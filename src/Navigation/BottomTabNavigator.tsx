@@ -3,10 +3,11 @@ import { Image } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import MapScreen from "../BottomTab/Maps";
 import CocktailBookScreen from "../BottomTab/CocktailBookScreen";
-import RecommendationsScreen from "../BottomTab/RecommendationsScreen";
+import RecommendationsScreen from "../BottomTab/RecommendationIntroScreen";
 import MyPageScreen from "../BottomTab/MyPageScreen";
 import theme from "../assets/styles/theme";
 import { widthPercentage, heightPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
+import RecommendationIntroScreen from "../BottomTab/RecommendationIntroScreen";
 
 const Tab = createBottomTabNavigator();
 
@@ -54,7 +55,7 @@ const BottomTabNavigator = () => {
     >
       <Tab.Screen name="지도" component={MapScreen} options={{ headerShown: false }} />
       <Tab.Screen name="칵테일 백과" component={CocktailBookScreen} options={{ headerShown: false }} />
-      <Tab.Screen name="맞춤 추천" component={RecommendationsScreen} options={{ headerShown: false }} />
+      <Tab.Screen name="맞춤 추천" component={RecommendationIntroScreen} options={{ headerShown: false }} />
       <Tab.Screen name="마이페이지" component={MyPageScreen} options={{ headerShown: false }} />
     </Tab.Navigator>
   );
