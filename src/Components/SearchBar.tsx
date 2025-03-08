@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     height: heightPercentage(48),
     borderRadius: widthPercentage(8),
-    backgroundColor: theme.background,
+    backgroundColor: "#FFFCF3",
     justifyContent: "center",
     paddingHorizontal: widthPercentage(10),
     zIndex: 2,

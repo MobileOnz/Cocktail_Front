@@ -5,6 +5,7 @@ import {
   responsiveScreenWidth,
   responsiveFontSize
 }from "react-native-responsive-dimensions"
+
 // Figma 기준 사이즈: 375 x 812
 const FIGMA_BASE_WIDTH = 375;
 const FIGMA_BASE_HEIGHT = 812;

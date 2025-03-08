@@ -26,7 +26,6 @@ const recentSearches = ["검색어 1", "검색어 2"];
 
 const SearchScreen: React.FC<SearchScreenProps> = ({ navigation }) => {
   const handlePress = () => {
-    console.log("Navigating to Maps...");
     navigation.navigate("Maps", { searchCompleted: true });
   };
 
@@ -41,7 +40,8 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation }) => {
           style={styles.backButton}
           onPress={() => navigation.navigate("Maps",{searchCompleted : false})}
         >
-          <FontAwesome name="arrow-left" size={20} color="#007BFF" />
+          <Text> - </Text>
+         
         </TouchableOpacity>
         <TextInput
           style={[styles.searchInput, {backgroundColor : "#F3EFE6"}]}
@@ -50,7 +50,7 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation }) => {
           returnKeyType="done"
           
           onSubmitEditing={() => {
-            console.log("🔵 onSubmitEditing triggered!");
+
             navigation.navigate("Maps", { searchCompleted: true });
           }}
         />
