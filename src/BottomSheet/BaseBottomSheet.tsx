@@ -29,7 +29,7 @@ const nearBars = [
 
 const BaseBottomSheet = () => {
   const navigation = useNavigation();
-  const snapPoints = useMemo(() => ["10%", "50%", "90%"], []);
+  const snapPoints = useMemo(() => ["10%", "30%", "76%"], []);
   const [showMyBars, setShowMyBars] = useState(true);
   const [selectedTab, setSelectedTab] = useState<"search" | "myList" | "region">("search");
 

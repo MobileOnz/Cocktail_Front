@@ -10,7 +10,7 @@ import BottomTabNavigator from "./BottomTabNavigator";
 import RecommendationFlowScreen from "../Screens/RecommendationFlowScreen";
 import LoadingScreen from "../Screens/LoadingScreen";
 import ResultScreen from "../Screens/ResultScreen";
-
+import MarketDetail from "../Screens/MarketDetail";
 import RegionSelectScreen from "../Screens/RegionSelectScreen";
 import CreateNewListScreen from "../Screens/CreateNewListScreen";
 export type RootStackParamList = {
@@ -24,6 +24,7 @@ export type RootStackParamList = {
   LoadingScreen: undefined;
   ResultScreen: undefined;
   CreateNewListScreen : undefined;
+  MarketDetail : undefined;
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -45,6 +46,7 @@ const Navigation: React.FC = () => {
         <Stack.Screen name="LoadingScreen" component={LoadingScreen} />
         <Stack.Screen name="ResultScreen" component={ResultScreen} />
         <Stack.Screen name="CreateNewListScreen" component={CreateNewListScreen} />
+        <Stack.Screen name="MarketDetail" component={MarketDetail}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

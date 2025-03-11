@@ -2,6 +2,11 @@ import React from "react";
 import { View, Text, TouchableOpacity, Image, StyleSheet } from "react-native";
 import { BottomSheetSectionList } from "@gorhom/bottom-sheet";
 import { widthPercentage, heightPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
+import { useNavigation } from "@react-navigation/native";
+import { RootStackParamList } from "../Navigation/Navigation";
+import { StackScreenProps } from "@react-navigation/stack";
+type SearchScreenProps = StackScreenProps<RootStackParamList, "SearchScreen">;
+
 
 type myBarList = {
   listId: number;
@@ -23,9 +28,11 @@ interface SearchSheetListProps {
 }
 
 const MainBottomSheet: React.FC<SearchSheetListProps> = ({ sections, showMyBars, setShowMyBars }) => {
+  const navigation = useNavigation();
   const renderBarItem = ({ item, index, section }: { item: myBarList; index: number; section: any }) => (
     <>
-      <TouchableOpacity style={styles.itemContainer}>
+      <TouchableOpacity  onPress={() => navigation.navigate("MarketDetail"as never)} 
+      style={styles.itemContainer}>
         <Image style={styles.itemImage} source={item.image} />
         <View style={styles.textContainer}>
           <Text style={styles.itemTitle}>{item.title}</Text>

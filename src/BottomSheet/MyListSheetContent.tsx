@@ -29,22 +29,22 @@ const myList = [
   },
 ];
 
+type NavigationProps = StackNavigationProp<RootStackParamList, "RegionSelectScreen">;
 
 const MyListSheetContent : React.FC =  () => {
   const navigation = useNavigation();
   const handleEdit = (itemId) => {
     console.log(`Editing item with id: ${itemId}`);
-    // 추가적인 수정 로직 구현
   };
 
   const handleDelete = (itemId) => {
     console.log(`Deleting item with id: ${itemId}`);
-    // 삭제 로직 구현
+  
   };
   return (
     <Provider>
     <View style={styles.container}>
-      {/* 헤더 */}
+    
       <View style={styles.headerContainer}>
       <Text style={styles.header}>나의 리스트</Text>
       <View style={styles.line}></View>
@@ -52,7 +52,7 @@ const MyListSheetContent : React.FC =  () => {
       
       {/* 새 리스트 만들기 버튼 */}
       <TouchableOpacity style={styles.newListButton}
-       onPress={() => navigation.navigate("CreateNewListScreen")}
+       onPress={() => navigation.navigate("CreateNewListScreen"as never)}
       >
         
         <Image  source={require("../assets/drawable/newlist.png")}

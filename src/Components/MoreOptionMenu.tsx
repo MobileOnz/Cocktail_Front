@@ -1,24 +1,15 @@
 import React, { useState } from "react";
-import { TouchableOpacity, Image, View, StyleSheet, Alert } from "react-native";
+import { TouchableOpacity, Image, View, StyleSheet } from "react-native";
 import { Menu } from "react-native-paper";
+import CustomAlertModal from "./CustomAlertModal";
 import { widthPercentage, heightPercentage } from "../assets/styles/FigmaScreen";
 
 const MoreOptionMenu = ({ itemId, onEdit, onDelete }) => {
   const [visible, setVisible] = useState(false);
+  const [alertVisible, setAlertVisible] = useState(false);
 
   const openMenu = () => setVisible(true);
   const closeMenu = () => setVisible(false);
-
-  const handleDelete = () => {
-    Alert.alert(
-      "나의 리스트에서 삭제할까요?", // 제목
-      "", // 내용 (필요 없으면 빈 문자열)
-      [
-        { text: "취소", style: "cancel" },
-        { text: "삭제", onPress: () => onDelete(itemId), style: "destructive" },
-      ]
-    );
-  };
 
   return (
     <View style={styles.container}>
@@ -52,8 +43,7 @@ const MoreOptionMenu = ({ itemId, onEdit, onDelete }) => {
         <Menu.Item
           style={styles.menuItem}
           onPress={() => {
-            onDelete(itemId);
-            handleDelete();
+            setAlertVisible(true);
             closeMenu();
           }}
           title="삭제하기"
@@ -65,6 +55,17 @@ const MoreOptionMenu = ({ itemId, onEdit, onDelete }) => {
           )}
         />
       </Menu>
+
+      {/* 커스텀 알림 모달 */}
+      <CustomAlertModal
+        visible={alertVisible}
+        message="나의 리스트에서 삭제할까요?"
+        onCancel={() => setAlertVisible(false)}
+        onConfirm={() => {
+          onDelete(itemId);
+          setAlertVisible(false);
+        }}
+      />
     </View>
   );
 };
@@ -74,9 +75,13 @@ export default MoreOptionMenu;
 const styles = StyleSheet.create({
   container: {
     position: "relative",
+    alignItems: "center",
+    justifyContent: "center",
   },
   menuButton: {
     padding: 2,
+    alignItems: "center",
+    justifyContent: "center",
   },
   menuIcon: {
     width: 4,
