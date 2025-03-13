@@ -7801,6 +7801,13 @@ react-is@^19.0.0:
   resolved "https://registry.npmjs.org/react-is/-/react-is-19.0.0.tgz"
   integrity sha512-H91OHcwjZsbq3ClIDHMzBShc1rotbfACdWENsmEf0IFvZ3FgGPtdHMcsv45bQ1hAbgdfiA8SnxTKfDS+x/8m2g==
 
+react-native-animatable@1.4.0:
+  version "1.4.0"
+  resolved "https://registry.npmjs.org/react-native-animatable/-/react-native-animatable-1.4.0.tgz"
+  integrity sha512-DZwaDVWm2NBvBxf7I0wXKXLKb/TxDnkV53sWhCvei1pRyTX3MVFpkvdYBknNBqPrxYuAIlPxEp7gJOidIauUkw==
+  dependencies:
+    prop-types "^15.8.1"
+
 react-native-app-intro-slider@^4.0.4:
   version "4.0.4"
   resolved "https://registry.npmjs.org/react-native-app-intro-slider/-/react-native-app-intro-slider-4.0.4.tgz"
@@ -7851,7 +7858,14 @@ react-native-maps@1.20.1:
   dependencies:
     "@types/geojson" "^7946.0.13"
 
-react-native-paper@^5.13.1:
+react-native-modal@14.0.0-rc.0:
+  version "14.0.0-rc.0"
+  resolved "https://registry.npmjs.org/react-native-modal/-/react-native-modal-14.0.0-rc.0.tgz"
+  integrity sha512-9Wkg77VUdIkkSxnxm6UctRtIzRnnvuE+MbvIOlHkYjGn/W3dJRej6B7GRGhjyn1QPZ/pO4+dixkxjMgyc380lQ==
+  dependencies:
+    react-native-animatable "1.4.0"
+
+react-native-paper@5.13.1:
   version "5.13.1"
   resolved "https://registry.npmjs.org/react-native-paper/-/react-native-paper-5.13.1.tgz"
   integrity sha512-8frKVKJ5JBd8WL1G3tpcYzOgK40kxkD/U+yLHGKNeLnD6v1Qc9W6DxWTHWN7lsX/DPYnhgvw1aKkYaPTmDj5pg==
@@ -7914,7 +7928,7 @@ react-native-vector-icons@*, react-native-vector-icons@10.2.0:
     prop-types "^15.7.2"
     yargs "^16.1.1"
 
-react-native@*, "react-native@^0.0.0-0 || >=0.65 <1.0", react-native@^0.78.0, "react-native@>= 0.59", "react-native@>= 0.64.3", react-native@>=0.44.1, react-native@>=0.56, react-native@>=0.57.0, react-native@>=0.73.0:
+react-native@*, "react-native@^0.0.0-0 || >=0.65 <1.0", react-native@^0.78.0, "react-native@>= 0.59", "react-native@>= 0.64.3", react-native@>=0.44.1, react-native@>=0.56, react-native@>=0.57.0, react-native@>=0.70.0, react-native@>=0.73.0:
   version "0.78.0"
   resolved "https://registry.npmjs.org/react-native/-/react-native-0.78.0.tgz"
   integrity sha512-3PO4tNvCN6BdAKcoY70v1sLfxYCmDR4KS1VTY+kIBKy5Qznp27QNxL7zBQjvS6Jp91gc8N82QbysQrfBlwg9gQ==

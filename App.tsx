@@ -5,6 +5,9 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import SplashScreen from "react-native-splash-screen";
 import Navigation from "./src/Navigation/Navigation";
 
+import {Provider as PaperProvider} from "react-native-paper"
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+
 function App(): React.JSX.Element {
   const isDarkMode = useColorScheme() === "dark";
   const [isFirstLaunch, setIsFirstLaunch] = useState<null | boolean>(null);
