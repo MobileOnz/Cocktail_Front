@@ -1,10 +1,11 @@
-import React from "react";
+import React, {useState, useEffect} from "react";
 import { View, Text, TouchableOpacity, Image, StyleSheet } from "react-native";
 import { BottomSheetSectionList } from "@gorhom/bottom-sheet";
 import { widthPercentage, heightPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
 import { useNavigation } from "@react-navigation/native";
 import { RootStackParamList } from "../Navigation/Navigation";
 import { StackScreenProps } from "@react-navigation/stack";
+
 type SearchScreenProps = StackScreenProps<RootStackParamList, "SearchScreen">;
 
 
@@ -25,28 +26,36 @@ interface SearchSheetListProps {
   sections: Section[];
   showMyBars: boolean;
   setShowMyBars: (value: boolean) => void;
+  handleTabPress: (tab: "search" | "myList" | "region" | "bookmark", bar?: myBarList | null) => void;
 }
 
-const MainBottomSheet: React.FC<SearchSheetListProps> = ({ sections, showMyBars, setShowMyBars }) => {
+const MainBottomSheet: React.FC<SearchSheetListProps> = ({ sections, showMyBars, setShowMyBars, handleTabPress }) => {
   const navigation = useNavigation();
+  const [selectedBar, setSelectedBar] = useState(null);
+
+
   const renderBarItem = ({ item, index, section }: { item: myBarList; index: number; section: any }) => (
     <>
-      <TouchableOpacity  onPress={() => navigation.navigate("MarketDetail"as never)} 
-      style={styles.itemContainer}>
+      <View style={styles.itemContainer}>
+      <TouchableOpacity onPress={() => navigation.navigate("MarketDetail")}>
         <Image style={styles.itemImage} source={item.image} />
-        <View style={styles.textContainer}>
-          <Text style={styles.itemTitle}>{item.title}</Text>
-          <Text style={styles.itemDistance}>{item.barAdress}</Text>
-          <Text style={{ color: "#B9B6AD", fontSize: fontPercentage(12) }}>인기메뉴</Text>
-          <View style={styles.hashtagContainer}>
-            {item.hashtageList.map((tag, idx) => (
-              <Text key={idx} style={styles.hashtag}>
-                {tag}
-              </Text>
-            ))}
-          </View>
-        </View>
       </TouchableOpacity>
+      <View style={styles.textContainer}>
+        <Text style={styles.itemTitle}>{item.title}</Text>
+        <Text style={styles.itemDistance}>{item.barAdress}</Text>
+        <Text style={{ color: "#B9B6AD", fontSize: fontPercentage(12) }}>인기메뉴</Text>
+        <View style={styles.hashtagContainer}>
+          {item.hashtageList.map((tag, idx) => (
+            <Text key={idx} style={styles.hashtag}>{tag}</Text>
+          ))}
+        </View>
+      </View>
+      {/* 책갈피 아이콘 */}
+      <TouchableOpacity onPress={() => handleTabPress("bookmark", item)}>
+        <Image source={require("../assets/drawable/bookmark.png")} style={styles.bookmarkImage} />
+      </TouchableOpacity>
+
+    </View>
 
       {section.title === "나의 칵테일 바" && index === section.data.length - 1 && (
         <TouchableOpacity style={styles.toggleButton} onPress={() => setShowMyBars(!showMyBars)}>
@@ -64,20 +73,23 @@ const MainBottomSheet: React.FC<SearchSheetListProps> = ({ sections, showMyBars,
   );
 
   return (
-    <BottomSheetSectionList
-      sections={sections}
-      keyExtractor={(item) => item.listId.toString()}
-      renderItem={renderBarItem}
-      renderSectionHeader={renderSectionHeader}
-      stickySectionHeadersEnabled={false}
-      ListFooterComponent={() =>
-        showMyBars && (
-          <TouchableOpacity style={styles.toggleButton} onPress={() => setShowMyBars(false)}>
-            <Text style={styles.toggleText}>접기</Text>
-          </TouchableOpacity>
-        )
-      }
-    />
+    <>
+      <BottomSheetSectionList
+        sections={sections}
+        keyExtractor={(item) => item.listId.toString()}
+        renderItem={renderBarItem}
+        renderSectionHeader={renderSectionHeader}
+        stickySectionHeadersEnabled={false}
+        ListFooterComponent={() =>
+          showMyBars && (
+            <TouchableOpacity style={styles.toggleButton} onPress={() => setShowMyBars(false)}>
+              <Text style={styles.toggleText}>접기</Text>
+            </TouchableOpacity>
+          )
+        }
+      />
+
+    </>
   );
 };
 
@@ -155,6 +167,23 @@ const styles = StyleSheet.create({
   toggleText: {
     fontSize: fontPercentage(14),
     color: "#7D7A6F",
+  },
+  bookmarkIcon: {
+    padding: widthPercentage(10),
+  },
+  bookmarkImage: {
+    width: widthPercentage(24),
+    height: heightPercentage(24),
+    resizeMode: "contain",
+  },
+  bookmarkContainer: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: 9999,
+    backgroundColor: "rgba(0,0,0,0.5)",
   },
 });
 

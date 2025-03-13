@@ -4,6 +4,7 @@ import BottomSheet from "@gorhom/bottom-sheet";
 import theme from "../assets/styles/theme";
 import SearchSheetContent from "../BottomSheet/SearchSheetContent";
 import MyListSheetContent from "../BottomSheet/MyListSheetContent";
+import SelectionListSheet from "./\bSelectionListSheet";
 import { widthPercentage, heightPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
 import { useNavigation } from "@react-navigation/native"; 
 
@@ -26,12 +27,36 @@ const nearBars = [
     hashtageList: ["#칵테일명", "#칵테일명", "#다른주류명", "#안주명"],
   },
 ];
+const myList = [
+  {
+    id: "1",
+    name: "메인 컨셉",
+    location: "999",
+    tags: ["#Sub", "#Sub", "#Sub"],
+    icon: require("../assets/drawable/listicon1.png"),
+  },
+  {
+    id: "2",
+    name: "메인 컨셉",
+    location: "999",
+    tags: ["#Sub", "#Sub", "#Sub"],
+    icon: require("../assets/drawable/listicon2.png"),
+  },
+  {
+    id: "3",
+    name: "메인 컨셉",
+    location: "999",
+    tags: ["#Sub", "#Sub", "#Sub"],
+    icon: require("../assets/drawable/listicon3.png"),
+  },
+];
 
 const BaseBottomSheet = () => {
   const navigation = useNavigation();
   const snapPoints = useMemo(() => ["10%", "30%", "76%"], []);
   const [showMyBars, setShowMyBars] = useState(true);
-  const [selectedTab, setSelectedTab] = useState<"search" | "myList" | "region">("search");
+  const [selectedTab, setSelectedTab] = useState<"search" | "myList" | "region" | "bookmark">("search");
+  const [selectedBar, setSelectedBar] = useState(null);
 
   // sections 데이터 변경
   const sections = useMemo(() => {
@@ -46,10 +71,14 @@ const BaseBottomSheet = () => {
     ];
   }, [selectedTab]);
 
-  // 버튼 클릭 시 같은 버튼이면 기본 화면('search')으로 변경
-  const handleTabPress = (tab: "myList" | "region") => {
-    setSelectedTab((prev) => (prev === tab ? "search" : tab));
+  // 탭 변경 핸들러
+  const handleTabPress = (tab: "search" | "myList" | "region" | "bookmark", bar = null) => {
+    if (tab === "bookmark") {
+      setSelectedBar(bar);
+    }
+    setSelectedTab(prev => (prev === tab ? "search" : tab));
   };
+  
 
   return (
     <BottomSheet index={0} snapPoints={snapPoints} enablePanDownToClose={false} backgroundStyle={{ backgroundColor: theme.background }}>
@@ -71,10 +100,17 @@ const BaseBottomSheet = () => {
         </TouchableOpacity>
       </View>
 
-      {selectedTab === "myList" ? (
+      {selectedTab === "bookmark" ? (
+        <SelectionListSheet
+          title="선택한 장소 명"
+          listData={myList}
+          onClose={() => setSelectedTab("search")}
+          onSave={(selectedItem) => console.log("선택한 아이템:", selectedItem)}
+        />
+      ) : selectedTab === "myList" ? (
         <MyListSheetContent />
       ) : (
-        <SearchSheetContent sections={sections} showMyBars={showMyBars} setShowMyBars={setShowMyBars} />
+        <SearchSheetContent sections={sections} showMyBars={true} handleTabPress={handleTabPress} />
       )}
     </BottomSheet>
   );
