@@ -4,7 +4,7 @@ import BottomSheet from "@gorhom/bottom-sheet";
 import theme from "../assets/styles/theme";
 import SearchSheetContent from "../BottomSheet/SearchSheetContent";
 import MyListSheetContent from "../BottomSheet/MyListSheetContent";
-import SelectionListSheet from "./\bSelectionListSheet";
+import SelectionListSheet from "./SelectionListSheet";
 import { widthPercentage, heightPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
 import { useNavigation } from "@react-navigation/native"; 
 

@@ -15,12 +15,12 @@ const Tab = createBottomTabNavigator();
 const BottomTabNavigator = () => {
   const navigation = useNavigation();
   const [isLoginSheetVisible, setLoginSheetVisible] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // 실제로는 토큰 확인 필요
+  const [isLoggedIn, setIsLoggedIn] = useState(true); // 실제로는 토큰 확인 필요
 
   // 맞춤 추천 탭을 눌렀을 때 실행
   const handleRecommendationPress = () => {
     console.log("🔥 맞춤 추천 탭 클릭됨! isLoggedIn:", isLoggedIn);
-    
+
     if (!isLoggedIn) {
       console.log("🚀 로그인이 필요하므로 바텀시트 표시");
       setLoginSheetVisible(true); // 로그인 바텀시트 표시
@@ -50,11 +50,11 @@ const BottomTabNavigator = () => {
     );
   };
 
-  
+
 
   return (
     <>
-      
+
 
       <Tab.Navigator
         initialRouteName="지도"

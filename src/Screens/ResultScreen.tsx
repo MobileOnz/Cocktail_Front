@@ -36,7 +36,7 @@ const ResultScreen: React.FC = () => {
           <Text style={styles.smallButtonText}>다시 찾기</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.smallButton} onPress={() => navigation.navigate("Maps")}
+        <TouchableOpacity style={styles.smallButton} onPress={() => navigation.navigate("BottomTabNavigator")}
         >
           <Text style={styles.smallButtonText}>홈으로</Text>
         </TouchableOpacity>
