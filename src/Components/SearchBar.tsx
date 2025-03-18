@@ -1,8 +1,7 @@
 import React from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet,Image } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { widthPercentage, heightPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
-import theme from "../assets/styles/theme";
 
 const SearchBar = () => {
   const navigation = useNavigation();
@@ -12,7 +11,13 @@ const SearchBar = () => {
       style={styles.searchButton}
       onPress={() => navigation.navigate("SearchScreen" as never)}
     >
-      <Text style={styles.searchButtonText}>검색</Text>
+      <View style={{flexDirection : "row"}}>
+        <Image source={require("../assets/drawable/search.png")}
+          style={{width : widthPercentage(24), height : heightPercentage(24), marginRight : widthPercentage(10)}}
+          resizeMode="contain"
+        />
+      <Text style={styles.searchButtonText}>서울시 소공동</Text>
+      </View>
     </TouchableOpacity>
   );
 };
@@ -20,7 +25,7 @@ const SearchBar = () => {
 const styles = StyleSheet.create({
   searchButton: {
     position: "absolute",
-    top: heightPercentage(59),
+    top: heightPercentage(5),
     width: widthPercentage(343),
     alignSelf: "center",
     height: heightPercentage(48),
