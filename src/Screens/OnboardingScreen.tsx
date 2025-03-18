@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { View, Text, Image, StyleSheet, Animated, Dimensions, StatusBar } from "react-native";
+import { View, Text, Image, StyleSheet, Animated, Dimensions, StatusBar, TouchableOpacity} from "react-native";
 import AppIntroSlider from "react-native-app-intro-slider";
 import { StackScreenProps } from "@react-navigation/stack";
 import { widthPercentage, heightPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
@@ -7,9 +7,9 @@ import theme from "../assets/styles/theme";
 type RootStackParamList = {
   Onboarding: undefined;
   Login: undefined;
+  BottomTabNavigator: { screen: "지도" | "칵테일 백과" | "맞춤 추천" | "마이페이지" };
 };
 
-const { width } = Dimensions.get("window");
 
 type OnboardingScreenProps = StackScreenProps<RootStackParamList, "Onboarding">;
 
@@ -23,33 +23,27 @@ interface SlideItem {
 const slides: SlideItem[] = [
   {
     key: "1",
-    title: "칵테일 바 용 지도",
-    text: "지역별 칵테일 바와 메뉴를 한번에 확인하여 내가 원하는 분위기와 메뉴를 찾을 수 있어요",
-    image: require("../assets/drawable/onboarding1.png"),
+    title: "지도",
+    text: "내가 원하는 분위기의 가게와 메뉴를\n 지역별로 한 번에 확인해요",
+    image: require("../assets/onboarding/description1.png"),
   },
   {
     key: "2",
-    title: "편리한 기능",
-    text: "당신을 위한 스마트한 기능을 제공합니다.",
-    image: require("../assets/drawable/onboarding2.jpg"),
+    title: "칵테일 백과",
+    text: " 평소에 궁금했던 칵테일의\n 맛과 정보를 확인해요",
+    image: require("../assets/onboarding/description2.png"),
   },
   {
     key: "3",
-    title: "시작해볼까요?",
-    text: "지금 바로 경험해보세요!",
-    image: require("../assets/drawable/onboarding3.jpg"),
+    title: "맞춤 추천",
+    text: "오늘의 기분과 취향을 입력하면\n 나만의 칵테일을 만들어줘요",
+    image: require("../assets/onboarding/description3.png"),
   },
 ];
 
 const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ navigation }) => {
-  
-  const scrollX = useRef(new Animated.Value(0)).current;
   const [activeIndex, setActiveIndex] = useState(0);
   const animatedValue = useRef(new Animated.Value(0)).current;
-
-  const finishOnboarding = async () => {
-    navigation.replace("Login");
-  };
 
   const onSlideChange = (index: number) => {
     setActiveIndex(index);
@@ -65,9 +59,9 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ navigation }) => {
       <View style={styles.paginationContainer}>
         <StatusBar barStyle="dark-content" backgroundColor={theme.background} />
         {slides.map((_, i) => {
-          const scaleAnim = animatedValue.interpolate({
+          const scaleAnim = animatedValue.interpolate({ // 도트 크기 및 애니메이션 효과 
             inputRange: [i - 1, i, i + 1],
-            outputRange: [1, 1.5, 1],
+            outputRange: [1, 1, 1],
             extrapolate: "clamp",
           });
           return (
@@ -87,13 +81,30 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ navigation }) => {
     );
   };
 
-  const renderItem = ({ item, index }: { item: SlideItem; index: number }) => (
+  const renderItem = ({item}: { item: SlideItem; index: number }) => (
     <View style={[styles.slide, {backgroundColor : theme.background}]}>
       <Image source={item.image} style={styles.image} />
       <Text style={styles.title}>{item.title}</Text>
       <Text style={styles.text}>{item.text}</Text>
-      
-      {renderPagination()}
+      {/*애니메이션 효과 넣기*/}
+      {renderPagination()} 
+      <View style={styles.buttonContainer}>
+      {/* 칵테일 바 찾기 버튼 */}
+      <TouchableOpacity 
+      onPress={() => navigation.navigate("BottomTabNavigator", { screen: "지도" }) }
+      style={styles.outlineButton}>
+        <Text style={styles.outlineButtonText}>칵테일 바 찾기</Text>
+        
+      </TouchableOpacity>
+
+      {/* 취향 알아보기 버튼 */}
+      <TouchableOpacity 
+      onPress={() => navigation.navigate("BottomTabNavigator", { screen: "맞춤 추천" }) }
+      style={styles.filledButton}>
+        
+        <Text style={styles.filledButtonText}>취향 알아보기</Text>
+      </TouchableOpacity>
+    </View>
     </View>
   );
 
@@ -101,9 +112,9 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ navigation }) => {
     <AppIntroSlider
       renderItem={renderItem}
       data={slides}
-      onDone={finishOnboarding}
-      showSkipButton={true}
-      onSkip={finishOnboarding}
+      showSkipButton={false}
+      showNextButton={false}
+      showDoneButton={false}
       dotStyle={{ display: "none" }}
       activeDotStyle={{ display: "none" }}
       onSlideChange={onSlideChange}
@@ -112,6 +123,43 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
+  buttonContainer: {
+    marginTop : heightPercentage(32),
+    flexDirection : "row",
+    justifyContent : "space-between"
+  },
+  outlineButton: {
+    borderWidth: 1,
+    height : heightPercentage(48),
+    justifyContent : "center",
+    alignItems : "center",
+    borderColor: '#2D2D2D',
+    paddingHorizontal : heightPercentage(37.25),
+    paddingVertical :widthPercentage(12),
+    borderRadius: 8,
+    backgroundColor: '#FFFCF3', 
+  },
+  outlineButtonText: {
+    color: '#2D2D2D',
+    fontSize: 16,
+    fontWeight: '700',
+  },
+  filledButton: {
+    marginLeft : widthPercentage(12),
+    height : heightPercentage(48),
+    justifyContent : "center",
+    alignItems : "center",
+    backgroundColor: '#21103C', 
+    borderRadius: 8,
+    paddingHorizontal : heightPercentage(38.75),
+    paddingVertical :widthPercentage(12),
+    
+  },
+  filledButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '700',
+  },
   slide: {
     flex: 1,
     alignItems: "center",
@@ -120,22 +168,21 @@ const styles = StyleSheet.create({
   },
   image: {
     width: widthPercentage(375),
-    height: heightPercentage(399.74),
+    height: heightPercentage(400),
     marginTop: heightPercentage(50),
   },
   title: {
-    fontSize: fontPercentage(20),
-    fontWeight: "bold",
+    fontSize: fontPercentage(24),
+    fontWeight: "700",
     textAlign: "center",
-    marginTop: heightPercentage(47),
+    marginTop: heightPercentage(44),
   },
   text: {
-    
     color : "#7D7A6F",
     fontSize: fontPercentage(16),
     textAlign: "center",
-    marginTop : heightPercentage(4),
-    marginHorizontal : widthPercentage(16)
+    marginTop : heightPercentage(8),
+    
   },
   paginationContainer: {
     flexDirection: "row",

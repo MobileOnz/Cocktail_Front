@@ -19,15 +19,11 @@ const BottomTabNavigator = () => {
 
   // 맞춤 추천 탭을 눌렀을 때 실행
   const handleRecommendationPress = () => {
-    console.log("🔥 맞춤 추천 탭 클릭됨! isLoggedIn:", isLoggedIn);
 
     if (!isLoggedIn) {
-      console.log("🚀 로그인이 필요하므로 바텀시트 표시");
       setLoginSheetVisible(true); // 로그인 바텀시트 표시
     } else {
-      console.log("✅ 로그인 상태이므로 RecommendationsScreen으로 이동");
       navigation.navigate("BottomTabNavigator", { screen: "맞춤 추천" });
-
     }
   };
 
