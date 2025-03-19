@@ -48,6 +48,26 @@ const RecommendationFlowScreen: React.FC<Props> = ({ navigation }) => {
   const typingBubbleOpacity = useRef(new Animated.Value(1)).current;
   const fadeInValues = useRef(questions.map(() => new Animated.Value(0))).current;
   
+  const buttonScale = useRef(new Animated.Value(1)).current;
+
+  const handlePress = () => { //버튼 애니메이션 (누르면 움츠려들었다가 펴지는거)
+    Animated.sequence([
+      Animated.timing(buttonScale, {
+        toValue: 0.95, // 버튼 축소
+        duration: 50, 
+        easing: Easing.out(Easing.ease),
+        useNativeDriver: true,
+      }),
+      Animated.timing(buttonScale, {
+        toValue: 1,
+        duration: 50,
+        easing: Easing.out(Easing.ease),
+        useNativeDriver: true,
+      }),
+    ]).start(() => {
+      navigation.navigate("LoadingScreen");
+    });
+  };
 
   useEffect(() => {
     setAllAnswered(Object.keys(selectedAnswers).length === questions.length);
@@ -188,10 +208,17 @@ const handleOptionSelect = (answer: string) => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-      <TouchableOpacity disabled={currentStep === 0}>
-            <Image source={require("../assets/drawable/left-chevron.png")} style={styles.icon} />
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.backButton}
+          hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }} // 터치 영역 확장
+        >
+          <Image
+            source={require("../assets/drawable/left-chevron.png")}
+            style={styles.icon}
+          />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate("Maps")}>  
+        <TouchableOpacity onPress={() => navigation.navigate("BottomTabNavigator")}>  
             <Image source={require("../assets/drawable/home.png")}
             style={styles.icon} />
         </TouchableOpacity>
@@ -283,13 +310,34 @@ const handleOptionSelect = (answer: string) => {
           </Animated.View>
         ))}
 
-        {allAnswered && (
+        {/* {allAnswered && (
           <TouchableOpacity
             style={styles.confirmButton}
             onPress={() => navigation.navigate("LoadingScreen")}
           >
             <Text style={styles.confirmButtonText}>나만의 칵테일 추천 받기</Text>
           </TouchableOpacity>
+        )} */}
+        {currentStep === questions.length - 1 && (
+          <Animated.View style={[styles.animatedButtonWrapper, { transform: [{ scale: buttonScale }] }]}>
+          <TouchableOpacity
+            style={[
+              styles.confirmButton,
+              selectedAnswers[currentStep] ? styles.activeButton : styles.disabledButton,
+            ]}
+            onPress={handlePress}
+            disabled={!selectedAnswers[currentStep]}
+          >
+            <Text
+              style={[
+                styles.confirmButtonText,
+                selectedAnswers[currentStep] ? styles.activeButtonText : styles.disabledButtonText,
+              ]}
+            >
+              나만의 칵테일 추천 받기
+            </Text>
+          </TouchableOpacity>
+        </Animated.View>
         )}
       </View>
     </View>
@@ -301,7 +349,15 @@ export default RecommendationFlowScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#FAF9F6",
+    backgroundColor: "#fffcf3",
+  },
+  backButton: {
+    top: heightPercentage(10), // 🔥 값을 낮춰서 아이콘을 위로 이동
+    left: widthPercentage(15),
+    width: widthPercentage(40), // 적절한 크기 설정
+    height: widthPercentage(40),
+    alignItems: "center",
+    justifyContent: "center",
   },
   header: {
     flexDirection: "row",
@@ -313,6 +369,7 @@ const styles = StyleSheet.create({
   icon: {
     width: widthPercentage(28),
     height: widthPercentage(28),
+    resizeMode: "contain",
   },
   centralContainer: {
     flex: 1,
@@ -373,7 +430,7 @@ const styles = StyleSheet.create({
   },
   optionText: {
     fontSize: fontPercentage(14),
-    color: "#7D7A6F",
+    color: "#2d2d2d",
   },
   selectedOptionText: {
     color: "#FFFFFF",
@@ -411,4 +468,23 @@ const styles = StyleSheet.create({
     height: widthPercentage(52),
     resizeMode: "contain",
   },
+  disabledButton: {
+    backgroundColor: "#f3efe6",
+  },
+  activeButton: {
+    backgroundColor: "#21103C",
+  },
+  disabledButtonText: {
+    color: "#b9b6ad",
+  },
+  activeButtonText: {
+    color: "#FFFFFF",
+  },
+  animatedButtonWrapper: {
+    position: "absolute",
+    bottom: heightPercentage(44),
+    width: "100%",
+    alignItems: "center",
+  },
+  
 });

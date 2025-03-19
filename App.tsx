@@ -8,10 +8,27 @@ import Navigation from "./src/Navigation/Navigation";
 import {Provider as PaperProvider} from "react-native-paper"
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
+import MobileAds from "react-native-google-mobile-ads";
+import { firebase } from "@react-native-firebase/app";
+
+
+
 function App(): React.JSX.Element {
   const isDarkMode = useColorScheme() === "dark";
   const [isFirstLaunch, setIsFirstLaunch] = useState<null | boolean>(null);
 
+  useEffect(() => {
+    
+    if (!firebase.apps.length) {
+      console.log("🔥 Firebase 자동 초기화 완료");
+    }
+
+    MobileAds()
+      .initialize()
+      .then(() => {
+        console.log("AdMob 초기화 완료");
+      });
+  }, []);
   useEffect(() => {
     const checkOnboarding = async () => {
       try {

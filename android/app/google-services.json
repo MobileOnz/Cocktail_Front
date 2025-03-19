@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "265741208176",
+    "project_id": "cocktail-e311f",
+    "storage_bucket": "cocktail-e311f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:265741208176:android:ddf413e88f483c30c682b5",
+        "android_client_info": {
+          "package_name": "com.cocktail_front"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAwLSoV84bd4j5PsMHbwhJPF91p265SXqM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

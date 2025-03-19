@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef, useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -6,58 +6,167 @@ import {
   Modal,
   TouchableOpacity,
   StyleSheet,
-  Dimensions,
+  Animated,
+  FlatList,
+  TouchableWithoutFeedback,
 } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
-
-const { width } = Dimensions.get("window");
+import { widthPercentage, heightPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
 
 interface CocktailDetailModalProps {
   visible: boolean;
   onClose: () => void;
-  cocktail: {
+  cocktailIndex: number;
+  cocktails: {
     name: string;
     description: string;
-    image: any; // require로 전달될 경우 any 타입을 사용
+    image: any;
     size: string;
     taste: string;
     alcohol: string;
     recommendation: string;
     ingredients: string;
-  };
+  }[];
 }
+
+const ITEM_WIDTH = widthPercentage(311);
+const ITEM_SPACING = widthPercentage(20);
 
 const CocktailDetailModal: React.FC<CocktailDetailModalProps> = ({
   visible,
   onClose,
-  cocktail,
+  cocktailIndex,
+  cocktails,
 }) => {
+  const flatListRef = useRef<FlatList>(null);
+  const scrollX = useRef(new Animated.Value(0)).current;
+  const [currentIndex, setCurrentIndex] = useState(cocktailIndex);
+
+  useEffect(() => {
+    if (visible) {
+      setTimeout(() => {
+        flatListRef.current?.scrollToOffset({
+          offset: cocktailIndex * ITEM_WIDTH,
+          animated: false,
+        });
+        setCurrentIndex(cocktailIndex);
+      }, 100);
+    }
+  }, [visible, cocktailIndex]);
+
+  let isScrolling = false;
+
+  const handleScrollEnd = (event: any) => {
+    if (isScrolling) return;
+    isScrolling = true;
+
+    const contentOffsetX = event.nativeEvent.contentOffset.x;
+    const index = Math.round(contentOffsetX / widthPercentage(311));
+
+    flatListRef.current?.scrollToOffset({
+      offset: index * widthPercentage(311),
+      animated: true,
+    });
+
+    setCurrentIndex(index);
+    setTimeout(() => {
+      isScrolling = false;
+    }, 500); // 500ms 후 다시 스크롤 가능
+  };
+
+
   return (
     <Modal visible={visible} animationType="fade" transparent>
-      <View style={styles.overlay}>
-        <View style={styles.modalContainer}>
-          {/* 닫기 버튼 */}
-          <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-            <Icon name="close" size={30} color="#000" />
-          </TouchableOpacity>
+      <TouchableWithoutFeedback onPress={onClose}>
+        <View style={styles.overlay}>
+          <Animated.FlatList
+            ref={flatListRef}
+            data={cocktails}
+            horizontal
+            pagingEnabled
+            snapToAlignment="center"
+            snapToInterval={ITEM_WIDTH + ITEM_SPACING}
+            decelerationRate="fast"
+            showsHorizontalScrollIndicator={false}
+            keyExtractor={(_, index) => index.toString()}
+            onScroll={Animated.event(
+              [{ nativeEvent: { contentOffset: { x: scrollX } } }],
+              { useNativeDriver: false }
+            )}
+            contentContainerStyle={{ alignItems: "center" }}
+            style={{ height: heightPercentage(550) }}
+            renderItem={({ item, index }) => {
+              const inputRange = [
+                (index - 1) * ITEM_WIDTH,
+                index * ITEM_WIDTH,
+                (index + 1) * ITEM_WIDTH,
+              ];
 
-          {/* 칵테일 이미지 */}
-          <Image source={cocktail.image} style={styles.cocktailImage} />
+              const scale = scrollX.interpolate({
+                inputRange,
+                outputRange: [0.85, 1, 0.85], // 양옆은 85%, 중앙은 100%
+                extrapolate: "clamp",
+              });
 
-          {/* 칵테일 정보 */}
-          <Text style={styles.cocktailName}>{cocktail.name}</Text>
-          <Text style={styles.cocktailDescription}>{cocktail.description}</Text>
+              const translateY = scrollX.interpolate({
+                inputRange,
+                outputRange: [10, 0, 10], // 중앙으로 올 때 위로 살짝 이동
+                extrapolate: "clamp",
+              });
 
-          <View style={styles.infoContainer}>
-            <Text style={styles.infoTitle}>기본 정보</Text>
-            <Text style={styles.infoText}>잔 크기: {cocktail.size}</Text>
-            <Text style={styles.infoText}>기본 맛: {cocktail.taste}</Text>
-            <Text style={styles.infoText}>도수: {cocktail.alcohol}</Text>
-            <Text style={styles.infoText}>추천 상황: {cocktail.recommendation}</Text>
-            <Text style={styles.infoText}>재료: {cocktail.ingredients}</Text>
-          </View>
+              return (
+                <TouchableWithoutFeedback>
+                  <Animated.View
+                    style={[
+                      styles.animatedContainer,
+                      { transform: [{ scale }, { translateY }] },
+                    ]}
+                  >
+                    {/* 닫기 버튼 */}
+                    <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+                      <Icon name="close" size={widthPercentage(24)} color="#000" />
+                    </TouchableOpacity>
+
+                    {/* 칵테일 이미지 */}
+                    <Image source={item.image} style={styles.cocktailImage} />
+
+                    {/* 칵테일 정보 */}
+                    <View style={styles.content}>
+                      <Text style={styles.cocktailName}>{item.name}</Text>
+                      <Text style={styles.cocktailDescription}>{item.description}</Text>
+
+                      {/* 기본 정보 */}
+                      <View style={styles.infoContainer}>
+                        <Text style={styles.infoTitle}>기본 정보</Text>
+                        <View style={styles.infoRow}>
+                          <Text style={styles.infoLabel}>잔 크기</Text>
+                          <Text style={styles.infoText}>{item.size}</Text>
+                        </View>
+                        <View style={styles.infoRow}>
+                          <Text style={styles.infoLabel}>기본 맛</Text>
+                          <Text style={styles.infoText}>{item.taste}</Text>
+                        </View>
+                        <View style={styles.infoRow}>
+                          <Text style={styles.infoLabel}>도수</Text>
+                          <Text style={styles.infoText}>{item.alcohol}</Text>
+                        </View>
+                        <View style={styles.infoRow}>
+                          <Text style={styles.infoLabel}>추천 상황</Text>
+                          <Text style={styles.infoText}>{item.recommendation}</Text>
+                        </View>
+                        <View style={styles.infoRow}>
+                          <Text style={styles.infoLabel}>재료</Text>
+                          <Text style={styles.infoText}>{item.ingredients}</Text>
+                        </View>
+                      </View>
+                    </View>
+                  </Animated.View>
+                </TouchableWithoutFeedback>
+              );
+            }}
+          />
         </View>
-      </View>
+      </TouchableWithoutFeedback>
     </Modal>
   );
 };
@@ -65,52 +174,71 @@ const CocktailDetailModal: React.FC<CocktailDetailModalProps> = ({
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    backgroundColor: "rgba(0, 0, 0, 0.7)",
     justifyContent: "center",
     alignItems: "center",
   },
-  modalContainer: {
-    width: width * 0.8,
-    backgroundColor: "#FAF9F6",
-    borderRadius: 15,
-    padding: 20,
-    alignItems: "center",
+  animatedContainer: {
+    width: widthPercentage(311),
+    backgroundColor: "#FFFCF3",
+    borderRadius: widthPercentage(15),
+    overflow: "hidden",
+    marginHorizontal: ITEM_SPACING / 2,
   },
   closeButton: {
     position: "absolute",
-    top: 10,
-    right: 10,
+    top: heightPercentage(10),
+    right: widthPercentage(10),
     zIndex: 10,
   },
   cocktailImage: {
-    width: width * 0.6,
-    height: width * 0.6,
-    borderRadius: 10,
-    marginBottom: 20,
+    width: "100%",
+    height: heightPercentage(260),
     resizeMode: "cover",
   },
+  content: {
+    padding: widthPercentage(20),
+  },
   cocktailName: {
-    fontSize: 22,
+    fontSize: fontPercentage(18),
     fontWeight: "bold",
-    marginBottom: 10,
+    color: "#2d2d2d",
+    marginBottom: heightPercentage(4),
   },
   cocktailDescription: {
-    fontSize: 16,
-    color: "#666",
-    textAlign: "center",
-    marginBottom: 20,
+    fontSize: fontPercentage(14),
+    color: "#7d7a6f",
+    marginBottom: heightPercentage(16),
   },
   infoContainer: {
-    width: "100%",
+    borderTopWidth: 1,
+    borderTopColor: "#E0E0E0",
+    paddingTop: heightPercentage(12),
   },
   infoTitle: {
-    fontSize: 18,
+    fontSize: fontPercentage(14),
     fontWeight: "bold",
-    marginBottom: 10,
+    color: "#2d2d2d",
+    marginBottom: heightPercentage(6),
+  },
+  infoRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    marginBottom: heightPercentage(8),
+  },
+  infoLabel: {
+    fontSize: fontPercentage(14),
+    fontWeight: "bold",
+    color: "#2D2D2D",
+    width: widthPercentage(80),
   },
   infoText: {
-    fontSize: 14,
-    marginBottom: 5,
+    fontSize: fontPercentage(14),
+    color: "#7d7a6f",
+    flex: 1,
+    textAlign: "left",
+    flexWrap: "wrap",
   },
 });
 
