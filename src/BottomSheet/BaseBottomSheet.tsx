@@ -9,6 +9,7 @@ import { widthPercentage, heightPercentage, fontPercentage } from "../assets/sty
 import { useNavigation } from "@react-navigation/native"; 
 import MenuListDetail from "./MenuListDetail";
 import PinClickView from "./PinClickView";
+
 const myBars = [
   {
     listId: 1,
@@ -61,7 +62,7 @@ const myList = [
 ];
 
 
-const BaseBottomSheet = () => {
+const BaseBottomSheet = ({ animatedPosition }) => {
   const navigation = useNavigation();
   const snapPoints = useMemo(() => ["10%", "30%", "76%"], []);
   const [selectedTab, setSelectedTab] = useState<"search" | "myList" | "region" | "bookmark"| "detail">("search");
@@ -101,6 +102,7 @@ const BaseBottomSheet = () => {
     ref={bottomSheetRef}
     index={0} 
     snapPoints={snapPoints} 
+    animatedPosition={animatedPosition}
     enablePanDownToClose={false} 
     backgroundStyle={{ backgroundColor: theme.background }}>
     {selectedTab !== "detail" && (

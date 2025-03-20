@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { StackScreenProps } from "@react-navigation/stack";
-import { View, StyleSheet, StatusBar, Text, TouchableOpacity, TextInput } from "react-native";
+import { View, StyleSheet, StatusBar, Text, TouchableOpacity, TextInput,Image } from "react-native";
 import SearchBar from "../Components/SearchBar";
 import CustomMapView from "../Components/CustomMapView";
 import BaseBottomSheet from "../BottomSheet/BaseBottomSheet";
@@ -8,7 +8,6 @@ import theme from "../assets/styles/theme";
 import { heightPercentage, widthPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
 import SelectedRegions from "../BottomSheet/SelectedRegions";
 import SelectedRegionTags from "../Components/SelectedRegionTags";
-
 
 type RootStackParamList = {
   SearchScreen: undefined;
@@ -18,9 +17,11 @@ type RootStackParamList = {
 type MapsProps = StackScreenProps<RootStackParamList, "Maps">;
 
 const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
+  
   const [isSearchCompleted, setIsSearchCompleted] = useState(false);
   const [selectedRegions, setSelectedRegions] = useState<string[]>([]);
   const {searchQuery} = route.params|| "";
+
 
   useEffect(() => {
     if (route.params?.searchCompleted) {
@@ -75,6 +76,11 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
           }}
         />
       </View>
+
+      <TouchableOpacity style={styles.currentLocationButton}>
+    <Image source={require("../assets/drawable/currentlocation.png")} style={styles.locationIcon} resizeMode="contain" />
+  </TouchableOpacity>
+
       <View style={styles.searchContainer}>
   
 {!isSearchCompleted &&(
@@ -83,7 +89,7 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
   
 
     {/*지역 검색 시 태그 띄우기*/}
-  {selectedRegions.length > 0 && (
+    {selectedRegions.length > 0 && (
     <View style={styles.tagsContainer}>
       <SelectedRegionTags 
         selectedRegions={selectedRegions} 
@@ -92,6 +98,7 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
       />
     </View>
   )}
+
 </View>
       {selectedRegions.length > 0 ? <SelectedRegions selectedRegions={selectedRegions} /> : <BaseBottomSheet />}
     </View>
@@ -103,6 +110,20 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: theme.background,
   },
+  currentLocationButton: {
+    position: "absolute",
+    bottom:100, // BottomSheet 위로 띄우기 (필요에 따라 조정)
+    right: 20,
+    width:50,
+    height: 50,
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 0,  // iOS에서 최상단
+  },
+  locationIcon: {
+    width: widthPercentage(48),
+    height: heightPercentage(48),
+  },
   searchContainer: {
     position: "absolute",
     flexDirection: "column",
@@ -113,7 +134,7 @@ const styles = StyleSheet.create({
   },
   tagsContainer: {
     flexDirection: "row", // 태그를 가로 정렬
-    marginTop: heightPercentage(8),
+    marginTop: heightPercentage(55),
   },
   mapContainer: {
     flex: 1,

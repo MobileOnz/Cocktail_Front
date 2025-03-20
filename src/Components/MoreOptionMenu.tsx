@@ -17,6 +17,7 @@ const MoreOptionMenu = ({ itemId, onEdit, onDelete }) => {
         visible={visible}
         onDismiss={closeMenu}
         contentStyle={styles.menuContent}
+        anchorPosition="bottom"
         anchor={
           <TouchableOpacity onPress={openMenu} style={styles.menuButton}>
             <Image
@@ -75,6 +76,7 @@ export default MoreOptionMenu;
 const styles = StyleSheet.create({
   container: {
     position: "relative",
+    overflow: "visible",  
     alignItems: "center",
     justifyContent: "center",
   },

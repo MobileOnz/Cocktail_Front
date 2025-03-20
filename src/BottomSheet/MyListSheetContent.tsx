@@ -3,9 +3,9 @@ import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image } from "react
 import Feather from "react-native-vector-icons/Feather";
 import { widthPercentage, heightPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
 import MoreOptionMenu from "../Components/MoreOptionMenu";
-import { Provider } from "react-native-paper";
+import { PaperProvider } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
-import { BottomSheetScrollView } from "@gorhom/bottom-sheet";
+import BottomSheet, { BottomSheetFlatList, BottomSheetScrollView } from "@gorhom/bottom-sheet";
 const myList = [
   {
     id: "1",
@@ -51,8 +51,6 @@ const myList = [
   },
 ];
 
-type NavigationProps = StackNavigationProp<RootStackParamList, "RegionSelectScreen">;
-
 const MyListSheetContent : React.FC =  () => {
   const navigation = useNavigation();
   const handleEdit = (itemId) => {
@@ -64,52 +62,54 @@ const MyListSheetContent : React.FC =  () => {
   
   };
   return (
-    <BottomSheetScrollView style={styles.container}>
+    <PaperProvider>
     
-      <View style={styles.headerContainer}>
-      <Text style={styles.header}>나의 리스트</Text>
-      <View style={styles.line}></View>
-      </View>
-      
-      {/* 새 리스트 만들기 버튼 */}
-      <TouchableOpacity style={styles.newListButton}
-       onPress={() => navigation.navigate("CreateNewListScreen"as never)}
-      >
-        
-        <Image  source={require("../assets/drawable/newlist.png")}
-        style={styles.newlistImage}
-        
-        />
-        <Text style={styles.newListText}>새 리스트 만들기</Text>
-      </TouchableOpacity>
-
-      {/* 바 리스트 */}
-      <FlatList
-        data={myList}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <View style={styles.listItem}>
-            <Image source={item.icon} style={styles.icon} />
-            <View style={styles.info}>
-              <Text style={styles.barName}>{item.name}</Text>
-              <View style={styles.location}>
-                <Feather name="map-pin" size={14} color="#7D7A6F" />
-                <Text style={styles.locationText}>{item.location}</Text>
-              </View>
-              <View style={styles.tagContainer}>
-                {item.tags.map((tag, index) => (
-                  <Text key={index} style={styles.tag}>
-                    {tag}
-                  </Text>
-                ))}
-              </View>
-            </View>
-
-            <MoreOptionMenu itemId={item.id} onEdit={handleEdit} onDelete={handleDelete} />
+    {/* ✅ ScrollView 대신 BottomSheetFlatList 사용 */}
+    <BottomSheetFlatList
+      style={styles.container}
+      data={myList}
+      keyExtractor={(item) => item.id}
+      ListHeaderComponent={
+        <>
+          <View style={styles.headerContainer}>
+            <Text style={styles.header}>나의 리스트</Text>
+            <View style={styles.line}></View>
           </View>
-        )}
-      />
-   </BottomSheetScrollView>
+  
+          {/* 새 리스트 만들기 버튼 */}
+          <TouchableOpacity
+            style={styles.newListButton}
+            onPress={() => navigation.navigate("CreateNewListScreen" as never)}
+          >
+            <Image
+              source={require("../assets/drawable/newlist.png")}
+              style={styles.newlistImage}
+            />
+            <Text style={styles.newListText}>새 리스트 만들기</Text>
+          </TouchableOpacity>
+        </>
+      }
+      renderItem={({ item }) => (
+        <View style={styles.listItem}>
+          <Image source={item.icon} style={styles.icon} />
+          <View style={styles.info}>
+            <Text style={styles.barName}>{item.name}</Text>
+            <View style={styles.location}>
+              <Feather name="map-pin" size={14} color="#7D7A6F" />
+              <Text style={styles.locationText}>{item.location}</Text>
+            </View>
+            <View style={styles.tagContainer}>
+              {item.tags.map((tag, index) => (
+                <Text key={index} style={styles.tag}>{tag}</Text>
+              ))}
+            </View>
+          </View>
+  
+          <MoreOptionMenu itemId={item.id} onEdit={handleEdit} onDelete={handleDelete} />
+        </View>
+      )}
+    />
+  </PaperProvider>
   );
 };
 

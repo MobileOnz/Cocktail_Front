@@ -1,13 +1,5 @@
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  TextInput,
-  ScrollView,
-  StatusBar,
-  Image
+import {View,Text,StyleSheet,TouchableOpacity,TextInput,ScrollView,StatusBar,Image
 } from "react-native";
 import { StackScreenProps } from "@react-navigation/stack";
 import theme from "../assets/styles/theme";

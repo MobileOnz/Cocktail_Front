@@ -44,8 +44,9 @@ const RegionSelectScreen = () => {
           <Text style={styles.closeText}>X</Text>
         </TouchableOpacity>
       </View>
+
+        {/* 지역 리스트 */}
       <View style={styles.ContentContainer}>
-      {/* 지역 리스트 */}
       <View style={styles.categorySection}>
       <Text style={styles.categoryTitle}>서울</Text>
     </View>
@@ -67,20 +68,26 @@ const RegionSelectScreen = () => {
       
 
       {/* 선택된 지역 태그 */}
-      {selectedRegions.length > 0 && (
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.tagContainer}>
-          {selectedRegions
+      {selectedRegions.filter((region) => region !== "서울 전체").length > 0 && (
+    <View style={styles.tagWrapper}>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.tagScroll}
+      >
+        {selectedRegions
           .filter((region) => region !== "서울 전체")
           .map((region, index) => (
             <View key={index} style={styles.tag}>
               <Text style={styles.tagText}>{region}</Text>
-              <TouchableOpacity onPress={() => toggleRegion(region)} >
+              <TouchableOpacity onPress={() => toggleRegion(region)}>
                 <Text style={styles.removeText}>X</Text>
               </TouchableOpacity>
             </View>
           ))}
-        </ScrollView>
-      )}
+      </ScrollView>
+    </View>
+  )}
 
       {/* 하단 버튼 */}
       <View style={styles.footer}>
@@ -91,7 +98,10 @@ const RegionSelectScreen = () => {
           style={styles.applyButton}
           onPress={() => {
             const filteredRegions = selectedRegions.filter((region) => region !== "서울 전체");
-            navigation.navigate("Maps", { selectedRegions: filteredRegions });
+            navigation.navigate("BottomTabNavigator", {
+              screen: "지도",
+              params: { selectedRegions: filteredRegions }
+            } as any);
           }}
         >
           <Text style={styles.buttonText}>적용하기</Text>
@@ -104,7 +114,19 @@ const RegionSelectScreen = () => {
 const styles = StyleSheet.create({
   container: { 
     flex: 1, 
-    backgroundColor: "#FAF7F2" 
+    backgroundColor: "#FAF7F2",
+  },
+  tagWrapper: {
+    backgroundColor: "#FFFCF3",
+    paddingVertical: heightPercentage(8),
+    paddingHorizontal: widthPercentage(16),
+    borderTopWidth: 1,
+    borderColor: "#E4DFD8",
+  },
+  
+  tagScroll: {
+    flexDirection: "row",
+    alignItems: "center",
   },
 
   RegiondataList : {
@@ -143,8 +165,12 @@ const styles = StyleSheet.create({
   backgroundColor: "#FFFCF3", 
   borderBottomColor: "#EEE",
   borderBottomWidth: 1, 
+  paddingLeft : widthPercentage(150),
 },
-  title: { fontSize: 18, fontWeight: "bold" },
+  title: { fontSize: 18, 
+    fontWeight: "bold",
+  
+  },
  
   closeText: { 
     fontSize: fontPercentage(18.67),
@@ -237,8 +263,14 @@ const styles = StyleSheet.create({
   footer: {
     flexDirection: "row",
     justifyContent: "space-between",
-    padding: 16,
+    paddingHorizontal: widthPercentage(16),
+    paddingVertical: heightPercentage(12),
     backgroundColor: theme.background,
+    borderTopWidth: 1,
+    borderColor: "#E4DFD8",
+    position: "absolute",  // 하단 고정
+    bottom: 0,
+    width: "100%",
   },
   resetButton: {
     width : widthPercentage(100),
