@@ -3,7 +3,7 @@ import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import { Alert, StyleSheet } from "react-native";
 
 
-const CustomMapView = ({ initialRegion, handleTabPress }: { initialRegion: any; handleTabPress: any }) => {
+const CustomMapView = ({ initialRegion}: { initialRegion: any;}) => {
   const mapRef = useRef<MapView>(null);
 
   return (
@@ -18,8 +18,7 @@ const CustomMapView = ({ initialRegion, handleTabPress }: { initialRegion: any; 
         title="가게 이름"
         description="여기에 가게 설명 입력"
         onPress={() => {
-          Alert.alert(`hello ${handleTabPress}`);
-          handleTabPress("pin")
+          
         }}
       />
     </MapView>

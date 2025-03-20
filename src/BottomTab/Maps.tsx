@@ -66,7 +66,7 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
       {/* 지도 */}
       <View style={styles.mapContainer}>
         <CustomMapView 
-        handleTabPress={handleTabPress}
+       
           initialRegion={{
             latitude: 37.5665,
             longitude: 126.9780,

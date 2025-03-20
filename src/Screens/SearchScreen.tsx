@@ -34,7 +34,7 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation }) => {
       <View style={[styles.header, { backgroundColor: theme.background }]}>
         <TouchableOpacity
           style={styles.backButton}
-          onPress={() => navigation.navigate("Maps",{searchCompleted : false})}
+          onPress={() => navigation.navigate("BottomTabNavigator", { screen: "지도" })}
         >
          <Image
          source={require("../assets/search/backspace.png")}
