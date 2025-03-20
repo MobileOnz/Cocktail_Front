@@ -1,3 +1,4 @@
+import React, {useState} from "react";
 import { View, Text, TouchableOpacity, Image, StyleSheet } from "react-native";
 import { BottomSheetSectionList } from "@gorhom/bottom-sheet";
 import { widthPercentage, heightPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
@@ -11,14 +12,25 @@ type myBarList = {
   hashtageList: string[];
 };
 
-type Section = {
-  title: string;
-  data: myBarList[];
-};
 
 
 
 const MainBottomSheet = ({ sections, showMyBars, handleTabPress }) => {
+  const [isExpanded, setIsExpanded] = useState(true);
+  const toggleShowMyBars = () => {
+    setIsExpanded(!isExpanded);
+  };
+  const getFilteredSections = () => {
+    return sections.map((section) => {
+      if (section.title === "나의 칵테일 바") {
+        return {
+          ...section, // 기존 데이터 유지지
+          data: isExpanded ? section.data : section.data.slice(0, 1), // 참이면 데이터 유지, 아니면 슬라이스스
+        };
+      }
+      return section;
+    });
+  };
    /*함수를 통해 아이템 리스트너 꾸미기*/ 
   const renderBarItem = ({ item, index, section }: { item: myBarList; index: number; section: any }) => (
     <>
@@ -43,8 +55,8 @@ const MainBottomSheet = ({ sections, showMyBars, handleTabPress }) => {
     </View>
     </TouchableOpacity>
       {section.title === "나의 칵테일 바" && index === section.data.length - 1 && (
-        <TouchableOpacity style={styles.toggleButton} onPress={() => setShowMyBars(!showMyBars)}>
-          <Text style={styles.toggleText}>{showMyBars ? "접기" : "더보기"}</Text>
+        <TouchableOpacity style={styles.toggleButton} onPress={toggleShowMyBars}>
+          <Text style={styles.toggleText}>{isExpanded ? "접기" : "더보기"}</Text>
         </TouchableOpacity>
       )}
     </>
@@ -57,20 +69,16 @@ const MainBottomSheet = ({ sections, showMyBars, handleTabPress }) => {
     </View>
   );
 
+
+  
+
   return (
       <BottomSheetSectionList
-        sections={sections}
+        sections={getFilteredSections()}
         keyExtractor={(item) => item.listId.toString()}
         renderItem={renderBarItem}
         renderSectionHeader={renderSectionHeader}
         stickySectionHeadersEnabled={false}
-        ListFooterComponent={() =>
-          showMyBars && (
-            <TouchableOpacity style={styles.toggleButton} onPress={() => setShowMyBars(false)}>
-              <Text style={styles.toggleText}>접기</Text>
-            </TouchableOpacity>
-          )
-        }
       />
   );
 };
