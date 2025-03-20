@@ -5,6 +5,7 @@ import { widthPercentage, heightPercentage, fontPercentage } from "../assets/sty
 import MoreOptionMenu from "../Components/MoreOptionMenu";
 import { Provider } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
+import { BottomSheetScrollView } from "@gorhom/bottom-sheet";
 const myList = [
   {
     id: "1",
@@ -25,6 +26,27 @@ const myList = [
     name: "메인 컨셉",
     location: "999",
     tags: ["#Sub", "#Sub", "#Sub"],
+    icon: require("../assets/drawable/listicon2.png"),
+  },
+  {
+    id: "4",
+    name: "메인 컨셉",
+    location: "999",
+    tags: ["#Sub", "#Sub", "#Sub"],
+    icon: require("../assets/drawable/listicon2.png"),
+  },
+  {
+    id: "5",
+    name: "메인 컨셉",
+    location: "999",
+    tags: ["#Sub", "#Sub", "#Sub"],
+    icon: require("../assets/drawable/listicon2.png"),
+  },
+  {
+    id: "6",
+    name: "메인 컨셉",
+    location: "999",
+    tags: ["#Sub", "#Sub", "#Sub"],
     icon: require("../assets/drawable/listicon3.png"),
   },
 ];
@@ -42,8 +64,7 @@ const MyListSheetContent : React.FC =  () => {
   
   };
   return (
-    <Provider>
-    <View style={styles.container}>
+    <BottomSheetScrollView style={styles.container}>
     
       <View style={styles.headerContainer}>
       <Text style={styles.header}>나의 리스트</Text>
@@ -88,8 +109,7 @@ const MyListSheetContent : React.FC =  () => {
           </View>
         )}
       />
-    </View>
-    </Provider>
+   </BottomSheetScrollView>
   );
 };
 

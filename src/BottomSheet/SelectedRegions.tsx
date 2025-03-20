@@ -1,9 +1,10 @@
 import { ScrollView, View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { widthPercentage, heightPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
+import { BottomSheetScrollView } from "@gorhom/bottom-sheet";
 
 const SelectedRegions = ({ selectedRegions, onRegionSelect }) => {
   return (
-    <View style={styles.headerContainer}>
+    <BottomSheetScrollView style={styles.headerContainer}>
       {/* 드래그 핸들 */}
       <View style={styles.handle} />
 
@@ -17,7 +18,7 @@ const SelectedRegions = ({ selectedRegions, onRegionSelect }) => {
           </TouchableOpacity>
         ))}
       </ScrollView>
-    </View>
+    </BottomSheetScrollView>
   );
 };
 

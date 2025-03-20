@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
   TextInput,
   ScrollView,
   StatusBar,
+  Image
 } from "react-native";
 import { StackScreenProps } from "@react-navigation/stack";
 import theme from "../assets/styles/theme";
@@ -19,6 +20,7 @@ const recommendedKeywords = ["추천 검색어1", "추천 검색어2", "추천 �
 const recentSearches = ["검색어 1", "검색어 2"];
 
 const SearchScreen: React.FC<SearchScreenProps> = ({ navigation }) => {
+  const [searchText, setSearchText] = useState('');
   const handlePress = () => {
     navigation.navigate("Maps", { searchCompleted: true });
   };
@@ -34,21 +36,41 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation }) => {
           style={styles.backButton}
           onPress={() => navigation.navigate("Maps",{searchCompleted : false})}
         >
-          <Text> - </Text>
-         
+         <Image
+         source={require("../assets/search/backspace.png")}
+         style={{width : widthPercentage(24), height : heightPercentage(24)}}
+         resizeMode="contain"
+         />
+
         </TouchableOpacity>
+         {/*검색창 입력*/}
         <TextInput
           style={[styles.searchInput, {backgroundColor : "#F3EFE6"}]}
           placeholder="가게 또는 메뉴 명을 입력해주세요."
           placeholderTextColor="#B9B6AD"
+          value={searchText}
+          onChangeText={(text) => setSearchText(text)}
           returnKeyType="done"
-          
           onSubmitEditing={() => {
-
-            navigation.navigate("Maps", { searchCompleted: true });
+            {if(searchText.length >0){
+            navigation.navigate("Maps", { searchCompleted: true, searchQuery: searchText});
+            }}
           }}
         />
+        {/*텍스트 입력 시, 삭제 버튼 */}
+         {searchText.length > 0 && (
+        <TouchableOpacity onPress={() => setSearchText('')}
+        style={styles.clearButton}>
+          <Image source={require("../assets/search/delete.png")}
+          style = {styles.clearButton}
+          resizeMode="contain"/>
+        </TouchableOpacity>
+      )}
+        
+
       </View>
+
+      
 
       {/* 스크롤 영역: 추천 검색어와 최근 검색어 목록 */}
       <ScrollView contentContainerStyle={[styles.scrollContent, {backgroundColor :theme.background}]}>
@@ -86,11 +108,19 @@ const styles = StyleSheet.create({
   },
   // 상단 헤더 영역: 뒤로가기 아이콘과 검색 입력창을 한 줄에 배치
   header: {
+    position : "relative",
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: widthPercentage(16),
     paddingVertical: heightPercentage(10),
     backgroundColor: "#f0f0f0",
+  },
+  clearButton: {
+    right : widthPercentage(9),
+    top : heightPercentage(36),
+    position: 'absolute',   
+    width : widthPercentage(18),
+    height : heightPercentage(18),
   },
   backButton: {
     width : widthPercentage(24),
@@ -99,6 +129,7 @@ const styles = StyleSheet.create({
     marginRight: widthPercentage(15),
   },
   searchInput: {
+    marginRight : widthPercentage(30),
     paddingHorizontal : heightPercentage(12),
     paddingVertical : widthPercentage(10),
     backgroundColor : "#F3EFE6",

@@ -1,12 +1,6 @@
-import React, {useState, useEffect} from "react";
 import { View, Text, TouchableOpacity, Image, StyleSheet } from "react-native";
 import { BottomSheetSectionList } from "@gorhom/bottom-sheet";
 import { widthPercentage, heightPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
-import { useNavigation } from "@react-navigation/native";
-import { RootStackParamList } from "../Navigation/Navigation";
-import { StackScreenProps } from "@react-navigation/stack";
-
-type SearchScreenProps = StackScreenProps<RootStackParamList, "SearchScreen">;
 
 
 type myBarList = {
@@ -22,24 +16,15 @@ type Section = {
   data: myBarList[];
 };
 
-interface SearchSheetListProps {
-  sections: Section[];
-  showMyBars: boolean;
-  setShowMyBars: (value: boolean) => void;
-  handleTabPress: (tab: "search" | "myList" | "region" | "bookmark", bar?: myBarList | null) => void;
-}
-
-const MainBottomSheet: React.FC<SearchSheetListProps> = ({ sections, showMyBars, setShowMyBars, handleTabPress }) => {
-  const navigation = useNavigation();
-  const [selectedBar, setSelectedBar] = useState(null);
 
 
+const MainBottomSheet = ({ sections, showMyBars, handleTabPress }) => {
+   /*함수를 통해 아이템 리스트너 꾸미기*/ 
   const renderBarItem = ({ item, index, section }: { item: myBarList; index: number; section: any }) => (
     <>
+    <TouchableOpacity onPress={() => handleTabPress("detail")}>
       <View style={styles.itemContainer}>
-      <TouchableOpacity onPress={() => navigation.navigate("MarketDetail")}>
         <Image style={styles.itemImage} source={item.image} />
-      </TouchableOpacity>
       <View style={styles.textContainer}>
         <Text style={styles.itemTitle}>{item.title}</Text>
         <Text style={styles.itemDistance}>{item.barAdress}</Text>
@@ -56,7 +41,7 @@ const MainBottomSheet: React.FC<SearchSheetListProps> = ({ sections, showMyBars,
       </TouchableOpacity>
 
     </View>
-
+    </TouchableOpacity>
       {section.title === "나의 칵테일 바" && index === section.data.length - 1 && (
         <TouchableOpacity style={styles.toggleButton} onPress={() => setShowMyBars(!showMyBars)}>
           <Text style={styles.toggleText}>{showMyBars ? "접기" : "더보기"}</Text>
@@ -73,7 +58,6 @@ const MainBottomSheet: React.FC<SearchSheetListProps> = ({ sections, showMyBars,
   );
 
   return (
-    <>
       <BottomSheetSectionList
         sections={sections}
         keyExtractor={(item) => item.listId.toString()}
@@ -88,8 +72,6 @@ const MainBottomSheet: React.FC<SearchSheetListProps> = ({ sections, showMyBars,
           )
         }
       />
-
-    </>
   );
 };
 

@@ -27,9 +27,8 @@ const BottomTabNavigator = () => {
     }
   };
 
-  // isLoginSheetVisible 상태가 변경될 때 로그 확인
   useEffect(() => {
-    console.log("🛑 isLoginSheetVisible 상태 변경됨:", isLoginSheetVisible);
+   
   }, [isLoginSheetVisible]);
 
   // 커스텀 탭 버튼

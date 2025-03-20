@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState,useRef,useEffect } from "react";
 import { View, StyleSheet, TouchableOpacity, Text } from "react-native";
 import BottomSheet from "@gorhom/bottom-sheet";
 import theme from "../assets/styles/theme";
@@ -7,10 +7,18 @@ import MyListSheetContent from "../BottomSheet/MyListSheetContent";
 import SelectionListSheet from "./SelectionListSheet";
 import { widthPercentage, heightPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
 import { useNavigation } from "@react-navigation/native"; 
-
+import MenuListDetail from "./MenuListDetail";
+import PinClickView from "./PinClickView";
 const myBars = [
   {
     listId: 1,
+    title: "Label",
+    barAdress: "거리",
+    image: require("../assets/drawable/barExample.png"),
+    hashtageList: ["#칵테일명", "#칵테일명", "#다른주류명", "#안주명"],
+  },
+  {
+    listId: 2,
     title: "Label",
     barAdress: "거리",
     image: require("../assets/drawable/barExample.png"),
@@ -48,15 +56,23 @@ const myList = [
     location: "999",
     tags: ["#Sub", "#Sub", "#Sub"],
     icon: require("../assets/drawable/listicon3.png"),
+
   },
 ];
+
 
 const BaseBottomSheet = () => {
   const navigation = useNavigation();
   const snapPoints = useMemo(() => ["10%", "30%", "76%"], []);
-  const [showMyBars, setShowMyBars] = useState(true);
-  const [selectedTab, setSelectedTab] = useState<"search" | "myList" | "region" | "bookmark">("search");
+  const [selectedTab, setSelectedTab] = useState<"search" | "myList" | "region" | "bookmark"| "detail">("search");
   const [selectedBar, setSelectedBar] = useState(null);
+  const bottomSheetRef = useRef<BottomSheet>(null);
+  
+  useEffect(() => {
+    if (selectedTab === "detail") {
+      bottomSheetRef.current?.expand();
+    }
+  }, [selectedTab]);
 
   // sections 데이터 변경
   const sections = useMemo(() => {
@@ -72,18 +88,23 @@ const BaseBottomSheet = () => {
   }, [selectedTab]);
 
   // 탭 변경 핸들러
-  const handleTabPress = (tab: "search" | "myList" | "region" | "bookmark", bar = null) => {
+  const handleTabPress = (tab: "search" | "myList" | "region" | "bookmark" | "detail"|"pin", bar = null) => {
     if (tab === "bookmark") {
       setSelectedBar(bar);
     }
     setSelectedTab(prev => (prev === tab ? "search" : tab));
   };
-  
 
   return (
-    <BottomSheet index={0} snapPoints={snapPoints} enablePanDownToClose={false} backgroundStyle={{ backgroundColor: theme.background }}>
-      
-      {/* 네비게이션 버튼 */}
+    
+    <BottomSheet 
+    ref={bottomSheetRef}
+    index={0} 
+    snapPoints={snapPoints} 
+    enablePanDownToClose={false} 
+    backgroundStyle={{ backgroundColor: theme.background }}>
+    {selectedTab !== "detail" && (
+      /* 네비게이션 버튼 */
       <View style={styles.sheetHeader}>
         <TouchableOpacity
           style={[styles.listButton, selectedTab === "myList" && styles.activeButton]}
@@ -99,19 +120,28 @@ const BaseBottomSheet = () => {
           <Text style={[styles.listText, selectedTab === "region" && styles.activeText]}>지역</Text>
         </TouchableOpacity>
       </View>
+    )}
+
+          {/* 클릭시 이동 */}
 
       {selectedTab === "bookmark" ? (
-        <SelectionListSheet
-          title="선택한 장소 명"
-          listData={myList}
-          onClose={() => setSelectedTab("search")}
-          onSave={(selectedItem) => console.log("선택한 아이템:", selectedItem)}
-        />
+      <SelectionListSheet
+      title="선택한 장소 명"
+      listData={myList}
+      onClose={() => setSelectedTab("search")}
+      onSave={(selectedItem) => console.log("선택한 아이템:", selectedItem)}
+      />
       ) : selectedTab === "myList" ? (
-        <MyListSheetContent />
+      <MyListSheetContent />
+      ) : selectedTab === "detail" ? (
+      <MenuListDetail handleTabPress={handleTabPress}/>
       ) : (
-        <SearchSheetContent sections={sections} showMyBars={true} handleTabPress={handleTabPress} />
-      )}
+      <SearchSheetContent
+      sections={sections}
+      showMyBars={true}
+      handleTabPress={handleTabPress}
+  />
+)}
     </BottomSheet>
   );
 };

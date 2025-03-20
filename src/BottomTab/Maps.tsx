@@ -9,9 +9,10 @@ import { heightPercentage, widthPercentage, fontPercentage } from "../assets/sty
 import SelectedRegions from "../BottomSheet/SelectedRegions";
 import SelectedRegionTags from "../Components/SelectedRegionTags";
 
+
 type RootStackParamList = {
   SearchScreen: undefined;
-  Maps: { searchCompleted?: boolean; selectedRegions? : string[] };
+  Maps: { searchCompleted?: boolean; selectedRegions? : string[], searchQuery : string };
 };
 
 type MapsProps = StackScreenProps<RootStackParamList, "Maps">;
@@ -19,6 +20,7 @@ type MapsProps = StackScreenProps<RootStackParamList, "Maps">;
 const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
   const [isSearchCompleted, setIsSearchCompleted] = useState(false);
   const [selectedRegions, setSelectedRegions] = useState<string[]>([]);
+  const {searchQuery} = route.params|| "";
 
   useEffect(() => {
     if (route.params?.searchCompleted) {
@@ -37,7 +39,7 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" translucent backgroundColor="transparent" />
 
-      {isSearchCompleted ? (
+      {isSearchCompleted && (
         <View style={styles.resultHeader}>
           {/* 뒤로가기 버튼 */}
           <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
@@ -47,7 +49,7 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
           {/* 검색 결과 화면 */}
           <TextInput
             style={[styles.searchButton, { backgroundColor: "white" }]}
-            placeholder="입력한 검색어"
+            placeholder={searchQuery}
             placeholderTextColor="black"
             returnKeyType="done"
             onSubmitEditing={() => {
@@ -59,15 +61,12 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
             <Text style={styles.buttonText}>X</Text>
           </TouchableOpacity>
         </View>
-      ) : (
-          <>
-
-      </>
       )}
 
       {/* 지도 */}
       <View style={styles.mapContainer}>
-        <CustomMapView
+        <CustomMapView 
+        handleTabPress={handleTabPress}
           initialRegion={{
             latitude: 37.5665,
             longitude: 126.9780,
@@ -78,9 +77,12 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
       </View>
       <View style={styles.searchContainer}>
   
-
+{!isSearchCompleted &&(
   <SearchBar />
+)}
+  
 
+    {/*지역 검색 시 태그 띄우기*/}
   {selectedRegions.length > 0 && (
     <View style={styles.tagsContainer}>
       <SelectedRegionTags 
