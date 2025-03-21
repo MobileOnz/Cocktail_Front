@@ -113,6 +113,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     paddingVertical: heightPercentage(12),
+    marginTop: heightPercentage(12),
     marginBottom: heightPercentage(12),
   },
   newlistImage: {

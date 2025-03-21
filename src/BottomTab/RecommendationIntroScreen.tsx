@@ -6,6 +6,7 @@ import {
   Animated,
   StyleSheet,
   Image,
+  Easing,
 } from "react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../navigation/types";
@@ -26,6 +27,28 @@ interface Props {
 
 const RecommendationIntroScreen: React.FC<Props> = ({ navigation }) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
+
+  const buttonScale = useRef(new Animated.Value(1)).current;
+
+
+  const handlePress = () => { //버튼 애니메이션 (누르면 움츠려들었다가 펴지는거)
+      Animated.sequence([
+        Animated.timing(buttonScale, {
+          toValue: 0.9, // 버튼 축소
+          duration: 100, 
+          easing: Easing.out(Easing.ease),
+          useNativeDriver: true,
+        }),
+        Animated.timing(buttonScale, {
+          toValue: 1,
+          duration: 100,
+          easing: Easing.out(Easing.ease),
+          useNativeDriver: true,
+        }),
+      ]).start(() => {
+        navigation.navigate("RecommendationFlow");
+      });
+    };
 
   useEffect(() => {
     Animated.timing(fadeAnim, {
@@ -63,12 +86,14 @@ const RecommendationIntroScreen: React.FC<Props> = ({ navigation }) => {
       />
 
       {/* 버튼 */}
+      <Animated.View style = {[styles.animatedButtonWrapper, { transform: [{ scale: buttonScale}] }]}>
       <TouchableOpacity
         style={styles.confirmButton}
-        onPress={() => navigation.navigate("RecommendationFlow")}
+        onPress={handlePress}
       >
         <Text style={styles.confirmButtonText}>나를 위한 칵테일 찾아보기</Text>
       </TouchableOpacity>
+      </Animated.View>
     </View>
   );
 };
@@ -80,17 +105,24 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#FAF9F6",
+    backgroundColor: "#FFFCF3",
   },
   backButton: {
     position: "absolute",
     top: heightPercentage(50),
     left: widthPercentage(15),
+    alignItems: "center",
+    justifyContent: "center",
+    width: widthPercentage(40),
+    height: heightPercentage(40),
+    // backgroundColor: "rgba(255, 0, 0, 0.3)", // 🔥 터치 영역 확인용 (빨간색 반투명)
+    // borderWidth: 1, 
+    // borderColor: "red",
   },
   icon: {
     width: widthPercentage(28),
     height: widthPercentage(28),
-    marginTop: heightPercentage(54)
+
   },
   description: {
     width: widthPercentage(375),

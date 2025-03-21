@@ -158,7 +158,8 @@ const styles = StyleSheet.create({
     marginRight : widthPercentage(20),
     borderBottomWidth : 1,
     borderColor : "#F3EFE6",
-    paddingVertical : heightPercentage(12)  },
+    paddingVertical : heightPercentage(12),
+  },
   newListText: {
     marginVertical : heightPercentage(10),
     fontWeight : "500",

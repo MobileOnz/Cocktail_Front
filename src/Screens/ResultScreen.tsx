@@ -24,8 +24,13 @@ const ResultScreen: React.FC = () => {
       <Text style={styles.cocktailName}>칵테일 명</Text>
       <Text style={styles.cocktailDescription}>음료 설명</Text>
 
-      <TouchableOpacity style={styles.mainButton}>
-        <Text style={styles.mainButtonText}>해당 메뉴가 있는 가게 찾기</Text>
+      <TouchableOpacity 
+        style={styles.mainButton}
+        onPress={() => navigation.navigate("SearchScreen")}
+        >
+        <Text 
+          style={styles.mainButtonText}>해당 메뉴가 있는 가게 찾기
+          </Text>
       </TouchableOpacity>
 
       <View style={styles.buttonContainer}>
@@ -52,7 +57,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#FAF9F6",
+    backgroundColor: "#fffcf3",
   },
   icon: {
     width: widthPercentage(28),

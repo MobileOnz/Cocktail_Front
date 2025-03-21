@@ -1,13 +1,20 @@
 import React from 'react';
 import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
 import { widthPercentage, heightPercentage, fontPercentage } from '../assets/styles/FigmaScreen';
-
+import {BannerAd, BannerAdSize, TestIds} from "react-native-google-mobile-ads";
 const MyPageScreen = () => {
   return (
     <View style={styles.container}>
       {/* 광고 배너 */}
-      <Image source={require('../assets/drawable/ad_sample.png')} style={styles.adBanner} />
-      
+      <View style={styles.adContainer}>
+        <BannerAd
+          unitId={TestIds.BANNER}
+          size={BannerAdSize.BANNER}
+          requestOptions={{
+            requestNonPersonalizedAdsOnly: true,
+          }}
+        />
+      </View>
       {/* 로그인 필요 알림 */}
       <View style={styles.loginContainer}>
         <Text style={styles.loginText}>로그인이 필요합니다</Text>
@@ -51,7 +58,7 @@ export default MyPageScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FAF9F6',
+    backgroundColor: '#fffcf3',
   },
   adBanner: {
     width: widthPercentage(343),
@@ -79,7 +86,7 @@ const styles = StyleSheet.create({
     paddingVertical: heightPercentage(10),
   },
   supportSection: {
-    backgroundColor: '#FAF9F6',
+    backgroundColor: '#fffcf3',
     paddingHorizontal: widthPercentage(16),
     paddingVertical: heightPercentage(12),
     // borderRadius: 10,
@@ -114,5 +121,10 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: '#E0E0E0',
     alignSelf: 'center',
+  },
+  adContainer: {
+    alignItems: "center",
+    marginTop: heightPercentage(80),
+    marginBottom: heightPercentage(10),
   },
 });

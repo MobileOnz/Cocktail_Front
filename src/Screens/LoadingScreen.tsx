@@ -39,7 +39,7 @@ const LoadingScreen: React.FC<Props> = ({ navigation }) => {
         (닉네임)님만을 위한{"\n"}칵테일을 만들고 있어요{loadingDots}
       </Text>
       <Image
-        source={require("../assets/drawable/cocktail_draw.png")}
+        source={require("../assets/drawable/cocktail_making.png")}
         style={styles.image}
         resizeMode="contain"
       />
@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#FAF9F6",
+    backgroundColor: "#fffcf3",
   },
   loadingText: {
     fontSize: fontPercentage(18),

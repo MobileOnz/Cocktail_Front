@@ -13,6 +13,7 @@ import ResultScreen from "../Screens/ResultScreen";
 import MarketDetail from "../Screens/MarketDetail";
 import RegionSelectScreen from "../Screens/RegionSelectScreen";
 import CreateNewListScreen from "../Screens/CreateNewListScreen";
+import SignupScreen from "../Screens/SignupScreen";
 export type RootStackParamList = {
   Onboarding: undefined;
   Login: undefined;
@@ -25,6 +26,7 @@ export type RootStackParamList = {
   ResultScreen: undefined;
   CreateNewListScreen : undefined;
   MarketDetail : undefined;
+  SignupScreen: undefined;
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -47,6 +49,7 @@ const Navigation: React.FC = () => {
         <Stack.Screen name="ResultScreen" component={ResultScreen} />
         <Stack.Screen name="CreateNewListScreen" component={CreateNewListScreen} />
         <Stack.Screen name="MarketDetail" component={MarketDetail}/>
+        <Stack.Screen name="SignupScreen" component={SignupScreen}/>
       </Stack.Navigator>
     </NavigationContainer>
   );
