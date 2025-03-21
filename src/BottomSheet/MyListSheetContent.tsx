@@ -57,7 +57,6 @@ const MyListSheetContent : React.FC =  () => {
         
         <Image  source={require("../assets/drawable/newlist.png")}
         style={styles.newlistImage}
-        
         />
         <Text style={styles.newListText}>새 리스트 만들기</Text>
       </TouchableOpacity>
