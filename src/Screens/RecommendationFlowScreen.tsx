@@ -141,7 +141,7 @@ useEffect(() => {
                   duration: 500,
                   useNativeDriver: true,
               }),
-              Animated.delay(1000),
+              Animated.delay(500),
               Animated.timing(typingBubbleOpacity, {
                   toValue: 0,
                   duration: 500,

@@ -18,14 +18,14 @@ const bannerImages = [
   require("../assets/drawable/banner.jpg"),
 ];
 const categories = [
-  { 
+  {
     title: "우아한 클래식", 
     description: "격식을 갖춘 품격있는 칵테일", 
     icon: require("../assets/drawable/classic.png"), 
     textColor: "#5D8A78",
     backgroundColor: "#E4F0E9"
   },
-  { 
+  {
     title: "달콤한 파티", 
     description: "분위기를 띄워 줄 화려한 칵테일", 
     icon: require("../assets/drawable/party.png"), 
@@ -46,14 +46,14 @@ const categories = [
     textColor: "#5478C1",
     backgroundColor: "#DCE7F9"
   },
-  { 
+  {
     title: "강렬한 한 잔", 
     description: "깊고 묵직한 분위기를 가진 칵테일", 
     icon: require("../assets/drawable/one_shot.png"), 
     textColor: "#C14C4C",
     backgroundColor: "#F4D6D6"
   },
-  { 
+  {
     title: "부담 없는 시작", 
     description: "칵테일 입문자를 위한 가벼운 선택", 
     icon: require("../assets/drawable/start.png"), 
