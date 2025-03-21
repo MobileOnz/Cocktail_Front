@@ -51,7 +51,7 @@ const myList = [
   },
 ];
 
-const MyListSheetContent : React.FC =  () => {
+const MyListSheetContent =  ({handleTabPress}) => {
   const navigation = useNavigation();
   const handleEdit = (itemId) => {
     console.log(`Editing item with id: ${itemId}`);
@@ -64,7 +64,7 @@ const MyListSheetContent : React.FC =  () => {
   return (
     <PaperProvider>
     
-    {/* ✅ ScrollView 대신 BottomSheetFlatList 사용 */}
+    {/*  ScrollView 대신 BottomSheetFlatList 사용 */}
     <BottomSheetFlatList
       style={styles.container}
       data={myList}
@@ -90,6 +90,13 @@ const MyListSheetContent : React.FC =  () => {
         </>
       }
       renderItem={({ item }) => (
+        
+        <TouchableOpacity onPress={() => {
+          console.log(`Clicked item: ${item}`);
+          handleTabPress("myBardetailList", item)
+        }
+        }>
+
         <View style={styles.listItem}>
           <Image source={item.icon} style={styles.icon} />
           <View style={styles.info}>
@@ -107,6 +114,7 @@ const MyListSheetContent : React.FC =  () => {
   
           <MoreOptionMenu itemId={item.id} onEdit={handleEdit} onDelete={handleDelete} />
         </View>
+        </TouchableOpacity>
       )}
     />
   </PaperProvider>

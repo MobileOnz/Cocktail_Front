@@ -9,6 +9,7 @@ import { widthPercentage, heightPercentage, fontPercentage } from "../assets/sty
 import { useNavigation } from "@react-navigation/native"; 
 import MenuListDetail from "./MenuListDetail";
 import PinClickView from "./PinClickView";
+import MyBardetailListBottomSheet from "./MyBardetailListBottomSheet";
 
 const myBars = [
   {
@@ -65,7 +66,7 @@ const myList = [
 const BaseBottomSheet = ({ animatedPosition }) => {
   const navigation = useNavigation();
   const snapPoints = useMemo(() => ["10%", "30%", "76%"], []);
-  const [selectedTab, setSelectedTab] = useState<"search" | "myList" | "region" | "bookmark"| "detail">("search");
+  const [selectedTab, setSelectedTab] = useState<"search" | "myList" | "region" | "bookmark"| "detail"|"myBardetailList">("search");
   const [selectedBar, setSelectedBar] = useState(null);
   const bottomSheetRef = useRef<BottomSheet>(null);
   
@@ -89,7 +90,7 @@ const BaseBottomSheet = ({ animatedPosition }) => {
   }, [selectedTab]);
 
   // 탭 변경 핸들러
-  const handleTabPress = (tab: "search" | "myList" | "region" | "bookmark" | "detail"|"pin", bar = null) => {
+  const handleTabPress = (tab: "search" | "myList" | "region" | "bookmark" | "detail"|"pin"|"myBardetailList", bar = null) => {
     if (tab === "bookmark") {
       setSelectedBar(bar);
     }
@@ -104,7 +105,8 @@ const BaseBottomSheet = ({ animatedPosition }) => {
     snapPoints={snapPoints} 
     animatedPosition={animatedPosition}
     enablePanDownToClose={false} 
-    backgroundStyle={{ backgroundColor: theme.background }}>
+    backgroundStyle={{ backgroundColor: theme.background }}
+    containerStyle={{ position: 'absolute', zIndex: 100 }}>
     {selectedTab !== "detail" && (
       /* 네비게이션 버튼 */
       <View style={styles.sheetHeader}>
@@ -133,8 +135,10 @@ const BaseBottomSheet = ({ animatedPosition }) => {
       onClose={() => setSelectedTab("search")}
       onSave={(selectedItem) => console.log("선택한 아이템:", selectedItem)}
       />
+      ): selectedTab ==="myBardetailList" ? (
+        <MyBardetailListBottomSheet/>
       ) : selectedTab === "myList" ? (
-      <MyListSheetContent />
+          <MyListSheetContent handleTabPress={handleTabPress} />
       ) : selectedTab === "detail" ? (
       <MenuListDetail handleTabPress={handleTabPress}/>
       ) : (

@@ -24,7 +24,7 @@ const MainBottomSheet = ({ sections, showMyBars, handleTabPress }) => {
     return sections.map((section) => {
       if (section.title === "나의 칵테일 바") {
         return {
-          ...section, // 기존 데이터 유지지
+          ...section, // 기존 데이터 유지
           data: isExpanded ? section.data : section.data.slice(0, 1), // 참이면 데이터 유지, 아니면 슬라이스스
         };
       }

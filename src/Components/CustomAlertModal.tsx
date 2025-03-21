@@ -41,7 +41,6 @@ const styles = StyleSheet.create({
     fontSize: fontPercentage(16),
     fontWeight: "700",
     paddingTop : heightPercentage(24),
-    paddingHorizontal : widthPercentage(54),
     paddingBottom : 24,
     borderBottomColor : "#E4DFD8",
     borderWidth : 1,

@@ -4,7 +4,7 @@ import { Menu } from "react-native-paper";
 import CustomAlertModal from "./CustomAlertModal";
 import { widthPercentage, heightPercentage } from "../assets/styles/FigmaScreen";
 
-const MoreOptionMenu = ({ itemId, onEdit, onDelete }) => {
+const MoreOptionMenu = ({ itemId, onEdit, onDelete, message  }) => {
   const [visible, setVisible] = useState(false);
   const [alertVisible, setAlertVisible] = useState(false);
 
@@ -60,7 +60,7 @@ const MoreOptionMenu = ({ itemId, onEdit, onDelete }) => {
       {/* 커스텀 알림 모달 */}
       <CustomAlertModal
         visible={alertVisible}
-        message="나의 리스트에서 삭제할까요?"
+        message={"해당 장소를 리스트에서 \n삭제할까요?"}
         onCancel={() => setAlertVisible(false)}
         onConfirm={() => {
           onDelete(itemId);
