@@ -1,12 +1,14 @@
 import React from 'react';
 import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
 import { widthPercentage, heightPercentage, fontPercentage } from '../assets/styles/FigmaScreen';
-import {BannerAd, BannerAdSize, TestIds} from "react-native-google-mobile-ads";
+// import {BannerAd, BannerAdSize, TestIds} from "react-native-google-mobile-ads";
+import { useNavigation } from "@react-navigation/native"; 
 const MyPageScreen = () => {
+   const navigation = useNavigation();
   return (
     <View style={styles.container}>
       {/* 광고 배너 */}
-      <View style={styles.adContainer}>
+      {/* <View style={styles.adContainer}>
         <BannerAd
           unitId={TestIds.BANNER}
           size={BannerAdSize.BANNER}
@@ -14,12 +16,14 @@ const MyPageScreen = () => {
             requestNonPersonalizedAdsOnly: true,
           }}
         />
-      </View>
+      </View> */}
       {/* 로그인 필요 알림 */}
-      <View style={styles.loginContainer}>
+      <TouchableOpacity style={styles.loginContainer}
+        onPress={() => navigation.navigate("Login")}>
         <Text style={styles.loginText}>로그인이 필요합니다</Text>
         <Image source={require('../assets/drawable/right-chevron.png')} style={styles.rightArrow} />
-      </View>
+       
+      </TouchableOpacity>
 
       {/* 고객지원 섹션 */}
       <Text style={styles.supportTitle}>고객지원</Text>

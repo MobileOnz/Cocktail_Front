@@ -9,7 +9,7 @@ import {
   SafeAreaView,
   TouchableOpacity
 } from "react-native";
-import { BannerAd, BannerAdSize, TestIds } from "react-native-google-mobile-ads"; 
+// import { BannerAd, BannerAdSize, TestIds } from "react-native-google-mobile-ads"; 
 import CocktailDetailModal from "../Components/CocktailDetailModal";
 import { widthPercentage, heightPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
 
@@ -160,7 +160,7 @@ const CocktailBookScreen: React.FC = () => {
 
 
         {/* 📌 광고 배너 추가 */}
-        <View style={styles.adContainer}>
+        {/* <View style={styles.adContainer}>
           <BannerAd
             unitId={TestIds.BANNER}  // 🛑 실제 앱에서는 Google AdMob ID로 변경
             size={BannerAdSize.BANNER}
@@ -168,7 +168,7 @@ const CocktailBookScreen: React.FC = () => {
               requestNonPersonalizedAdsOnly: true,
             }}
           />
-        </View>
+        </View> */}
 
         {/* 분위기별 칵테일 리스트 */}
         {categories.map((category, index) => (

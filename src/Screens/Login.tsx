@@ -50,6 +50,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
   // 카카오 로그인 함수
   const kakaologin = () => {
     KakaoLogin.login()
+    
       .then((result) => {
         console.log("Login Success", JSON.stringify(result));
         getProfile();
@@ -65,6 +66,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
 
   // 프로필 가져오기
   const getProfile = () => {
+    console.log("kakao click");
     KakaoLogin.getProfile()
       .then((result) => {
         console.log("GetProfile Success", JSON.stringify(result));
