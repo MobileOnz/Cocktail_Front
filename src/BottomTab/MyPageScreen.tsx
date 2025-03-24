@@ -2,7 +2,15 @@ import React from 'react';
 import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
 import { widthPercentage, heightPercentage, fontPercentage } from '../assets/styles/FigmaScreen';
 import {BannerAd, BannerAdSize, TestIds} from "react-native-google-mobile-ads";
+import {useNavigation} from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
+import { RootStackParamList } from '../Navigation/Navigation';
+
+type NavigationProp = StackNavigationProp<RootStackParamList>;
+
 const MyPageScreen = () => {
+  const navigation = useNavigation<NavigationProp>();
+
   return (
     <View style={styles.container}>
       {/* 광고 배너 */}
@@ -16,10 +24,10 @@ const MyPageScreen = () => {
         />
       </View>
       {/* 로그인 필요 알림 */}
-      <View style={styles.loginContainer}>
+      <TouchableOpacity style={styles.loginContainer} onPress={() => navigation.navigate("ProfileScreen")}>
         <Text style={styles.loginText}>로그인이 필요합니다</Text>
         <Image source={require('../assets/drawable/right-chevron.png')} style={styles.rightArrow} />
-      </View>
+      </TouchableOpacity>
 
       {/* 고객지원 섹션 */}
       <Text style={styles.supportTitle}>고객지원</Text>
