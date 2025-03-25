@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect} from "react";
 import { View, Text, StyleSheet, TextInput, Image, TouchableOpacity } from "react-native";
 import { widthPercentage, heightPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
 import { useNavigation } from "@react-navigation/native";
@@ -6,6 +6,7 @@ import Icon from "react-native-vector-icons/Ionicons";
 
 import { launchImageLibrary } from "react-native-image-picker";
 
+import AsyncStorage from "@react-native-async-storage/async-storage";
 const ProfileScreen: React.FC = () => {
   const navigation = useNavigation();
   const [nickname, setNickname] = useState("현재 닉네임");
@@ -18,6 +19,36 @@ const ProfileScreen: React.FC = () => {
   const [profileUri, setProfileUri] = useState<string | null>(null); // 현재 선택된 이미지
   const [initialProfileUri, setInitialProfileUri] = useState<string | null>(null); // 원래 이미지
 
+
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      const token = await AsyncStorage.getItem("accessToken");
+      if (!token) return;
+
+      try {
+        const res = await fetch("http://localhost:8080/api/public/cocktail/get/member", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const json = await res.json();
+        if (json.code === 1) {
+          const member = json.data;
+          setNickname(member.nickname);
+          setNewNickname("");
+          if (member.profile) {
+            setProfileUri(member.profile);
+            setInitialProfileUri(member.profile);
+          }
+          console.log("login 정보 : ", member.nickname, member.profile);
+        }
+      } catch (error) {
+        console.error("Failed to fetch member info", error);
+      }
+    };
+
+    fetchProfileData();
+  }, []);
 
   const handleSave = () => {
     if (isChanged) {
@@ -57,7 +88,10 @@ const ProfileScreen: React.FC = () => {
     <View style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Icon name="chevron-back" size={28} color="#000" />
+          <Image
+            source={require("../assets/drawable/left-chevron.png")}
+            style={styles.backIcon}
+          />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>프로필 변경</Text>
         <View style={{ width: 28 }} />
@@ -125,7 +159,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: heightPercentage(24),
+    marginBottom: heightPercentage(44),
+    marginTop: heightPercentage(20),
   },
   headerTitle: {
     fontSize: fontPercentage(20),
@@ -193,4 +228,9 @@ const styles = StyleSheet.create({
   disabledButtonText: {
     color: "#C1C1C1",
   },
+  backIcon: {
+    width: widthPercentage(28),
+    height: widthPercentage(28),
+    resizeMode: 'contain',
+  }
 });
