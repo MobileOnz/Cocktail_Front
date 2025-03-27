@@ -6,12 +6,13 @@ import { RootStackParamList } from "../navigation/types";
 import { widthPercentage, heightPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
 import Icon from "react-native-vector-icons/Ionicons";
 
+import { API_BASE_URL } from "@env";
 type NavigationProps = StackNavigationProp<RootStackParamList, "ResultScreen">;
 
 const ResultScreen: React.FC = ({route}) => {
   const navigation = useNavigation<NavigationProps>();
 
-  const { alcholType } = route.params;
+  const { alcholType, tasteCategoryId, tasteDetailId } = route.params;
 
   const [cocktailName, setCocktailName] = useState("");
   const [cocktailDescription, setCocktailDescription] = useState("");
@@ -24,7 +25,7 @@ const ResultScreen: React.FC = ({route}) => {
   useEffect(() => {
     const fetchResult = async () => {
       try {
-        const response = await fetch(`https://www.onzbackend.shop/api/public/cocktail/personalize?alcholType=${alcholType}`);
+        const response = await fetch(`${API_BASE_URL}/api/public/cocktail/personalize?tasteCategoryId=${tasteCategoryId}&tasteDetailid=${tasteDetailId}&alcholType=${alcholType}`);
 
         const result = await response.json();
         console.log("추천 결과:", result);

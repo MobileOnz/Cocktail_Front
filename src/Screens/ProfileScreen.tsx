@@ -24,8 +24,9 @@ const ProfileScreen: React.FC = () => {
     const fetchProfileData = async () => {
       const token = await AsyncStorage.getItem("accessToken");
       if (!token) return;
-
+  
       try {
+        // 회원 기본 정보 불러오기
         const res = await fetch("http://localhost:8080/api/public/cocktail/get/member", {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -36,33 +37,105 @@ const ProfileScreen: React.FC = () => {
           const member = json.data;
           setNickname(member.nickname);
           setNewNickname("");
-          if (member.profile) {
-            setProfileUri(member.profile);
-            setInitialProfileUri(member.profile);
-          }
-          console.log("login 정보 : ", member.nickname, member.profile);
+          console.log("✅ 닉네임 불러오기 완료:", member.nickname);
         }
       } catch (error) {
-        console.error("Failed to fetch member info", error);
-      }
-    };
-
-    fetchProfileData();
-  }, []);
-
-  const handleSave = () => {
-    if (isChanged) {
-      if (isNicknameChanged) {
-        setNickname(newNickname);
-        setNewNickname("");
-      }
-      if (isProfileChanged) {
-        setInitialProfileUri(profileUri); // 저장 후 새 프로필을 초기값으로 반영
+        console.error("❌ 닉네임 불러오기 실패", error);
       }
   
-      // TODO: 서버 업로드 로직 필요 시 추가!
+      try {
+        // 🔥 프로필 이미지 따로 불러오기
+        const profileRes = await fetch("http://localhost:8080/api/profile", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const profileText = await profileRes.text(); // 이미지 URL이 그냥 문자열로 올 경우
+        if (profileText) {
+          setProfileUri(profileText);
+          setInitialProfileUri(profileText);
+          console.log("✅ 프로필 이미지 불러오기 완료:", profileText);
+        }
+      } catch (error) {
+        console.error("❌ 프로필 이미지 불러오기 실패", error);
+      }
+    };
+  
+    fetchProfileData();
+  }, []);
+  
+
+  const handleSave = async () => {
+    if (!isChanged) return;
+  
+    try {
+      const token = await AsyncStorage.getItem("accessToken");
+      if (!token) {
+        console.warn("AccessToken is missing");
+        return;
+      }
+  
+      // 1. 프로필 이미지 변경 시 먼저 업로드
+      if (isProfileChanged && profileUri) {
+        const formData = new FormData();
+        formData.append("file", {
+          uri: profileUri,
+          type: "image/jpeg",
+          name: "profile.jpg",
+        });
+  
+        const uploadRes = await fetch("http://localhost:8080/api/public/upload/profile", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: formData,
+        });
+  
+        const uploadJson = await uploadRes.json();
+        if (uploadJson.code === 1) {
+          console.log("✅ 프로필 이미지 업로드 성공");
+        } else {
+          console.warn("❌ 프로필 이미지 업로드 실패", uploadJson.msg);
+        }
+      }
+  
+      // 2. 프로필 정보 업데이트
+      const profileUpdateRes = await fetch("http://localhost:8080/api/update/member", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          gender: "none",
+          nickName: newNickname || nickname,
+          name: "test",
+          addr: "seoul",
+          age: 20,
+          profile: profileUri || "",
+        }),
+      });
+  
+      const profileJson = await profileUpdateRes.json();
+      if (profileJson.code === 1) {
+        console.log("✅ 프로필 정보 업데이트 성공", profileJson.data);
+        if (isNicknameChanged) {
+          setNickname(newNickname);
+          setNewNickname("");
+        }
+        if (isProfileChanged) {
+          setInitialProfileUri(profileUri);
+        }
+      } else {
+        console.warn("❌ 프로필 정보 업데이트 실패", profileJson.msg);
+      }
+    } catch (error) {
+      console.error("🔥 프로필 저장 중 에러 발생", error);
     }
   };
+  
+  
   
 
   const handleProfileImageChange = async () => {

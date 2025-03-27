@@ -16,11 +16,11 @@ interface Props {
 const LoadingScreen: React.FC<Props> = ({ navigation, route }) => {
   const [loadingDots, setLoadingDots] = useState(".");
 
-  const { alcholType } = route.params;
+  const { alcholType, tasteCategoryId, tasteDetailId } = route.params;
 
   useEffect(() => {
     const timeout = setTimeout(() => {
-      navigation.navigate("ResultScreen", { alcholType });
+      navigation.navigate("ResultScreen", { alcholType, tasteCategoryId, tasteDetailId });
     }, 3000);
 
     const interval = setInterval(() => {

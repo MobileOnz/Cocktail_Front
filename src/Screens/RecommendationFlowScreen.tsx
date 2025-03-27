@@ -11,7 +11,7 @@ import {
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../navigation/types";
 import { widthPercentage, heightPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
-
+import {API_BASE_URL} from '@env';
 
 type RecommendationFlowScreenNavigationProp = StackNavigationProp<
   RootStackParamList,
@@ -57,6 +57,9 @@ const RecommendationFlowScreen: React.FC<Props> = ({ navigation }) => {
  //선택된 카테고리와 ID 매핑 저장용
  const [tasteCategoryMap, setTasteCategoryMap] = useState<{ [key: string]: number }>({});
 
+ // 추가: 세부 맛 → ID 매핑 저장
+ const [tasteDetailIdMap, setTasteDetailIdMap] = useState<{ [key: string]: number }>({});
+
   useEffect(() => {
     const loadTasteCategories = async () => {
       const categories = await fetchTasteCategories();
@@ -74,7 +77,7 @@ const RecommendationFlowScreen: React.FC<Props> = ({ navigation }) => {
   //첫 번째 질문 옵션 API 호출 → 맵 저장
 const fetchTasteCategories = async () => {
   try {
-    const response = await fetch("https://www.onzbackend.shop/api/public/cocktail/taste/category");
+    const response = await fetch(`${API_BASE_URL}/api/public/cocktail/taste/category`);
     const result = await response.json();
 
     if (result.code === 1 && result.data) {
@@ -97,15 +100,18 @@ const fetchTasteCategories = async () => {
 // (3) 세부 맛 호출 함수
 const fetchTasteDetails = async (categoryId: number) => {
   try {
-    const response = await fetch(`https://www.onzbackend.shop/api/public/cocktail/taste/detail?tasteCategoryId=${categoryId}`);
+    const response = await fetch(`${API_BASE_URL}/api/public/cocktail/taste/detail?tasteCategoryId=${categoryId}`);
     const result = await response.json();
 
     if (result.code === 1 && result.data) {
+      const detailMap: { [key: string]: number } = {};
+      result.data.forEach((item: any) => {
+        detailMap[item.tasteDetail] = item.tasteDetailId;
+      });
+      setTasteDetailIdMap(detailMap); // 💡 여기서 저장
       return result.data.map((item: any) => item.tasteDetail);
-    } else {
-      console.error("세부 맛 API 실패:", result.msg);
-      return [];
     }
+    
   } catch (error) {
     console.error("세부 맛 에러:", error);
     return [];
@@ -113,6 +119,8 @@ const fetchTasteDetails = async (categoryId: number) => {
 };
 
   const handlePress = () => {
+  
+  console.log("🔥 handlePress 호출됨!");
   const alcoholAnswer = selectedAnswers[2]; // 세 번째 질문의 선택값
   const alcoholMap: { [key: string]: number } = {
     "가볍게 마시고 싶어요": 1,
@@ -122,6 +130,13 @@ const fetchTasteDetails = async (categoryId: number) => {
 
   const alcholType = alcoholMap[alcoholAnswer];
 
+
+  const selectedCategoryId = tasteCategoryMap[selectedAnswers[0]];
+  const selectedDetailId = tasteDetailIdMap[selectedAnswers[1]];
+
+  console.log("alcholType:", alcholType);
+  console.log("tasteCategoryId:", selectedCategoryId);
+  console.log("tasteDetailId:", selectedDetailId);
   Animated.sequence([
     Animated.timing(buttonScale, {
       toValue: 0.95,
@@ -136,7 +151,7 @@ const fetchTasteDetails = async (categoryId: number) => {
       useNativeDriver: true,
     }),
   ]).start(() => {
-    navigation.navigate("LoadingScreen", { alcholType });
+    navigation.navigate("LoadingScreen", { alcholType, tasteCategoryId: selectedCategoryId, tasteDetailId: selectedDetailId });
   });
 };
 
@@ -243,6 +258,8 @@ useEffect(() => {
 
 
 const handleOptionSelect = async (answer: string) => {
+
+
   setSelectedAnswers((prev) => ({
     ...prev,
     [currentStep]: answer,
@@ -261,6 +278,8 @@ const handleOptionSelect = async (answer: string) => {
       });
     }
   }
+
+  console.log("🧪 tasteDetailIdMap", tasteDetailIdMap);
 
   // 다음 질문으로 이동
   if (currentStep < questions.length - 1) {
@@ -338,7 +357,6 @@ const handleOptionSelect = async (answer: string) => {
                 </View>
             </Animated.View>
         )}
-
         {/* 질문과 옵션 표시 */}
         {questions.map((item, index) => (
           <Animated.View
