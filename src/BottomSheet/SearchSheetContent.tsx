@@ -15,7 +15,7 @@ type myBarList = {
 
 
 
-const MainBottomSheet = ({ sections, showMyBars, handleTabPress }) => {
+const MainBottomSheet = ({ sections, showMyBars, handleTabPress, setSelectedTab, setSelectedBarId }) => {
   const [isExpanded, setIsExpanded] = useState(true);
   const toggleShowMyBars = () => {
     setIsExpanded(!isExpanded);
@@ -34,7 +34,12 @@ const MainBottomSheet = ({ sections, showMyBars, handleTabPress }) => {
    /*함수를 통해 아이템 리스트너 꾸미기*/ 
   const renderBarItem = ({ item, index, section }: { item: myBarList; index: number; section: any }) => (
     <>
-    <TouchableOpacity onPress={() => handleTabPress("detail")}>
+      <TouchableOpacity
+        onPress={() => {
+          setSelectedBarId(item.listId);  // ✅ 상세조회용 바 ID 저장
+          setSelectedTab("detail");       // ✅ 상세 탭으로 전환
+        }}
+      >
       <View style={styles.itemContainer}>
         <Image style={styles.itemImage} source={item.image} />
       <View style={styles.textContainer}>

@@ -1,11 +1,9 @@
-import React, { useRef } from "react";
+// CustomMapView.tsx
+import React from "react";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
-import { Alert, StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
 
-
-const CustomMapView = ({ initialRegion}: { initialRegion: any;}) => {
-  const mapRef = useRef<MapView>(null);
-
+const CustomMapView = ({ initialRegion, mapRef, markerList }) => {
   return (
     <MapView
       ref={mapRef}
@@ -13,14 +11,17 @@ const CustomMapView = ({ initialRegion}: { initialRegion: any;}) => {
       style={styles.map}
       initialRegion={initialRegion}
     >
-      <Marker
-        coordinate={{ latitude: 37.5665, longitude: 126.9780 }}
-        title="가게 이름"
-        description="여기에 가게 설명 입력"
-        onPress={() => {
-          
-        }}
-      />
+      {markerList?.map((marker) => {
+      console.log("📍 마커 찍음", marker);
+      return (
+        <Marker
+          key={marker.id}
+          coordinate={marker.coordinate}
+          title={marker.title}
+          description="검색된 바"
+        />
+      );
+    })}
     </MapView>
   );
 };

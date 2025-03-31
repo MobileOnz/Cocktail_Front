@@ -63,31 +63,40 @@ const myList = [
 ];
 
 
-const BaseBottomSheet = ({ animatedPosition }) => {
+const BaseBottomSheet = ({ 
+  animatedPosition, 
+  barList, 
+  setBarList, 
+  selectedTab, 
+  setSelectedTab 
+  }) => {
   const navigation = useNavigation();
   const snapPoints = useMemo(() => ["10%", "30%", "76%"], []);
-  const [selectedTab, setSelectedTab] = useState<"search" | "myList" | "region" | "bookmark"| "detail"|"myBardetailList">("search");
-  const [selectedBar, setSelectedBar] = useState(null);
   const bottomSheetRef = useRef<BottomSheet>(null);
-  
+
+  const [selectedBarId, setSelectedBarId] = useState<number | null>(null);
+
+
   useEffect(() => {
     if (selectedTab === "detail") {
       bottomSheetRef.current?.expand();
     }
   }, [selectedTab]);
 
-  // sections 데이터 변경
-  const sections = useMemo(() => {
-    if (selectedTab === "myList") {
+  // ✅ sections 설정
+const sections = useMemo(() => {
+    if (selectedTab === "search" && barList.length > 0) {
+      return [{ title: "검색 결과", data: barList }];
+    } else if (selectedTab === "myList") {
       return [{ title: "나의 칵테일 바", data: myBars }];
     } else if (selectedTab === "region") {
       return [{ title: "근처 칵테일 바", data: nearBars }];
     }
     return [
       { title: "나의 칵테일 바", data: myBars },
-      { title: "근처 칵테일 바", data: nearBars }
+      { title: "근처 칵테일 바", data: nearBars },
     ];
-  }, [selectedTab]);
+  }, [selectedTab, barList]);
 
   // 탭 변경 핸들러
   const handleTabPress = (tab: "search" | "myList" | "region" | "bookmark" | "detail"|"pin"|"myBardetailList", bar = null) => {
@@ -107,7 +116,7 @@ const BaseBottomSheet = ({ animatedPosition }) => {
     enablePanDownToClose={false} 
     backgroundStyle={{ backgroundColor: theme.background }}
     containerStyle={{ position: 'absolute', zIndex: 100 }}>
-    {selectedTab !== "detail" && (
+    {selectedTab !== "detail" && selectedTab !== "search" &&(
       /* 네비게이션 버튼 */
       <View style={styles.sheetHeader}>
         <TouchableOpacity
@@ -140,12 +149,17 @@ const BaseBottomSheet = ({ animatedPosition }) => {
       ) : selectedTab === "myList" ? (
           <MyListSheetContent handleTabPress={handleTabPress} />
       ) : selectedTab === "detail" ? (
-      <MenuListDetail handleTabPress={handleTabPress}/>
+          <MenuListDetail 
+            handleTabPress={handleTabPress}
+            barId={selectedBarId}
+            />
       ) : (
       <SearchSheetContent
       sections={sections}
       showMyBars={true}
       handleTabPress={handleTabPress}
+      setSelectedTab={setSelectedTab}
+      setSelectedBarId={setSelectedBarId}
   />
 )}
     </BottomSheet>

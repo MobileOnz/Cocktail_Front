@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { StackScreenProps } from "@react-navigation/stack";
 import { View, StyleSheet, StatusBar, Text, TouchableOpacity, TextInput,Image } from "react-native";
 import SearchBar from "../Components/SearchBar";
@@ -8,6 +8,9 @@ import theme from "../assets/styles/theme";
 import { heightPercentage, widthPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
 import SelectedRegions from "../BottomSheet/SelectedRegions";
 import SelectedRegionTags from "../Components/SelectedRegionTags";
+import MapView from "react-native-maps";
+
+import { API_BASE_URL } from "@env";
 
 type RootStackParamList = {
   SearchScreen: undefined;
@@ -17,11 +20,74 @@ type RootStackParamList = {
 type MapsProps = StackScreenProps<RootStackParamList, "Maps">;
 
 const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
-  
+  const mapRef = useRef<MapView>(null);
+
   const [isSearchCompleted, setIsSearchCompleted] = useState(false);
   const [selectedRegions, setSelectedRegions] = useState<string[]>([]);
   const {searchQuery} = route.params|| "";
 
+  const [barList, setBarList] = useState([]);
+  const [selectedTab, setSelectedTab] = useState("search");
+
+  const [markerList, setMarkerList] = useState([]);
+
+  // ✅ MapsScreen에서 props로 받은 searchQuery 기반으로 API 요청
+  useEffect(() => {
+    if (route.params?.searchCompleted && route.params.searchQuery) {
+      const query = route.params.searchQuery;
+  
+      fetch(`${API_BASE_URL}/api/search/keyword?search=${encodeURIComponent(query)}`)
+      .then(res => res.json())
+      .then(result => {
+        console.log("응답 결과:", result);
+
+        if (!Array.isArray(result.data)) {
+          throw new Error("검색 결과가 배열이 아닙니다.");
+        }
+
+        const formatted = result.data.map((bar) => ({
+          listId: bar.id,
+          title: bar.bar_name,
+          barAdress: bar.address || "주소 없음",
+          image: bar.thumbnail 
+            ? { uri: bar.thumbnail } 
+            : require("../assets/drawable/barExample.png"),
+          hashtageList: bar.menus.slice(0, 4).map(menu => `#${menu.name}`),
+        }));
+
+        // 마커용 데이터 저장
+        const markers = result.data.map((bar) => ({
+          id: bar.id,
+          title: bar.bar_name,
+          coordinate: {
+            latitude: Number(bar.y),
+            longitude: Number(bar.x),
+          },
+        }));
+
+        setBarList(formatted);
+        setMarkerList(markers);
+        setSelectedTab("search");
+
+        // ✅ 모든 마커가 보이도록 지도 이동
+        setTimeout(() => {
+          if (mapRef.current && markers.length > 0) {
+            mapRef.current.fitToCoordinates(
+              markers.map((m) => m.coordinate),
+              {
+                edgePadding: { top: 100, right: 100, bottom: 300, left: 100 },
+                animated: true,
+              }
+            );
+          }
+        }, 300);
+      })
+      .catch(err => console.error("검색 실패:", err));
+
+    }
+  }, [route.params?.searchCompleted]);
+  
+  
 
   useEffect(() => {
     if (route.params?.searchCompleted) {
@@ -66,14 +132,15 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
 
       {/* 지도 */}
       <View style={styles.mapContainer}>
-        <CustomMapView 
-       
+        <CustomMapView
           initialRegion={{
             latitude: 37.5665,
-            longitude: 126.9780,
+            longitude: 126.978,
             latitudeDelta: 0.02,
             longitudeDelta: 0.02,
           }}
+          mapRef={mapRef}
+          markerList={markerList}
         />
       </View>
 
@@ -100,7 +167,16 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
   )}
 
 </View>
-      {selectedRegions.length > 0 ? <SelectedRegions selectedRegions={selectedRegions} /> : <BaseBottomSheet />}
+    {selectedRegions.length > 0 ? (
+      <SelectedRegions selectedRegions={selectedRegions} />
+    ) : (
+      <BaseBottomSheet
+        barList={barList}
+        setBarList={setBarList}
+        selectedTab={selectedTab}
+        setSelectedTab={setSelectedTab}
+      />
+    )}
     </View>
   );
 };
