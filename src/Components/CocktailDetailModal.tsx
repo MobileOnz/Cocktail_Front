@@ -12,35 +12,77 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 import { widthPercentage, heightPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
+import {API_BASE_URL} from '@env';
+
+const server = API_BASE_URL;
 
 interface CocktailDetailModalProps {
   visible: boolean;
   onClose: () => void;
   cocktailIndex: number;
   cocktails: {
-    name: string;
-    description: string;
-    image: any;
-    size: string;
-    taste: string;
-    alcohol: string;
-    recommendation: string;
-    ingredients: string;
+    cocktail: {
+      id: number;
+      cocktail_name: string;
+      introduce: string;
+      image_url: string;
+      cocktail_size: number;
+      min_alchol: number;
+      max_alchol: number;
+    };
+    ingredients: {
+      unit: string;
+      ingredient: string;
+      quantity: string;
+    }[];
+    tastes: {
+      tasteDetail: string;
+      category: string;
+    }[];
+    recommends: {
+      mood: string;
+      season: string;
+      situation: string;
+    }[];
   }[];
+  selectedCocktailId: number;
 }
 
-const ITEM_WIDTH = widthPercentage(311);
-const ITEM_SPACING = widthPercentage(20);
+  const  ITEM_WIDTH = widthPercentage(311);
+  const ITEM_SPACING = widthPercentage(20);
+
+
+  // 데이터 
+  const fetchCocktailById = async (id: number) => {
+    const res = await fetch(`${server}/api/public/cocktail?cocktailId=${id}`);
+    const json = await res.json();
+    return json.data;
+  };
 
 const CocktailDetailModal: React.FC<CocktailDetailModalProps> = ({
   visible,
   onClose,
   cocktailIndex,
   cocktails,
+  selectedCocktailId,
 }) => {
   const flatListRef = useRef<FlatList>(null);
   const scrollX = useRef(new Animated.Value(0)).current;
   const [currentIndex, setCurrentIndex] = useState(cocktailIndex);
+  const [fetchedData, setFetchedData] = useState<any | null>(null);
+
+  useEffect(() => {
+    if (visible && selectedCocktailId) {
+      (async () => {
+        try {
+          const data = await fetchCocktailById(selectedCocktailId);
+          setFetchedData(data);
+        } catch (err) {
+          console.error("불러오기 실패:", err);
+        }
+      })();
+    }
+  }, [visible, selectedCocktailId]);
 
   useEffect(() => {
     if (visible) {
@@ -56,7 +98,7 @@ const CocktailDetailModal: React.FC<CocktailDetailModalProps> = ({
 
   let isScrolling = false;
 
-  const handleScrollEnd = (event: any) => {
+  const handleScrollEnd = async (event: any) => {
     if (isScrolling) return;
     isScrolling = true;
 
@@ -69,107 +111,144 @@ const CocktailDetailModal: React.FC<CocktailDetailModalProps> = ({
     });
 
     setCurrentIndex(index);
+
+    const selected = cocktails[index]?.cocktail?.id;
+  if (selected) {
+    try {
+      const data = await fetchCocktailById(selected);
+      setFetchedData(data); // -> 해당 칵테일 정보 갱신
+    } catch (err) {
+      console.error("스와이프 중 데이터 불러오기 실패:", err);
+    }
+  }
     setTimeout(() => {
       isScrolling = false;
     }, 500); // 500ms 후 다시 스크롤 가능
   };
 
 
-  return (
-    <Modal visible={visible} animationType="fade" transparent>
-      <TouchableWithoutFeedback onPress={onClose}>
-        <View style={styles.overlay}>
-          <Animated.FlatList
-            ref={flatListRef}
-            data={cocktails}
-            horizontal
-            pagingEnabled
-            snapToAlignment="center"
-            snapToInterval={ITEM_WIDTH + ITEM_SPACING}
-            decelerationRate="fast"
-            showsHorizontalScrollIndicator={false}
-            keyExtractor={(_, index) => index.toString()}
-            onScroll={Animated.event(
-              [{ nativeEvent: { contentOffset: { x: scrollX } } }],
-              { useNativeDriver: false }
-            )}
-            contentContainerStyle={{ alignItems: "center" }}
-            style={{ height: heightPercentage(550) }}
-            renderItem={({ item, index }) => {
-              const inputRange = [
-                (index - 1) * ITEM_WIDTH,
-                index * ITEM_WIDTH,
-                (index + 1) * ITEM_WIDTH,
-              ];
+return (
+  <Modal visible={visible} animationType="fade" transparent>
+    <TouchableWithoutFeedback onPress={onClose}>
+      <View style={styles.overlay}>
+        <Animated.FlatList
+          ref={flatListRef}
+          data={cocktails}
+          horizontal
+          pagingEnabled
+          onMomentumScrollEnd={handleScrollEnd}
+          snapToAlignment="center"
+          snapToInterval={ITEM_WIDTH + ITEM_SPACING}
+          decelerationRate="fast"
+          showsHorizontalScrollIndicator={false}
+          keyExtractor={(_, index) => index.toString()}
+          onScroll={Animated.event(
+            [{ nativeEvent: { contentOffset: { x: scrollX } } }],
+            { useNativeDriver: false }
+          )}
+          contentContainerStyle={{ alignItems: "center" }}
+          style={{ height: heightPercentage(550) }}
+          renderItem={({ item, index }) => {
+            const inputRange = [
+              (index - 1) * ITEM_WIDTH,
+              index * ITEM_WIDTH,
+              (index + 1) * ITEM_WIDTH,
+            ];
 
-              const scale = scrollX.interpolate({
-                inputRange,
-                outputRange: [0.85, 1, 0.85], // 양옆은 85%, 중앙은 100%
-                extrapolate: "clamp",
-              });
+            const scale = scrollX.interpolate({
+              inputRange,
+              outputRange: [0.85, 1, 0.85],
+              extrapolate: "clamp",
+            });
 
-              const translateY = scrollX.interpolate({
-                inputRange,
-                outputRange: [10, 0, 10], // 중앙으로 올 때 위로 살짝 이동
-                extrapolate: "clamp",
-              });
+            const translateY = scrollX.interpolate({
+              inputRange,
+              outputRange: [10, 0, 10],
+              extrapolate: "clamp",
+            });
 
-              return (
-                <TouchableWithoutFeedback>
-                  <Animated.View
-                    style={[
-                      styles.animatedContainer,
-                      { transform: [{ scale }, { translateY }] },
-                    ]}
-                  >
-                    {/* 닫기 버튼 */}
-                    <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-                      <Icon name="close" size={widthPercentage(24)} color="#000" />
-                    </TouchableOpacity>
+            return (
+              <TouchableWithoutFeedback>
+                <Animated.View
+                  style={[
+                    styles.animatedContainer,
+                    { transform: [{ scale }, { translateY }] },
+                  ]}
+                >
+                  <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+                    <Icon name="close" size={widthPercentage(24)} color="#000" />
+                  </TouchableOpacity>
 
-                    {/* 칵테일 이미지 */}
-                    <Image source={item.image} style={styles.cocktailImage} />
+                  {fetchedData && (
+                    <>
+                      <Image
+                        source={
+                          fetchedData.cocktail.image_url
+                            ? { uri: fetchedData.cocktail.image_url }
+                            : require("../assets/drawable/cocktail.jpg")
+                        }
+                        style={styles.cocktailImage}
+                      />
 
-                    {/* 칵테일 정보 */}
-                    <View style={styles.content}>
-                      <Text style={styles.cocktailName}>{item.name}</Text>
-                      <Text style={styles.cocktailDescription}>{item.description}</Text>
+                      <View style={styles.content}>
+                        <Text style={styles.cocktailName}>
+                          {fetchedData.cocktail.cocktail_name}
+                        </Text>
+                        <Text style={styles.cocktailDescription}>
+                          {fetchedData.cocktail.introduce}
+                        </Text>
 
-                      {/* 기본 정보 */}
-                      <View style={styles.infoContainer}>
-                        <Text style={styles.infoTitle}>기본 정보</Text>
-                        <View style={styles.infoRow}>
-                          <Text style={styles.infoLabel}>잔 크기</Text>
-                          <Text style={styles.infoText}>{item.size}</Text>
-                        </View>
-                        <View style={styles.infoRow}>
-                          <Text style={styles.infoLabel}>기본 맛</Text>
-                          <Text style={styles.infoText}>{item.taste}</Text>
-                        </View>
-                        <View style={styles.infoRow}>
-                          <Text style={styles.infoLabel}>도수</Text>
-                          <Text style={styles.infoText}>{item.alcohol}</Text>
-                        </View>
-                        <View style={styles.infoRow}>
-                          <Text style={styles.infoLabel}>추천 상황</Text>
-                          <Text style={styles.infoText}>{item.recommendation}</Text>
-                        </View>
-                        <View style={styles.infoRow}>
-                          <Text style={styles.infoLabel}>재료</Text>
-                          <Text style={styles.infoText}>{item.ingredients}</Text>
+                        <View style={styles.infoContainer}>
+                          <Text style={styles.infoTitle}>기본 정보</Text>
+                          <View style={styles.infoRow}>
+                            <Text style={styles.infoLabel}>잔 크기</Text>
+                            <Text style={styles.infoText}>
+                              {fetchedData.cocktail.cocktail_size}ml
+                            </Text>
+                          </View>
+                          <View style={styles.infoRow}>
+                            <Text style={styles.infoLabel}>기본 맛</Text>
+                            <Text style={styles.infoText}>
+                              {fetchedData.tastes?.[0]?.tasteDetail},{" "}
+                              {fetchedData.tastes?.[0]?.category}
+                            </Text>
+                          </View>
+                          <View style={styles.infoRow}>
+                            <Text style={styles.infoLabel}>도수</Text>
+                            <Text style={styles.infoText}>
+                              {fetchedData.cocktail.min_alchol} ~{" "}
+                              {fetchedData.cocktail.max_alchol}
+                            </Text>
+                          </View>
+                          <View style={styles.infoRow}>
+                            <Text style={styles.infoLabel}>추천 상황</Text>
+                            <Text style={styles.infoText}>
+                              {fetchedData.recommends?.[0]?.mood}
+                            </Text>
+                          </View>
+                          <View style={styles.infoRow}>
+                            <Text style={styles.infoLabel}>재료</Text>
+                            <Text style={styles.infoText}>
+                              {fetchedData.ingredients
+                                .map((i) => `${i.ingredient} ${i.quantity}${i.unit}`)
+                                .join(", ")}
+                            </Text>
+                          </View>
                         </View>
                       </View>
-                    </View>
-                  </Animated.View>
-                </TouchableWithoutFeedback>
-              );
-            }}
-          />
-        </View>
-      </TouchableWithoutFeedback>
-    </Modal>
-  );
-};
+                    </>
+                  )}
+                </Animated.View>
+              </TouchableWithoutFeedback>
+            );
+          }}
+        />
+      </View>
+    </TouchableWithoutFeedback>
+  </Modal>
+);
+}
+
 
 const styles = StyleSheet.create({
   overlay: {

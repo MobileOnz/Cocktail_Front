@@ -39,6 +39,26 @@
             </intent-filter>
         </activity>
 
+        <activity android:name="com.reactnativecommunity.webview.RNCWebViewManager$RNCWebViewActivity"
+    android:exported="true">
+    <intent-filter>
+        <action android:name="android.intent.action.VIEW" />
+        <category android:name="android.intent.category.DEFAULT" />
+        <category android:name="android.intent.category.BROWSABLE" />
+        <data android:scheme="${appAuthRedirectScheme}" />
+    </intent-filter>
+</activity>
+
+<activity
+    android:name="com.nhn.android.naverlogin.ui.OAuthLoginActivity"
+    android:exported="true">
+    <intent-filter>
+        <action android:name="android.intent.action.VIEW" />
+        <category android:name="android.intent.category.DEFAULT" />
+        <category android:name="android.intent.category.BROWSABLE" />
+        <data android:scheme="navertest" />
+    </intent-filter>
+</activity>
         <!-- 카카오 SDK 설정 -->
         <activity
             android:name="com.kakao.sdk.auth.AuthCodeHandlerActivity"

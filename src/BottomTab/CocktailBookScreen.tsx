@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, {useState, useRef,useEffect } from "react";
 import {
   View,
   Text,
@@ -12,6 +12,10 @@ import {
 // import { BannerAd, BannerAdSize, TestIds } from "react-native-google-mobile-ads"; 
 import CocktailDetailModal from "../Components/CocktailDetailModal";
 import { widthPercentage, heightPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
+import {API_BASE_URL} from '@env';
+
+const server = API_BASE_URL;
+
 
 const bannerImages = [
   require("../assets/drawable/banner.jpg"),
@@ -61,53 +65,71 @@ const categories = [
     backgroundColor: "#F1E6D5"
   }
 ];
+const fetchCocktailById = async (id: number) => {
+  const res = await fetch(`${server}/api/public/cocktail?cocktailId=${id}`);
+  const json = await res.json();
+  return json.data;
+};
+
+//4씩 나누기
+const fetchAllCocktails = async () => {
+  const ids = Array.from({ length: 24 }, (_, i) => i + 1); // Max data
+  const results = await Promise.all(ids.map((id) => fetchCocktailById(id)));
+
+  const grouped = [];
+  for (let i = 0; i < results.length; i += 4) {
+    grouped.push(results.slice(i, i + 4));
+  }
+
+  return grouped;
+};
+type CocktailData = {
+  cocktail: {
+    id: number;
+    cocktail_name: string;
+    image_url : string;
+  };
+};
+type CategoryData = {
+  title: string;
+  description: string;
+  icon: any;
+  textColor: string;
+  backgroundColor: string;
+  items: CocktailData[];
+};
 
 
-const cocktails = [
-  { 
-    id: "1", 
-    name: "칵테일 명", 
-    image: require("../assets/drawable/cocktail.jpg"),
-    description: "칵테일 소개 한줄입니다.",
-    size: "120ml",
-    taste: "새콤한 맛, 약간 짠 맛",
-    alcohol: "약 13~15%",
-    recommendation: "더운 날 해변에서, 가벼운 식사와 함께 하는 것을 추천합니다.",
-    ingredients: "데킬라, 라임 주스, 오렌지 리큐어",
-  },
-  { 
-    id: "2", 
-    name: "칵테일 명", 
-    image: require("../assets/drawable/cocktail.jpg"),
-    description: "칵테일 소개 한줄입니다.",
-    size: "150ml",
-    taste: "달콤한 맛",
-    alcohol: "약 5~7%",
-    recommendation: "디저트와 함께 즐기기 좋은 칵테일입니다.",
-    ingredients: "럼, 코코넛 밀크, 파인애플 주스",
-  },
-  { 
-    id: "3", 
-    name: "칵테일 명", 
-    image: require("../assets/drawable/cocktail.jpg"),
-    description: "칵테일 소개 한줄입니다.",
-    size: "180ml",
-    taste: "묵직한 맛, 쌉싸름한 맛",
-    alcohol: "약 20~25%",
-    recommendation: "저녁에 진한 음식을 곁들여 마시기 좋습니다.",
-    ingredients: "위스키, 진저 비어, 라임",
-  },
-];
 
 const CocktailBookScreen: React.FC = () => {
+  const [selectedCategoryIndex, setSelectedCategoryIndex] = useState<number | null>();
+  const [categorizedCocktails, setCategorizedCocktails] = useState<CategoryData[]>([]);
+  useEffect(() => {
+    const fetchData = async () => {
+      const grouped = await fetchAllCocktails();
+  
+      const categorized = categories.map((category, index) => ({
+        ...category,
+        items: grouped[index] || [],
+      }));
+  
+      setCategorizedCocktails(categorized);
+    };
+  
+    fetchData();
+  }, []);
   const [selectedCocktail, setSelectedCocktail] = useState<any>(null);
+  const [modalCocktailList, setModalCocktailList] = useState<any[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const bannerRef = useRef<FlatList<any>>(null);
   const [selectedCocktailIndex, setSelectedCocktailIndex] = useState<number | null>(null);
-  const openModal = (cocktail: any) => {
-    const index = cocktails.findIndex((c) => c.id === cocktail.id);  // ✅ 인덱스 찾기
+  const openModal = (cocktail: any, cocktailList: any[],  categoryIndex: number) => {
+    console.log("🔥 클릭한 칵테일 데이터:", cocktail);
+    const index = cocktailList.findIndex((c) => c.cocktail.id === cocktail.cocktail.id);
     setSelectedCocktailIndex(index);
     setSelectedCocktail(cocktail);
+    setModalCocktailList(cocktailList);
+    setSelectedCategoryIndex(categoryIndex);
   };
   
 
@@ -171,7 +193,7 @@ const CocktailBookScreen: React.FC = () => {
         </View> */}
 
         {/* 분위기별 칵테일 리스트 */}
-        {categories.map((category, index) => (
+        {categorizedCocktails.map((category, index) => (
           <View key={index} style={styles.categorySection}>
             {/* 카테고리 제목 */}
             <View style={styles.categoryHeader}>
@@ -185,12 +207,15 @@ const CocktailBookScreen: React.FC = () => {
             {/* 칵테일 리스트 (가로 스크롤) */}
             <FlatList
               horizontal
-              data={cocktails}
-              keyExtractor={(item) => item.id}
+              data={category.items}
+              keyExtractor={(item) => item.cocktail.id.toString()}
               renderItem={({ item }) => (
-                <TouchableOpacity onPress={() => openModal(item)} style={styles.cocktailCard}>
-                  <Image source={item.image} style={styles.cocktailImage} />
-                  <Text style={styles.cocktailName}>{item.name}</Text>
+                <TouchableOpacity onPress={() => openModal(item, category.items, index)} style={styles.cocktailCard}>
+                  <Image source={item.cocktail.image_url
+                              ? { uri: item.cocktail.image_url }
+                              : require("../assets/drawable/cocktail.jpg") 
+                              }style={styles.cocktailImage} />
+                  <Text style={styles.cocktailName}>{item.cocktail.cocktail_name}</Text>
                 </TouchableOpacity>
               )}
               showsHorizontalScrollIndicator={false}
@@ -205,7 +230,9 @@ const CocktailBookScreen: React.FC = () => {
           visible={true}
           onClose={closeModal}
           cocktailIndex={selectedCocktailIndex}
-          cocktails={cocktails}
+          cocktails={modalCocktailList}
+          selectedCocktailId={selectedCocktail?.cocktail.id}
+  
         />
       )}
     </SafeAreaView>

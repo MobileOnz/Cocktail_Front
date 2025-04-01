@@ -1,14 +1,33 @@
-import React from "react";
+import React, {useEffect,useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import { StackScreenProps } from "@react-navigation/stack";
 import * as KakaoLogin from "@react-native-seoul/kakao-login";
-
 import { heightPercentage, widthPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
-// import NaverLogin from "@react-native-seoul/naver-login";
-// import type {
-//   GetProfileResponse,
-//   NaverLoginResponse,
-// } from "@react-native-seoul/naver-login";
+import NaverLogin from "@react-native-seoul/naver-login";
+import type {
+  GetProfileResponse,
+  NaverLoginResponse,
+} from "@react-native-seoul/naver-login";
+import { authorize } from 'react-native-app-auth';
+import axios from 'axios';
+import {API_BASE_URL} from '@env';
+
+//env에서 서버 주소 가져옴
+const server = API_BASE_URL;
+
+
+//구글로그인  설정
+const config = {
+  issuer: 'https://accounts.google.com',
+  clientId: process.env.GOOGLE_CLIENT_ID as string,
+  redirectUrl: process.env.GOOGLE_REDIRECT_URI as string,
+  scopes: ['openid', 'profile', 'email'],
+  serviceConfiguration: {
+    authorizationEndpoint: 'https://accounts.google.com/o/oauth2/auth',
+    tokenEndpoint: 'https://oauth2.googleapis.com/token',
+  },
+};
+
 
 type RootStackParamList = {
   Onboarding: undefined;
@@ -16,37 +35,113 @@ type RootStackParamList = {
   BottomTabNavigator: undefined;
 };
 
-const consumerKey = 'pjSp0u95mvc6Ufq_TQbP';
-const consumerSecret = 'xD2ZRcw_px';
-const appName = '온즈';
-const serviceUrlScheme = 'navertest';
+const consumerKey = "Oc17d0i2lHxKxHhTqL1C";
+const consumerSecret = "PgG9qhIBZP";
+const appName = "onz";
+const serviceUrlScheme = "testapp";
 
 type LoginScreenProps = StackScreenProps<RootStackParamList, "Login">;
 
- // useEffect(() => {
-  //   NaverLogin.initialize({
-  //     appName,
-  //     consumerKey,
-  //     consumerSecret,
-  //     serviceUrlSchemeIOS: serviceUrlScheme,
-  //     disableNaverAppAuthIOS: true,
-  //   });
-  // }, []);
-
-  // const [success, setSuccessResponse] =
-  //   useState<NaverLoginResponse['successResponse']>();
-
-  // const [failure, setFailureResponse] =
-  //   useState<NaverLoginResponse['failureResponse']>();
-  // const [getProfileRes, setGetProfileRes] = useState<GetProfileResponse>();
-
-  // const naverLogin = async (): Promise<void> => {
-  //   const { failureResponse, successResponse } = await NaverLogin.login();
-  //   setSuccessResponse(successResponse);
-  //   setFailureResponse(failureResponse);
-  // };
-
 const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
+  useEffect(() => {
+    NaverLogin.initialize({
+      appName,
+      consumerKey,
+      consumerSecret,
+      serviceUrlSchemeIOS: serviceUrlScheme,
+      disableNaverAppAuthIOS: true,
+    });
+    
+  }, []);
+
+  const [success, setSuccessResponse] = useState<NaverLoginResponse['successResponse']>();
+
+  const [failure, setFailureResponse] = useState<NaverLoginResponse['failureResponse']>();
+  const [getProfileRes, setGetProfileRes] = useState<GetProfileResponse>();
+
+  const parseSafeError = (error: unknown): {
+    message: string;
+    code?: string;
+    stack?: string;
+  } => {
+    let message = '알 수 없는 오류 발생';
+    let code = 'Unknown';
+    let stack = '';
+  
+    if (
+      typeof error === 'object' &&
+      error !== null &&
+      'message' in error &&
+      typeof (error as any).message === 'string'
+    ) {
+      message = (error as any).message;
+  
+      if ('stack' in error && typeof (error as any).stack === 'string') {
+        stack = (error as any).stack;
+      }
+  
+      if ('code' in error && typeof (error as any).code === 'string') {
+        code = (error as any).code;
+      }
+    } else if (typeof error === 'string') {
+      message = error;
+      stack = error;
+    }
+  
+    return { message, code, stack };
+  };
+
+  const naverLogin = async (): Promise<void> => {
+    try {
+      const { failureResponse, successResponse } = await NaverLogin.login();
+  
+      setSuccessResponse(successResponse);
+      setFailureResponse(failureResponse);
+
+      
+  
+      if (successResponse) {
+        const { accessToken} = successResponse;
+
+        console.log('✅ 서버 요청 파라미터:', {
+          provider: 'naver',
+          code: null,
+          state: null,
+          accessToken,
+        });
+  
+        console.log('네이버 로그인 성공 응답:', successResponse);
+
+
+        const payload = {
+          provider: 'naver',
+          code: null,
+          state: null,
+          accessToken : accessToken,
+        };
+  
+        const response = await axios.post(`${server}/api/auth/social-login`, payload, {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+  
+        console.log('백엔드 응답:', response.data);
+      } else if (failureResponse) {
+        console.log('네이버 로그인 실패:', failureResponse);
+      } else {
+        setFailureResponse({ message: '로그인 정보가 없습니다.', isCancel: false });
+      }
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        console.log('서버 응답 상태:', error.response?.status);
+        console.log('서버 응답 내용:', error.response?.data);
+      } else {
+        console.error('네이버 로그인 중 예외 발생:', error);
+      }
+    }
+  };
+  
   // 카카오 로그인 함수
   const kakaologin = () => {
     KakaoLogin.login()
@@ -62,6 +157,24 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
           console.log(`Login Fail(code:${error.code})`, error.message);
         }
       });
+  };
+  const signInWithGoogle = async () => {
+    try {
+      const result = await authorize(config);
+      const { authorizationCode } = result;
+
+      const response = await axios.post('https://www.onzbackend.shop/api/auth/social-login', {
+        provider: 'google',
+        code: authorizationCode,
+        state: null,
+      });
+
+      console.log('✅ 구글 로그인 성공:', response.data);
+      // TODO: 토큰 저장 & 메인 화면으로 이동 등 처리
+      // navigation.replace('BottomTabNavigator');
+    } catch (error) {
+      console.error('❌ 구글 로그인 실패:', error);
+    }
   };
 
   // 프로필 가져오기
@@ -109,16 +222,17 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
           />
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.loginButton}>
+        <TouchableOpacity style={styles.loginButton} onPress={naverLogin}>
           <Image
             source={require("../assets/drawable/naver_button.png")}
             style={styles.buttonImage}
           />
         </TouchableOpacity>
 
+      {/* google로그인 버튼 */}
         <TouchableOpacity 
           style={styles.loginButton}
-          onPress={() => navigation.navigate("SignupScreen")}
+          onPress={signInWithGoogle}
           >
           <Image
             source={require("../assets/drawable/google_button.png")}
