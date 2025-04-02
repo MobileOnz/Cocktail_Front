@@ -1,5 +1,5 @@
 import React, { useMemo, useState,useRef,useEffect } from "react";
-import { View, StyleSheet, TouchableOpacity, Text } from "react-native";
+import { View, StyleSheet, TouchableOpacity, Text, Alert } from "react-native";
 import BottomSheet from "@gorhom/bottom-sheet";
 import theme from "../assets/styles/theme";
 import SearchSheetContent from "../BottomSheet/SearchSheetContent";
@@ -81,6 +81,31 @@ const BaseBottomSheet = ({
   //나의 리스트 가져오기
   const[myList, setMyList] = useState([]);
 
+  useEffect(() => {
+    const fetchMyList = async () => {
+      try {
+        const token = "your_access_token_here"; // 실제로는 context나 secure storage에서 가져오기
+        const response = await fetch(`${API_BASE_URL}/api/item/public/list`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const result = await response.json();
+        if (result.code === 1) {
+          setMyList(result.data);
+        } else {
+          console.warn("리스트 불러오기 실패:", result.msg);
+        }
+      } catch (error) {
+        console.error("리스트 가져오기 실패:", error);
+      }
+    };
+  
+    fetchMyList();
+  }, []);
+
   //북마크된 가게 불러오기위한 변수
   const [myBars, setMyBars] = useState([]);
 
@@ -135,7 +160,7 @@ const sections = useMemo(() => {
   // 탭 변경 핸들러
   const handleTabPress = (tab: "search" | "myList" | "region" | "bookmark" | "detail"|"pin"|"myBardetailList", bar = null) => {
     if (tab === "bookmark") {
-      setSelectedBar(bar);
+      setSelectedBarId(bar?.id ?? null);
     }
     setSelectedTab(prev => (prev === tab ? "search" : tab));
   };
@@ -170,19 +195,53 @@ const sections = useMemo(() => {
     )}
 
           {/* 클릭시 이동 */}
-
       {selectedTab === "bookmark" ? (
       <SelectionListSheet
       title="선택한 장소 명"
       listData={myList}
       onClose={() => setSelectedTab("search")}
-      onSave={(selectedItem) => console.log("선택한 아이템:", selectedItem)}
+      onSave={async (selectedItem) => {
+        if (!selectedItem || !selectedBarId) return;
+      
+        try {
+          const token = "your_access_token_here"; // 실제로는 context 또는 SecureStorage 등에서
+          const response = await fetch(`${API_BASE_URL}/api/item`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              listId: selectedItem.id,
+              barId: selectedBarId,
+            }),
+          });
+      
+          const result = await response.json();
+          if (result.code === 1) {
+            Alert.alert("성공", "리스트에 가게를 추가했습니다.");
+            setSelectedTab("search");
+          } else {
+            Alert.alert("실패", result.msg ?? "리스트 추가 실패");
+          }
+        } catch (error) {
+          console.error("가게 추가 에러:", error);
+          Alert.alert("에러", "네트워크 오류");
+        }
+      }}
+      
+
       />
       ): selectedTab ==="myBardetailList" ? (
-        <MyBardetailListBottomSheet/>
+        <MyBardetailListBottomSheet listId={selectedBarId} />
       ) : selectedTab === "myList" ? (
           <MyListSheetContent 
-            handleTabPress={handleTabPress}
+            handleTabPress={(tab, bar) => {
+              if (tab === "myBardetailList") {
+                setSelectedBarId(bar.id); // 리스트 ID 설정
+              }
+              handleTabPress(tab, bar);
+            }}
             bookmarkedBars={myBars} //실제 데이터 전달
             />
       ) : selectedTab === "detail" ? (
