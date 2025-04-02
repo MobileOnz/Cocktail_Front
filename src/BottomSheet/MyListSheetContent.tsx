@@ -51,7 +51,7 @@ const myList = [
   },
 ];
 
-const MyListSheetContent =  ({handleTabPress}) => {
+const MyListSheetContent =  ({handleTabPress, bookmarkedBars}) => {
   const navigation = useNavigation();
   const handleEdit = (itemId) => {
     console.log(`Editing item with id: ${itemId}`);
@@ -67,8 +67,8 @@ const MyListSheetContent =  ({handleTabPress}) => {
     {/*  ScrollView 대신 BottomSheetFlatList 사용 */}
     <BottomSheetFlatList
       style={styles.container}
-      data={myList}
-      keyExtractor={(item) => item.id}
+      data={bookmarkedBars} //임시 리스트가 아닌 실제 api로 가져온 바 리스트 데이터 사용
+      keyExtractor={(item) => item.id.toString()}
       ListHeaderComponent={
         <>
           <View style={styles.headerContainer}>
@@ -98,16 +98,16 @@ const MyListSheetContent =  ({handleTabPress}) => {
         }>
 
         <View style={styles.listItem}>
-          <Image source={item.icon} style={styles.icon} />
+          <Image source={{uri: item.thumbnail}} style={styles.icon} />
           <View style={styles.info}>
-            <Text style={styles.barName}>{item.name}</Text>
+            <Text style={styles.barName}>{item.bar_name}</Text>
             <View style={styles.location}>
               <Feather name="map-pin" size={14} color="#7D7A6F" />
               <Text style={styles.locationText}>{item.location}</Text>
             </View>
             <View style={styles.tagContainer}>
-              {item.tags.map((tag, index) => (
-                <Text key={index} style={styles.tag}>{tag}</Text>
+              {item.menus?.map((menu, index) => (
+                <Text key={index} style={styles.tag}>#{menu.name}</Text>
               ))}
             </View>
           </View>

@@ -11,13 +11,31 @@ interface SelectionListSheetProps {
   onSave: (selectedItem: ListItem | null) => void;
 }
 
+// interface ListItem {
+//   id: string;
+//   name: string;
+//   location: string;
+//   tags: string[];
+//   icon: any;
+// }
+
+//api에 맞는 ListItem 형태
 interface ListItem {
-  id: string;
-  name: string;
-  location: string;
-  tags: string[];
-  icon: any;
+  id: number;
+  icon_url: string;
+  main_tag: {
+    id: number;
+    name: string;
+  };
+  sub_tags: {
+    [category: string]: {
+      id: number;
+      name: string;
+    }[];
+  };
+  store_count: number;
 }
+
 
 const SelectionListSheet: React.FC<SelectionListSheetProps> = ({ title, listData, onClose, onSave }) => {
   const [selectedListId, setSelectedListId] = useState<string | null>(null);
@@ -43,37 +61,50 @@ const SelectionListSheet: React.FC<SelectionListSheetProps> = ({ title, listData
       <FlatList
         data={listData}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <View style={styles.listItem}>
-            <Image source={item.icon} style={styles.icon} />
-            <View style={styles.info}>
-              <Text style={styles.barName}>{item.name}</Text>
-              <View style={styles.location}>
-                <Text style={styles.locationText}>{item.location}</Text>
-              </View>
-              <View style={styles.tagContainer}>
-                {item.tags.map((tag, index) => (
-                  <Text key={index} style={styles.tag}>
-                    {tag}
-                  </Text>
-                ))}
-              </View>
-            </View>
+        renderItem={({ item }) => {
+          // 해시태그 추출
+          const allTags = Object.values(item.sub_tags ?? {}).flat();
 
-            {/* 체크박스 */}
-            <TouchableOpacity style={styles.checkboxContainer} onPress={() => setSelectedListId(item.id)}>
-              {selectedListId === item.id ? (
-                <Image source={require("../assets/drawable/checkbox_checked.png")} style={styles.checkbox} />
-              ) : (
-                <Image source={require("../assets/drawable/checkbox_unchecked.png")} style={styles.checkbox} />
-              )}
-            </TouchableOpacity>
-          </View>
-        )}
+        
+          return (
+            <View style={styles.listItem}>
+              <Image source={item.icon_url ? { uri: item.icon_url } : require("../assets/drawable/listicon1.png")} style={styles.icon} />
+              
+              <View style={styles.info}>
+                <Text style={styles.barName}>{item.main_tag?.name ?? "이름 없음"}</Text>
+
+        
+                <View style={styles.location}>
+                <Text style={styles.locationText}>
+                  {item.store_count?.toString() ?? "0"}
+                </Text>
+
+                </View>
+        
+                <View style={styles.tagContainer}>
+                  {allTags.map((tag, index) => (
+                    <Text key={index} style={styles.tag}>
+                      #{tag.name}
+                    </Text>
+                  ))}
+                </View>
+              </View>
+        
+              <TouchableOpacity style={styles.checkboxContainer} onPress={() => setSelectedListId(item.id.toString())}>
+                {selectedListId === item.id.toString() ? (
+                  <Image source={require("../assets/drawable/checkbox_checked.png")} style={styles.checkbox} />
+                ) : (
+                  <Image source={require("../assets/drawable/checkbox_unchecked.png")} style={styles.checkbox} />
+                )}
+              </TouchableOpacity>
+            </View>
+          );
+        }}
+        
       />
 
       {/* 저장하기 버튼 */}
-      <TouchableOpacity style={styles.saveButton} onPress={() => onSave(listData.find((item) => item.id === selectedListId) || null)}>
+      <TouchableOpacity style={styles.saveButton} onPress={() => onSave(listData.find((item) => item.id.toString() === selectedListId) || null)}>
         <Text style={styles.saveText}>저장하기</Text>
       </TouchableOpacity>
     </View>
