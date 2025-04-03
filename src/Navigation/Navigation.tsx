@@ -24,7 +24,10 @@ export type RootStackParamList = {
   RecommendationFlow: undefined;
   LoadingScreen: undefined;
   ResultScreen: undefined;
-  CreateNewListScreen : undefined;
+  CreateNewListScreen: {
+    editMode: boolean;
+    itemId: string;
+  } | undefined;
   MarketDetail : undefined;
   SignupScreen: undefined;
 };
@@ -47,7 +50,11 @@ const Navigation: React.FC = () => {
         <Stack.Screen name="RecommendationFlow" component={RecommendationFlowScreen} />
         <Stack.Screen name="LoadingScreen" component={LoadingScreen} />
         <Stack.Screen name="ResultScreen" component={ResultScreen} />
-        <Stack.Screen name="CreateNewListScreen" component={CreateNewListScreen} />
+        <Stack.Screen 
+  		name="CreateNewListScreen" 
+  		component={CreateNewListScreen} 
+  		options={{ headerShown: false }} 
+		/>
         <Stack.Screen name="MarketDetail" component={MarketDetail}/>
         <Stack.Screen name="SignupScreen" component={SignupScreen}/>
       </Stack.Navigator>

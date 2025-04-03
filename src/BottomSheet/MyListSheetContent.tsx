@@ -1,4 +1,5 @@
-import React from "react";
+import React, {useState, useCallback } from "react";
+import { useFocusEffect } from "@react-navigation/native";
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image } from "react-native";
 import Feather from "react-native-vector-icons/Feather";
 import { widthPercentage, heightPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
@@ -6,53 +7,57 @@ import MoreOptionMenu from "../Components/MoreOptionMenu";
 import { PaperProvider } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
 import BottomSheet, { BottomSheetFlatList, BottomSheetScrollView } from "@gorhom/bottom-sheet";
-const myList = [
-  {
-    id: "1",
-    name: "메인 컨셉",
-    location: "999",
-    tags: ["#Sub", "#Sub", "#Sub"],
-    icon: require("../assets/drawable/listicon1.png"),
-  },
-  {
-    id: "2",
-    name: "메인 컨셉",
-    location: "999",
-    tags: ["#Sub", "#Sub", "#Sub"],
-    icon: require("../assets/drawable/listicon2.png"),
-  },
-  {
-    id: "3",
-    name: "메인 컨셉",
-    location: "999",
-    tags: ["#Sub", "#Sub", "#Sub"],
-    icon: require("../assets/drawable/listicon2.png"),
-  },
-  {
-    id: "4",
-    name: "메인 컨셉",
-    location: "999",
-    tags: ["#Sub", "#Sub", "#Sub"],
-    icon: require("../assets/drawable/listicon2.png"),
-  },
-  {
-    id: "5",
-    name: "메인 컨셉",
-    location: "999",
-    tags: ["#Sub", "#Sub", "#Sub"],
-    icon: require("../assets/drawable/listicon2.png"),
-  },
-  {
-    id: "6",
-    name: "메인 컨셉",
-    location: "999",
-    tags: ["#Sub", "#Sub", "#Sub"],
-    icon: require("../assets/drawable/listicon3.png"),
-  },
-];
+import { API_BASE_URL } from "@env";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from "axios";
+
+const server = API_BASE_URL;
+
+
+interface MyListItem {
+  id: string;
+  name: string;
+  location: string;
+  tags: string[];
+  icon_url: string | null;
+}
 
 const MyListSheetContent =  ({handleTabPress}) => {
   const navigation = useNavigation();
+  const [myList, setMyList] = useState<MyListItem[]>([]);
+
+  const fetchMyList = async () => {
+    try {
+      const token = await AsyncStorage.getItem("accessToken");
+      if (!token) return;
+
+      const response = await axios.get(`${server}/api/list/all`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const transformed = response.data.data.map((item) => ({
+        id: item.id.toString(),
+        name: item.main_tag.name,
+        location: null,
+        tags: Object.values(item.sub_tags).flat().map((tag) => `#${tag.name}`),
+        icon_url: item.icon_url || null,
+      }));
+
+      setMyList(transformed);
+    } catch (error) {
+      console.error("나의 리스트 가져오기 실패:", error);
+    }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchMyList();
+    }, [])
+  );
+
+
   const handleEdit = (itemId) => {
     console.log(`Editing item with id: ${itemId}`);
   };
@@ -98,13 +103,17 @@ const MyListSheetContent =  ({handleTabPress}) => {
         }>
 
         <View style={styles.listItem}>
-          <Image source={item.icon} style={styles.icon} />
+        <Image
+        source={
+        item.icon_url
+        ? { uri: item.icon_url }
+        : require("../assets/drawable/classic.png")
+        }
+        style={styles.icon}
+        />
           <View style={styles.info}>
             <Text style={styles.barName}>{item.name}</Text>
-            <View style={styles.location}>
-              <Feather name="map-pin" size={14} color="#7D7A6F" />
-              <Text style={styles.locationText}>{item.location}</Text>
-            </View>
+           
             <View style={styles.tagContainer}>
               {item.tags.map((tag, index) => (
                 <Text key={index} style={styles.tag}>{tag}</Text>
@@ -112,7 +121,7 @@ const MyListSheetContent =  ({handleTabPress}) => {
             </View>
           </View>
   
-          <MoreOptionMenu itemId={item.id} onEdit={handleEdit} onDelete={handleDelete} />
+          <MoreOptionMenu itemId={item.id} onEdit={handleEdit} onDelete={handleDelete}  message={`"${item.name}" 리스트 메뉴입니다.`}/>
         </View>
         </TouchableOpacity>
       )}

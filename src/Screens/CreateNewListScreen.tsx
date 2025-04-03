@@ -1,58 +1,133 @@
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity, FlatList, StyleSheet,Image } from "react-native";
+import { View, Text, TouchableOpacity, FlatList, StyleSheet,Image,ScrollView } from "react-native";
 import { widthPercentage, heightPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../Navigation/Navigation";
-const MAIN_CONCEPTS = [
-  "혼술하기 좋은", "데이트하기 좋은", "모임하기 좋은",
-  "핫 플레이스", "뷰가가 좋은", "컨셉 & 테마",
-  "재즈 & 라이브 뮤직", "클래식한"
-];
+import { useEffect } from "react";
+import axios from "axios";
+import { API_BASE_URL } from "@env";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { RouteProp, useRoute } from "@react-navigation/native";
 
-const SUB_CONCEPTS = [
-  "조용한", "교류가 많은", "사진 맛집",
-  "1차로 가기 좋은", "2차로 가기 좋은",
-  "루프탑", "주차장", "교통이 편리한"
-];
+interface Tag {
+  id: number;
+  name: string;
+}
+type CreateNewListRouteProp = RouteProp<RootStackParamList, "CreateNewListScreen">;
 
-
-type NavigationProps = StackNavigationProp<RootStackParamList, "CreateNewListScreen">;
-
-
-const ICONS = ["🔴", "🟠", "🟡", "🟢", "🔵", "🟣"];
 
 const CreateNewListScreen = () => {
-  const navigation = useNavigation<NavigationProps>();
+  const route = useRoute<CreateNewListRouteProp>();
+  const { editMode, itemId } = route.params ?? {};
+  const [mainTags, setMainTags] = useState<Tag[]>([]);
+  const [moodTags, setMoodTags] = useState<Tag[]>([]);
+  const [locationTags, setLocationTags] = useState<Tag[]>([]);
+  const [imgTags, setImgTags] = useState<Tag[]>([]);
+ 
+//저장요청 함수 추가하기 
+const handleSaveList = async () => {
+	const token = await AsyncStorage.getItem("accessToken");
+	try {
+		 const token = await AsyncStorage.getItem("accessToken");
+		if(!token){
+			console.warn("토큰 없음");
+			return;
+		}
+
+		const mainTagId = mainTags.find(tag => tag.name === selectedMain)?.id;
+		const subTagIds = [...moodTags, ...locationTags]
+		  .filter(tag => selectedSub.includes(tag.name))
+		  .map(tag => tag.id);
+		  const payload = {
+			iconUrl: "", // 현재 선택된 아이콘 URL이 있다면 여기에 넣기
+			mainTagId,
+			subTagIds,
+		 };
+		 const response = await axios.post(`${API_BASE_URL}/api/list`,payload, {
+			headers: {
+				Authorization: `Bearer ${token}`,
+				"Content-Type": "application/json",
+			 },
+		  });
+		  console.log("리스트 저장 성공:", response.data);
+		  navigation.goBack();
+		} catch (error) {
+		  if (axios.isAxiosError(error)) {
+			 console.error("서버 응답:", error.response?.data);
+		  } else {
+			 console.error("저장 중 에러:", error);
+		  }
+		}
+	 };
+
+   useEffect(() => {
+    const fetchTags = async () => {
+      const token = await AsyncStorage.getItem("accessToken");
+      if (!token) return;
   
-  const [selectedMain, setSelectedMain] = useState(null);
-  const [selectedSub, setSelectedSub] = useState([]);
-  const [screenState, setScreenState] = useState(1); // 1: 첫 번째 화면, 2: 두 번째 화면
+      const tagResponse = await axios.get(`${API_BASE_URL}/api/list`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+  
+      const { main_tags, sub_tags, img_tags } = tagResponse.data.data;
+      setMainTags(main_tags);
+      setMoodTags(sub_tags.MOOD || []);
+      setLocationTags(sub_tags.LOCATION || []);
+      setImgTags(img_tags || []);
+  
+      if (editMode && itemId) {
+        const listResponse = await axios.get(`${API_BASE_URL}/api/list/${itemId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+  
+        const listData = listResponse.data.data;
+        setSelectedMain(listData.main_tag.name);
+        setSelectedSub(
+          Object.values(listData.sub_tags)
+            .flat()
+            .map((tag: any) => tag.name)
+        );
+      }
+    };
+  
+    fetchTags();
+  }, []);
+  
 
-  // 태그 추가 & 삭제 핸들러
-  const handleSelectMain = (concept) => {
-    if (selectedMain === concept) {
-      setSelectedMain(null);
-    } else {
-      setSelectedMain(concept);
-    }
+//서버 기반 태그 맞추기
+ 
+  const navigation = useNavigation<RootStackParamList>();
+  
+  const [selectedMain, setSelectedMain] = useState<string | null>(null);
+  const [selectedSub, setSelectedSub] = useState<string[]>([]);
+
+  const handleSelectMain = (conceptName: string) => {
+    setSelectedMain(prev => prev === conceptName ? null : conceptName);
   };
-
-  const handleSelectSub = (concept) => {
-    if (selectedSub.includes(concept)) {
-      setSelectedSub(selectedSub.filter((item) => item !== concept));
+  
+  const handleSelectSub = (conceptName: string) => {
+    if (selectedSub.includes(conceptName)) {
+      setSelectedSub(prev => prev.filter(item => item !== conceptName));
     } else if (selectedSub.length < 3) {
-      setSelectedSub([...selectedSub, concept]);
+      setSelectedSub(prev => [...prev, conceptName]);
     }
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>새 리스트 만들기</Text>
-      <Text onPress={() => navigation.goBack()}>X</Text>
+	  {/* 맨 위 헤더 데이터  */}
+      <View style={styles.headerContainer}>
+  <Text style={styles.headerTitle}>새 리스트 만들기</Text>
+  <TouchableOpacity onPress={() => navigation.goBack()} style={styles.closeButton}>
+    <Text style={styles.closeText}>X</Text>
+  </TouchableOpacity>
+</View>
 
       {/* 선택된 태그 UI (두 번째 화면에서 표시) */}
-      {screenState === 2 && (
+	  <View style={{ flex: 1 }}>
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+
       <View style={styles.selectedTags}>
         {/* 선택된 태그가 없을 때 기본 텍스트 표시 */}
         {!selectedMain && selectedSub.length === 0 ? (
@@ -75,7 +150,7 @@ const CreateNewListScreen = () => {
           </>
         )}
       </View>
-    )}
+    
       {/* 메인 컨셉 선택 */}
       <View style={styles.titleContainer}>
       <Text style={styles.sectionTitle}>메인 컨셉</Text>
@@ -83,29 +158,40 @@ const CreateNewListScreen = () => {
       </View>
       
       <FlatList
-        data={MAIN_CONCEPTS}
+        data={mainTags}
         numColumns={3}
-        keyExtractor={(item) => item}
+        keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <TouchableOpacity
-            onPress={() => handleSelectMain(item)}
+            onPress={() => handleSelectMain(item.name)}
             style={[
               styles.conceptButton,
-              selectedMain === item && styles.selectedButton
+              selectedMain === item.name && styles.selectedButton
             ]}
           >
-            <Text style={[styles.conceptText, selectedMain === item && styles.selectedText]}>{item}</Text>
+            <Text style={[
+              styles.conceptText,
+              selectedMain === item.name && styles.selectedMainText
+            ]}>
+              {item.name}
+            </Text>
           </TouchableOpacity>
         )}
       />
 
       {/* 컨셉 아이콘 */}
       <Text style={[styles.sectionTitle, styles.titleContainer]}>컨셉 아이콘</Text>
-      <View style={styles.iconContainer}>
-        {ICONS.map((icon, index) => (
-          <Text key={index} style={styles.icon}>{icon}</Text>
-        ))}
-      </View>
+<View style={styles.iconContainer}>
+  {imgTags.length > 0 ? (
+    imgTags.map((icon, index) => (
+      <Text key={index} style={styles.icon}>{icon}</Text>
+    ))
+  ) : (
+    <Text style={{ color: "#B9B6AD", fontSize: fontPercentage(14) }}>
+      아직 등록된 아이콘이 없습니다.
+    </Text>
+  )}
+</View>
         <View style={styles.line}/>
       {/* 보조 컨셉 선택 */}
       <View style={styles.titleContainer}>
@@ -113,68 +199,85 @@ const CreateNewListScreen = () => {
       <Text style={styles.sectionSubTitle}> 3가지 선택 가능합니다.</Text>
       </View>
       <View style={styles.titleContainer}>
-              <Image source={require("../assets/drawable/feel.png")}
-              style={{
-                width: widthPercentage(13.33),
-                height: heightPercentage(13.33),
-              }}
-              />
-              <Text 
-              style = {{
-                fontSize : fontPercentage(14),
-                fontWeight : "700",
-                marginLeft : widthPercentage(4),
+  <Image source={require("../assets/drawable/feel.png")}
+    style={{
+      width: widthPercentage(13.33),
+      height: heightPercentage(13.33),
+    }}
+  />
+  <Text style={{
+    fontSize: fontPercentage(14),
+    fontWeight: "700",
+    marginLeft: widthPercentage(4),
+  }}>분위기</Text>
+</View>
 
-              }}
-              >분위기</Text>
-            </View>
-      <FlatList
-        data={SUB_CONCEPTS.slice(0,5)}
-        numColumns={3}
-        keyExtractor={(item) => item}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            onPress={() => handleSelectSub(item)}
-            style={[
-              styles.conceptButton,
-              selectedSub.includes(item) && styles.selectedSubButton
-            ]}
-          >
-            <Text style={[styles.conceptText, selectedSub.includes(item)]}>{item}</Text>
-          </TouchableOpacity>
-        )}
-      />
-      <View style={styles.titleContainer}>
-              <Image source={require("../assets/drawable/location.png")}
-              style = {{
-                width : widthPercentage(13.33),
-                height : heightPercentage(15)
+<FlatList
+  data={moodTags}
+  numColumns={3}
+  keyExtractor={(item) => item.id.toString()}
+  renderItem={({ item }) => (
+    <TouchableOpacity
+      onPress={() => handleSelectSub(item.name)}
+      style={[
+        styles.conceptButton,
+        selectedSub.includes(item.name) && styles.selectedSubButton
+      ]}
+    >
+      <Text style={[
+        styles.conceptText,
+        selectedSub.includes(item.name) && styles.selectedText
+      ]}>
+        {item.name}
+      </Text>
+    </TouchableOpacity>
+  )}
+/>
 
-              }}/>
-              <Text>위치</Text>
-            </View>
-      <FlatList
-        data={SUB_CONCEPTS.slice(5)}
-        numColumns={3}
-        keyExtractor={(item) => item}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            onPress={() => handleSelectSub(item)}
-            style={[
-              styles.conceptButton,
-              selectedSub.includes(item) && styles.selectedSubButton
-            ]}
-          >
-            
-            <Text style={[styles.conceptText, selectedSub.includes(item)]}>{item}</Text>
-          </TouchableOpacity>
-        )}
-      />
+<View style={styles.titleContainer}>
+  <Image source={require("../assets/drawable/location.png")}
+    style={{
+      width: widthPercentage(13.33),
+      height: heightPercentage(15),
+    }}
+  />
+  <Text style={{
+    fontSize: fontPercentage(14),
+    fontWeight: "700",
+    marginLeft: widthPercentage(4),
+  }}>
+    위치
+  </Text>
+</View>
+
+<FlatList
+  data={locationTags}
+  numColumns={3}
+  keyExtractor={(item) => item.id.toString()}
+  renderItem={({ item }) => (
+    <TouchableOpacity
+      onPress={() => handleSelectSub(item.name)}
+      style={[
+        styles.conceptButton,
+        selectedSub.includes(item.name) && styles.selectedSubButton
+      ]}
+    >
+      <Text style={[
+        styles.conceptText,
+        selectedSub.includes(item.name) && styles.selectedText
+      ]}>
+        {item.name}
+      </Text>
+    </TouchableOpacity>
+  )}
+/>
+</ScrollView>
+</View>
 
       {/* 저장 버튼 */}
       <TouchableOpacity
-        style={[styles.saveButton, (selectedMain || selectedSub.length > 0) && styles.activeSaveButton]}
-        onPress={() => setScreenState(2)}
+        style={[styles.saveButton, (selectedMain && selectedSub.length > 0) && styles.activeSaveButton]}
+		  onPress={handleSaveList}
         disabled={!selectedMain && selectedSub.length === 0}
       >
         <Text style={[styles.saveButtonText, (selectedMain || selectedSub.length > 0) && styles.activeSaveButtonText]}>
@@ -188,9 +291,37 @@ const CreateNewListScreen = () => {
 export default CreateNewListScreen;
 
 const styles = StyleSheet.create({
+	scrollContent: {
+		paddingBottom: heightPercentage(30), 
+	  },
   container: {
     flex: 1,
     backgroundColor: "#FFFCF3",
+  },
+  headerContainer: {
+	flexDirection: "row",
+	alignItems: "center",
+	justifyContent: "center",
+	position: "relative",
+	marginTop: heightPercentage(30),
+	paddingHorizontal: widthPercentage(20),
+	height: heightPercentage(40),
+  },
+  headerTitle: {
+	fontSize: fontPercentage(18),
+	fontWeight: "700",
+	textAlign: "center",
+	flex: 1, 
+  },
+  closeButton: {
+	position: "absolute",
+	right: widthPercentage(20),
+	top: 0,
+	bottom: 0,
+	justifyContent: "center",
+  },
+  closeText: {
+	fontSize: fontPercentage(24),
   },
   tagText : {
     fontWeight : "500",
@@ -206,12 +337,14 @@ const styles = StyleSheet.create({
     marginLeft : widthPercentage(16),
     marginBottom : heightPercentage(8)
   },
+  headerContext : {
+	flexDirection : "row"
+  },
   header: {
-    fontSize: 18,
+    fontSize: fontPercentage(20),
     fontWeight: "700",
     marginTop : heightPercentage(30),
-    textAlign: "center",
-    justifyContent : "center",
+ 
   },
   sectionTitle: {
     marginTop : heightPercentage(16),
@@ -248,8 +381,13 @@ const styles = StyleSheet.create({
     fontWeight : "500",
     color: "#2D2D2D",
   },
+  selectedMainText : {
+	color: "#FFF",
+    fontSize : fontPercentage(14),
+    fontWeight : "500",
+  },
   selectedText: {
-    color: "#FFF",
+    color: "#2D2D2D",
     fontSize : fontPercentage(14),
     fontWeight : "500",
   },

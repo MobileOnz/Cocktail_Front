@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
     height : heightPercentage(140),
     backgroundColor: "#FFFCF3",
     borderRadius: 12,
-    alignItems: "center",
+   
 
   },
   message: {
@@ -42,13 +42,12 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     paddingTop : heightPercentage(24),
     paddingBottom : 24,
+    borderBottomWidth : 1,
     borderBottomColor : "#E4DFD8",
-    borderWidth : 1,
     textAlign: "center",
   },
   buttonContainer: {
     flexDirection: "row",
-    justifyContent: "space-between",
     width : "100%",
   },
   cancelButton: {

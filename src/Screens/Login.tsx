@@ -11,6 +11,7 @@ import type {
 import { authorize } from 'react-native-app-auth';
 import axios from 'axios';
 import {API_BASE_URL} from '@env';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 //env에서 서버 주소 가져옴
 const server = API_BASE_URL;
@@ -51,6 +52,8 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
       serviceUrlSchemeIOS: serviceUrlScheme,
       disableNaverAppAuthIOS: true,
     });
+    NaverLogin.logout
+    NaverLogin.deleteToken
     
   }, []);
 
@@ -59,37 +62,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
   const [failure, setFailureResponse] = useState<NaverLoginResponse['failureResponse']>();
   const [getProfileRes, setGetProfileRes] = useState<GetProfileResponse>();
 
-  const parseSafeError = (error: unknown): {
-    message: string;
-    code?: string;
-    stack?: string;
-  } => {
-    let message = '알 수 없는 오류 발생';
-    let code = 'Unknown';
-    let stack = '';
-  
-    if (
-      typeof error === 'object' &&
-      error !== null &&
-      'message' in error &&
-      typeof (error as any).message === 'string'
-    ) {
-      message = (error as any).message;
-  
-      if ('stack' in error && typeof (error as any).stack === 'string') {
-        stack = (error as any).stack;
-      }
-  
-      if ('code' in error && typeof (error as any).code === 'string') {
-        code = (error as any).code;
-      }
-    } else if (typeof error === 'string') {
-      message = error;
-      stack = error;
-    }
-  
-    return { message, code, stack };
-  };
+ 
 
   const naverLogin = async (): Promise<void> => {
     try {
@@ -127,6 +100,17 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
         });
   
         console.log('백엔드 응답:', response.data);
+        const backendAccessToken = response.data.data.access_token;
+        const backendRefreshToken = response.data.data.refresh_token;
+        
+        if (backendAccessToken) {
+          const cleanToken = backendAccessToken.replace(/^Bearer\s/, '');
+          await AsyncStorage.setItem('accessToken', cleanToken);
+        }
+        if (backendRefreshToken) {
+          await AsyncStorage.setItem('refreshToken', backendRefreshToken);
+        }
+
       } else if (failureResponse) {
         console.log('네이버 로그인 실패:', failureResponse);
       } else {
@@ -146,9 +130,22 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
   const kakaologin = () => {
     KakaoLogin.login()
     
-      .then((result) => {
-        console.log("Login Success", JSON.stringify(result));
-        getProfile();
+    .then(async (result) => {
+      console.log("Login Success", JSON.stringify(result));
+
+      const accessToken = result.accessToken;
+      await fetch(`${server}/api/auth/social-login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          provider: 'kakao',
+          code: null,
+          state: null,
+          accessToken,
+        }),
+      });
+      navigation.replace('BottomTabNavigator');
+
       })
       .catch((error) => {
         if (error.code === "E_CANCELLED_OPERATION") {
@@ -163,15 +160,14 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
       const result = await authorize(config);
       const { authorizationCode } = result;
 
-      const response = await axios.post('https://www.onzbackend.shop/api/auth/social-login', {
+      const response = await axios.post(`${server}/api/auth/social-login`, {
         provider: 'google',
         code: authorizationCode,
         state: null,
+        accessToken: null,
       });
 
       console.log('✅ 구글 로그인 성공:', response.data);
-      // TODO: 토큰 저장 & 메인 화면으로 이동 등 처리
-      // navigation.replace('BottomTabNavigator');
     } catch (error) {
       console.error('❌ 구글 로그인 실패:', error);
     }
@@ -213,7 +209,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
         style={styles.logo}
       />
 
-      {/* 로그인 버튼들 */}
+      {/* 로그인 버튼 */}
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.loginButton} onPress={kakaologin}>
           <Image

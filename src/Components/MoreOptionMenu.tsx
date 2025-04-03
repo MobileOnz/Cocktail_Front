@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import { TouchableOpacity, Image, View, StyleSheet } from "react-native";
-import { Menu } from "react-native-paper";
+import { TouchableOpacity, Image, View, StyleSheet, Text } from "react-native";
 import CustomAlertModal from "./CustomAlertModal";
-import { widthPercentage, heightPercentage } from "../assets/styles/FigmaScreen";
+import { widthPercentage, heightPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
+import Popover from "react-native-popover-view";
 
-const MoreOptionMenu = ({ itemId, onEdit, onDelete, message  }) => {
+const MoreOptionMenu = ({ itemId, onEdit, onDelete, message }) => {
   const [visible, setVisible] = useState(false);
   const [alertVisible, setAlertVisible] = useState(false);
 
@@ -13,12 +13,10 @@ const MoreOptionMenu = ({ itemId, onEdit, onDelete, message  }) => {
 
   return (
     <View style={styles.container}>
-      <Menu 
-        visible={visible}
-        onDismiss={closeMenu}
-        contentStyle={styles.menuContent}
-        anchorPosition="bottom"
-        anchor={
+      <Popover
+        isVisible={visible}
+        onRequestClose={closeMenu}
+        from={
           <TouchableOpacity onPress={openMenu} style={styles.menuButton}>
             <Image
               source={require("../assets/drawable/optionbutton.png")}
@@ -26,41 +24,49 @@ const MoreOptionMenu = ({ itemId, onEdit, onDelete, message  }) => {
             />
           </TouchableOpacity>
         }
+        placement="bottom"
+        arrowStyle={{ backgroundColor: "#FFFCF3" }}
+        backgroundStyle={{ backgroundColor: "transparent" }}
       >
-        <Menu.Item
+        <TouchableOpacity
           style={styles.menuItem}
           onPress={() => {
             onEdit(itemId);
             closeMenu();
           }}
-          title="수정하기"
-          leadingIcon={() => (
+        >
+          <View style={styles.menuItemContent}>
             <Image
               source={require("../assets/drawable/pencil.png")}
               style={styles.icon}
             />
-          )}
-        />
-        <Menu.Item
+            <Text style={styles.menuText}>수정하기</Text>
+          </View>
+        </TouchableOpacity>
+
+        <View style={styles.line} />
+
+        <TouchableOpacity
           style={styles.menuItem}
           onPress={() => {
             setAlertVisible(true);
             closeMenu();
           }}
-          title="삭제하기"
-          leadingIcon={() => (
+        >
+          <View style={styles.menuItemContent}>
             <Image
               source={require("../assets/drawable/trash.png")}
               style={styles.icon}
             />
-          )}
-        />
-      </Menu>
+            <Text style={styles.menuText}>삭제하기</Text>
+          </View>
+        </TouchableOpacity>
+      </Popover>
 
       {/* 커스텀 알림 모달 */}
       <CustomAlertModal
         visible={alertVisible}
-        message={"해당 장소를 리스트에서 \n삭제할까요?"}
+        message={"나의 리스트에서 \n삭제할까요?"}
         onCancel={() => setAlertVisible(false)}
         onConfirm={() => {
           onDelete(itemId);
@@ -74,9 +80,11 @@ const MoreOptionMenu = ({ itemId, onEdit, onDelete, message  }) => {
 export default MoreOptionMenu;
 
 const styles = StyleSheet.create({
+  line: {
+    height: heightPercentage(1),
+    backgroundColor: "#B9B6AD",
+  },
   container: {
-    position: "relative",
-    overflow: "visible",  
     alignItems: "center",
     justifyContent: "center",
   },
@@ -86,22 +94,28 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   menuIcon: {
-    width: 4,
-    height: 20,
+    width: widthPercentage(4),
+    height: heightPercentage(20),
     resizeMode: "contain",
   },
-  menuContent: {
-    backgroundColor: "#FFFCF3",
-    borderRadius: 4,
-    marginBottom: 30,
-  },
   menuItem: {
-    width: widthPercentage(152),
-    height: heightPercentage(44),
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    backgroundColor: "#FFFCF3",
+  },
+  menuItemContent: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  menuText: {
+    fontSize: fontPercentage(14),
+    fontWeight: "500",
+    color: "#2D2D2D",
+    marginLeft: 8,
   },
   icon: {
-    width: 20,
-    height: 20,
+    width: widthPercentage(20),
+    height: heightPercentage(20),
     resizeMode: "contain",
   },
 });
