@@ -11,6 +11,8 @@ import MenuListDetail from "./MenuListDetail";
 import PinClickView from "./PinClickView";
 import MyBardetailListBottomSheet from "./MyBardetailListBottomSheet";
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import { API_BASE_URL } from "@env";
 const myBars = [
   {
@@ -84,7 +86,11 @@ const BaseBottomSheet = ({
   useEffect(() => {
     const fetchMyList = async () => {
       try {
-        const token = "your_access_token_here"; // 실제로는 context나 secure storage에서 가져오기
+        const token = await AsyncStorage.getItem('accessToken');
+        if(!token){
+          console.warn("로그인이 필요합니다.");
+          return;
+        }
         const response = await fetch(`${API_BASE_URL}/api/item/public/list`, {
           method: "GET",
           headers: {
@@ -113,7 +119,11 @@ const BaseBottomSheet = ({
   useEffect(() => {
     const fetchBookmarkedBars = async () => {
       try {
-        const token = "your_access_token_here"; // 실제론 context나 secure storage에서 가져오기
+        const token = await AsyncStorage.getItem('accessToken');
+        if(!token){
+          console.warn("로그인이 필요합니다");
+          return;
+        }
         const response = await fetch(`${API_BASE_URL}/api/item/public/all`, {
           method: "GET",
           headers: {
@@ -204,7 +214,11 @@ const sections = useMemo(() => {
         if (!selectedItem || !selectedBarId) return;
       
         try {
-          const token = "your_access_token_here"; // 실제로는 context 또는 SecureStorage 등에서
+          const token = await AsyncStorage.getItem('accessToken');
+          if(!token){
+            Alert.alert("로그인이 필요합니다.");
+            return;
+          }
           const response = await fetch(`${API_BASE_URL}/api/item`, {
             method: "POST",
             headers: {

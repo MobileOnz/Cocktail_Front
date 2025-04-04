@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
 import { widthPercentage, heightPercentage, fontPercentage } from '../assets/styles/FigmaScreen';
 import {BannerAd, BannerAdSize, TestIds} from "react-native-google-mobile-ads";
@@ -6,10 +6,31 @@ import {useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import { RootStackParamList } from '../Navigation/Navigation';
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 type NavigationProp = StackNavigationProp<RootStackParamList>;
 
 const MyPageScreen = () => {
   const navigation = useNavigation<NavigationProp>();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const checkToken = async () => {
+      const token = await AsyncStorage.getItem('accessToken');
+      setIsLoggedIn(!!token); // token이 존재하면 true
+    };
+
+    const unsubscribe = navigation.addListener('focus', checkToken); // 화면 focus 될 때마다 확인
+    return unsubscribe;
+  }, [navigation]);
+
+  const handleLoginPress = () => {
+    if (isLoggedIn) {
+      navigation.navigate("ProfileScreen"); // ✅ 로그인된 경우 프로필 화면으로 이동
+    } else {
+      navigation.navigate("Login"); // ✅ 로그인 안 된 경우 로그인 화면으로 이동
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -23,9 +44,11 @@ const MyPageScreen = () => {
           }}
         />
       </View>
-      {/* 로그인 필요 알림 */}
-      <TouchableOpacity style={styles.loginContainer} onPress={() => navigation.navigate("ProfileScreen")}>
-        <Text style={styles.loginText}>로그인이 필요합니다</Text>
+      {/* 로그인 필요 알림 or 로그인 완료 메시지 */}
+      <TouchableOpacity style={styles.loginContainer} onPress={handleLoginPress}>
+        <Text style={styles.loginText}>
+          {isLoggedIn ? "로그인 완료!" : "로그인이 필요합니다"}
+        </Text>
         <Image source={require('../assets/drawable/right-chevron.png')} style={styles.rightArrow} />
       </TouchableOpacity>
 

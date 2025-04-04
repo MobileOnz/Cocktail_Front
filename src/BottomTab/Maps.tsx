@@ -10,6 +10,7 @@ import SelectedRegions from "../BottomSheet/SelectedRegions";
 import SelectedRegionTags from "../Components/SelectedRegionTags";
 import MapView from "react-native-maps";
 
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API_BASE_URL } from "@env";
 
 type RootStackParamList = {
@@ -36,56 +37,73 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
     if (route.params?.searchCompleted && route.params.searchQuery) {
       const query = route.params.searchQuery;
   
-      fetch(`${API_BASE_URL}/api/search/keyword?search=${encodeURIComponent(query)}`)
-      .then(res => res.json())
-      .then(result => {
-        console.log("응답 결과:", result);
-
-        if (!Array.isArray(result.data)) {
-          throw new Error("검색 결과가 배열이 아닙니다.");
-        }
-
-        const formatted = result.data.map((bar) => ({
-          listId: bar.id,
-          title: bar.bar_name,
-          barAdress: bar.address || "주소 없음",
-          image: bar.thumbnail 
-            ? { uri: bar.thumbnail } 
-            : require("../assets/drawable/barExample.png"),
-          hashtageList: bar.menus.slice(0, 4).map(menu => `#${menu.name}`),
-        }));
-
-        // 마커용 데이터 저장
-        const markers = result.data.map((bar) => ({
-          id: bar.id,
-          title: bar.bar_name,
-          coordinate: {
-            latitude: Number(bar.y),
-            longitude: Number(bar.x),
-          },
-        }));
-
-        setBarList(formatted);
-        setMarkerList(markers);
-        setSelectedTab("search");
-
-        // ✅ 모든 마커가 보이도록 지도 이동
-        setTimeout(() => {
-          if (mapRef.current && markers.length > 0) {
-            mapRef.current.fitToCoordinates(
-              markers.map((m) => m.coordinate),
-              {
-                edgePadding: { top: 100, right: 100, bottom: 300, left: 100 },
-                animated: true,
-              }
-            );
+      const fetchData = async () => {
+        try {
+          const token = await AsyncStorage.getItem('accessToken');
+  
+          const res = await fetch(
+            `${API_BASE_URL}/api/search/keyword?search=${encodeURIComponent(query)}`,
+            {
+              method: "GET",
+              headers: {
+                'Content-Type': 'application/json',
+                ...(token ? { Authorization: `Bearer ${token}` } : {}),
+              },
+            }
+          );
+  
+          const result = await res.json();
+          console.log("응답 결과:", result);
+  
+          if (!Array.isArray(result.data)) {
+            throw new Error("검색 결과가 배열이 아닙니다.");
           }
-        }, 300);
-      })
-      .catch(err => console.error("검색 실패:", err));
-
+  
+          const formatted = result.data.map((bar) => ({
+            listId: bar.id,
+            title: bar.bar_name,
+            barAdress: bar.address || "주소 없음",
+            image: bar.thumbnail 
+              ? { uri: bar.thumbnail } 
+              : require("../assets/drawable/barExample.png"),
+            hashtageList: bar.menus.slice(0, 4).map(menu => `#${menu.name}`),
+          }));
+  
+          //마커용 데이터 저장
+          const markers = result.data.map((bar) => ({
+            id: bar.id,
+            title: bar.bar_name,
+            coordinate: {
+              latitude: Number(bar.y),
+              longitude: Number(bar.x),
+            },
+          }));
+  
+          
+          setBarList(formatted);
+          setMarkerList(markers);
+          setSelectedTab("search");
+          //모든 마커가 보이도록 지도 이동
+          setTimeout(() => {
+            if (mapRef.current && markers.length > 0) {
+              mapRef.current.fitToCoordinates(
+                markers.map((m) => m.coordinate),
+                {
+                  edgePadding: { top: 100, right: 100, bottom: 300, left: 100 },
+                  animated: true,
+                }
+              );
+            }
+          }, 300);
+        } catch (err) {
+          console.error("검색 실패:", err);
+        }
+      };
+  
+      fetchData();
     }
   }, [route.params?.searchCompleted]);
+  
   
   
 

@@ -7,6 +7,7 @@ import { widthPercentage, heightPercentage, fontPercentage } from "../assets/sty
 import { RootStackParamList } from "../Navigation/Navigation";
 import { API_BASE_URL } from "@env";
 
+import AsyncStorage from "@react-native-async-storage/async-storage";
 type SearchScreenProps = StackScreenProps<RootStackParamList, "SearchScreen">;
 
 const recommendedKeywords = ["추천 검색어1", "추천 검색어2", "추천 검색어3", "추천 검색어4"];
@@ -20,12 +21,22 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation }) => {
     navigation.navigate("Maps", { searchCompleted: true });
   };
 
+  type SearchLog = {
+    keyword: string;
+    search_type: "NAME" | "MENU";
+  };
+
   //최근 검색어
-  const [recentNameSearches, setRecentNameSearches] = useState([]);
-  const [recentMenuSearches, setRecentMenuSearches] = useState([]);
+  const [recentNameSearches, setRecentNameSearches] = useState<SearchLog[]>([]);
+  const [recentMenuSearches, setRecentMenuSearches] = useState<SearchLog[]>([]);
   useEffect(() => {
     const fetchRecentSearches = async () => {
       try {
+        const accessToken = await AsyncStorage.getItem('accessToken');
+        if(!accessToken){
+          console.log("로그인 안된 사용자 - 토큰 없음");
+          return;
+        }
         const res = await fetch(`${API_BASE_URL}/api/search/searchlog`, {
           method: "GET",
           headers: {
@@ -33,6 +44,7 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation }) => {
           },
         });
         const result = await res.json();
+        console.log("📡 최근 검색어 !! - 서버 응답 전체:", result);
         if (result.code === 1) {
           setRecentNameSearches(result.data.name || []);
           setRecentMenuSearches(result.data.menu || []);
@@ -107,15 +119,20 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation }) => {
           </TouchableOpacity>
         ))}
         <Text style={[styles.sectionTitle, { marginTop: 24 }]}>최근 검색어</Text>
-        {recentSearches.map((search, index) => (
+        {[...recentNameSearches, ...recentMenuSearches].map((item, index) => (
           <TouchableOpacity
             key={index}
             style={styles.recentItem}
-            onPress={handlePress}
+            onPress={() => {
+              if (item.keyword?.length > 0) {
+                navigation.navigate("Maps", { searchCompleted: true, searchQuery: item.keyword });
+              }
+            }}
           >
-            <Text style={styles.recentText}>{search}</Text>
+            <Text style={styles.recentText}>{item.keyword}</Text>
           </TouchableOpacity>
         ))}
+
       </ScrollView>
     </View>
   );

@@ -6,6 +6,7 @@ import MoreOptionMenu from "../Components/MoreOptionMenu";
 import { PaperProvider } from "react-native-paper";
 import SelectionListSheet from "./SelectionListSheet";
 
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { API_BASE_URL } from "@env";
 // 🔸 더미 데이터 배열
@@ -44,7 +45,11 @@ const MyBardetailListBottomSheet = ({listId}: {listId: number}) => {
   useEffect(() => {
     const fetchMyList = async () => {
       try {
-        const token = "your_access_token_here";
+        const token = await AsyncStorage.getItem('accessToken');
+        if(!token){
+          console.warn("로그인이 필요합니다.");
+          return;
+        }
         const response = await fetch(`${API_BASE_URL}/api/item/public/list`, {
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -62,7 +67,11 @@ const MyBardetailListBottomSheet = ({listId}: {listId: number}) => {
   useEffect(() => {
     const fetchBarList = async () => {
       try {
-        const token = "your_access_token_here"; // 실제 토큰 적용 필요
+        const token = await AsyncStorage.getItem('accessToken');
+        if(!token){
+          console.warn("로그인이 필요합니다.");
+          return;
+        }
         const response = await fetch(`${API_BASE_URL}/api/list/${listId}/item`, {
           method: "GET",
           headers: {
@@ -87,7 +96,11 @@ const MyBardetailListBottomSheet = ({listId}: {listId: number}) => {
   //수정하기로 접근해 가게를 다른 리스트로 이동
   const moveBarToOtherList = async (barId: number, toListId: number) => {
     try {
-      const token = "your_access_token_here";
+      const token = await AsyncStorage.getItem('accessToken');
+        if(!token){
+          console.warn("로그인이 필요합니다.");
+          return;
+        }
       const response = await fetch(`${API_BASE_URL}/api/item/move`, {
         method: "POST",
         headers: {
@@ -122,7 +135,11 @@ const MyBardetailListBottomSheet = ({listId}: {listId: number}) => {
 
   const handleDelete = async (barId: number) => {
     try {
-      const token = "your_access_token_here"; // 실제 토큰으로 대체 필요
+      const token = await AsyncStorage.getItem('accessToken');
+        if(!token){
+          console.warn("로그인이 필요합니다.");
+          return;
+        }
       const response = await fetch(`${API_BASE_URL}/api/item`, {
         method: "DELETE",
         headers: {
