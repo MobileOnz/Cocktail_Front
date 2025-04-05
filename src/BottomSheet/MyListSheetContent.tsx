@@ -1,28 +1,47 @@
-import React, {useState, useCallback } from "react";
+import React, { useState, useCallback } from "react";
 import { useFocusEffect } from "@react-navigation/native";
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image } from "react-native";
-import Feather from "react-native-vector-icons/Feather";
-import { widthPercentage, heightPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  TouchableOpacity,
+  Image,
+} from "react-native";
+import {
+  widthPercentage,
+  heightPercentage,
+  fontPercentage,
+} from "../assets/styles/FigmaScreen";
 import MoreOptionMenu from "../Components/MoreOptionMenu";
 import { PaperProvider } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
-import BottomSheet, { BottomSheetFlatList, BottomSheetScrollView } from "@gorhom/bottom-sheet";
 import { API_BASE_URL } from "@env";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
+import { ScrollView } from "react-native-gesture-handler";
 
 const server = API_BASE_URL;
-
 
 interface MyListItem {
   id: string;
   name: string;
   location: string;
   tags: string[];
-  icon_url: string | null;
+  icon_tag: number;
 }
 
-const MyListSheetContent =  ({handleTabPress}) => {
+const imageMap = {
+  1: require("../assets/newListIcon/Name=Classic_Status=Default.png"),
+  2: require("../assets/newListIcon/Name=Light_Status=Default.png"),
+  3: require("../assets/newListIcon/Name=Party_Status=Default.png"),
+  4: require("../assets/newListIcon/Name=Play_Status=Default.png"),
+  5: require("../assets/newListIcon/Name=Primary_Status=Default.png"),
+  6: require("../assets/newListIcon/Name=Shine_Status=Default.png"),
+  7: require("../assets/newListIcon/Name=Summer_Status=Default.png"),
+};
+
+const MyListSheetContent = ({ handleTabPress }) => {
   const navigation = useNavigation();
   const [myList, setMyList] = useState<MyListItem[]>([]);
 
@@ -33,7 +52,7 @@ const MyListSheetContent =  ({handleTabPress}) => {
 
       const response = await axios.get(`${server}/api/list/all`, {
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `${token}`,
         },
       });
 
@@ -41,8 +60,10 @@ const MyListSheetContent =  ({handleTabPress}) => {
         id: item.id.toString(),
         name: item.main_tag.name,
         location: null,
-        tags: Object.values(item.sub_tags).flat().map((tag) => `#${tag.name}`),
-        icon_url: item.icon_url || null,
+        tags: Object.values(item.sub_tags)
+          .flat()
+          .map((tag) => `#${tag.name}`),
+        icon_tag : item.icon_tag ?? 1,
       }));
 
       setMyList(transformed);
@@ -57,76 +78,89 @@ const MyListSheetContent =  ({handleTabPress}) => {
     }, [])
   );
 
-
-  const handleEdit = (itemId) => {
-    console.log(`Editing item with id: ${itemId}`);
+  const handleEdit = (itemId : number) => {
+    navigation.navigate("CreateNewListScreen" as never, {
+    editMode: true,
+    itemId: itemId,
+  } as never);
+    
   };
 
-  const handleDelete = (itemId) => {
-    console.log(`Deleting item with id: ${itemId}`);
+  const handleDelete = async (itemId : number) => {
+    try {
+      const token = await AsyncStorage.getItem("accessToken");
+      if (!token) return;
   
+      await axios.delete(`${server}/api/list/${itemId}`, {
+        headers: {
+          Authorization: `${token}`,
+        },
+      });
+  
+      console.log(`리스트 ${itemId} 삭제 완료`);
+      fetchMyList(); // 리스트 다시 불러오기
+    } catch (error) {
+      console.error("리스트 삭제 실패:", error);
+    }
   };
+
   return (
     <PaperProvider>
-    
-    {/*  ScrollView 대신 BottomSheetFlatList 사용 */}
-    <BottomSheetFlatList
-      style={styles.container}
-      data={myList}
-      keyExtractor={(item) => item.id}
-      ListHeaderComponent={
-        <>
-          <View style={styles.headerContainer}>
-            <Text style={styles.header}>나의 리스트</Text>
-            <View style={styles.line}></View>
-          </View>
-  
-          {/* 새 리스트 만들기 버튼 */}
-          <TouchableOpacity
-            style={styles.newListButton}
-            onPress={() => navigation.navigate("CreateNewListScreen" as never)}
-          >
-            <Image
-              source={require("../assets/drawable/newlist.png")}
-              style={styles.newlistImage}
-            />
-            <Text style={styles.newListText}>새 리스트 만들기</Text>
-          </TouchableOpacity>
-        </>
-      }
-      renderItem={({ item }) => (
-        
-        <TouchableOpacity onPress={() => {
-          console.log(`Clicked item: ${item}`);
-          handleTabPress("myBardetailList", item)
-        }
-        }>
-
-        <View style={styles.listItem}>
-        <Image
-        source={
-        item.icon_url
-        ? { uri: item.icon_url }
-        : require("../assets/drawable/classic.png")
-        }
-        style={styles.icon}
-        />
-          <View style={styles.info}>
-            <Text style={styles.barName}>{item.name}</Text>
-           
-            <View style={styles.tagContainer}>
-              {item.tags.map((tag, index) => (
-                <Text key={index} style={styles.tag}>{tag}</Text>
-              ))}
-            </View>
-          </View>
-  
-          <MoreOptionMenu itemId={item.id} onEdit={handleEdit} onDelete={handleDelete}  message={`"${item.name}" 리스트 메뉴입니다.`}/>
+      <ScrollView contentContainerStyle={styles.container}>
+        <View style={styles.headerContainer}>
+          <Text style={styles.header}>나의 리스트</Text>
+          <View style={styles.line}></View>
         </View>
+
+        <TouchableOpacity
+          style={styles.newListButton}
+          onPress={() =>
+            navigation.navigate("CreateNewListScreen" as never)
+          }
+        >
+          <Image
+            source={require("../assets/drawable/newlist.png")}
+            style={styles.newlistImage}
+          />
+          <Text style={styles.newListText}>새 리스트 만들기</Text>
         </TouchableOpacity>
-      )}
-    />
-  </PaperProvider>
+
+        {myList.map((item) => (
+          <TouchableOpacity
+            key={item.id}
+            onPress={() => {
+              handleTabPress("myBardetailList", item);
+            }}
+          >
+            <View style={styles.listItem}>
+              <Image
+                source={
+                  imageMap[item.icon_tag] || require("../assets/drawable/classic.png")
+                }
+                style={styles.icon}
+              />
+              <View style={styles.info}>
+                <Text style={styles.barName}>{item.name}</Text>
+                <View style={styles.tagContainer}>
+                  {item.tags.map((tag, index) => (
+                    <Text key={index} style={styles.tag}>
+                      {tag}
+                    </Text>
+                  ))}
+                </View>
+              </View>
+
+              <MoreOptionMenu
+                itemId={item.id}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+                message={`"${item.name}" 리스트 메뉴입니다.`}
+              />
+            </View>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
+    </PaperProvider>
   );
 };
 

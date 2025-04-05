@@ -26,7 +26,7 @@ export type RootStackParamList = {
   ResultScreen: undefined;
   CreateNewListScreen: {
     editMode: boolean;
-    itemId: string;
+    itemId: number;
   } | undefined;
   MarketDetail : undefined;
   SignupScreen: undefined;

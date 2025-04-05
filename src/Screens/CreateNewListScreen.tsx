@@ -16,80 +16,134 @@ interface Tag {
 }
 type CreateNewListRouteProp = RouteProp<RootStackParamList, "CreateNewListScreen">;
 
+const imageMap = {
+  1: require("../assets/newListIcon/Name=Classic_Status=Default.png"),
+  2: require("../assets/newListIcon/Name=Light_Status=Default.png"),
+  3: require("../assets/newListIcon/Name=Party_Status=Default.png"),
+  4: require("../assets/newListIcon/Name=Play_Status=Default.png"),
+  5: require("../assets/newListIcon/Name=Primary_Status=Default.png"),
+  6: require("../assets/newListIcon/Name=Shine_Status=Default.png"),
+  7: require("../assets/newListIcon/Name=Summer_Status=Default.png"),
+};
+
+const clickedImageMap = {
+  1: require("../assets/newListIcon/Name=Classic_Status=Active.png"),
+  2: require("../assets/newListIcon/Name=Light_Status=Active.png"),
+  3: require("../assets/newListIcon/Name=Party_Status=Active.png"),
+  4: require("../assets/newListIcon/Name=Play_Status=Active.png"),
+  5: require("../assets/newListIcon/Name=Primary_Status=Active.png"),
+  6: require("../assets/newListIcon/Name=Shine_Status=Active.png"),
+  7: require("../assets/newListIcon/Name=Summer_Status=Active.png"),
+};
 
 const CreateNewListScreen = () => {
+
+  const [selectedImageId, setSelectedImageId] = useState<number>(1);
   const route = useRoute<CreateNewListRouteProp>();
   const { editMode, itemId } = route.params ?? {};
   const [mainTags, setMainTags] = useState<Tag[]>([]);
   const [moodTags, setMoodTags] = useState<Tag[]>([]);
   const [locationTags, setLocationTags] = useState<Tag[]>([]);
-  const [imgTags, setImgTags] = useState<Tag[]>([]);
- 
+
 //저장요청 함수 추가하기 
 const handleSaveList = async () => {
-	const token = await AsyncStorage.getItem("accessToken");
-	try {
-		 const token = await AsyncStorage.getItem("accessToken");
-		if(!token){
-			console.warn("토큰 없음");
-			return;
-		}
+  const token = await AsyncStorage.getItem("accessToken");
+  if (!token) {
+    console.warn("토큰 없음");
+    return;
+  }
 
-		const mainTagId = mainTags.find(tag => tag.name === selectedMain)?.id;
-		const subTagIds = [...moodTags, ...locationTags]
-		  .filter(tag => selectedSub.includes(tag.name))
-		  .map(tag => tag.id);
-		  const payload = {
-			iconUrl: "", // 현재 선택된 아이콘 URL이 있다면 여기에 넣기
-			mainTagId,
-			subTagIds,
-		 };
-		 const response = await axios.post(`${API_BASE_URL}/api/list`,payload, {
-			headers: {
-				Authorization: `Bearer ${token}`,
-				"Content-Type": "application/json",
-			 },
-		  });
-		  console.log("리스트 저장 성공:", response.data);
-		  navigation.goBack();
-		} catch (error) {
-		  if (axios.isAxiosError(error)) {
-			 console.error("서버 응답:", error.response?.data);
-		  } else {
-			 console.error("저장 중 에러:", error);
-		  }
-		}
-	 };
+  const mainTagId = mainTags.find((tag) => tag.name === selectedMain)?.id;
+  const subTagIds = [...moodTags, ...locationTags]
+    .filter((tag) => selectedSub.includes(tag.name))
+    .map((tag) => tag.id);
+
+  const payload = {
+    iconTagId: selectedImageId,
+    mainTagId,
+    subTagIds,
+  };
+  const patchPayload = {
+    id : itemId,
+    iconTagId: selectedImageId,
+    mainTagId,
+    subTagIds,
+  };
+
+  try {
+    if (editMode && itemId) {
+      //수정 요청 (PUT)
+      const response = await axios.patch(`${API_BASE_URL}/api/list`, patchPayload, {
+        headers: {
+          Authorization: `${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+      console.log("리스트 수정 성공:", response.data);
+    } else {
+      // 생성 요청 (POST)
+      const response = await axios.post(`${API_BASE_URL}/api/list`, payload, {
+        headers: {
+          Authorization: `${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+      console.log("리스트 저장 성공:", response.data);
+    }
+
+    navigation.goBack();
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error("서버 응답:", error.response?.data);
+    } else {
+      console.error("저장 중 에러:", error);
+    }
+  }
+};
+
 
    useEffect(() => {
+
+    
+    
     const fetchTags = async () => {
       const token = await AsyncStorage.getItem("accessToken");
+      console.log("✅ 토큰:", token);
       if (!token) return;
   
       const tagResponse = await axios.get(`${API_BASE_URL}/api/list`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `${token}` },
       });
+         
   
       const { main_tags, sub_tags, img_tags } = tagResponse.data.data;
       setMainTags(main_tags);
       setMoodTags(sub_tags.MOOD || []);
       setLocationTags(sub_tags.LOCATION || []);
-      setImgTags(img_tags || []);
+  
   
       if (editMode && itemId) {
         const listResponse = await axios.get(`${API_BASE_URL}/api/list/${itemId}`, {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { Authorization: `${token}` },
         });
-  
+       
         const listData = listResponse.data.data;
+       
         setSelectedMain(listData.main_tag.name);
         setSelectedSub(
           Object.values(listData.sub_tags)
             .flat()
             .map((tag: any) => tag.name)
         );
+        setSelectedImageId(
+          typeof listData.icon_tag === "number" && imageMap[listData.icon_tag]
+            ? listData.icon_tag
+            : 1 // 기본값
+        );
       }
+      
     };
+    
   
     fetchTags();
   }, []);
@@ -157,42 +211,59 @@ const handleSaveList = async () => {
       <Text style={styles.sectionSubTitle}> 1가지 선택 가능합니다.</Text>
       </View>
       
-      <FlatList
-        data={mainTags}
-        numColumns={3}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            onPress={() => handleSelectMain(item.name)}
-            style={[
-              styles.conceptButton,
-              selectedMain === item.name && styles.selectedButton
-            ]}
-          >
-            <Text style={[
-              styles.conceptText,
-              selectedMain === item.name && styles.selectedMainText
-            ]}>
-              {item.name}
-            </Text>
-          </TouchableOpacity>
-        )}
-      />
+      <View style={{ flexDirection: "row", flexWrap: "wrap", paddingHorizontal: widthPercentage(16) }}>
+  {mainTags.map((item) => (
+    <TouchableOpacity
+      key={item.id}
+      onPress={() => handleSelectMain(item.name)}
+      style={[
+        styles.conceptButton,
+        selectedMain === item.name && styles.selectedButton
+      ]}
+    >
+      <Text style={[
+        styles.conceptText,
+        selectedMain === item.name && styles.selectedMainText
+      ]}>
+        {item.name}
+      </Text>
+    </TouchableOpacity>
+  ))}
+</View>
+
 
       {/* 컨셉 아이콘 */}
       <Text style={[styles.sectionTitle, styles.titleContainer]}>컨셉 아이콘</Text>
-<View style={styles.iconContainer}>
-  {imgTags.length > 0 ? (
-    imgTags.map((icon, index) => (
-      <Text key={index} style={styles.icon}>{icon}</Text>
-    ))
-  ) : (
-    <Text style={{ color: "#B9B6AD", fontSize: fontPercentage(14) }}>
-      아직 등록된 아이콘이 없습니다.
-    </Text>
-  )}
-</View>
-        <View style={styles.line}/>
+      <ScrollView
+  horizontal
+  showsHorizontalScrollIndicator={false}
+  style={{ padding : 10 }}
+  contentContainerStyle={{ paddingHorizontal: widthPercentage(16) }}
+>
+  {Object.keys(imageMap).map((idStr) => {
+    const id = Number(idStr);
+    const isSelected = selectedImageId === id;
+
+    return (
+      <TouchableOpacity key={id} onPress={() => setSelectedImageId(id)}>
+        <Image
+          source={isSelected ? clickedImageMap[id] : imageMap[id]}
+          style={{
+            
+            width: isSelected ? widthPercentage(32) : widthPercentage(24),
+            height: isSelected ? widthPercentage(32) : widthPercentage(24),
+            marginTop: isSelected ? -heightPercentage(4) : 0,
+            marginRight: widthPercentage(32),
+            resizeMode: "contain",
+          }}
+        />
+      </TouchableOpacity>
+    );
+  })}
+</ScrollView>        
+
+<View style={styles.line}/>
+
       {/* 보조 컨셉 선택 */}
       <View style={styles.titleContainer}>
       <Text style={styles.sectionTitle}>보조 컨셉</Text>
@@ -212,12 +283,10 @@ const handleSaveList = async () => {
   }}>분위기</Text>
 </View>
 
-<FlatList
-  data={moodTags}
-  numColumns={3}
-  keyExtractor={(item) => item.id.toString()}
-  renderItem={({ item }) => (
+<View style={{ flexDirection: "row", flexWrap: "wrap", paddingHorizontal: widthPercentage(16) }}>
+  {moodTags.map((item) => (
     <TouchableOpacity
+      key={item.id}
       onPress={() => handleSelectSub(item.name)}
       style={[
         styles.conceptButton,
@@ -231,8 +300,9 @@ const handleSaveList = async () => {
         {item.name}
       </Text>
     </TouchableOpacity>
-  )}
-/>
+  ))}
+</View>
+
 
 <View style={styles.titleContainer}>
   <Image source={require("../assets/drawable/location.png")}
@@ -249,13 +319,10 @@ const handleSaveList = async () => {
     위치
   </Text>
 </View>
-
-<FlatList
-  data={locationTags}
-  numColumns={3}
-  keyExtractor={(item) => item.id.toString()}
-  renderItem={({ item }) => (
+<View style={{ flexDirection: "row", flexWrap: "wrap", paddingHorizontal: widthPercentage(16) }}>
+  {locationTags.map((item) => (
     <TouchableOpacity
+      key={item.id}
       onPress={() => handleSelectSub(item.name)}
       style={[
         styles.conceptButton,
@@ -269,8 +336,9 @@ const handleSaveList = async () => {
         {item.name}
       </Text>
     </TouchableOpacity>
-  )}
-/>
+  ))}
+</View>
+
 </ScrollView>
 </View>
 

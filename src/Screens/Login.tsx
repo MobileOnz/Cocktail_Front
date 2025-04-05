@@ -104,7 +104,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
         const backendRefreshToken = response.data.data.refresh_token;
         
         if (backendAccessToken) {
-          const cleanToken = backendAccessToken.replace(/^Bearer\s/, '');
+          const cleanToken = backendAccessToken;
           await AsyncStorage.setItem('accessToken', cleanToken);
         }
         if (backendRefreshToken) {
