@@ -10,57 +10,8 @@ import { useNavigation } from "@react-navigation/native";
 import MenuListDetail from "./MenuListDetail";
 import PinClickView from "./PinClickView";
 import MyBardetailListBottomSheet from "./MyBardetailListBottomSheet";
-
-const myBars = [
-  {
-    listId: 1,
-    title: "Label",
-    barAdress: "거리",
-    image: require("../assets/drawable/barExample.png"),
-    hashtageList: ["#칵테일명", "#칵테일명", "#다른주류명", "#안주명"],
-  },
-  {
-    listId: 2,
-    title: "Label",
-    barAdress: "거리",
-    image: require("../assets/drawable/barExample.png"),
-    hashtageList: ["#칵테일명", "#칵테일명", "#다른주류명", "#안주명"],
-  },
-];
-
-const nearBars = [
-  {
-    listId: 1,
-    title: "Label",
-    barAdress: "거리",
-    image: require("../assets/drawable/barExample.png"),
-    hashtageList: ["#칵테일명", "#칵테일명", "#다른주류명", "#안주명"],
-  },
-];
-const myList = [
-  {
-    id: "1",
-    name: "메인 컨셉",
-    location: "999",
-    tags: ["#Sub", "#Sub", "#Sub"],
-    icon: require("../assets/drawable/listicon1.png"),
-  },
-  {
-    id: "2",
-    name: "메인 컨셉",
-    location: "999",
-    tags: ["#Sub", "#Sub", "#Sub"],
-    icon: require("../assets/drawable/listicon2.png"),
-  },
-  {
-    id: "3",
-    name: "메인 컨셉",
-    location: "999",
-    tags: ["#Sub", "#Sub", "#Sub"],
-    icon: require("../assets/drawable/listicon3.png"),
-
-  },
-];
+import axios from "axios";
+import {API_BASE_URL} from "@env"
 
 
 const BaseBottomSheet = ({ animatedPosition }) => {
@@ -69,7 +20,33 @@ const BaseBottomSheet = ({ animatedPosition }) => {
   const [selectedTab, setSelectedTab] = useState<"search" | "myList" | "region" | "bookmark"| "detail"|"myBardetailList">("search");
   const [selectedBar, setSelectedBar] = useState(null);
   const bottomSheetRef = useRef<BottomSheet>(null);
-  
+  const [barData,setBarData] = useState([]);
+  useEffect(() => {
+    const fetchNearbyBars = async () => {
+      
+      try{
+        const response = await axios.get(`${API_BASE_URL}/api/location/nearby?x=126.9812675&y=37.5718599`)
+        if(response.data.code ===1){
+          console.log("정상적으로 근처 칵테일바 데이터 접근 완료")
+          const transformed = response.data.data.map((bar) => ({
+            id: bar.id,
+            title: bar.bar_name,                     
+            barAdress: bar.address,                  
+            thumbNail: { uri: bar.thumbnail },           
+            hashtagList: bar.menus.map((m) => `#${m.name}`), 
+          }));
+          console.log(transformed);
+          setBarData(transformed);
+        }else
+        console.log("서버 요청중 에러발생",response.data.msg);
+      }catch(error){
+        console.log("잘못된 접근", error);
+      }
+    }
+    fetchNearbyBars();
+  }, []);
+
+
   useEffect(() => {
     if (selectedTab === "detail") {
       bottomSheetRef.current?.expand();
@@ -78,20 +55,15 @@ const BaseBottomSheet = ({ animatedPosition }) => {
 
   // sections 데이터 변경
   const sections = useMemo(() => {
-    if (selectedTab === "myList") {
-      return [{ title: "나의 칵테일 바", data: myBars }];
-    } else if (selectedTab === "region") {
-      return [{ title: "근처 칵테일 바", data: nearBars }];
-    }
     return [
-      { title: "나의 칵테일 바", data: myBars },
-      { title: "근처 칵테일 바", data: nearBars }
+      // { title: "나의 칵테일 바", data: myBars },
+      { title: "근처 칵테일 바", data: barData }
     ];
-  }, [selectedTab]);
+  }, [selectedTab, barData]);
 
   // 탭 변경 핸들러
   const handleTabPress = (tab: "search" | "myList" | "region" | "bookmark" | "detail"|"pin"|"myBardetailList", bar = null) => {
-    if (tab === "bookmark") {
+    if (tab === "bookmark" || tab ==="detail") {
       setSelectedBar(bar);
     }
     setSelectedTab(prev => (prev === tab ? "search" : tab));
@@ -140,7 +112,7 @@ const BaseBottomSheet = ({ animatedPosition }) => {
       ) : selectedTab === "myList" ? (
           <MyListSheetContent handleTabPress={handleTabPress} />
       ) : selectedTab === "detail" ? (
-      <MenuListDetail handleTabPress={handleTabPress}/>
+      <MenuListDetail handleTabPress={handleTabPress} selectedBar={selectedBar}/>
       ) : (
       <SearchSheetContent
       sections={sections}

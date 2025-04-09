@@ -44,6 +44,8 @@ const serviceUrlScheme = "testapp";
 type LoginScreenProps = StackScreenProps<RootStackParamList, "Login">;
 
 const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
+
+  //네이버 로그인 초기 설정.
   useEffect(() => {
     NaverLogin.initialize({
       appName,
@@ -54,7 +56,6 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
     });
     NaverLogin.logout
     NaverLogin.deleteToken
-    
   }, []);
 
   const [success, setSuccessResponse] = useState<NaverLoginResponse['successResponse']>();
@@ -62,17 +63,16 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
   const [failure, setFailureResponse] = useState<NaverLoginResponse['failureResponse']>();
   const [getProfileRes, setGetProfileRes] = useState<GetProfileResponse>();
 
+
  
 
+  //네이버 로그인
   const naverLogin = async (): Promise<void> => {
     try {
       const { failureResponse, successResponse } = await NaverLogin.login();
-  
       setSuccessResponse(successResponse);
       setFailureResponse(failureResponse);
 
-      
-  
       if (successResponse) {
         const { accessToken} = successResponse;
 
@@ -127,13 +127,14 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
   };
   
   // 카카오 로그인 함수
-  const kakaologin = () => {
+  const kakaoLogin = () => {
     KakaoLogin.login()
     
     .then(async (result) => {
       console.log("Login Success", JSON.stringify(result));
 
       const accessToken = result.accessToken;
+     
       await fetch(`${server}/api/auth/social-login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -173,18 +174,6 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
     }
   };
 
-  // 프로필 가져오기
-  const getProfile = () => {
-    console.log("kakao click");
-    KakaoLogin.getProfile()
-      .then((result) => {
-        console.log("GetProfile Success", JSON.stringify(result));
-      })
-      .catch((error) => {
-        console.log(`GetProfile Fail(code:${error.code})`, error.message);
-      });
-  };
-
   return (
     <View style={styles.container}>
       {/* X 버튼 (닫기) */}
@@ -211,7 +200,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
 
       {/* 로그인 버튼 */}
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.loginButton} onPress={kakaologin}>
+        <TouchableOpacity style={styles.loginButton} onPress={kakaoLogin}>
           <Image
             source={require("../assets/drawable/kakao_button.png")}
             style={styles.buttonImage}

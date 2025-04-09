@@ -53,6 +53,9 @@ const RegionSelectScreen = () => {
       <FlatList
         data={regions}
         keyExtractor={(item) => item}
+        contentContainerStyle={{
+          paddingBottom: selectedRegions.length > 0 ? heightPercentage(200) : heightPercentage(145), // 태그 영역 존재하면 공간 확보
+        }}
         renderItem={({ item }) => (
           <TouchableOpacity style={styles.listItem} onPress={() => toggleRegion(item)}>
             <Text style={[styles.itemText, selectedRegions.includes(item) && styles.itemCheckText]}>
@@ -98,9 +101,13 @@ const RegionSelectScreen = () => {
           style={styles.applyButton}
           onPress={() => {
             const filteredRegions = selectedRegions.filter((region) => region !== "서울 전체");
+
+            setSelectedRegions([]);
             navigation.navigate("BottomTabNavigator", {
               screen: "지도",
-              params: { selectedRegions: filteredRegions }
+              params: { selectedRegions: filteredRegions,
+                resetRequested: true  
+               } //선택 지역 넘김, 초기화 함수 챙기기 
             } as any);
           }}
         >
@@ -117,13 +124,17 @@ const styles = StyleSheet.create({
     backgroundColor: "#FAF7F2",
   },
   tagWrapper: {
+    position: "absolute",
+    bottom: heightPercentage(70), // 적용 버튼 위에 위치
+    left: 0,
+    right: 0,
     backgroundColor: "#FFFCF3",
-    paddingVertical: heightPercentage(8),
-    paddingHorizontal: widthPercentage(16),
+    paddingVertical: 8,
+    paddingHorizontal: 16,
     borderTopWidth: 1,
     borderColor: "#E4DFD8",
+    zIndex: 10,
   },
-  
   tagScroll: {
     flexDirection: "row",
     alignItems: "center",
@@ -135,7 +146,6 @@ const styles = StyleSheet.create({
   ContentContainer: {
     flexDirection: "row", // 왼쪽(카테고리) + 오른쪽(리스트) 정렬
     backgroundColor: "#FFFCF3", // 전체 배경색
-    height : heightPercentage(543)
   },
   categorySection: {
     width: widthPercentage(105), 

@@ -8,7 +8,13 @@ const categories = ["음식", "칵테일", "와인/샴페인", "맥주/하이볼
 
 
 
-const BarDetailSheetContent = ({ handleTabPress}) => {
+const BarDetailSheetContent = ({ handleTabPress, selectedBar }) => {
+  useEffect(() => {
+    if (selectedBar) {
+      console.log("selectedBar 데이터 확인:", selectedBar);
+    }else
+    console.log("없음");
+  }, [selectedBar]);
 
   const bottomSheetRef = useRef<BottomSheet>(null);
 
@@ -27,15 +33,24 @@ const BarDetailSheetContent = ({ handleTabPress}) => {
         </View>
      
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.scrollContainer}>
-          <Image source={require("../assets/listdetail/detailimg1.png")} style={[styles.imgSize, { marginRight: widthPercentage(12) }]} />
-          <Image source={require("../assets/listdetail/detailimg2.png")} style={styles.imgSize} />
+        {selectedBar?.thumbNail ? (
+    <Image
+      source={selectedBar.thumbNail}
+      style={[styles.imgSize, { marginRight: widthPercentage(12) }]}
+    />
+  ) : (
+    <Text style={{ padding: 16, color: "#aaa" }}>이미지가 없습니다</Text>
+  )}
+    <Image
+    />
+ 
         </ScrollView>
 
        
         <View style={styles.infoContainer}>
           <View style={styles.infoItem}>
             <Image source={require("../assets/listdetail/location.png")} style={styles.icon} />
-            <Text style={styles.infoText}>서울 중구 만리재로 201 1층 (우)04508</Text>
+            <Text style={styles.infoText}>{selectedBar?.barAdress ?? "주소 정보 없음"}</Text>
             <TouchableOpacity style={styles.copyButton}>
               <Text style={styles.copyText}>복사</Text>
             </TouchableOpacity>
