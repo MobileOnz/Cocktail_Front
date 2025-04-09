@@ -3,13 +3,13 @@
 <plist version="1.0">
 <dict>
 <key>GIDClientID</key>
-<string>[구글 클라우드 콘솔 iOS 클라이언트 ID]</string>
+<string>1058340377075-an8fq49j4mg29fq9rm88qpi253dd2vts.apps.googleusercontent.com</string>
 <key>CFBundleURLTypes</key>
 <array>
 	<dict>
 		<key>CFBundleURLSchemes</key>
 		<array>
-			<string>[REVERSED_CLIENT_ID]</string>
+			<string>com.googleusercontent.apps.1058340377075-an8fq49j4mg29fq9rm88qpi253dd2vts</string>
 		</array>
 	</dict>
 </array>

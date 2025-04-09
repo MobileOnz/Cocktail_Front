@@ -8,11 +8,10 @@ import type {
   GetProfileResponse,
   NaverLoginResponse,
 } from "@react-native-seoul/naver-login";
-import { authorize } from 'react-native-app-auth';
 import axios from 'axios';
 import {API_BASE_URL} from '@env';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import {GoogleSignin} from '@react-native-google-signin/google-signin';
 //env에서 서버 주소 가져옴
 const server = API_BASE_URL;
 
@@ -47,6 +46,13 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
 
   //네이버 로그인 초기 설정.
   useEffect(() => {
+     GoogleSignin.configure({
+      offlineAccess: true,
+        webClientId:
+          '1058340377075-vt8u6qabph0f0van79eqhkt9j2f1jkbe.apps.googleusercontent.com',
+        iosClientId:
+          '1058340377075-an8fq49j4mg29fq9rm88qpi253dd2vts.apps.googleusercontent.com',
+     });
     NaverLogin.initialize({
       appName,
       consumerKey,
@@ -61,8 +67,6 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
   const [success, setSuccessResponse] = useState<NaverLoginResponse['successResponse']>();
 
   const [failure, setFailureResponse] = useState<NaverLoginResponse['failureResponse']>();
-  const [getProfileRes, setGetProfileRes] = useState<GetProfileResponse>();
-
 
  
 
@@ -110,6 +114,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
         if (backendRefreshToken) {
           await AsyncStorage.setItem('refreshToken', backendRefreshToken);
         }
+        navigation.replace('BottomTabNavigator');
 
       } else if (failureResponse) {
         console.log('네이버 로그인 실패:', failureResponse);
@@ -126,7 +131,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
     }
   };
   
-  // 카카오 로그인 함수
+      // 카카오 로그인 함수
   const kakaoLogin = () => {
     KakaoLogin.login()
     
@@ -134,17 +139,31 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
       console.log("Login Success", JSON.stringify(result));
 
       const accessToken = result.accessToken;
+      const payload = {
+        provider: 'kakao',
+        code: null,
+        state: null,
+        accessToken : accessToken,
+      };
      
-      await fetch(`${server}/api/auth/social-login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          provider: 'kakao',
-          code: null,
-          state: null,
-          accessToken,
-        }),
+      const response = await axios.post(`${server}/api/auth/social-login`, payload, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        
       });
+       console.log('백엔드 응답:', response.data);
+        const backendAccessToken = response.data.data.access_token;
+        const backendRefreshToken = response.data.data.refresh_token;
+        
+        if (backendAccessToken) {
+          const cleanToken = backendAccessToken;
+          await AsyncStorage.setItem('accessToken', cleanToken);
+        }
+        if (backendRefreshToken) {
+          await AsyncStorage.setItem('refreshToken', backendRefreshToken);
+        }
+
       navigation.replace('BottomTabNavigator');
 
       })
@@ -156,23 +175,46 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
         }
       });
   };
+
+
+
+
+      //구글 로그인 
   const signInWithGoogle = async () => {
     try {
-      const result = await authorize(config);
-      const { authorizationCode } = result;
+      const accessToken = (await GoogleSignin.getTokens()).accessToken;
 
-      const response = await axios.post(`${server}/api/auth/social-login`, {
+      const payload = {
         provider: 'google',
-        code: authorizationCode,
+        code: null,
         state: null,
-        accessToken: null,
+        accessToken : accessToken,
+      };
+      
+      const response = await axios.post(`${server}/api/auth/social-login`, payload, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        
       });
-
-      console.log('✅ 구글 로그인 성공:', response.data);
+       console.log('백엔드 응답:', response.data);
+        const backendAccessToken = response.data.data.access_token;
+        const backendRefreshToken = response.data.data.refresh_token;
+        
+        if (backendAccessToken) {
+          const cleanToken = backendAccessToken;
+          await AsyncStorage.setItem('accessToken', cleanToken);
+        }
+        if (backendRefreshToken) {
+          await AsyncStorage.setItem('refreshToken', backendRefreshToken);
+        }
+      navigation.replace('BottomTabNavigator');
     } catch (error) {
-      console.error('❌ 구글 로그인 실패:', error);
+      console.log('Google Sign-In Error:', JSON.stringify(error, null, 2));
     }
   };
+
+
 
   return (
     <View style={styles.container}>

@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { View, Text, TouchableOpacity, FlatList, StyleSheet,Image,ScrollView } from "react-native";
 import { widthPercentage, heightPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
 import { useNavigation } from "@react-navigation/native";
-import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../Navigation/Navigation";
 import { useEffect } from "react";
 import axios from "axios";
