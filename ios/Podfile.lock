@@ -1729,7 +1729,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNGoogleMobileAds (14.10.1):
+  - RNGoogleMobileAds (15.0.0):
     - DoubleConversion
     - glog
     - Google-Mobile-Ads-SDK (= 12.2.0)
@@ -2358,7 +2358,7 @@ SPEC CHECKSUMS:
   RNCAsyncStorage: 5321442ed26760d7581b26effab82399ea5ff18b
   RNFBApp: 5e27e8311042d41fa8350f1751ab42e042c39d52
   RNGestureHandler: f7b3a72c099e1e29b5b81688678bc9108d44057c
-  RNGoogleMobileAds: b38374bb5dfc86de97ca8c758a4eaa90cec35c2b
+  RNGoogleMobileAds: 2816ccf723055b85d4d1708919fe66918d7deeb2
   RNGoogleSignin: 1a215139c537bb0430abdb9ff9a8e437578e515d
   RNNaverLogin: 2f5e64145427ffe78f840db591a8b297949e4b47
   RNReanimated: fe5c52894886953248a81a10b2a9b6eeb5398d61

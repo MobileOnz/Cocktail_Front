@@ -22,11 +22,12 @@ const BottomTabNavigator = () => {
   // 맞춤 추천 탭을 눌렀을 때 실행
   const handleRecommendationPress = () => {
 
-    if (!isLoggedIn) {
-      setLoginSheetVisible(true); // 로그인 바텀시트 표시
-    } else {
-      navigation.navigate("BottomTabNavigator", { screen: "맞춤 추천" });
-    }
+    // if (!isLoggedIn) {
+    //   setLoginSheetVisible(true); // 로그인 바텀시트 표시
+    // } else {
+    //   navigation.navigate("BottomTabNavigator", { screen: "맞춤 추천" });
+    // }
+    setLoginSheetVisible(true);
   };
 
   useEffect(() => {
