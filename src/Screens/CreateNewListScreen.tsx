@@ -89,7 +89,6 @@ const handleSaveList = async () => {
       });
       console.log("리스트 저장 성공:", response.data);
     }
-
     navigation.goBack();
   } catch (error) {
     if (axios.isAxiosError(error)) {
@@ -103,8 +102,6 @@ const handleSaveList = async () => {
 
    useEffect(() => {
 
-    
-    
     const fetchTags = async () => {
       const token = await AsyncStorage.getItem("accessToken");
       console.log("✅ 토큰:", token);

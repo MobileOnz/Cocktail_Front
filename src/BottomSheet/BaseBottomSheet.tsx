@@ -8,18 +8,20 @@ import SelectionListSheet from "./SelectionListSheet";
 import { widthPercentage, heightPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
 import { useNavigation } from "@react-navigation/native"; 
 import MenuListDetail from "./MenuListDetail";
-import PinClickView from "./PinClickView";
 import MyBardetailListBottomSheet from "./MyBardetailListBottomSheet";
 import axios from "axios";
 import {API_BASE_URL} from "@env"
-
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import LoginBottomSheet from "./LoginBottomSheetProps";
 
 const BaseBottomSheet = ({ animatedPosition }) => {
+
   const navigation = useNavigation();
   const snapPoints = useMemo(() => ["10%", "30%", "76%"], []);
   const [selectedTab, setSelectedTab] = useState<"search" | "myList" | "region" | "bookmark"| "detail"|"myBardetailList">("search");
   const [selectedBar, setSelectedBar] = useState(null);
   const bottomSheetRef = useRef<BottomSheet>(null);
+  const [isLoginSheetVisible, setLoginSheetVisible] = useState(false);
   const [barData,setBarData] = useState([]);
   useEffect(() => {
     const fetchNearbyBars = async () => {
@@ -45,6 +47,14 @@ const BaseBottomSheet = ({ animatedPosition }) => {
     }
     fetchNearbyBars();
   }, []);
+const headerCheck = async () =>{
+  const token = await AsyncStorage.getItem("accessToken");
+  if(token){
+    handleTabPress("myList")
+  }else{
+    setLoginSheetVisible(true);
+  }
+}
 
 
   useEffect(() => {
@@ -70,7 +80,7 @@ const BaseBottomSheet = ({ animatedPosition }) => {
   };
 
   return (
-    
+    <>
     <BottomSheet 
     ref={bottomSheetRef}
     index={0} 
@@ -84,7 +94,7 @@ const BaseBottomSheet = ({ animatedPosition }) => {
       <View style={styles.sheetHeader}>
         <TouchableOpacity
           style={[styles.listButton, selectedTab === "myList" && styles.activeButton]}
-          onPress={() => handleTabPress("myList")}
+          onPress={() => headerCheck()}
         >
           <Text style={[styles.listText, selectedTab === "myList" && styles.activeText]}>나의 리스트</Text>
         </TouchableOpacity>
@@ -121,6 +131,15 @@ const BaseBottomSheet = ({ animatedPosition }) => {
   />
 )}
     </BottomSheet>
+     <LoginBottomSheet
+      isVisible={isLoginSheetVisible}
+      onClose={() => setLoginSheetVisible(false)}
+      onLogin={() => {
+        setLoginSheetVisible(false);
+        navigation.navigate("Login");
+      }}
+    />
+  </>
   );
 };
 

@@ -14,6 +14,8 @@ import MarketDetail from "../Screens/MarketDetail";
 import RegionSelectScreen from "../Screens/RegionSelectScreen";
 import CreateNewListScreen from "../Screens/CreateNewListScreen";
 import SignupScreen from "../Screens/SignupScreen";
+
+//param
 export type RootStackParamList = {
   Onboarding: undefined;
   Login: undefined;
@@ -29,7 +31,7 @@ export type RootStackParamList = {
     itemId: number;
   } | undefined;
   MarketDetail : undefined;
-  SignupScreen: undefined;
+  SignupScreen: {code? : string};
 };
 
 const Stack = createStackNavigator<RootStackParamList>();

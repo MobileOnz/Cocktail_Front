@@ -45,7 +45,34 @@ const MyListSheetContent = ({ handleTabPress }) => {
   const navigation = useNavigation();
   const [myList, setMyList] = useState<MyListItem[]>([]);
 
-   useFocusEffect(
+  const fetchMyList = async () => {
+    try {
+      const token = await AsyncStorage.getItem("accessToken");
+      if (!token) return;
+
+      const response = await axios.get(`${server}/api/list/all`, {
+        headers: {
+          Authorization: `${token}`,
+        },
+      });
+
+      const transformed = response.data.data.map((item) => ({
+        id: item.id.toString(),
+        name: item.main_tag.name,
+        location: null,
+        tags: Object.values(item.sub_tags)
+          .flat()
+          .map((tag) => `#${tag.name}`),
+        icon_tag : item.icon_tag ?? 1,
+      }));
+
+      setMyList(transformed);
+    } catch (error) {
+      console.error("나의 리스트 가져오기 실패:", error);
+    }
+  };
+
+  useFocusEffect(
     useCallback(() => {
       fetchMyList();
     }, [])

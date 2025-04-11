@@ -1,4 +1,4 @@
-import React, {useEffect,useState } from "react";
+import React, {useEffect,useState, } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import { StackScreenProps } from "@react-navigation/stack";
 import * as KakaoLogin from "@react-native-seoul/kakao-login";
@@ -12,6 +12,8 @@ import axios from 'axios';
 import {API_BASE_URL} from '@env';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
+import { RootStackParamList } from "../Navigation/Navigation";
+
 //env에서 서버 주소 가져옴
 const server = API_BASE_URL;
 
@@ -29,11 +31,6 @@ const config = {
 };
 
 
-type RootStackParamList = {
-  Onboarding: undefined;
-  Login: undefined;
-  BottomTabNavigator: undefined;
-};
 
 const consumerKey = "Oc17d0i2lHxKxHhTqL1C";
 const consumerSecret = "PgG9qhIBZP";
@@ -79,43 +76,31 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
 
       if (successResponse) {
         const { accessToken} = successResponse;
-
-        console.log('✅ 서버 요청 파라미터:', {
-          provider: 'naver',
-          code: null,
-          state: null,
-          accessToken,
-        });
-  
-        console.log('네이버 로그인 성공 응답:', successResponse);
-
-
         const payload = {
           provider: 'naver',
-          code: null,
-          state: null,
           accessToken : accessToken,
         };
-  
         const response = await axios.post(`${server}/api/auth/social-login`, payload, {
           headers: {
             'Content-Type': 'application/json',
           },
         });
-  
-        console.log('백엔드 응답:', response.data);
-        const backendAccessToken = response.data.data.access_token;
-        const backendRefreshToken = response.data.data.refresh_token;
-        
+        const code = response.data.data.code;
+        if(code){
+          navigation.navigate("SignupScreen",{code : code})
+        }else{
+          //여기서 토큰을 발행함. 만약 새로운 유저가 가입을 한 것이라면 SignupScreen에 code값을 담아 옮겨주면 된다. 
+          const backendAccessToken = response.data.data.access_token;
+          const backendRefreshToken = response.data.data.refresh_token;
+          console.log("backendAccessToken: ",backendAccessToken);
         if (backendAccessToken) {
-          const cleanToken = backendAccessToken;
-          await AsyncStorage.setItem('accessToken', cleanToken);
+          await AsyncStorage.setItem('accessToken', backendAccessToken);
         }
         if (backendRefreshToken) {
           await AsyncStorage.setItem('refreshToken', backendRefreshToken);
         }
-        navigation.replace('BottomTabNavigator');
 
+        }
       } else if (failureResponse) {
         console.log('네이버 로그인 실패:', failureResponse);
       } else {
@@ -141,8 +126,6 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
       const accessToken = result.accessToken;
       const payload = {
         provider: 'kakao',
-        code: null,
-        state: null,
         accessToken : accessToken,
       };
      
@@ -152,19 +135,22 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
         },
         
       });
-       console.log('백엔드 응답:', response.data);
+      const code = response.data.data.code;
+      if(code){
+        navigation.navigate("SignupScreen",{code : code})
+      }else{
+        //여기서 토큰을 발행함. 만약 새로운 유저가 가입을 한 것이라면 SignupScreen에 code값을 담아 옮겨주면 된다. 
         const backendAccessToken = response.data.data.access_token;
         const backendRefreshToken = response.data.data.refresh_token;
-        
-        if (backendAccessToken) {
-          const cleanToken = backendAccessToken;
-          await AsyncStorage.setItem('accessToken', cleanToken);
-        }
-        if (backendRefreshToken) {
-          await AsyncStorage.setItem('refreshToken', backendRefreshToken);
-        }
-
-      navigation.replace('BottomTabNavigator');
+        console.log("backendAccessToken: ",backendAccessToken);
+      if (backendAccessToken) {
+        await AsyncStorage.setItem('accessToken', backendAccessToken);
+      }
+      if (backendRefreshToken) {
+        await AsyncStorage.setItem('refreshToken', backendRefreshToken);
+      }
+      navigation.navigate("BottomTabNavigator");
+      }
 
       })
       .catch((error) => {
@@ -176,6 +162,34 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
       });
   };
 
+  const debugDelete = async () => {
+    try{
+      const accessToken = await AsyncStorage.getItem("accessToken");
+      console.log("현재 accessToken:", accessToken);
+      try{
+        const tagResponse = await axios.delete(`${API_BASE_URL}/api/delete/member`, {
+          headers: { Authorization: `${accessToken}` },
+        });
+        await AsyncStorage.multiRemove(['accessToken', 'refreshToken']);
+        
+      }catch(error) {
+        if (accessToken) {
+          if (axios.isAxiosError(error)) {
+            console.error({accessToken});
+            console.error("서버 응답:", error.response?.data);
+          } else {
+            console.error("저장 중 에러:", error);
+          }
+        
+        } else {
+          console.log("정상적으로 탈퇴 되었습니다.");
+        }
+      }
+      
+    }catch(Exception){
+      console.log("AccessToken이 없습니다");
+    }
+  }
 
 
 
@@ -197,18 +211,23 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
         },
         
       });
-       console.log('백엔드 응답:', response.data);
+      const code = response.data.data.code;
+      if(code){
+        navigation.navigate("SignupScreen",{code : code})
+      }else{
+        //여기서 토큰을 발행함. 만약 새로운 유저가 가입을 한 것이라면 SignupScreen에 code값을 담아 옮겨주면 된다. 
         const backendAccessToken = response.data.data.access_token;
         const backendRefreshToken = response.data.data.refresh_token;
-        
-        if (backendAccessToken) {
-          const cleanToken = backendAccessToken;
-          await AsyncStorage.setItem('accessToken', cleanToken);
-        }
-        if (backendRefreshToken) {
-          await AsyncStorage.setItem('refreshToken', backendRefreshToken);
-        }
-      navigation.replace('BottomTabNavigator');
+        console.log("backendAccessToken: ",backendAccessToken);
+      if (backendAccessToken) {
+        await AsyncStorage.setItem('accessToken', backendAccessToken);
+      }
+      if (backendRefreshToken) {
+        await AsyncStorage.setItem('refreshToken', backendRefreshToken);
+      }
+      navigation.navigate("BottomTabNavigator");
+      }
+      
     } catch (error) {
       console.log('Google Sign-In Error:', JSON.stringify(error, null, 2));
     }
@@ -265,6 +284,12 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
             source={require("../assets/drawable/google_button.png")}
             style={styles.buttonImage}
           />
+        </TouchableOpacity>
+        <TouchableOpacity 
+          style={styles.loginButton}
+          onPress={debugDelete}
+          >
+          <Text>디버깅용 버튼</Text>
         </TouchableOpacity>
       </View>
     </View>
