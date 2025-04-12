@@ -5,6 +5,8 @@ import ReactAppDependencyProvider
 import GoogleMaps
 import FirebaseCore
 import NaverThirdPartyLogin // ✅ 네이버 SDK import
+import GoogleSignIn 
+
 @main
 class AppDelegate: RCTAppDelegate {
   override func application(
@@ -20,6 +22,7 @@ class AppDelegate: RCTAppDelegate {
 
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
+
 
   // ✅ 네이버 & 카카오 로그인 콜백 처리용 메서드
   override func application(
@@ -41,6 +44,11 @@ class AppDelegate: RCTAppDelegate {
 
     return super.application(application, open: url, options: options)
   }
+
+
+override func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+  return GIDSignIn.sharedInstance.handle(url)
+}
 
   override func sourceURL(for bridge: RCTBridge) -> URL? {
     self.bundleURL()

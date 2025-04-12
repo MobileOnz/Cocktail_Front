@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -13,12 +13,82 @@ import {
   widthPercentage,
   fontPercentage,
 } from "../assets/styles/FigmaScreen";
-import {useNavigation} from "@react-navigation/native";
+import {RouteProp, useNavigation, useRoute} from "@react-navigation/native";
+import { RootStackParamList } from "../Navigation/Navigation";
+import axios from "axios";
+import { API_BASE_URL } from "@env";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { StackScreenProps } from "@react-navigation/stack";
 
+const server = API_BASE_URL;
+type SignupScreenRouteProp = RouteProp<RootStackParamList, "SignupScreen">;
+type SignupScreenProps = StackScreenProps<RootStackParamList,"SignupScreen">;
 
-const SignupScreen = () => {
+const SignupScreen: React.FC<SignupScreenProps> = ({navigation}) => {
+  const route = useRoute<SignupScreenRouteProp>();
+  const signUpCode = route.params?.code;
+  
+  //회원가입 처리 
+  const signUpRequest = async() =>{
+    if(!nickname){
+      console.log("닉네임이 없습니다.");
+      return;
+    }
+    const payload = {
+      code : signUpCode,
+      nickName : nickname,
+      ageTerm : agreements.age,
+      serviceTerm : agreements.terms,
+      marketingTerm : agreements.marketing,
+      adTerm :  agreements.ads,
+    }
+    try{
+      const response = await axios.post(`${server}/api/auth/signup`, payload,{
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      console.log("백엔드 응답",response.data);
+        const backendAccessToken = response.data.data.access_token;
+        const backendRefreshToken = response.data.data.refresh_token;
+        
+        if (backendAccessToken) {
+          console.log(backendAccessToken);
+          await AsyncStorage.setItem('accessToken', backendAccessToken);
+        }
+        if (backendRefreshToken) {
+          console.log(backendRefreshToken);
+          await AsyncStorage.setItem('refreshToken', backendRefreshToken);
+        }
+        navigation.navigate("BottomTabNavigator");
+    }catch(error){
+      if(axios.isAxiosError(error)){
+        console.error("서버 에러 응답",error.response?.data);
+        console.error("에러 코드", error.response?.status);
+      }
+    }
 
-  const navigation = useNavigation();
+  };
+
+  //필수만 bold 처리
+  const textBoldChange = (text : string) => {
+    const boldText = text.slice(0,4);
+    const afterText = text.slice(4);
+    if(boldText === "(필수)"){
+      return (
+        <Text style={styles.individualAgreementText}>
+          <Text style={{fontWeight : "bold"}}>{boldText}</Text>
+          <Text>{afterText}</Text>
+        </Text>
+      )
+    }
+    return(
+      <Text style={styles.individualAgreementText}>
+        {text}
+      </Text>
+    )
+
+  }
   const [nickname, setNickname] = useState("");
   const [agreements, setAgreements] = useState({
     all: false,
@@ -64,7 +134,8 @@ const SignupScreen = () => {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       {/* 뒤로가기 버튼 */}
-      <TouchableOpacity style={styles.backButton}>
+      <TouchableOpacity style={styles.backButton}
+      onPress={() => navigation.goBack()}>
         <Image
           source={require("../assets/drawable/left-chevron.png")}
           style={styles.backIcon}
@@ -137,7 +208,7 @@ const SignupScreen = () => {
                 }
                 style={styles.checkbox}
               />
-              <Text style={styles.individualAgreementText}>{text}</Text>
+              {textBoldChange(text)}
               <TouchableOpacity onPress={() => toggleDetails(key as keyof typeof detailsVisible)}>
                 <Image
                   source={require("../assets/drawable/chevron.png")}
@@ -165,7 +236,7 @@ const SignupScreen = () => {
       <TouchableOpacity
         style={[styles.startButton, isButtonDisabled && styles.startButtonDisabled]}
         disabled={isButtonDisabled}
-        onPress= {()=> navigation.navigate("BottomTabNavigator")}
+        onPress= {()=> signUpRequest()}
       >
         <Text
           style={[
@@ -191,6 +262,7 @@ const styles = StyleSheet.create({
       position: "absolute",
       top: heightPercentage(15), // 🔥 더 위로 조정
       left: widthPercentage(16),
+      zIndex : 10,
     },
     backIcon: {
       width: widthPercentage(12),

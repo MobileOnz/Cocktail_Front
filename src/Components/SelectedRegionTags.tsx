@@ -8,11 +8,11 @@ interface SelectedRegionTagsProps {
   onRemoveAllRegions: () => void;
 }
 
-const SelectedRegionTags: React.FC<SelectedRegionTagsProps> = ({ selectedRegions, onRemoveRegion }) => {
+const SelectedRegionTags: React.FC<SelectedRegionTagsProps> = ({ selectedRegions, onRemoveRegion, onRemoveAllRegions}) => {
     return (
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.container}>
           {/* 초기화 버튼 */}
-          <TouchableOpacity onPress={() => setSelectedRegions([])} >
+          <TouchableOpacity onPress={() => {onRemoveAllRegions} } >
           <Image source={require("../assets/drawable/reset.png")} style={styles.resetIcon} />
           </TouchableOpacity>
     

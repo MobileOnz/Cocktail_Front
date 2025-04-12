@@ -8,63 +8,11 @@ import SelectionListSheet from "./SelectionListSheet";
 import { widthPercentage, heightPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
 import { useNavigation } from "@react-navigation/native"; 
 import MenuListDetail from "./MenuListDetail";
-import PinClickView from "./PinClickView";
 import MyBardetailListBottomSheet from "./MyBardetailListBottomSheet";
-
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
-import { API_BASE_URL } from "@env";
-const myBars = [
-  {
-    listId: 1,
-    title: "Label",
-    barAdress: "거리",
-    image: require("../assets/drawable/barExample.png"),
-    hashtageList: ["#칵테일명", "#칵테일명", "#다른주류명", "#안주명"],
-  },
-  {
-    listId: 2,
-    title: "Label",
-    barAdress: "거리",
-    image: require("../assets/drawable/barExample.png"),
-    hashtageList: ["#칵테일명", "#칵테일명", "#다른주류명", "#안주명"],
-  },
-];
-
-const nearBars = [
-  {
-    listId: 1,
-    title: "Label",
-    barAdress: "거리",
-    image: require("../assets/drawable/barExample.png"),
-    hashtageList: ["#칵테일명", "#칵테일명", "#다른주류명", "#안주명"],
-  },
-];
-const myList = [
-  {
-    id: "1",
-    name: "메인 컨셉",
-    location: "999",
-    tags: ["#Sub", "#Sub", "#Sub"],
-    icon: require("../assets/drawable/listicon1.png"),
-  },
-  {
-    id: "2",
-    name: "메인 컨셉",
-    location: "999",
-    tags: ["#Sub", "#Sub", "#Sub"],
-    icon: require("../assets/drawable/listicon2.png"),
-  },
-  {
-    id: "3",
-    name: "메인 컨셉",
-    location: "999",
-    tags: ["#Sub", "#Sub", "#Sub"],
-    icon: require("../assets/drawable/listicon3.png"),
-
-  },
-];
-
+import axios from "axios";
+import {API_BASE_URL} from "@env"
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import LoginBottomSheet from "./LoginBottomSheetProps";
 
 const BaseBottomSheet = ({ 
   animatedPosition, 
@@ -145,12 +93,49 @@ const BaseBottomSheet = ({
     fetchBookmarkedBars();
   }, []);
 
-  
+
+  const [isLoginSheetVisible, setLoginSheetVisible] = useState(false);
+  const [barData,setBarData] = useState([]);
+  useEffect(() => {
+    const fetchNearbyBars = async () => {
+      
+      try{
+        const response = await axios.get(`${API_BASE_URL}/api/location/nearby?x=126.9812675&y=37.5718599`)
+        if(response.data.code ===1){
+          console.log("정상적으로 근처 칵테일바 데이터 접근 완료")
+          const transformed = response.data.data.map((bar) => ({
+            id: bar.id,
+            title: bar.bar_name,                     
+            barAdress: bar.address,                  
+            thumbNail: { uri: bar.thumbnail },           
+            hashtagList: bar.menus.map((m) => `#${m.name}`), 
+          }));
+          console.log(transformed);
+          setBarData(transformed);
+        }else
+        console.log("서버 요청중 에러발생",response.data.msg);
+      }catch(error){
+        console.log("잘못된 접근", error);
+      }
+    }
+    fetchNearbyBars();
+  }, []);
+
+const headerCheck = async () =>{
+  const token = await AsyncStorage.getItem("accessToken");
+  if(token){
+    handleTabPress("myList")
+  }else{
+    setLoginSheetVisible(true);
+  }
+}
+
   useEffect(() => {
     if (selectedTab === "detail") {
       bottomSheetRef.current?.expand();
     }
   }, [selectedTab]);
+
 
   // ✅ sections 설정
 const sections = useMemo(() => {
@@ -159,24 +144,33 @@ const sections = useMemo(() => {
     } else if (selectedTab === "myList") {
       return [{ title: "나의 칵테일 바", data: myBars }];
     } else if (selectedTab === "region") {
-      return [{ title: "근처 칵테일 바", data: nearBars }];
+      return [{ title: "근처 칵테일 바", data: barData }];
     }
     return [
       { title: "나의 칵테일 바", data: myBars },
-      { title: "근처 칵테일 바", data: nearBars },
+      { title: "근처 칵테일 바", data: barData },
     ];
   }, [selectedTab, barList, myBars]);
 
-  // 탭 변경 핸들러
-  const handleTabPress = (tab: "search" | "myList" | "region" | "bookmark" | "detail"|"pin"|"myBardetailList", bar = null) => {
+  const handleTabPress = (
+    tab: "search" | "myList" | "region" | "bookmark" | "detail" | "pin" | "myBardetailList",
+    bar = null
+  ) => {
     if (tab === "bookmark") {
-      setSelectedBarId(bar?.id ?? null);
+      setSelectedBarId(bar?.id ?? null);  // ✅ 리스트 저장용
+      setSelectedBar(bar);                // ✅ UI 표시용 or Detail 화면용
     }
+
+    if (tab === "detail") {
+      setSelectedBar(bar); // ✅ 상세 바 정보 전달용
+    }
+
     setSelectedTab(prev => (prev === tab ? "search" : tab));
   };
 
+
   return (
-    
+    <>
     <BottomSheet 
     ref={bottomSheetRef}
     index={0} 
@@ -190,7 +184,7 @@ const sections = useMemo(() => {
       <View style={styles.sheetHeader}>
         <TouchableOpacity
           style={[styles.listButton, selectedTab === "myList" && styles.activeButton]}
-          onPress={() => handleTabPress("myList")}
+          onPress={() => headerCheck()}
         >
           <Text style={[styles.listText, selectedTab === "myList" && styles.activeText]}>나의 리스트</Text>
         </TouchableOpacity>
@@ -273,6 +267,15 @@ const sections = useMemo(() => {
   />
 )}
     </BottomSheet>
+     <LoginBottomSheet
+      isVisible={isLoginSheetVisible}
+      onClose={() => setLoginSheetVisible(false)}
+      onLogin={() => {
+        setLoginSheetVisible(false);
+        navigation.navigate("Login");
+      }}
+    />
+  </>
   );
 };
 

@@ -13,19 +13,61 @@ import MapView from "react-native-maps";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API_BASE_URL } from "@env";
 
+import Animated, {
+  useAnimatedStyle,
+  interpolate,
+} from "react-native-reanimated";
+import { useSharedValue } from "react-native-reanimated";
+
 type RootStackParamList = {
   SearchScreen: undefined;
-  Maps: { searchCompleted?: boolean; selectedRegions? : string[], searchQuery : string };
+  Maps: { searchCompleted?: boolean; selectedRegions? : string[], searchQuery : string,
+     resetRequested? : boolean };
 };
+import { Dimensions } from "react-native";
 
 type MapsProps = StackScreenProps<RootStackParamList, "Maps">;
+
+const buttonStartY = heightPercentage(980); // 예: 바텀시트가 "10%"일 때 버튼은 아래쪽
+const buttonEndY = heightPercentage(100);
+const CurrentLocationButton = ({ animatedPosition, onPress }) => {
+  const animatedStyle = useAnimatedStyle(() => {
+    const translateY = interpolate(
+      animatedPosition.value,
+      [0,800],
+      [buttonEndY, buttonStartY],
+      "clamp"
+    );
+    return {
+      transform: [{ translateY }],
+      position: "absolute",
+      right: 20,
+    };
+  });
+
+  return (
+    <Animated.View style={animatedStyle}>
+      <TouchableOpacity style={styles.currentLocationButton} onPress={onPress}>
+        <Image
+          source={require("../assets/drawable/currentlocation.png")}
+          style={styles.locationIcon}
+          resizeMode="contain"
+        />
+      </TouchableOpacity>
+    </Animated.View>
+  );
+};
 
 const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
   const mapRef = useRef<MapView>(null);
 
+  const animatedPosition = useSharedValue(0);
+  
   const [isSearchCompleted, setIsSearchCompleted] = useState(false);
   const [selectedRegions, setSelectedRegions] = useState<string[]>([]);
   const {searchQuery} = route.params|| "";
+  
+  
 
   const [barList, setBarList] = useState([]);
   const [selectedTab, setSelectedTab] = useState("search");
@@ -114,7 +156,10 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
     if (route.params?.selectedRegions) {
       setSelectedRegions(route.params.selectedRegions);
     }
-  }, [route.params?.searchCompleted, route.params?.selectedRegions]);
+    if (route.params?.resetRequested){
+      navigation.setParams({ resetRequested: false });
+    }
+  }, [route.params?.searchCompleted, route.params?.selectedRegions, route.params?.resetRequested]);
 
   const handleRemoveRegion = (region: string) => {
     setSelectedRegions((prevRegions) => prevRegions.filter((r) => r !== region));
@@ -141,6 +186,7 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
               navigation.navigate("Maps", { searchCompleted: true });
             }}
           />
+
           {/* 검색 초기화 버튼 */}
           <TouchableOpacity style={styles.clearButton} onPress={() => navigation.navigate("SearchScreen")}>
             <Text style={styles.buttonText}>X</Text>
@@ -161,11 +207,13 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
           markerList={markerList}
         />
       </View>
-
-      <TouchableOpacity style={styles.currentLocationButton}>
-    <Image source={require("../assets/drawable/currentlocation.png")} style={styles.locationIcon} resizeMode="contain" />
-  </TouchableOpacity>
-
+      <CurrentLocationButton
+    animatedPosition={animatedPosition}
+    onPress={() => {
+    
+    console.log("현재 위치 버튼 클릭됨");
+  }}
+/>
       <View style={styles.searchContainer}>
   
 {!isSearchCompleted &&(
@@ -179,7 +227,10 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
       <SelectedRegionTags 
         selectedRegions={selectedRegions} 
         onRemoveRegion={handleRemoveRegion} 
-        
+        onRemoveAllRegions={() => {
+          console.log("전체 초기화 실행됨"); // ✅ 로그 찍히는지 확인
+          setSelectedRegions([]);
+        }}
       />
     </View>
   )}
@@ -189,6 +240,7 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
       <SelectedRegions selectedRegions={selectedRegions} />
     ) : (
       <BaseBottomSheet
+        animatedPosition={animatedPosition}
         barList={barList}
         setBarList={setBarList}
         selectedTab={selectedTab}
