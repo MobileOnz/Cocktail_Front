@@ -16,10 +16,9 @@ import MoreOptionMenu from "../Components/MoreOptionMenu";
 import { PaperProvider } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
 import { API_BASE_URL } from "@env";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import axios from "axios";
 import { ScrollView } from "react-native-gesture-handler";
 import instance from "../tokenRequest/axios_interceptor";
+import LoginBottomSheet from "./LoginBottomSheetProps";
 
 const server = API_BASE_URL;
 
@@ -42,6 +41,7 @@ const imageMap = {
 };
 
 const MyListSheetContent = ({ handleTabPress }) => {
+  const [loginModalVisible, setLoginModalVisible] = useState(false);
   const navigation = useNavigation();
   const [myList, setMyList] = useState<MyListItem[]>([]);
 
@@ -49,7 +49,6 @@ const fetchMyList = async () => {
   
   try {
     const response = await instance.get('/api/list/all');
-
     const transformed = response.data.data.map((item) => ({
       id: item.id.toString(),
       name: item.main_tag.name,
@@ -63,6 +62,9 @@ const fetchMyList = async () => {
     setMyList(transformed);
   } catch (error) {
     console.error('나의 리스트 가져오기 실패:', error);
+    if (error instanceof Error && error.message.includes("로그인 필요")) {
+      setLoginModalVisible(true);
+    }
 
     if (error.message === '리프레시 토큰 만료') {
      navigation.navigate("Login" as never);
@@ -100,17 +102,19 @@ const fetchMyList = async () => {
 
   return (
     <PaperProvider>
+  <>
+    <View style={{ flex: 1 }}>
       <ScrollView contentContainerStyle={styles.container}>
+        {/* 헤더 */}
         <View style={styles.headerContainer}>
           <Text style={styles.header}>나의 리스트</Text>
           <View style={styles.line}></View>
         </View>
 
+        {/* 새 리스트 버튼 */}
         <TouchableOpacity
           style={styles.newListButton}
-          onPress={() =>
-            navigation.navigate("CreateNewListScreen" as never)
-          }
+          onPress={() => navigation.navigate("CreateNewListScreen" as never)}
         >
           <Image
             source={require("../assets/drawable/newlist.png")}
@@ -119,6 +123,7 @@ const fetchMyList = async () => {
           <Text style={styles.newListText}>새 리스트 만들기</Text>
         </TouchableOpacity>
 
+        {/* 리스트 아이템들 */}
         {myList.map((item) => (
           <TouchableOpacity
             key={item.id}
@@ -154,7 +159,20 @@ const fetchMyList = async () => {
           </TouchableOpacity>
         ))}
       </ScrollView>
-    </PaperProvider>
+
+      <LoginBottomSheet
+        isVisible={loginModalVisible}
+        onClose={() => {setLoginModalVisible(false);
+          handleTabPress("search");
+           }}
+        onLogin={() => {
+          setLoginModalVisible(false);
+          navigation.navigate("Login" as never);
+        }}
+      />
+    </View>
+  </>
+</PaperProvider>
   );
 };
 

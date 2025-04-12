@@ -11,6 +11,9 @@ const instance = axios.create({
 instance.interceptors.request.use(
   async (config) => {
     const accessToken = await getToken();
+    if (!accessToken) {
+        throw new Error("토큰 없음: 로그인 필요");
+      }
     config.headers["Content-Type"] = "application/json";
     config.headers["Authorization"] = `${accessToken}`;
     return config;
