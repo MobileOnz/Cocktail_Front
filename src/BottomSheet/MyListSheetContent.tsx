@@ -4,7 +4,6 @@ import {
   View,
   Text,
   StyleSheet,
-  FlatList,
   TouchableOpacity,
   Image,
 } from "react-native";
@@ -20,6 +19,7 @@ import { API_BASE_URL } from "@env";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import { ScrollView } from "react-native-gesture-handler";
+import instance from "../tokenRequest/axios_interceptor";
 
 const server = API_BASE_URL;
 
@@ -45,32 +45,30 @@ const MyListSheetContent = ({ handleTabPress }) => {
   const navigation = useNavigation();
   const [myList, setMyList] = useState<MyListItem[]>([]);
 
-  const fetchMyList = async () => {
-    try {
-      const token = await AsyncStorage.getItem("accessToken");
-      if (!token) return;
+const fetchMyList = async () => {
+  
+  try {
+    const response = await instance.get('/api/list/all');
 
-      const response = await axios.get(`${server}/api/list/all`, {
-        headers: {
-          Authorization: `${token}`,
-        },
-      });
+    const transformed = response.data.data.map((item) => ({
+      id: item.id.toString(),
+      name: item.main_tag.name,
+      location: null,
+      tags: Object.values(item.sub_tags)
+        .flat()
+        .map((tag) => `#${tag.name}`),
+      icon_tag: item.icon_tag ?? 1,
+    }));
 
-      const transformed = response.data.data.map((item) => ({
-        id: item.id.toString(),
-        name: item.main_tag.name,
-        location: null,
-        tags: Object.values(item.sub_tags)
-          .flat()
-          .map((tag) => `#${tag.name}`),
-        icon_tag : item.icon_tag ?? 1,
-      }));
+    setMyList(transformed);
+  } catch (error) {
+    console.error('나의 리스트 가져오기 실패:', error);
 
-      setMyList(transformed);
-    } catch (error) {
-      console.error("나의 리스트 가져오기 실패:", error);
+    if (error.message === '리프레시 토큰 만료') {
+     navigation.navigate("Login" as never);
     }
-  };
+  }
+};
 
   useFocusEffect(
     useCallback(() => {
@@ -88,19 +86,15 @@ const MyListSheetContent = ({ handleTabPress }) => {
 
   const handleDelete = async (itemId : number) => {
     try {
-      const token = await AsyncStorage.getItem("accessToken");
-      if (!token) return;
-  
-      await axios.delete(`${server}/api/list/${itemId}`, {
-        headers: {
-          Authorization: `${token}`,
-        },
-      });
-  
-      console.log(`리스트 ${itemId} 삭제 완료`);
-      fetchMyList(); // 리스트 다시 불러오기
+      await instance.delete(`/api/list/${itemId}`);
+    console.log(`리스트 ${itemId} 삭제 완료`);
+    fetchMyList(); 
     } catch (error) {
       console.error("리스트 삭제 실패:", error);
+      if (error.message === '리프레시 토큰 만료') {
+        navigation.navigate("Login" as never);
+       }
+
     }
   };
 

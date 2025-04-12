@@ -19,13 +19,27 @@ export async function isTokenExpired(): Promise<boolean> {
     return true;
   }
 }
+export async function isRefreshTokenExpired(): Promise<boolean> {
+    const token = await AsyncStorage.getItem("refreshToken");
+    if (!token) return true;
+  
+    try {
+      const decoded: any = jwtDecode(token);
+      const exp = decoded.exp * 1000; // 밀리초 단위
+      return Date.now() > exp;
+    } catch (err) {
+      console.warn("리프레시 토큰 디코딩 실패", err);
+      return true; // 디코딩 실패 시 만료된 것으로 처리
+    }
+  }
 
 export async function tokenRefresh() {
     try{
-        const refreshToken = AsyncStorage.getItem("refreshToken");
+        const refreshToken = await AsyncStorage.getItem("refreshToken");
+        console.log("🔄 보내는 refresh token:", refreshToken);
         const response = await axios.post(`${API_BASE_URL}/api/auth/refresh`,null,{
             headers: {
-                Authorization: `${refreshToken}`,
+              'Refresh-Token': refreshToken,
               },
         });
 
@@ -45,7 +59,7 @@ export async function tokenRefresh() {
 
     } catch (error) {
     console.error('토큰 갱신 실패:', error);
-    
+    throw error;
   }
     
 }
