@@ -162,23 +162,6 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
         }
       });
   };
-  const signInWithGoogle = async () => {
-    try {
-      const result = await authorize(config);
-      const { authorizationCode } = result;
-
-      const response = await axios.post(`${server}/api/auth/social-login`, {
-        provider: 'google',
-        code: authorizationCode,
-        state: null,
-        accessToken: null,
-      });
-
-      console.log('✅ 구글 로그인 성공:', response.data);
-    } catch (error) {
-      console.error('❌ 구글 로그인 실패:', error);
-    }
-  };
 
 
   const debugDelete = async () => {

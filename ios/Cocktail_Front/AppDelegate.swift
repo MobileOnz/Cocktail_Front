@@ -23,32 +23,32 @@ class AppDelegate: RCTAppDelegate {
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
 
+override func application(
+  _ application: UIApplication,
+  open url: URL,
+  options: [UIApplication.OpenURLOptionsKey : Any] = [:]
+) -> Bool {
+  // ✅ 네이버 로그인 처리
+  if url.scheme == "naverlogin" {
+    return NaverThirdPartyLoginConnection
+      .getSharedInstance()?
+      .application(application, open: url, options: options) ?? false
+  }
 
-  // ✅ 네이버 & 카카오 로그인 콜백 처리용 메서드
-  override func application(
-    _ application: UIApplication,
-    open url: URL,
-    options: [UIApplication.OpenURLOptionsKey : Any] = [:]
-  ) -> Bool {
-    // 네이버
-    if url.scheme == "naverlogin" {
-      return NaverThirdPartyLoginConnection
-        .getSharedInstance()?
-        .application(application, open: url, options: options) ?? false
-    }
-
-    // 카카오
+// 카카오
     // if RNKakaoLogins.isKakaoTalkLoginUrl(url) {
     //   return RNKakaoLogins.handleOpenUrl(url)
     // }
 
-    return super.application(application, open: url, options: options)
+  // ✅ 구글 로그인 처리
+  if GIDSignIn.sharedInstance.handle(url) {
+    return true
   }
 
-
-override func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
-  return GIDSignIn.sharedInstance.handle(url)
+  // ✅ 기타 기본 처리 (super)
+  return super.application(application, open: url, options: options)
 }
+
 
   override func sourceURL(for bridge: RCTBridge) -> URL? {
     self.bundleURL()

@@ -1774,7 +1774,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNNaverLogin (4.0.5):
+  - RNNaverLogin (4.0.4):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2360,7 +2360,7 @@ SPEC CHECKSUMS:
   RNGestureHandler: f7b3a72c099e1e29b5b81688678bc9108d44057c
   RNGoogleMobileAds: 2816ccf723055b85d4d1708919fe66918d7deeb2
   RNGoogleSignin: 1a215139c537bb0430abdb9ff9a8e437578e515d
-  RNNaverLogin: 2f5e64145427ffe78f840db591a8b297949e4b47
+  RNNaverLogin: da97da237828a05a310bbb83ef11292be830091d
   RNReanimated: fe5c52894886953248a81a10b2a9b6eeb5398d61
   RNScreens: fc78b9b5a1274426d7a59b7d07c272bba13604fa
   RNVectorIcons: 1743deffb9c4b70f253704075dbac432cc802e74

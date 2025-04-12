@@ -47,9 +47,10 @@ const MainBottomSheet = ({ sections, showMyBars, handleTabPress, setSelectedTab,
         <Text style={styles.itemDistance}>{item.barAdress}</Text>
         <Text style={{ color: "#B9B6AD", fontSize: fontPercentage(12) }}>인기메뉴</Text>
         <View style={styles.hashtagContainer}>
-          {item.hashtagList.map((tag, idx) => (
-            <Text key={idx} style={styles.hashtag}>{tag}</Text>
-          ))}
+        {Array.isArray(item.hashtagList) && item.hashtagList.map((tag, idx) => (
+          <Text key={idx} style={styles.hashtag}>{tag}</Text>
+        ))}
+
         </View>
       </View>
       {/* 책갈피 아이콘 */}
@@ -80,7 +81,7 @@ const MainBottomSheet = ({ sections, showMyBars, handleTabPress, setSelectedTab,
   return (
       <BottomSheetSectionList
         sections={getFilteredSections()}
-        keyExtractor={(item) => item.id.toString()}
+        keyExtractor={(item, index) => item?.id?.toString?.() ?? index.toString()}
         renderItem={renderBarItem}
         renderSectionHeader={renderSectionHeader}
         stickySectionHeadersEnabled={false}
