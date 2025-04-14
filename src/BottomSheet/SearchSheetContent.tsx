@@ -36,8 +36,10 @@ const MainBottomSheet = ({ sections, showMyBars, handleTabPress, setSelectedTab,
     <>
       <TouchableOpacity
         onPress={() => {
-          setSelectedBarId(item.listId);  // ✅ 상세조회용 바 ID 저장
-          setSelectedTab("detail");       // ✅ 상세 탭으로 전환
+          // setSelectedBarId(item.id);  // ✅ 상세조회용 바 ID 저장
+          console.log("✅ 바 디테일 보기로 전달:", item);
+          // setSelectedTab("detail", item);       // ✅ 상세 탭으로 전환
+          handleTabPress("detail", item);
         }}
       >
       <View style={styles.itemContainer}>

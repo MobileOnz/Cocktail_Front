@@ -150,7 +150,7 @@ const sections = useMemo(() => {
       { title: "나의 칵테일 바", data: myBars },
       { title: "근처 칵테일 바", data: barData },
     ];
-  }, [selectedTab, barList, myBars]);
+  }, [selectedTab, barList, myBars, barData]);
 
   const handleTabPress = (
     tab: "search" | "myList" | "region" | "bookmark" | "detail" | "pin" | "myBardetailList",
@@ -162,10 +162,13 @@ const sections = useMemo(() => {
     }
 
     if (tab === "detail") {
+      console.log("📦 handleTabPress로 전달된 bar:", bar);
+      setSelectedBarId(bar?.id ?? null);
       setSelectedBar(bar); // ✅ 상세 바 정보 전달용
     }
 
-    setSelectedTab(prev => (prev === tab ? "search" : tab));
+    // setSelectedTab(prev => (prev === tab ? "search" : tab));
+    setSelectedTab(tab);
   };
 
 
@@ -255,7 +258,7 @@ const sections = useMemo(() => {
       ) : selectedTab === "detail" ? (
           <MenuListDetail 
             handleTabPress={handleTabPress}
-            barId={selectedBarId}
+            barId={selectedBar?.id}
             />
       ) : (
       <SearchSheetContent

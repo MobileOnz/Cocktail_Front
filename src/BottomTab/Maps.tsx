@@ -102,13 +102,13 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
           }
   
           const formatted = result.data.map((bar) => ({
-            listId: bar.id,
+            id: bar.id,
             title: bar.bar_name,
             barAdress: bar.address || "주소 없음",
-            image: bar.thumbnail 
+            thumbNail: bar.thumbnail 
               ? { uri: bar.thumbnail } 
               : require("../assets/drawable/barExample.png"),
-            hashtageList: bar.menus.slice(0, 4).map(menu => `#${menu.name}`),
+            hashtagList: bar.menus.slice(0, 4).map(menu => `#${menu.name}`),
           }));
   
           //마커용 데이터 저장

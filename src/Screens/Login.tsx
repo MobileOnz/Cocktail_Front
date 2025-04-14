@@ -106,7 +106,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
             navigation.goBack();
 
           }, 2000);
-          await AsyncStorage.setItem('accessToken', backendAccessToken);
+          // await AsyncStorage.setItem('accessToken', backendAccessToken);
 
         }
         if (backendRefreshToken) {
