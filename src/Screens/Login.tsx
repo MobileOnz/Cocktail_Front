@@ -13,6 +13,8 @@ import axios from 'axios';
 import {API_BASE_URL} from '@env';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+import {useToast} from '../Components/ToastContext';
+
 //env에서 서버 주소 가져옴
 const server = API_BASE_URL;
 
@@ -44,6 +46,8 @@ const serviceUrlScheme = "naverlogin";
 type LoginScreenProps = StackScreenProps<RootStackParamList, "Login">;
 
 const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
+  const {showToast} = useToast();
+
   useEffect(() => {
     NaverLogin.initialize({
       appName,
@@ -106,6 +110,11 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
         if (backendAccessToken) {
           const cleanToken = backendAccessToken.replace(/^Bearer\s/, '');
           await AsyncStorage.setItem('accessToken', cleanToken);
+          showToast("로그인 되었습니다.");
+          setTimeout(() => {
+            navigation.goBack();
+
+          }, 2000);
         }
         if (backendRefreshToken) {
           await AsyncStorage.setItem('refreshToken', backendRefreshToken);

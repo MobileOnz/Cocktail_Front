@@ -11,7 +11,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import MobileAds from "react-native-google-mobile-ads";
 import { firebase } from "@react-native-firebase/app";
 
-
+import { ToastProvider } from "./src/Components/ToastContext";
 
 function App(): React.JSX.Element {
   const isDarkMode = useColorScheme() === "dark";
@@ -55,7 +55,11 @@ function App(): React.JSX.Element {
     );
   }
 
-  return <Navigation />;
+  return (
+    <ToastProvider>
+      <Navigation />
+    </ToastProvider>
+    );
 }
 
 const styles = StyleSheet.create({
