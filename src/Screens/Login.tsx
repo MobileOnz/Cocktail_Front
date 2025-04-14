@@ -15,6 +15,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import { RootStackParamList } from "../Navigation/Navigation";
 
+import {useToast} from '../Components/ToastContext';
+
 //env에서 서버 주소 가져옴
 const server = API_BASE_URL;
 
@@ -40,8 +42,11 @@ const serviceUrlScheme = "naverlogin";
 type LoginScreenProps = StackScreenProps<RootStackParamList, "Login">;
 
 const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
+  const {showToast} = useToast();
+
 
   //네이버 로그인 초기 설정.
+
   useEffect(() => {
      GoogleSignin.configure({
       offlineAccess: true,
@@ -94,6 +99,13 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
           const backendRefreshToken = response.data.data.refresh_token;
           console.log("backendAccessToken: ",backendAccessToken);
         if (backendAccessToken) {
+          const cleanToken = backendAccessToken.replace(/^Bearer\s/, '');
+          await AsyncStorage.setItem('accessToken', cleanToken);
+          showToast("로그인 되었습니다.");
+          setTimeout(() => {
+            navigation.goBack();
+
+          }, 2000);
           await AsyncStorage.setItem('accessToken', backendAccessToken);
 
         }
