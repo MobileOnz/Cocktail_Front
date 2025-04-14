@@ -57,9 +57,14 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
   
   const [isSearchCompleted, setIsSearchCompleted] = useState(false);
   const [selectedRegions, setSelectedRegions] = useState<string[]>([]);
+  const [activeRegion, setActiveRegion] = useState<string|null>(null);
   const {searchQuery} = route.params|| "";
   
-  
+  useEffect(() => {
+    if (selectedRegions.length > 0 && !activeRegion) {
+      setActiveRegion(selectedRegions[0]); 
+    }
+  }, [selectedRegions]);
 
 
   useEffect(() => {
@@ -148,7 +153,10 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
   )}
 
 </View>
-      {selectedRegions.length > 0 ? <SelectedRegions selectedRegions={selectedRegions} /> : <BaseBottomSheet animatedPosition={animatedPosition} />}
+<BaseBottomSheet
+  animatedPosition={animatedPosition}
+  selectedRegions={selectedRegions}
+/>
     </View>
   );
 };

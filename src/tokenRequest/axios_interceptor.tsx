@@ -1,5 +1,5 @@
 import { API_BASE_URL } from "@env";
-import { getToken, isTokenExpired, tokenRefresh, isRefreshTokenExpired } from "./Token";
+import { getToken, isTokenExpired, tokenRefresh } from "./Token";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -11,11 +11,14 @@ const instance = axios.create({
 instance.interceptors.request.use(
   async (config) => {
     const accessToken = await getToken();
+
     if (!accessToken) {
-        throw new Error("토큰 없음: 로그인 필요");
-      }
+      throw new Error("⛔️ 토큰 없음: 로그인 필요");
+    }
+
     config.headers["Content-Type"] = "application/json";
     config.headers["Authorization"] = `${accessToken}`;
+
     return config;
   },
   (error) => {
@@ -26,32 +29,36 @@ instance.interceptors.request.use(
 instance.interceptors.response.use(
   (response) => response,
   async (error) => {
-    if (error.response?.status === 401) {
+    const originalRequest = error.config;
+
+    // access token 만료로 401이 발생한 경우
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true; // 무한 루프 방지
+
       try {
         const tokenExpired = await isTokenExpired();
-        const refreshExpired = typeof isRefreshTokenExpired === "function"
-          ? await isRefreshTokenExpired()
-          : true;
-
-        if (refreshExpired) {
-            await AsyncStorage.clear();
-            
-          return Promise.reject(new Error("리프레시 토큰 만료"));
-        }
 
         if (tokenExpired) {
-          await tokenRefresh();
+          const refreshExpired = await tokenRefresh(); // true면 만료됨
+
+          if (refreshExpired) {
+            await AsyncStorage.clear(); // 로그아웃 처리
+            return Promise.reject(new Error("⛔️ 리프레시 토큰 만료: 재로그인 필요"));
+          }
+
+          // 새 access token을 다시 설정 후 재요청
+          const newToken = await getToken();
+          originalRequest.headers["Content-Type"] = "application/json";
+          originalRequest.headers["Authorization"] = `${newToken}`;
+
+          return axios(originalRequest);
         }
-
-        const newToken = await getToken();
-        error.config.headers = {
-          "Content-Type": "application/json",
-          Authorization: `${newToken}`,
-        };
-
-        return await axios.request(error.config);
       } catch (refreshError) {
-        return Promise.reject(refreshError);
+        return Promise.reject(
+          refreshError instanceof Error
+            ? refreshError
+            : new Error("리프레시 실패: " + JSON.stringify(refreshError))
+        );
       }
     }
 

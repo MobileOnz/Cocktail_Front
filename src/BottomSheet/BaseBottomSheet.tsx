@@ -13,17 +13,25 @@ import axios from "axios";
 import {API_BASE_URL} from "@env"
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import LoginBottomSheet from "./LoginBottomSheetProps";
+import SelectedRegions from "./SelectedRegions";
 
-const BaseBottomSheet = ({ animatedPosition }) => {
+const BaseBottomSheet = ({ animatedPosition, selectedRegions }) => {
 
   const navigation = useNavigation();
   const snapPoints = useMemo(() => ["10%", "30%", "76%"], []);
-  const [selectedTab, setSelectedTab] = useState<"search" | "myList" | "region" | "bookmark"| "detail"|"myBardetailList">("search");
+  const [selectedTab, setSelectedTab] = useState<"search" | "myList" | "region"|"regionDetail" | "bookmark"| "detail"|"myBardetailList">("search");
   const [selectedBar, setSelectedBar] = useState(null);
   const bottomSheetRef = useRef<BottomSheet>(null);
   const [isLoginSheetVisible, setLoginSheetVisible] = useState(false);
   const [barData,setBarData] = useState([]);
+  const [sheetReady, setSheetReady] = useState(false);
+
   useEffect(() => {
+    if (selectedRegions.length > 0) {
+      setSelectedTab("regionDetail");
+    } else {
+      setSelectedTab("search"); 
+    }
     const fetchNearbyBars = async () => {
       
       try{
@@ -46,7 +54,8 @@ const BaseBottomSheet = ({ animatedPosition }) => {
       }
     }
     fetchNearbyBars();
-  }, []);
+  }, [selectedRegions]);
+  
 const headerCheck = async () =>{
   const token = await AsyncStorage.getItem("accessToken");
   if(token){
@@ -72,7 +81,7 @@ const headerCheck = async () =>{
   }, [selectedTab, barData]);
 
   // 탭 변경 핸들러
-  const handleTabPress = (tab: "search" | "myList" | "region" | "bookmark" | "detail"|"pin"|"myBardetailList", bar = null) => {
+  const handleTabPress = (tab: "search" | "myList" | "region"|"regionDetail" | "bookmark" | "detail"|"pin"|"myBardetailList", bar = null) => {
     if (tab === "bookmark" || tab ==="detail") {
       setSelectedBar(bar);
     }
@@ -81,32 +90,40 @@ const headerCheck = async () =>{
 
   return (
     <>
-    <BottomSheet 
-    ref={bottomSheetRef}
-    index={0} 
-    snapPoints={snapPoints} 
-    animatedPosition={animatedPosition}
-    enablePanDownToClose={false} 
-    backgroundStyle={{ backgroundColor: theme.background }}
-    containerStyle={{ position: 'absolute', zIndex: 100 }}>
-    {selectedTab !== "detail" && (
-      /* 네비게이션 버튼 */
-      <View style={styles.sheetHeader}>
-        <TouchableOpacity
-          style={[styles.listButton, selectedTab === "myList" && styles.activeButton]}
-          onPress={() => headerCheck()}
-        >
-          <Text style={[styles.listText, selectedTab === "myList" && styles.activeText]}>나의 리스트</Text>
-        </TouchableOpacity>
+<BottomSheet
+  ref={bottomSheetRef}
+  index={0}
+  snapPoints={snapPoints}
+  animatedPosition={animatedPosition}
+  onLayout={() => {
+    setSheetReady(true);
+  }}
+  enablePanDownToClose={false}
+  backgroundStyle={{ backgroundColor: theme.background }}
+  containerStyle={{ position: 'absolute', zIndex: 100 }}
+>
+  
+{selectedTab !== "detail" && selectedTab !== "regionDetail" && (
+  <View style={styles.sheetHeader}>
+    <TouchableOpacity
+      style={[styles.listButton, selectedTab === "myList" && styles.activeButton]}
+      onPress={() => headerCheck()}
+    >
+      <Text style={[styles.listText, selectedTab === "myList" && styles.activeText]}>
+        나의 리스트
+      </Text>
+    </TouchableOpacity>
 
-        <TouchableOpacity
-          style={[styles.listButton, selectedTab === "region" && styles.activeButton]}
-          onPress={() => navigation.navigate("RegionSelectScreen")}
-        >
-          <Text style={[styles.listText, selectedTab === "region" && styles.activeText]}>지역</Text>
-        </TouchableOpacity>
-      </View>
-    )}
+    <TouchableOpacity
+      style={[styles.listButton, selectedTab === "region" && styles.activeButton]}
+      onPress={() => navigation.navigate("RegionSelectScreen")}
+    >
+      <Text style={[styles.listText, selectedTab === "region" && styles.activeText]}>
+        지역
+      </Text>
+    </TouchableOpacity>
+  </View>
+)}
 
           {/* 클릭시 이동 */}
 
@@ -119,7 +136,14 @@ const headerCheck = async () =>{
       />
       ): selectedTab ==="myBardetailList" ? (
         <MyBardetailListBottomSheet/>
-      ) : selectedTab === "myList" ? (
+      ) : selectedTab ==="regionDetail" ? (
+        <SelectedRegions
+        selectedRegions={selectedRegions}
+        onRegionSelect={(region) => {
+          console.log("선택된 지역:", region);
+        }}
+      />
+      ): selectedTab === "myList" ? (
           <MyListSheetContent handleTabPress={handleTabPress} />
       ) : selectedTab === "detail" ? (
       <MenuListDetail handleTabPress={handleTabPress} selectedBar={selectedBar}/>

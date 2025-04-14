@@ -45,6 +45,7 @@ const MyListSheetContent = ({ handleTabPress }) => {
   const navigation = useNavigation();
   const [myList, setMyList] = useState<MyListItem[]>([]);
 
+
 const fetchMyList = async () => {
   
   try {

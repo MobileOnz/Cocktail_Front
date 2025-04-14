@@ -19,24 +19,16 @@ export async function isTokenExpired(): Promise<boolean> {
     return true;
   }
 }
-export async function isRefreshTokenExpired(): Promise<boolean> {
-    const token = await AsyncStorage.getItem("refreshToken");
-    if (!token) return true;
-  
-    try {
-      const decoded: any = jwtDecode(token);
-      const exp = decoded.exp * 1000; // 밀리초 단위
-      return Date.now() > exp;
-    } catch (err) {
-      console.warn("리프레시 토큰 디코딩 실패", err);
-      return true; // 디코딩 실패 시 만료된 것으로 처리
-    }
-  }
 
 export async function tokenRefresh() {
     try{
         const refreshToken = await AsyncStorage.getItem("refreshToken");
-        console.log("🔄 보내는 refresh token:", refreshToken);
+        console.log("🔄 [tokenRefresh] 보내는 refresh token:", refreshToken);
+        if(!refreshToken){
+          console.log("리프레시 토큰이 없습니다.");
+          return true;
+        }
+        console.log("보내는 refresh token:", refreshToken);
         const response = await axios.post(`${API_BASE_URL}/api/auth/refresh`,null,{
             headers: {
               'Refresh-Token': refreshToken,
@@ -56,10 +48,18 @@ export async function tokenRefresh() {
     }else{
         console.error("새로운 리프레시 토큰이 들어오지 않았습니다.")
     }
+    return false;
 
-    } catch (error) {
-    console.error('토큰 갱신 실패:', error);
-    throw error;
-  }
+    } catch (error: any) {
+      const status = error.response?.status;
+  
+      if (status === 401 || status === 403) {
+        console.warn("리프레시 토큰 만료됨 (로그아웃 필요)");
+        return true; // 리프레시 토큰도 만료
+      }
+  
+      console.error("토큰 갱신 중 오류:", error);
+      return true; // 기타 에러도 만료로 간주
+    }
     
 }
