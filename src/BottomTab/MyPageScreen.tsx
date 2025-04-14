@@ -35,7 +35,7 @@ const MyPageScreen = () => {
   return (
     <View style={styles.container}>
       {/* 광고 배너 */}
-      <View style={styles.adContainer}>
+      {/* <View style={styles.adContainer}>
         <BannerAd
           unitId={TestIds.BANNER}
           size={BannerAdSize.BANNER}

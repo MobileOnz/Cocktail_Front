@@ -5,11 +5,11 @@ import { widthPercentage, heightPercentage, fontPercentage } from "../assets/sty
 
 
 type myBarList = {
-  listId: number;
+  id: number;
   title: string;
   barAdress: string;
-  image: any;
-  hashtageList: string[];
+  thumbNail: any;
+  hashtagList: string[];
 };
 
 
@@ -41,15 +41,16 @@ const MainBottomSheet = ({ sections, showMyBars, handleTabPress, setSelectedTab,
         }}
       >
       <View style={styles.itemContainer}>
-        <Image style={styles.itemImage} source={item.image} />
+        <Image style={styles.itemImage} source={item.thumbNail} />
       <View style={styles.textContainer}>
         <Text style={styles.itemTitle}>{item.title}</Text>
         <Text style={styles.itemDistance}>{item.barAdress}</Text>
         <Text style={{ color: "#B9B6AD", fontSize: fontPercentage(12) }}>인기메뉴</Text>
         <View style={styles.hashtagContainer}>
-          {item.hashtageList.map((tag, idx) => (
-            <Text key={idx} style={styles.hashtag}>{tag}</Text>
-          ))}
+        {Array.isArray(item.hashtagList) && item.hashtagList.map((tag, idx) => (
+          <Text key={idx} style={styles.hashtag}>{tag}</Text>
+        ))}
+
         </View>
       </View>
       {/* 책갈피 아이콘 */}
@@ -80,7 +81,7 @@ const MainBottomSheet = ({ sections, showMyBars, handleTabPress, setSelectedTab,
   return (
       <BottomSheetSectionList
         sections={getFilteredSections()}
-        keyExtractor={(item) => item.listId.toString()}
+        keyExtractor={(item, index) => item?.id?.toString?.() ?? index.toString()}
         renderItem={renderBarItem}
         renderSectionHeader={renderSectionHeader}
         stickySectionHeadersEnabled={false}
@@ -107,8 +108,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#E4DFD8",
   },
   itemContainer: {
-    width: widthPercentage(375),
-    height: heightPercentage(156),
     marginTop: heightPercentage(16),
     marginLeft: widthPercentage(16),
     backgroundColor: "#FFFCF3",
@@ -139,6 +138,7 @@ const styles = StyleSheet.create({
     borderRadius: widthPercentage(4),
     fontSize: fontPercentage(12),
     textAlign: "center",
+    marginRight : widthPercentage(4),
     marginBottom: heightPercentage(4),
   },
   itemTitle: {
