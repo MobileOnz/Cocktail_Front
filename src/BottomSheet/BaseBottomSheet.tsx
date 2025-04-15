@@ -28,45 +28,17 @@ const BaseBottomSheet = ({
   const [selectedBar, setSelectedBar] = useState<"search" | "myList" | "region" | "bookmark"| "detail"|"myBardetailList">("search");
   const [selectedBarId, setSelectedBarId] = useState<number | null>(null);
 
+  //북마크 체크/해제를 위해 북마크 리스트를 맵으로 저장
+  const [bookmarkListMap, setBookmarkListMap] = useState<Map<number, number>>(new Map());
+
+  
   //나의 리스트 가져오기
   const[myList, setMyList] = useState([]);
 
   //북마크된 가게들 체크해서 bookmark_checked.png로 적용하기 위한 변수
   const [bookmarkIds, setBookmarkIds] = useState<Set<number>>(new Set());
 
-  useEffect(() => {
-    const fetchBookmarkedBars = async () => {
-      try {
-        const token = await AsyncStorage.getItem('accessToken');
-        if (!token) return;
   
-        const response = await fetch(`${API_BASE_URL}/api/item/public/all`, {
-          method: "GET",
-          headers: { Authorization: `${token}` },
-        });
-  
-        const result = await response.json();
-        if (result.code === 1) {
-          const transformed = result.data.map((bar) => ({
-            id: bar.id,
-            title: bar.bar_name,
-            barAdress: bar.address,
-            thumbNail: { uri: bar.thumbnail },
-            hashtagList: bar.menus?.map((menu) => `#${menu.name}`) ?? [],
-          }));
-          setMyBars(transformed);
-  
-          // ✅ 북마크된 바 ID만 저장
-          const ids = new Set(result.data.map((bar) => bar.id));
-          setBookmarkIds(ids);
-        }
-      } catch (error) {
-        console.error("북마크 가게 불러오기 실패:", error);
-      }
-    };
-  
-    fetchBookmarkedBars();
-  }, []);
 
   useEffect(() => {
     const fetchMyList = async () => {
@@ -104,21 +76,19 @@ const BaseBottomSheet = ({
   useEffect(() => {
     const fetchBookmarkedBars = async () => {
       try {
-        const token = await AsyncStorage.getItem('accessToken');
-        if(!token){
-          console.warn("로그인이 필요합니다");
-          return;
-        }
+        const token = await AsyncStorage.getItem("accessToken");
+        if (!token) return;
+  
         const response = await fetch(`${API_BASE_URL}/api/item/public/all`, {
           method: "GET",
-          headers: {
-            Authorization: `${token}`,
-          },
+          headers: { Authorization: `${token}` },
         });
   
         const result = await response.json();
-        console.log("✅ 북마크 응답 데이터:", result);
+        console.log("✅ 북마크 응답:", result);
+  
         if (result.code === 1) {
+          // ✅ 북마크 데이터 변환
           const transformed = result.data.map((bar) => ({
             id: bar.id,
             title: bar.bar_name,
@@ -127,8 +97,23 @@ const BaseBottomSheet = ({
             hashtagList: bar.menus?.map((menu) => `#${menu.name}`) ?? [],
           }));
           setMyBars(transformed);
-        } else if (result.code === -1) {
-          console.warn("로그인이 필요합니다");
+  
+          console.log("result.data 예시", result.data[0]);
+          
+          // ✅ 북마크 ID Set 및 barId -> listId Map 구성
+          const ids = new Set<number>();
+          const map = new Map<number, number>();
+  
+          result.data.forEach((bar) => {
+            ids.add(bar.id);
+            if (bar.list_id !== undefined) {
+              map.set(bar.id, bar.list_id);
+            }
+          });
+  
+          console.log("✅ 최종 map:", map);
+          setBookmarkIds(ids);
+          setBookmarkListMap(map);
         }
       } catch (error) {
         console.error("북마크 가게 불러오기 실패:", error);
@@ -137,6 +122,7 @@ const BaseBottomSheet = ({
   
     fetchBookmarkedBars();
   }, []);
+  
 
 
   const [isLoginSheetVisible, setLoginSheetVisible] = useState(false);
@@ -313,6 +299,8 @@ const sections = useMemo(() => {
             barId={selectedBar?.id}
             bookmarkIds={bookmarkIds}
             setBookmarkIds={setBookmarkIds}
+            bookmarkListMap={bookmarkListMap}
+            setBookmarkListMap={setBookmarkListMap}
             />
       ) : (
       <SearchSheetContent

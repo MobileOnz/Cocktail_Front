@@ -18,6 +18,8 @@ const MenuListDetail = ({
   barId,
   bookmarkIds,
   setBookmarkIds,
+  bookmarkListMap,
+  setBookmarkListMap,
 }) => {
   const [barDetail, setBarDetail] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState(null);
@@ -63,17 +65,59 @@ const MenuListDetail = ({
       Alert.alert("로그인이 필요합니다.");
       return;
     }
-
+  
+    console.log("🔁 북마크 토글 클릭됨");
+    console.log("현재 북마크 상태:", isBookmarked);
+    console.log("리스트 맵:", bookmarkListMap);
+  
     if (isBookmarked) {
-      // 북마크 해제
-      const newSet = new Set(bookmarkIds);
-      newSet.delete(barDetail.id);
-      setBookmarkIds(newSet);
+      try {
+        const listId = bookmarkListMap.get(barDetail.id);
+        console.log("📌 listId:", listId);
+  
+        if (listId) {
+          const response = await fetch(`${API_BASE_URL}/api/item`, {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: token,
+            },
+            body: JSON.stringify({
+              listId,
+              barId: barDetail.id,
+            }),
+          });
+  
+          const result = await response.json();
+          console.log("🧾 삭제 결과:", result);
+  
+          if (result.code === 1) {
+            const newSet = new Set(bookmarkIds);
+            newSet.delete(barDetail.id);
+            setBookmarkIds(newSet);
+  
+            const newMap = new Map(bookmarkListMap);
+            newMap.delete(barDetail.id);
+            setBookmarkListMap(newMap);
+  
+            Alert.alert("북마크 해제", "리스트에서 삭제되었습니다.");
+          } else {
+            Alert.alert("실패", result.msg || "서버에서 북마크 해제 실패");
+          }
+        } else {
+          console.warn("❌ listId가 없습니다 → API 호출 안함");
+          Alert.alert("에러", "해당 가게의 리스트 정보가 없습니다.");
+        }
+      } catch (err) {
+        console.error("북마크 해제 요청 실패:", err);
+        Alert.alert("에러", "네트워크 오류 발생");
+      }
     } else {
-      // 북마크 추가 → 리스트 선택 시트로 이동
       handleTabPress("bookmark", barDetail);
     }
   };
+  
+  
 
   return (
     <BottomSheetScrollView style={styles.container}>
@@ -96,13 +140,16 @@ const MenuListDetail = ({
       </View>
 
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.scrollContainer}>
-        {barDetail.photos.slice(0, 2).map((photoUrl, index) => (
+      {barDetail.photos
+        .filter((url) => !!url && url !== "")
+        .slice(0, 2)
+        .map((photoUrl, index) => (
           <Image
             key={index}
             source={{ uri: photoUrl }}
             style={[styles.imgSize, index === 0 && { marginRight: widthPercentage(12) }]}
           />
-        ))}
+      ))}
       </ScrollView>
 
       <View style={styles.infoContainer}>
@@ -147,7 +194,11 @@ const MenuListDetail = ({
 
       {filteredMenus.map((menu, index) => (
         <View key={index} style={styles.menuItem}>
-          <Image source={{ uri: menu.image_url }} style={styles.menuImage} />
+          {menu.image_url ? (
+            <Image source={{ uri: menu.image_url }} style={styles.menuImage} />
+          ) : (
+            <View style={[styles.menuImage, { backgroundColor: "#DDD" }]} />
+          )}
           <View style={styles.menuInfo}>
             <Text style={styles.menuName}>{menu.name}</Text>
             <Text style={styles.menuPrice}>{menu.sell_price}원</Text>
