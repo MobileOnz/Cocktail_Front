@@ -15,7 +15,7 @@ type myBarList = {
 
 
 
-const MainBottomSheet = ({ sections, showMyBars, handleTabPress, setSelectedTab, setSelectedBarId }) => {
+const MainBottomSheet = ({ sections, showMyBars, handleTabPress, setSelectedTab, setSelectedBarId, bookmarkIds }) => {
   const [isExpanded, setIsExpanded] = useState(true);
   const toggleShowMyBars = () => {
     setIsExpanded(!isExpanded);
@@ -57,7 +57,13 @@ const MainBottomSheet = ({ sections, showMyBars, handleTabPress, setSelectedTab,
       </View>
       {/* 책갈피 아이콘 */}
       <TouchableOpacity onPress={() => handleTabPress("bookmark", item)}>
-        <Image source={require("../assets/drawable/bookmark.png")} style={styles.bookmarkImage} />
+        <Image 
+          source={
+            bookmarkIds?.has?.(item.id)
+              ? require("../assets/drawable/bookmark_checked.png")
+              : require("../assets/drawable/bookmark.png")
+          }
+          style={styles.bookmarkImage} />
       </TouchableOpacity>
 
     </View>

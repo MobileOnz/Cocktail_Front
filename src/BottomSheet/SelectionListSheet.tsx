@@ -59,54 +59,49 @@ const SelectionListSheet: React.FC<SelectionListSheetProps> = ({ title, listData
 
       {/* 리스트 목록 */}
       <FlatList
-        data={listData}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => {
-          // 해시태그 추출
-          const allTags = Object.values(item.sub_tags ?? {}).flat();
-
-        
-          return (
-            <View style={styles.listItem}>
-              <Image source={item.icon_url ? { uri: item.icon_url } : require("../assets/drawable/listicon1.png")} style={styles.icon} />
-              
-              <View style={styles.info}>
-                <Text style={styles.barName}>{item.main_tag?.name ?? "이름 없음"}</Text>
-
-        
-                <View style={styles.location}>
-                <Text style={styles.locationText}>
-                  {item.store_count?.toString() ?? "0"}
-                </Text>
-
-                </View>
-        
-                <View style={styles.tagContainer}>
-                  {allTags.map((tag, index) => (
-                    <Text key={index} style={styles.tag}>
-                      #{tag.name}
-                    </Text>
-                  ))}
-                </View>
+      style={{flexGrow: 0}}
+      contentContainerStyle={{
+        paddingBottom: heightPercentage(160), // ✅ 저장 버튼이 가려지지 않게 여유 공간 확보
+      }}
+      data={listData}
+      keyExtractor={(item) => item.id.toString()}
+      renderItem={({ item }) => {
+        const allTags = Object.values(item.sub_tags ?? {}).flat();
+        return (
+          <View style={styles.listItem}>
+            <Image source={item.icon_url ? { uri: item.icon_url } : require("../assets/drawable/listicon1.png")} style={styles.icon} />
+            <View style={styles.info}>
+              <Text style={styles.barName}>{item.main_tag?.name ?? "이름 없음"}</Text>
+              <View style={styles.location}>
+                <Text style={styles.locationText}>{item.store_count?.toString() ?? "0"}</Text>
               </View>
-        
-              <TouchableOpacity style={styles.checkboxContainer} onPress={() => setSelectedListId(item.id.toString())}>
-                {selectedListId === item.id.toString() ? (
-                  <Image source={require("../assets/drawable/checkbox_checked.png")} style={styles.checkbox} />
-                ) : (
-                  <Image source={require("../assets/drawable/checkbox_unchecked.png")} style={styles.checkbox} />
-                )}
-              </TouchableOpacity>
+              <View style={styles.tagContainer}>
+                {allTags.map((tag, index) => (
+                  <Text key={index} style={styles.tag}>#{tag.name}</Text>
+                ))}
+              </View>
             </View>
-          );
-        }}
-        
-      />
+            <TouchableOpacity style={styles.checkboxContainer} onPress={() => setSelectedListId(item.id.toString())}>
+              <Image
+                source={selectedListId === item.id.toString()
+                  ? require("../assets/drawable/checkbox_checked.png")
+                  : require("../assets/drawable/checkbox_unchecked.png")}
+                style={styles.checkbox}
+              />
+            </TouchableOpacity>
+          </View>
+        );
+      }}
+      ListFooterComponent={
+        <TouchableOpacity style={styles.saveButton} onPress={() => onSave(listData.find((item) => item.id.toString() === selectedListId) || null)}>
+          <Text style={styles.saveText}>저장하기</Text>
+        </TouchableOpacity>
+      }
+    />
 
-      {/* 저장하기 버튼 */}
-      <TouchableOpacity style={styles.saveButton} onPress={() => onSave(listData.find((item) => item.id.toString() === selectedListId) || null)}>
-        <Text style={styles.saveText}>저장하기</Text>
-      </TouchableOpacity>
+
+      
+      
     </View>
   );
 };
