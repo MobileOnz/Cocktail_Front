@@ -42,7 +42,7 @@ const BaseBottomSheet = ({
   
         const response = await fetch(`${API_BASE_URL}/api/item/public/all`, {
           method: "GET",
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { Authorization: `${token}` },
         });
   
         const result = await response.json();
@@ -79,7 +79,7 @@ const BaseBottomSheet = ({
         const response = await fetch(`${API_BASE_URL}/api/item/public/list`, {
           method: "GET",
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `${token}`,
           },
         });
 
@@ -112,7 +112,7 @@ const BaseBottomSheet = ({
         const response = await fetch(`${API_BASE_URL}/api/item/public/all`, {
           method: "GET",
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `${token}`,
           },
         });
   
@@ -197,13 +197,20 @@ const sections = useMemo(() => {
     ];
   }, [selectedTab, barList, myBars, barData]);
 
-  const handleTabPress = (
+  const handleTabPress = async (
     tab: "search" | "myList" | "region" | "bookmark" | "detail" | "pin" | "myBardetailList",
     bar = null
   ) => {
     if (tab === "bookmark") {
-      setSelectedBarId(bar?.id ?? null);  // ✅ 리스트 저장용
-      setSelectedBar(bar);                // ✅ UI 표시용 or Detail 화면용
+      const token = await AsyncStorage.getItem("accessToken");
+
+      if(!token){
+        setLoginSheetVisible(true);
+        return;
+      }else{
+        setSelectedBarId(bar?.id ?? null);  // ✅ 리스트 저장용
+        setSelectedBar(bar);                // ✅ UI 표시용 or Detail 화면용
+      }
     }
 
     if (tab === "detail") {
@@ -265,7 +272,7 @@ const sections = useMemo(() => {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
+              Authorization: `${token}`,
             },
             body: JSON.stringify({
               listId: selectedItem.id,
@@ -304,6 +311,8 @@ const sections = useMemo(() => {
           <MenuListDetail 
             handleTabPress={handleTabPress}
             barId={selectedBar?.id}
+            bookmarkIds={bookmarkIds}
+            setBookmarkIds={setBookmarkIds}
             />
       ) : (
       <SearchSheetContent

@@ -51,7 +51,7 @@ const MyBardetailListBottomSheet = ({listId}: {listId: number}) => {
           return;
         }
         const response = await fetch(`${API_BASE_URL}/api/item/public/list`, {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { Authorization: `${token}` },
         });
         const result = await response.json();
         if (result.code === 1) setMyList(result.data);
@@ -75,7 +75,7 @@ const MyBardetailListBottomSheet = ({listId}: {listId: number}) => {
         const response = await fetch(`${API_BASE_URL}/api/list/${listId}/item`, {
           method: "GET",
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `${token}`,
           },
         });
 
@@ -104,7 +104,7 @@ const MyBardetailListBottomSheet = ({listId}: {listId: number}) => {
       const response = await fetch(`${API_BASE_URL}/api/item/move`, {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `${token}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
@@ -143,7 +143,7 @@ const MyBardetailListBottomSheet = ({listId}: {listId: number}) => {
       const response = await fetch(`${API_BASE_URL}/api/item`, {
         method: "DELETE",
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `${token}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({

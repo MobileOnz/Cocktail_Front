@@ -2,24 +2,31 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>GIDClientID</key>
+	<string>1058340377075-an8fq49j4mg29fq9rm88qpi253dd2vts.apps.googleusercontent.com</string>
 
-<key>GIDClientID</key>
-<string>1058340377075-an8fq49j4mg29fq9rm88qpi253dd2vts.apps.googleusercontent.com</string>
-<key>CFBundleURLTypes</key>
-<array>
-	<dict>
-		<key>CFBundleURLSchemes</key>
-		<array>
-			<string>com.googleusercontent.apps.1058340377075-an8fq49j4mg29fq9rm88qpi253dd2vts</string>
-		</array>
-	</dict>
-</array>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>kakao7798f0108bf85f0f9a3149d4bedae99c</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.1058340377075-an8fq49j4mg29fq9rm88qpi253dd2vts</string>
+			</array>
+		</dict>
+	</array>
+
 	<key>CFBundleTypeRole</key>
 	<string>Editor</string>
-	<key>CFBundleURLSchemes</key>
-	<array>
-	<string>kakao7798f0108bf85f0f9a3149d4bedae99c</string>
-	</array>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
@@ -27,7 +34,7 @@
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
-	<string>org.reactjs.native.example.Cocktail-Front</string>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
@@ -43,31 +50,6 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 
-	<!-- ✅ 여기에 CFBundleURLTypes 추가 -->
-	<key>CFBundleURLTypes</key>
-	<array>
-		<!-- Kakao -->
-		<dict>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>kakao7798f0108bf85f0f9a3149d4bedae99c</string>
-			</array>
-		</dict>
-		<!-- Naver -->
-		<dict>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-			<key>CFBundleURLName</key>
-			<string>naver</string>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>naverlogin</string>
-			</array>
-		</dict>
-	</array>
-
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>
@@ -77,7 +59,7 @@
 	</dict>
 
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
+	<string>앱이 사용자의 위치를 활용하여 주변 바를 추천합니다.</string>
 
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
@@ -96,26 +78,20 @@
 
 	<key>KAKAO_APP_KEY</key>
 	<string>7798f0108bf85f0f9a3149d4bedae99c</string>
-	<key>KAKAO_APP_SCHEME</key>
-	<string>LSApplicationQueriesSchemes</string>
 
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
-		<!-- Naver -->
-		<string>naversearchapp</string>
-		<string>naversearchthirdlogin</string>
-		<!-- Kakao -->
 		<string>kakao7798f0108bf85f0f9a3149d4bedae99c</string>
 		<string>kakaokompassauth</string>
 		<string>storykompassauth</string>
 		<string>kakaolink</string>
+		<string>kakaotalk</string>
 	</array>
 
 	<key>FirebaseAppDelegateProxyEnabled</key>
 	<false/>
 	<key>GADApplicationIdentifier</key>
 	<string>ca-app-pub-3940256099942544~3347511713</string>
-
 	<key>SKAdNetworkItems</key>
 	<array>
 		<dict>

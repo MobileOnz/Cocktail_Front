@@ -40,7 +40,7 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation }) => {
         const res = await fetch(`${API_BASE_URL}/api/search/searchlog`, {
           method: "GET",
           headers: {
-            Authorization: `Bearer ${accessToken}`,
+            Authorization: `${accessToken}`,
           },
         });
         const result = await res.json();

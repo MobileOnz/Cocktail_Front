@@ -99,13 +99,9 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
           const backendRefreshToken = response.data.data.refresh_token;
           console.log("backendAccessToken: ",backendAccessToken);
         if (backendAccessToken) {
-          const cleanToken = backendAccessToken.replace(/^Bearer\s/, '');
-          await AsyncStorage.setItem('accessToken', cleanToken);
+          await AsyncStorage.setItem('accessToken', backendAccessToken);
           showToast("로그인 되었습니다.");
-          setTimeout(() => {
-            navigation.goBack();
-
-          }, 2000);
+          navigation.navigate("BottomTabNavigator");
           // await AsyncStorage.setItem('accessToken', backendAccessToken);
 
         }
@@ -157,6 +153,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
         console.log("backendAccessToken: ",backendAccessToken);
       if (backendAccessToken) {
         await AsyncStorage.setItem('accessToken', backendAccessToken);
+        showToast("로그인 되었습니다.");
       }
       if (backendRefreshToken) {
         await AsyncStorage.setItem('refreshToken', backendRefreshToken);

@@ -1305,30 +1305,9 @@ PODS:
     - Google-Maps-iOS-Utils (= 5.0.0)
     - GoogleMaps (= 8.4.0)
     - React-Core
-  - react-native-image-picker (8.2.0):
-    - DoubleConversion
-    - glog
-    - hermes-engine
-    - RCT-Folly (= 2024.11.18.00)
-    - RCTRequired
-    - RCTTypeSafety
-    - React-Core
-    - React-debug
-    - React-Fabric
-    - React-featureflags
-    - React-graphics
-    - React-ImageManager
-    - React-NativeModulesApple
-    - React-RCTFabric
-    - React-rendererdebug
-    - React-utils
-    - ReactCodegen
-    - ReactCommon/turbomodule/bridging
-    - ReactCommon/turbomodule/core
-    - Yoga
   - react-native-maps (1.20.1):
     - React-Core
-  - react-native-safe-area-context (5.3.0):
+  - react-native-safe-area-context (5.2.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1341,8 +1320,8 @@ PODS:
     - React-featureflags
     - React-graphics
     - React-ImageManager
-    - react-native-safe-area-context/common (= 5.3.0)
-    - react-native-safe-area-context/fabric (= 5.3.0)
+    - react-native-safe-area-context/common (= 5.2.0)
+    - react-native-safe-area-context/fabric (= 5.2.0)
     - React-NativeModulesApple
     - React-RCTFabric
     - React-rendererdebug
@@ -1351,7 +1330,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - react-native-safe-area-context/common (5.3.0):
+  - react-native-safe-area-context/common (5.2.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1372,7 +1351,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - react-native-safe-area-context/fabric (5.3.0):
+  - react-native-safe-area-context/fabric (5.2.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1683,7 +1662,7 @@ PODS:
     - React-logger (= 0.78.0)
     - React-perflogger (= 0.78.0)
     - React-utils (= 0.78.0)
-  - RNCAsyncStorage (2.1.2):
+  - RNCAsyncStorage (2.1.1):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1718,29 +1697,6 @@ PODS:
     - React-debug
     - React-Fabric
     - React-FabricComponents
-    - React-featureflags
-    - React-graphics
-    - React-ImageManager
-    - React-NativeModulesApple
-    - React-RCTFabric
-    - React-rendererdebug
-    - React-utils
-    - ReactCodegen
-    - ReactCommon/turbomodule/bridging
-    - ReactCommon/turbomodule/core
-    - Yoga
-  - RNGoogleMobileAds (15.0.0):
-    - DoubleConversion
-    - glog
-    - Google-Mobile-Ads-SDK (= 12.2.0)
-    - GoogleUserMessagingPlatform (= 2.7.0)
-    - hermes-engine
-    - RCT-Folly (= 2024.11.18.00)
-    - RCTRequired
-    - RCTTypeSafety
-    - React-Core
-    - React-debug
-    - React-Fabric
     - React-featureflags
     - React-graphics
     - React-ImageManager
@@ -2031,7 +1987,6 @@ DEPENDENCIES:
   - react-native-app-auth (from `../node_modules/react-native-app-auth`)
   - react-native-get-random-values (from `../node_modules/react-native-get-random-values`)
   - react-native-google-maps (from `../node_modules/react-native-maps`)
-  - react-native-image-picker (from `../node_modules/react-native-image-picker`)
   - react-native-maps (from `../node_modules/react-native-maps`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - react-native-splash-screen (from `../node_modules/react-native-splash-screen`)
@@ -2066,7 +2021,6 @@ DEPENDENCIES:
   - "RNCAsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
   - "RNFBApp (from `../node_modules/@react-native-firebase/app`)"
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
-  - RNGoogleMobileAds (from `../node_modules/react-native-google-mobile-ads`)
   - "RNGoogleSignin (from `../node_modules/@react-native-google-signin/google-signin`)"
   - "RNNaverLogin (from `../node_modules/@react-native-seoul/naver-login`)"
   - RNReanimated (from `../node_modules/react-native-reanimated`)
@@ -2179,8 +2133,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-get-random-values"
   react-native-google-maps:
     :path: "../node_modules/react-native-maps"
-  react-native-image-picker:
-    :path: "../node_modules/react-native-image-picker"
   react-native-maps:
     :path: "../node_modules/react-native-maps"
   react-native-safe-area-context:
@@ -2249,8 +2201,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-firebase/app"
   RNGestureHandler:
     :path: "../node_modules/react-native-gesture-handler"
-  RNGoogleMobileAds:
-    :path: "../node_modules/react-native-google-mobile-ads"
   RNGoogleSignin:
     :path: "../node_modules/@react-native-google-signin/google-signin"
   RNNaverLogin:
@@ -2323,9 +2273,8 @@ SPEC CHECKSUMS:
   react-native-app-auth: 2c55acac76891da0ebc4a2a20d75851912e3d5f0
   react-native-get-random-values: d16467cf726c618e9c7a8c3c39c31faa2244bbba
   react-native-google-maps: c4f5c5b2dda17e7cb2cb2b37a81f140b039b3e7e
-  react-native-image-picker: 4c10603e9b253c7f48f296034c04a09fe9c8d427
   react-native-maps: 9febd31278b35cd21e4fad2cf6fa708993be5dab
-  react-native-safe-area-context: 33fadf89988c8813cfac57797a3bc53708863dd1
+  react-native-safe-area-context: 02e0f487c16ccf1acc8a666bed2318ceeb5dc14c
   react-native-splash-screen: 95994222cc95c236bd3cdc59fe45ed5f27969594
   React-NativeModulesApple: ec44c21ae0bbb5f9a2df72db00294e33a00e07f0
   React-perflogger: 9e8d3c0dc0194eb932162812a168aa5dc662f418
@@ -2355,10 +2304,9 @@ SPEC CHECKSUMS:
   ReactAppDependencyProvider: a1fb08dfdc7ebc387b2e54cfc9decd283ed821d8
   ReactCodegen: 0f8899ac1bad260bf3b362ee848ef67a70b5a306
   ReactCommon: a30b578194de911fbe1698efb8247bfe4cb6abff
-  RNCAsyncStorage: 5321442ed26760d7581b26effab82399ea5ff18b
+  RNCAsyncStorage: 849b77e6ab3eb838361a902b492993056924faab
   RNFBApp: 5e27e8311042d41fa8350f1751ab42e042c39d52
   RNGestureHandler: f7b3a72c099e1e29b5b81688678bc9108d44057c
-  RNGoogleMobileAds: 2816ccf723055b85d4d1708919fe66918d7deeb2
   RNGoogleSignin: 1a215139c537bb0430abdb9ff9a8e437578e515d
   RNNaverLogin: da97da237828a05a310bbb83ef11292be830091d
   RNReanimated: fe5c52894886953248a81a10b2a9b6eeb5398d61
