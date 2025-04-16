@@ -1706,6 +1706,27 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
+  - RNCClipboard (1.16.2):
+    - DoubleConversion
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.11.18.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
   - RNFBApp (21.12.0):
     - Firebase/CoreOnly (= 11.8.0)
     - React-Core
@@ -2068,6 +2089,7 @@ DEPENDENCIES:
   - ReactCodegen (from `build/generated/ios`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
   - "RNCAsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
+  - "RNCClipboard (from `../node_modules/@react-native-clipboard/clipboard`)"
   - "RNFBApp (from `../node_modules/@react-native-firebase/app`)"
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - RNGoogleMobileAds (from `../node_modules/react-native-google-mobile-ads`)
@@ -2251,6 +2273,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon"
   RNCAsyncStorage:
     :path: "../node_modules/@react-native-async-storage/async-storage"
+  RNCClipboard:
+    :path: "../node_modules/@react-native-clipboard/clipboard"
   RNFBApp:
     :path: "../node_modules/@react-native-firebase/app"
   RNGestureHandler:
@@ -2363,6 +2387,7 @@ SPEC CHECKSUMS:
   ReactCodegen: 0f8899ac1bad260bf3b362ee848ef67a70b5a306
   ReactCommon: a30b578194de911fbe1698efb8247bfe4cb6abff
   RNCAsyncStorage: 5321442ed26760d7581b26effab82399ea5ff18b
+  RNCClipboard: 86342298a16010051a6f2fa92688fb83dfd3f4c4
   RNFBApp: 5e27e8311042d41fa8350f1751ab42e042c39d52
   RNGestureHandler: f7b3a72c099e1e29b5b81688678bc9108d44057c
   RNGoogleMobileAds: 2816ccf723055b85d4d1708919fe66918d7deeb2

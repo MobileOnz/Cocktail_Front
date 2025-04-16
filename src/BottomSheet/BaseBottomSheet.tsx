@@ -269,7 +269,7 @@ const sections = useMemo(() => {
     enablePanDownToClose={false} 
     backgroundStyle={{ backgroundColor: theme.background }}
     containerStyle={{ position: 'absolute', zIndex: 100 }}>
-    {selectedTab !== "detail" && selectedTab !== "search" &&(
+    {selectedTab !== "detail" && selectedTab !== "search" && selectedTab !== "bookmark" &&(
       /* 네비게이션 버튼 */
       <View style={styles.sheetHeader}>
         <TouchableOpacity

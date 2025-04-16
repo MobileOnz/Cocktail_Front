@@ -47,9 +47,9 @@ const MainBottomSheet = ({ sections, showMyBars, handleTabPress, setSelectedTab,
       <View style={styles.itemContainer}>
         <Image style={styles.itemImage} source={item.thumbNail} />
       <View style={styles.textContainer}>
-        <Text style={styles.itemTitle}>{item.title}</Text>
-        <Text style={styles.itemDistance}>{item.barAdress}</Text>
-        <Text style={{ color: "#B9B6AD", fontSize: fontPercentage(12) }}>인기메뉴</Text>
+        <Text style={styles.itemTitle} numberOfLines={1} ellipsizeMode="tail">{item.title}</Text>
+        <Text style={styles.itemDistance} numberOfLines={1} ellipsizeMode="tail">{item.barAdress}</Text>
+        <Text style={{ color: "#B9B6AD", fontSize: fontPercentage(12), marginTop: heightPercentage(10), }}>인기메뉴</Text>
         <View style={styles.hashtagContainer}>
         {Array.isArray(item.hashtagList) && item.hashtagList.map((tag, idx) => (
           <Text key={idx} style={styles.hashtag}>{tag}</Text>
@@ -132,6 +132,7 @@ const styles = StyleSheet.create({
     marginLeft: widthPercentage(16),
     backgroundColor: "#FFFCF3",
     flexDirection: "row",
+    paddingBottom: heightPercentage(12),
   },
   textContainer: {
     marginLeft: widthPercentage(12),
@@ -141,25 +142,28 @@ const styles = StyleSheet.create({
   itemImage: {
     width: widthPercentage(126),
     height: heightPercentage(156),
+    borderRadius: widthPercentage(8),
   },
   hashtagContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
-    marginTop: heightPercentage(8),
+    marginTop: heightPercentage(16),
     width: widthPercentage(197),
-    height: heightPercentage(50),
-    maxHeight: heightPercentage(52),
+    height: heightPercentage(55),
+    maxHeight: heightPercentage(50),
+    overflow: "hidden",
   },
   hashtag: {
     backgroundColor: "#F3EFE6",
     color: "#7D7A6F",
     paddingVertical: heightPercentage(4),
     paddingHorizontal: widthPercentage(8),
-    borderRadius: widthPercentage(4),
+    borderRadius: widthPercentage(20),
     fontSize: fontPercentage(12),
     textAlign: "center",
     marginRight : widthPercentage(4),
     marginBottom: heightPercentage(4),
+    height: heightPercentage(24),
   },
   itemTitle: {
     fontSize: fontPercentage(18),
@@ -190,6 +194,7 @@ const styles = StyleSheet.create({
     width: widthPercentage(24),
     height: heightPercentage(24),
     resizeMode: "contain",
+    marginLeft: widthPercentage(12),
   },
   bookmarkContainer: {
     position: "absolute",

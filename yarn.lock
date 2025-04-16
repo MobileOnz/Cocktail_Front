@@ -2368,6 +2368,11 @@
   dependencies:
     merge-options "^3.0.4"
 
+"@react-native-clipboard/clipboard@1.16.2":
+  version "1.16.2"
+  resolved "https://registry.npmjs.org/@react-native-clipboard/clipboard/-/clipboard-1.16.2.tgz"
+  integrity sha512-VqUYwVxo7DyHMz7v2LxLMaAOSu3pKFvzpqR4jQezdH0VyaudILTTcUf7dR4TroARU/lLkTU8nZA11UniTvGVXg==
+
 "@react-native-community/cli-clean@15.0.1":
   version "15.0.1"
   resolved "https://registry.npmjs.org/@react-native-community/cli-clean/-/cli-clean-15.0.1.tgz"
@@ -8594,7 +8599,7 @@ react-native-vector-icons@*, react-native-vector-icons@10.2.0:
     prop-types "^15.7.2"
     yargs "^16.1.1"
 
-react-native@*, "react-native@^0.0.0-0 || >=0.60 <1.0", "react-native@^0.0.0-0 || >=0.65 <1.0", react-native@^0.78.0, "react-native@>= 0.59", "react-native@>= 0.64.3", react-native@>=0.44.1, react-native@>=0.56, react-native@>=0.57.0, react-native@>=0.63.0, react-native@>=0.70.0, react-native@>=0.73.0, react-native@>=v0.40.0:
+react-native@*, "react-native@^0.0.0-0 || >=0.60 <1.0", "react-native@^0.0.0-0 || >=0.65 <1.0", react-native@^0.78.0, "react-native@>= 0.59", "react-native@>= 0.61.5", "react-native@>= 0.64.3", react-native@>=0.44.1, react-native@>=0.56, react-native@>=0.57.0, react-native@>=0.63.0, react-native@>=0.70.0, react-native@>=0.73.0, react-native@>=v0.40.0:
   version "0.78.0"
   resolved "https://registry.npmjs.org/react-native/-/react-native-0.78.0.tgz"
   integrity sha512-3PO4tNvCN6BdAKcoY70v1sLfxYCmDR4KS1VTY+kIBKy5Qznp27QNxL7zBQjvS6Jp91gc8N82QbysQrfBlwg9gQ==
@@ -8649,7 +8654,7 @@ react-test-renderer@^19.0.0:
     react-is "^19.0.0"
     scheduler "^0.25.0"
 
-react@*, "react@^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0", react@^19.0.0, "react@>= 17.0.1", "react@>= 18.2.0", react@>=16.13, react@>=16.3.0, react@>=16.8, react@>=17.0.0, react@>=18.2.0, react@19.0.0:
+react@*, "react@^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0", react@^19.0.0, "react@>= 16.9.0", "react@>= 17.0.1", "react@>= 18.2.0", react@>=16.13, react@>=16.3.0, react@>=16.8, react@>=17.0.0, react@>=18.2.0, react@19.0.0:
   version "19.0.0"
   resolved "https://registry.npmjs.org/react/-/react-19.0.0.tgz"
   integrity sha512-V8AVnmPIICiWpGfm6GLzCR/W5FXLchHop40W4nXBmdlEceh16rCN8O8LNWm5bh5XUX91fh7KpA+W0TgMKmgTpQ==

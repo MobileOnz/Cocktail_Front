@@ -7,11 +7,15 @@ import {
   ScrollView,
   StyleSheet,
   Alert,
+  Linking,
 } from "react-native";
 import { BottomSheetScrollView } from "@gorhom/bottom-sheet";
 import { widthPercentage, heightPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
 import { API_BASE_URL } from "@env";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useToast } from "../Components/ToastContext";
+
+import Clipboard from '@react-native-clipboard/clipboard';
 
 const MenuListDetail = ({
   handleTabPress,
@@ -24,6 +28,73 @@ const MenuListDetail = ({
   const [barDetail, setBarDetail] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState(null);
 
+  const {showToast} = useToast();
+
+  const copyToClipboard = (text: string) => {
+    Clipboard.setString(text);
+    console.log("복사됨 : ", text);
+    showToast("주소가 클립보드에 복사되었습니다.");
+  };
+
+  //영업시간을 설정하기 위한 변수
+  const [showHours, setShowHours] = useState(false);
+
+  //시간 비교를 위한 유틸 함수 추가
+  const getOpenStatus = (hours: any[]) => {
+    if (!Array.isArray(hours)) return "";
+  
+    const now = new Date();
+    const days = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+    const currentDayIndex = now.getDay();
+    const currentDay = days[currentDayIndex];
+    const currentTime = now.getHours() * 60 + now.getMinutes();
+  
+    const today = hours.find((h) => h.day_of_week === currentDay);
+    if (!today) return "운영시간 정보 없음";
+    if (today.is_closed) return "오늘은 휴무입니다";
+  
+    const [openH, openM] = today.opening_hour.split(":").map(Number);
+    const [closeH, closeM] = today.closing_hour.split(":").map(Number);
+    const openTime = openH * 60 + openM;
+    const closeTime = closeH * 60 + closeM;
+  
+    // 닫는 시간이 더 빠르면 익일 마감 (ex. 18:30 ~ 01:30)
+    const isOvernight = closeTime <= openTime;
+  
+    if (isOvernight) {
+      if (currentTime >= openTime || currentTime < closeTime) {
+        return `영업중 · ${today.closing_hour}에 영업 종료`;
+      } else if (currentTime < openTime) {
+        return `영업 전 · ${today.opening_hour}에 오픈`;
+      } else {
+        return `영업 종료 · 내일 확인해주세요`;
+      }
+    } else {
+      if (openTime <= currentTime && currentTime < closeTime) {
+        return `영업중 · ${today.closing_hour}에 영업 종료`;
+      } else if (currentTime < openTime) {
+        return `영업 전 · ${today.opening_hour}에 오픈`;
+      } else {
+        return `영업 종료 · 내일 확인해주세요`;
+      }
+    }
+  };
+  
+  
+  const getKoreanDay = (eng: string) => {
+    const dict: any = {
+      MON: "월요일",
+      TUE: "화요일",
+      WED: "수요일",
+      THU: "목요일",
+      FRI: "금요일",
+      SAT: "토요일",
+      SUN: "일요일",
+    };
+    return dict[eng] || eng;
+  };
+
+  
   useEffect(() => {
     if (!barId) return;
 
@@ -122,11 +193,17 @@ const MenuListDetail = ({
   return (
     <BottomSheetScrollView style={styles.container}>
       <TouchableOpacity onPress={() => handleTabPress("search")} style={styles.backButton}>
-        <Text style={styles.backText}>← 목록으로</Text>
+        <Image
+          source={require("../assets/drawable/cancel.png")}
+          style={styles.cancelIcon}
+          resizeMode="contain"
+        />
       </TouchableOpacity>
 
       <View style={styles.headerRow}>
+      <View style={styles.nameContainer}>
         <Text style={styles.barName}>{barDetail.bar_name}</Text>
+      </View>
         <TouchableOpacity onPress={handleBookmarkToggle}>
           <Image
             source={
@@ -154,22 +231,54 @@ const MenuListDetail = ({
 
       <View style={styles.infoContainer}>
         <View style={styles.infoItem}>
-          <Image source={require("../assets/listdetail/location.png")} style={styles.icon} />
+          <Image source={require("../assets/drawable/location.png")} style={styles.icon} />
           <Text style={styles.infoText}>{barDetail.address}</Text>
+          <TouchableOpacity onPress={() => copyToClipboard(barDetail.address)}>
+            <Image source={require("../assets/drawable/copy_box.png")} style={styles.copyButton}/>
+          </TouchableOpacity>
         </View>
 
-        <View style={styles.infoItem}>
-          <Image source={require("../assets/listdetail/phone.png")} style={styles.icon} />
-          <Text style={styles.infoText}>{barDetail.phone}</Text>
-        </View>
+        <TouchableOpacity onPress={() => Linking.openURL(`tel:${barDetail.phone}`)}>
+          <View style={styles.infoItem}>
+            <Image source={require("../assets/listdetail/phone.png")} style={styles.icon} />
+            <Text style={styles.infoText}>{barDetail.phone}</Text>
+          </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => setShowHours((prev) => !prev)}>
+          <View style={styles.infoItem}>
+            <Image source={require("../assets/drawable/time.png")} style={styles.icon} />
+            <Text style={[styles.infoText, {fontWeight: "bold"}]}>
+              {getOpenStatus(barDetail.open_hours)}
+            </Text>
+            <Image
+                source={
+                  showHours
+                    ? require("../assets/drawable/up.png")
+                    : require("../assets/drawable/down.png")
+                }
+                style={styles.arrowIcon}
+              />
+          </View>
+        </TouchableOpacity>
+
+        {showHours &&
+          barDetail.open_hours.map((hour, index) => (
+            <Text key={index} style={[styles.infoText, {marginLeft: widthPercentage(30)}, {padding: widthPercentage(2)}]}>
+              {getKoreanDay(hour.day_of_week)} {hour.is_closed ? "휴무" : `${hour.opening_hour} ~ ${hour.closing_hour}`}
+            </Text>
+          ))}
+
+        <TouchableOpacity onPress={() => Linking.openURL(barDetail.url)}>
+          <View style={styles.infoItem}>
+            <Image source={require("../assets/drawable/sns.png")} style={styles.icon} />
+            <Text style={styles.infoText}>{barDetail.url}</Text>
+          </View>
+        </TouchableOpacity>
+        
 
         <View style={styles.infoItem}>
-          <Image source={require("../assets/drawable/bookmark.png")} style={styles.icon} />
-          <Text style={styles.infoText}>{barDetail.url}</Text>
-        </View>
-
-        <View style={styles.infoItem}>
-          <Image source={require("../assets/drawable/bookmark.png")} style={styles.icon} />
+          <Image source={require("../assets/drawable/payment.png")} style={styles.icon} />
           <Text style={styles.infoText}>결제 정보</Text>
         </View>
       </View>
@@ -217,18 +326,37 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFCF3",
   },
   backButton: {
-    padding: heightPercentage(16),
-    alignSelf: "flex-start",
+    alignSelf: "flex-end",
+    padding: widthPercentage(20),
+  },
+  cancelIcon: {
+    width: widthPercentage(18),
+    height: widthPercentage(18),
   },
   backText: {
     fontSize: fontPercentage(16),
     color: "#007AFF",
+  },
+  copyButton: {
+    width: widthPercentage(47),
+    height: heightPercentage(28),
+    paddingLeft: widthPercentage(5),
+    borderRadius: widthPercentage(8),
   },
   headerRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     paddingHorizontal: widthPercentage(16),
+  },
+  arrowIcon: {
+    width: widthPercentage(16),
+    height: widthPercentage(16),
+    marginLeft: widthPercentage(6),
+  },
+  nameContainer: {
+    flex: 1, //북마크 제외 전체 너비 사용
+    paddingRight: widthPercentage(8), //북마크랑 거리두기
   },
   barName: {
     fontSize: fontPercentage(20),
@@ -240,6 +368,7 @@ const styles = StyleSheet.create({
     width: widthPercentage(76),
     height: heightPercentage(36),
     marginBottom: heightPercentage(20),
+    marginTop: heightPercentage(4),
   },
   scrollContainer: {
     paddingHorizontal: widthPercentage(12),
