@@ -31,6 +31,8 @@ target 'Cocktail_Front' do
   pod 'Google-Maps-iOS-Utils', '5.0.0'
   pod 'react-native-google-maps', :path => rn_maps_path
 
+  pod 'KakaoSDKAuth'
+  
   # ✅ RNKakaoLogins 모듈 추가 (필요 시)
   pod 'kakao-login', :path => '../node_modules/@react-native-seoul/kakao-login'
 

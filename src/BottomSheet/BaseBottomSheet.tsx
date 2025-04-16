@@ -98,8 +98,12 @@ const BaseBottomSheet = ({
           }));
           setMyBars(transformed);
   
+          result.data.forEach((bar, idx) => {
+            console.log(`[${idx}] id=${bar.id}, name=${bar.bar_name}, addr=${bar.address}`);
+          });
+
           console.log("result.data 예시", result.data[0]);
-          
+
           // ✅ 북마크 ID Set 및 barId -> listId Map 구성
           const ids = new Set<number>();
           const map = new Map<number, number>();
@@ -194,6 +198,7 @@ const sections = useMemo(() => {
         setLoginSheetVisible(true);
         return;
       }else{
+        console.log("북마크 할 bar id:", selectedBarId, selectedBar);
         setSelectedBarId(bar?.id ?? null);  // ✅ 리스트 저장용
         setSelectedBar(bar);                // ✅ UI 표시용 or Detail 화면용
       }
@@ -209,6 +214,50 @@ const sections = useMemo(() => {
     setSelectedTab(tab);
   };
 
+  const handleBookmarkToggle = async (barId: number) => {
+    const token = await AsyncStorage.getItem("accessToken");
+    if (!token) {
+      Alert.alert("로그인이 필요합니다.");
+      return;
+    }
+  
+    const listId = bookmarkListMap.get(barId);
+    if (!listId) {
+      console.warn("❌ listId가 없습니다 → API 호출 안함");
+      Alert.alert("에러", "해당 가게의 리스트 정보가 없습니다.");
+      return;
+    }
+  
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/item`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token,
+        },
+        body: JSON.stringify({ listId, barId }),
+      });
+  
+      const result = await response.json();
+      if (result.code === 1) {
+        const newSet = new Set(bookmarkIds);
+        newSet.delete(barId);
+        setBookmarkIds(newSet);
+  
+        const newMap = new Map(bookmarkListMap);
+        newMap.delete(barId);
+        setBookmarkListMap(newMap);
+  
+        Alert.alert("북마크 해제", "리스트에서 삭제되었습니다.");
+      } else {
+        Alert.alert("실패", result.msg || "서버에서 북마크 해제 실패");
+      }
+    } catch (err) {
+      console.error("북마크 해제 요청 실패:", err);
+      Alert.alert("에러", "네트워크 오류 발생");
+    }
+  };
+  
 
   return (
     <>
@@ -310,6 +359,10 @@ const sections = useMemo(() => {
       setSelectedTab={setSelectedTab}
       setSelectedBarId={setSelectedBarId}
       bookmarkIds={bookmarkIds}
+      setBookmarkIds={setBookmarkIds}
+      bookmarkListMap={bookmarkListMap}
+      setBookmarkListMap={setBookmarkListMap}
+      handleBookmarkToggle={handleBookmarkToggle}
   />
 )}
     </BottomSheet>

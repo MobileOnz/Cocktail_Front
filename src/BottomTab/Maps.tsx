@@ -136,7 +136,7 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
                 }
               );
             }
-          }, 300);
+          }, 600);
         } catch (err) {
           console.error("검색 실패:", err);
         }

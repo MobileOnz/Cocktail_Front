@@ -103,7 +103,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: widthPercentage(16),
     paddingVertical: heightPercentage(12),
-    marginTop: heightPercentage(12),
+    // marginTop: heightPercentage(12),
+    marginTop: heightPercentage(72),
   },
   loginText: {
     fontSize: fontPercentage(18),

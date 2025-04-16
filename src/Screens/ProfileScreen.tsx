@@ -1,111 +1,151 @@
-import React, { useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, TextInput, Image, TouchableOpacity } from "react-native";
 import { widthPercentage, heightPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
 import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Ionicons";
-
+import { API_BASE_URL } from "@env";
 import { launchImageLibrary } from "react-native-image-picker";
-
 import AsyncStorage from "@react-native-async-storage/async-storage";
+
+import ImageResizer from 'react-native-image-resizer';
+
+const safeParseJson = async (res: Response) => {
+  const text = await res.text();
+  try {
+    return JSON.parse(text);
+  } catch (e) {
+    console.error("❌ JSON 파싱 실패:", text);
+    return null;
+  }
+};
+
 const ProfileScreen: React.FC = () => {
   const navigation = useNavigation();
   const [nickname, setNickname] = useState("현재 닉네임");
   const [newNickname, setNewNickname] = useState("");
+  const [profileUri, setProfileUri] = useState<string | null>(null);
+  const [initialProfileUri, setInitialProfileUri] = useState<string | null>(null);
 
   const isNicknameChanged = newNickname.trim() !== "" && newNickname !== nickname;
   const isProfileChanged = profileUri !== initialProfileUri;
   const isChanged = isNicknameChanged || isProfileChanged;
 
-  const [profileUri, setProfileUri] = useState<string | null>(null); // 현재 선택된 이미지
-  const [initialProfileUri, setInitialProfileUri] = useState<string | null>(null); // 원래 이미지
-
+  //이미지의 type, name을 안전하게 지정해주기 위해 상태를 저장하는 변수 추가
+  const [selectedImageMeta, setSelectedImageMeta] = useState<{name: string; type: string} | null>(null);
 
   useEffect(() => {
     const fetchProfileData = async () => {
       const token = await AsyncStorage.getItem("accessToken");
+      console.log("fetchProfileData Token:", token);
       if (!token) return;
-  
+
       try {
-        // 회원 기본 정보 불러오기
-        const res = await fetch("http://localhost:8080/api/public/cocktail/get/member", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+        const res = await fetch(`${API_BASE_URL}/api/get/member`, {
+          headers: { Authorization: `${token}` },
         });
-        const json = await res.json();
-        if (json.code === 1) {
+        const json = await safeParseJson(res);
+        console.log("👤 get/member 응답:", json);
+
+        if (json && json.code === 1) {
           const member = json.data;
           setNickname(member.nickname);
           setNewNickname("");
           console.log("✅ 닉네임 불러오기 완료:", member.nickname);
+        } else {
+          console.warn("❌ 닉네임 API 실패:", json?.msg || json);
         }
       } catch (error) {
         console.error("❌ 닉네임 불러오기 실패", error);
       }
-  
+
       try {
-        // 🔥 프로필 이미지 따로 불러오기
-        const profileRes = await fetch("http://localhost:8080/api/profile", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+        const profileRes = await fetch(`${API_BASE_URL}/api/profile`, {
+          headers: { Authorization: `${token}` },
         });
-        const profileText = await profileRes.text(); // 이미지 URL이 그냥 문자열로 올 경우
-        if (profileText) {
-          setProfileUri(profileText);
-          setInitialProfileUri(profileText);
-          console.log("✅ 프로필 이미지 불러오기 완료:", profileText);
+
+        const contentType = profileRes.headers.get("content-type");
+
+        if (contentType?.includes("application/json")) {
+          const profileJson = await safeParseJson(profileRes);
+          console.log("📷 프로필 응답 (JSON):", profileJson);
+
+          if (profileJson && profileJson.code === 1 && profileJson.data) {
+            const profileUrl = profileJson.data;
+            const fullUri = profileUrl.startsWith("http")
+              ? profileUrl
+              : `${API_BASE_URL}${profileUrl.startsWith("/") ? "" : "/"}${profileUrl}`;
+
+            setProfileUri(fullUri);
+            setInitialProfileUri(fullUri);
+
+            const short = fullUri.length > 100 ? fullUri.slice(0, 100) + "..." : fullUri;
+            console.log("✅ 프로필 이미지 불러오기 완료:", short);
+          } else {
+            console.warn("❌ 프로필 이미지 API 실패:", profileJson?.msg || profileJson);
+          }
+
+        } else if (contentType?.startsWith("image/")) {
+          const blob = await profileRes.blob();
+          const imageUrl = URL.createObjectURL(blob);
+
+          setProfileUri(imageUrl);
+          setInitialProfileUri(imageUrl);
+
+          console.log("📷 이미지 직접 응답으로 설정:", imageUrl);
+        } else {
+          console.warn("❓ 알 수 없는 Content-Type 응답:", contentType);
         }
+      
       } catch (error) {
         console.error("❌ 프로필 이미지 불러오기 실패", error);
       }
+      
     };
-  
+
     fetchProfileData();
   }, []);
-  
 
   const handleSave = async () => {
     if (!isChanged) return;
-  
+
     try {
       const token = await AsyncStorage.getItem("accessToken");
+      console.log("handleSave Token:", token);
       if (!token) {
         console.warn("AccessToken is missing");
         return;
       }
-  
-      // 1. 프로필 이미지 변경 시 먼저 업로드
-      if (isProfileChanged && profileUri) {
+
+      if (isProfileChanged && profileUri && selectedImageMeta) {
         const formData = new FormData();
+
+
+        //이미지 업로드용 파일 구조
         formData.append("file", {
-          uri: profileUri,
-          type: "image/jpeg",
-          name: "profile.jpg",
-        });
-  
-        const uploadRes = await fetch("http://localhost:8080/api/public/upload/profile", {
+          uri: profileUri?.startsWith("file://") ? profileUri : `file://${profileUri}`,
+          name: selectedImageMeta.name,
+          type: selectedImageMeta.type,
+        }as any); //타입 충돌 방지용
+
+        const uploadRes = await fetch(`${API_BASE_URL}/api/upload/profile`, {
           method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `${token}` },
           body: formData,
         });
-  
-        const uploadJson = await uploadRes.json();
-        if (uploadJson.code === 1) {
+
+        const uploadJson = await safeParseJson(uploadRes);
+        if (uploadJson?.code === 1) {
           console.log("✅ 프로필 이미지 업로드 성공");
         } else {
-          console.warn("❌ 프로필 이미지 업로드 실패", uploadJson.msg);
+          console.warn("❌ 프로필 이미지 업로드 실패", uploadJson?.msg);
         }
       }
-  
-      // 2. 프로필 정보 업데이트
-      const profileUpdateRes = await fetch("http://localhost:8080/api/update/member", {
+
+      const profileUpdateRes = await fetch(`${API_BASE_URL}/api/update/member`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          Authorization: `${token}`,
         },
         body: JSON.stringify({
           gender: "none",
@@ -116,9 +156,9 @@ const ProfileScreen: React.FC = () => {
           profile: profileUri || "",
         }),
       });
-  
-      const profileJson = await profileUpdateRes.json();
-      if (profileJson.code === 1) {
+
+      const profileJson = await safeParseJson(profileUpdateRes);
+      if (profileJson?.code === 1) {
         console.log("✅ 프로필 정보 업데이트 성공", profileJson.data);
         if (isNicknameChanged) {
           setNickname(newNickname);
@@ -128,43 +168,54 @@ const ProfileScreen: React.FC = () => {
           setInitialProfileUri(profileUri);
         }
       } else {
-        console.warn("❌ 프로필 정보 업데이트 실패", profileJson.msg);
+        console.warn("❌ 프로필 정보 업데이트 실패", profileJson?.msg);
       }
     } catch (error) {
       console.error("🔥 프로필 저장 중 에러 발생", error);
     }
   };
-  
-  
-  
 
   const handleProfileImageChange = async () => {
     launchImageLibrary(
-      {
-        mediaType: "photo",
-        selectionLimit: 1,
-      },
-      (response) => {
+      { mediaType: "photo", selectionLimit: 1 },
+      async (response) => {
         if (!response.didCancel && response.assets && response.assets.length > 0) {
-          const uri = response.assets[0].uri;
-          if (!initialProfileUri) {
-            setInitialProfileUri(uri || null); // 최초 선택 시 초기값 저장
+          try {
+            const asset = response.assets[0];
+            console.log("📸 선택된 원본 이미지:", asset);
+  
+            const resizedImage = await ImageResizer.createResizedImage(
+              asset.uri!,
+              800, // 너비 (원본 비율 유지됨)
+              800, // 높이
+              "PNG", // 포맷 강제 지정
+              100 // 품질 (0~100)
+            );
+  
+            const uri = resizedImage.uri;
+            console.log("🧩 변환된 png 이미지:", resizedImage);
+  
+            setSelectedImageMeta({
+              name: `profile_${Date.now()}.png`,
+              type: "image/png",
+            });
+  
+            if (!initialProfileUri) setInitialProfileUri(uri);
+            setProfileUri(uri);
+  
+          } catch (error) {
+            console.error("❌ 이미지 리사이즈 실패:", error);
           }
-          setProfileUri(uri || null);
         }
       }
     );
   };
-  
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Image
-            source={require("../assets/drawable/left-chevron.png")}
-            style={styles.backIcon}
-          />
+          <Image source={require("../assets/drawable/left-chevron.png")} style={styles.backIcon} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>프로필 변경</Text>
         <View style={{ width: 28 }} />
@@ -180,10 +231,7 @@ const ProfileScreen: React.FC = () => {
             }
             style={styles.profileImage}
           />
-          <Image
-            source={require("../assets/drawable/edit_icon.png")}
-            style={styles.editIcon}
-          />
+          <Image source={require("../assets/drawable/edit_icon.png")} style={styles.editIcon} />
         </TouchableOpacity>
       </View>
 
@@ -203,7 +251,10 @@ const ProfileScreen: React.FC = () => {
         onPress={handleSave}
       >
         <Text
-          style={[styles.saveButtonText, isChanged ? styles.activeButtonText : styles.disabledButtonText]}
+          style={[
+            styles.saveButtonText,
+            isChanged ? styles.activeButtonText : styles.disabledButtonText,
+          ]}
         >
           저장하기
         </Text>

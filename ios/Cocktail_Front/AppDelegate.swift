@@ -6,7 +6,7 @@ import GoogleMaps
 import FirebaseCore
 import NaverThirdPartyLogin // ✅ 네이버 SDK import
 import GoogleSignIn 
-
+import KakaoSDKAuth
 @main
 class AppDelegate: RCTAppDelegate {
   override func application(
@@ -35,10 +35,10 @@ override func application(
       .application(application, open: url, options: options) ?? false
   }
 
-// 카카오
-    // if RNKakaoLogins.isKakaoTalkLoginUrl(url) {
-    //   return RNKakaoLogins.handleOpenUrl(url)
-    // }
+  // ✅ 카카오 로그인 처리
+  if AuthApi.isKakaoTalkLoginUrl(url) {
+    return AuthController.handleOpenUrl(url: url)
+  }
 
   // ✅ 구글 로그인 처리
   if GIDSignIn.sharedInstance.handle(url) {

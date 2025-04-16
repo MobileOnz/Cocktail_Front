@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, Image, StyleSheet } from "react-native";
 import { BottomSheetSectionList } from "@gorhom/bottom-sheet";
 import { widthPercentage, heightPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
 
+import { API_BASE_URL } from "@env";
 
 type myBarList = {
   id: number;
@@ -15,11 +16,12 @@ type myBarList = {
 
 
 
-const MainBottomSheet = ({ sections, showMyBars, handleTabPress, setSelectedTab, setSelectedBarId, bookmarkIds }) => {
+const MainBottomSheet = ({ sections, showMyBars, handleTabPress, setSelectedTab, setSelectedBarId, bookmarkIds, setBookmarkIds, bookmarkListMap, setBookmarkListMap, handleBookmarkToggle }) => {
   const [isExpanded, setIsExpanded] = useState(true);
   const toggleShowMyBars = () => {
     setIsExpanded(!isExpanded);
   };
+
   const getFilteredSections = () => {
     return sections.map((section) => {
       if (section.title === "나의 칵테일 바") {
@@ -56,15 +58,25 @@ const MainBottomSheet = ({ sections, showMyBars, handleTabPress, setSelectedTab,
         </View>
       </View>
       {/* 책갈피 아이콘 */}
-      <TouchableOpacity onPress={() => handleTabPress("bookmark", item)}>
-        <Image 
+      <TouchableOpacity
+        onPress={() => {
+          if (bookmarkIds.has(item.id)) {
+            handleBookmarkToggle(item.id); // ✅ 북마크 해제
+          } else {
+            handleTabPress("bookmark", item); // 북마크 추가
+          }
+        }}
+      >
+        <Image
           source={
-            bookmarkIds?.has?.(item.id)
+            bookmarkIds.has(item.id)
               ? require("../assets/drawable/bookmark_checked.png")
               : require("../assets/drawable/bookmark.png")
           }
-          style={styles.bookmarkImage} />
+          style={styles.bookmarkImage}
+        />
       </TouchableOpacity>
+
 
     </View>
     </TouchableOpacity>
