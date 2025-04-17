@@ -14,8 +14,10 @@ import {API_BASE_URL} from "@env"
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import LoginBottomSheet from "./LoginBottomSheetProps";
 import SelectedRegions from "./SelectedRegions";
+import MapView from "react-native-maps";
 
-const BaseBottomSheet = ({ animatedPosition, selectedRegions }) => {
+const BaseBottomSheet = ({ animatedPosition, selectedRegions, barData, setBarData  }) => {
+  const mapRef = useRef<MapView>(null);
 
   const navigation = useNavigation();
   const snapPoints = useMemo(() => ["10%", "30%", "76%"], []);
@@ -23,38 +25,62 @@ const BaseBottomSheet = ({ animatedPosition, selectedRegions }) => {
   const [selectedBar, setSelectedBar] = useState(null);
   const bottomSheetRef = useRef<BottomSheet>(null);
   const [isLoginSheetVisible, setLoginSheetVisible] = useState(false);
-  const [barData,setBarData] = useState([]);
   const [sheetReady, setSheetReady] = useState(false);
+  const [markerList, setMarkerList] = useState([]);
 
-  useEffect(() => {
-    if (selectedRegions.length > 0) {
-      setSelectedTab("regionDetail");
-    } else {
-      setSelectedTab("search"); 
-    }
-    const fetchNearbyBars = async () => {
-      
-      try{
-        const response = await axios.get(`${API_BASE_URL}/api/location/nearby?x=126.9812675&y=37.5718599`)
-        if(response.data.code ===1){
-          console.log("정상적으로 근처 칵테일바 데이터 접근 완료")
-          const transformed = response.data.data.map((bar) => ({
-            id: bar.id,
-            title: bar.bar_name,                     
-            barAdress: bar.address,                  
-            thumbNail: { uri: bar.thumbnail },           
-            hashtagList: bar.menus.map((m) => `#${m.name}`), 
-          }));
-          console.log(transformed);
-          setBarData(transformed);
-        }else
-        console.log("서버 요청중 에러발생",response.data.msg);
-      }catch(error){
-        console.log("잘못된 접근", error);
+// 🔹 지역 선택 시 주변 바 조회
+useEffect(() => {
+  const fetchNearbyBars = async () => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/api/location/nearby?x=126.9812675&y=37.5718599`);
+      if (response.data.code === 1) {
+        const rawData = response.data.data;
+
+        const formatted = rawData.map((bar) => ({
+          id: bar.id,
+          title: bar.bar_name,
+          barAdress: bar.address,
+          thumbNail: bar.thumbnail ? { uri: bar.thumbnail } : require("../assets/drawable/barExample.png"),
+          hashtagList: bar.menus.map((m) => `#${m.name}`),
+        }));
+
+        const markers = rawData.map((bar) => ({
+          id: bar.id,
+          title: bar.bar_name,
+          coordinate: {
+            latitude: Number(bar.y),
+            longitude: Number(bar.x),
+          },
+        }));
+
+        setBarData(formatted);
+        setMarkerList(markers);
+        setSelectedTab("regionDetail");
+
+        // 📍 지도 줌인
+        setTimeout(() => {
+          if (mapRef.current && markers.length > 0) {
+            mapRef.current.fitToCoordinates(markers.map((m) => m.coordinate), {
+              edgePadding: { top: 100, right: 100, bottom: 300, left: 100 },
+              animated: true,
+            });
+          }
+        }, 600);
+      } else {
+        console.log("서버 요청중 에러발생", response.data.msg);
       }
+    } catch (error) {
+      console.log("잘못된 접근", error);
     }
+  };
+
+  if (selectedRegions.length > 0) {
     fetchNearbyBars();
-  }, [selectedRegions]);
+  } else {
+    setSelectedTab("search");
+  }
+}, [selectedRegions]);
+
   
 const headerCheck = async () =>{
   const token = await AsyncStorage.getItem("accessToken");

@@ -39,7 +39,9 @@ const MainBottomSheet = ({ sections, showMyBars, handleTabPress }) => {
         <Image style={styles.itemImage} source={item.thumbNail} />
       <View style={styles.textContainer}>
         <Text style={styles.itemTitle}>{item.title}</Text>
-        <Text style={{ color: "#B9B6AD", fontSize: fontPercentage(12) }}>인기메뉴</Text>
+        {item.hashtagList && item.hashtagList.length >0 &&(
+           <Text style={{ color: "#B9B6AD", fontSize: fontPercentage(12) }}>인기메뉴</Text>
+        )}
         <View style={styles.hashtagContainer}>
           {item.hashtagList.map((tag, idx) => (
             <Text key={idx} style={styles.hashtag}>{tag}</Text>

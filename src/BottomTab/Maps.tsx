@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useRef } from "react";
 import { StackScreenProps } from "@react-navigation/stack";
 import { View, StyleSheet, StatusBar, Text, TouchableOpacity, TextInput,Image } from "react-native";
 import SearchBar from "../Components/SearchBar";
@@ -6,25 +6,27 @@ import CustomMapView from "../Components/CustomMapView";
 import BaseBottomSheet from "../BottomSheet/BaseBottomSheet";
 import theme from "../assets/styles/theme";
 import { heightPercentage, widthPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
-import SelectedRegions from "../BottomSheet/SelectedRegions";
 import SelectedRegionTags from "../Components/SelectedRegionTags";
 import Animated, {
   useAnimatedStyle,
   interpolate,
 } from "react-native-reanimated";
 import { useSharedValue } from "react-native-reanimated";
+import axios from "axios";
+import {API_BASE_URL} from "@env"
+import MapView from "react-native-maps";
+
 type RootStackParamList = {
   SearchScreen: undefined;
   Maps: { searchCompleted?: boolean; selectedRegions? : string[], searchQuery : string,
      resetRequested? : boolean };
 };
-import { Dimensions } from "react-native";
 
-type MapsProps = StackScreenProps<RootStackParamList, "Maps">;
-
+type MapsProps = StackScreenProps<RootStackParamList, "Maps">; 
 const buttonStartY = heightPercentage(980); // 예: 바텀시트가 "10%"일 때 버튼은 아래쪽
 const buttonEndY = heightPercentage(100);
 const CurrentLocationButton = ({ animatedPosition, onPress }) => {
+ 
   const animatedStyle = useAnimatedStyle(() => {
     const translateY = interpolate(
       animatedPosition.value,
@@ -53,13 +55,72 @@ const CurrentLocationButton = ({ animatedPosition, onPress }) => {
 };
 
 const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
+  const mapRef = useRef<MapView>(null);
   const animatedPosition = useSharedValue(0);
-  
+  const [barData, setBarData] = useState([]);
+  const [selectedTab, setSelectedTab] = useState("search")
   const [isSearchCompleted, setIsSearchCompleted] = useState(false);
   const [selectedRegions, setSelectedRegions] = useState<string[]>([]);
   const [activeRegion, setActiveRegion] = useState<string|null>(null);
+  const [markerList, setMarkerList] = useState([]);
   const {searchQuery} = route.params|| "";
+  useEffect(() => {
+    const fetchNearbyBars = async () => {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/api/location/nearby?x=126.9812675&y=37.5718599`);
+        if (response.data.code === 1) {
+          const rawData = response.data.data;
   
+          const formatted = rawData.map((bar) => ({
+            id: bar.id,
+            title: bar.bar_name,
+            barAdress: bar.address,
+            thumbNail: bar.thumbnail
+              ? { uri: bar.thumbnail }
+              : require("../assets/drawable/barExample.png"),
+            hashtagList: bar.menus.map((m) => `#${m.name}`),
+          }));
+  
+  
+          const markers = rawData.map((bar) => ({
+            id: bar.id,
+            title: bar.bar_name,
+            coordinate: {
+              latitude: Number(bar.y),
+              longitude: Number(bar.x),
+            },
+          }));
+  
+          setBarData(formatted);       // UI용 바텀시트
+          setMarkerList(markers);      // 지도 마커용
+          setSelectedTab("search");    // 바텀시트 탭도 맞춰주면 좋음
+  
+          setTimeout(() => {
+            if (mapRef.current && markers.length > 0) {
+              mapRef.current.fitToCoordinates(
+                markers.map((m) => m.coordinate),
+                {
+                  edgePadding: { top: 100, right: 100, bottom: 300, left: 100 },
+                  animated: true,
+                }
+              );
+            }
+          }, 600);
+        } else {
+          console.log("서버 요청 에러:", response.data.msg);
+        }
+      } catch (error) {
+        console.log("서버 호출 실패:", error);
+      }
+    };
+  
+    fetchNearbyBars();
+  }, []);
+  
+
+  useEffect(() => {
+    console.log("✅ Maps에서 보내는 markerList:", markerList);
+  }, [markerList]);
   useEffect(() => {
     if (selectedRegions.length > 0 && !activeRegion) {
       setActiveRegion(selectedRegions[0]); 
@@ -114,14 +175,15 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
 
       {/* 지도 */}
       <View style={styles.mapContainer}>
-        <CustomMapView 
-       
+      <CustomMapView
           initialRegion={{
             latitude: 37.5665,
-            longitude: 126.9780,
+            longitude: 126.978,
             latitudeDelta: 0.02,
             longitudeDelta: 0.02,
           }}
+          mapRef={mapRef}
+          markerList={markerList}
         />
       </View>
       <CurrentLocationButton
@@ -145,7 +207,6 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
         selectedRegions={selectedRegions} 
         onRemoveRegion={handleRemoveRegion} 
         onRemoveAllRegions={() => {
-          console.log("전체 초기화 실행됨"); // ✅ 로그 찍히는지 확인
           setSelectedRegions([]);
         }}
       />
@@ -156,6 +217,9 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
 <BaseBottomSheet
   animatedPosition={animatedPosition}
   selectedRegions={selectedRegions}
+  barData={barData}
+  setBarData={setBarData}
+  
 />
     </View>
   );

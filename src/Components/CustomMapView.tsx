@@ -1,26 +1,34 @@
-import React, { useRef } from "react";
+// CustomMapView.tsx
+import React from "react";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
-import { Alert, StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
 
-
-const CustomMapView = ({ initialRegion}: { initialRegion: any;}) => {
-  const mapRef = useRef<MapView>(null);
-
+const CustomMapView = ({ initialRegion, mapRef, markerList }) => {
   return (
     <MapView
+      key={markerList.length} //markerList가 바뀔 때마다 MapView를 강제 리렌더링
       ref={mapRef}
+    
       provider={PROVIDER_GOOGLE}
       style={styles.map}
-      initialRegion={initialRegion}
+      region={initialRegion}
     >
-      <Marker
-        coordinate={{ latitude: 37.5665, longitude: 126.9780 }}
-        title="가게 이름"
-        description="여기에 가게 설명 입력"
-        onPress={() => {
-          
-        }}
-      />
+      {markerList?.map((marker) => {
+      const lat = Number(marker.coordinate.latitude);
+      const lng = Number(marker.coordinate.longitude);
+
+      if (isNaN(lat) || isNaN(lng)) return null; 
+      
+      return (
+        <Marker
+          key={marker.id}
+          coordinate={{ latitude: lat, longitude: lng }}
+          image={require("../assets/drawable/map_pin.png")}
+          title={marker.title}
+          description="검색된 바"
+        />
+      );
+    })}
     </MapView>
   );
 };

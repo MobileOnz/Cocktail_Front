@@ -9,8 +9,9 @@ import {
 } from "react-native";
 import { BottomSheetScrollView } from "@gorhom/bottom-sheet";
 import axios from "axios";
+import { ScrollView } from "react-native-gesture-handler";
 
-// 🔸 지역 이름 → 서버 코드 매핑
+// 지역 이름 → 서버 코드 매핑
 const REGION_CODE_MAP = {
   "서울 전체": "SEOUL_ALL",
   "강남/신논현/양재": "GANGNAM",
@@ -100,49 +101,54 @@ const SelectedRegions = ({ selectedRegions = [], onRegionSelect }) => {
 
       setActiveRegion(firstRegion);
       onRegionSelect?.(firstRegion);
-      handleRegionPress(firstRegion); // ✅ 초기 바 데이터도 요청
+      handleRegionPress(firstRegion); 
     }
   }, [selectedRegions]);
 
   return (
-    <View>
+    <BottomSheetScrollView
+      showsVerticalScrollIndicator={false}
+      contentContainerStyle={{ paddingBottom: 40 }}
+    >
       {/* 지역 탭 */}
-      <BottomSheetScrollView
-        ref={scrollRef}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContainer}
-      >
-        {selectedRegions.map((region) => (
-          <TouchableOpacity
-            key={region}
-            style={styles.tab}
-            onPress={() => handleRegionPress(region)}
-            onLayout={(e) => {
-              regionLayouts.current[region] = {
-                x: e.nativeEvent.layout.x,
-                width: e.nativeEvent.layout.width,
-              };
-            }}
-          >
-            <Text
-              style={region === activeRegion ? styles.activeText : styles.text}
+      <View>
+        <ScrollView
+          ref={scrollRef}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.scrollContainer}
+        >
+          {selectedRegions.map((region) => (
+            <TouchableOpacity
+              key={region}
+              style={styles.tab}
+              onPress={() => handleRegionPress(region)}
+              onLayout={(e) => {
+                regionLayouts.current[region] = {
+                  x: e.nativeEvent.layout.x,
+                  width: e.nativeEvent.layout.width,
+                };
+              }}
             >
-              {region}
-            </Text>
-          </TouchableOpacity>
-        ))}
-        <Animated.View
-          style={[
-            styles.underline,
-            {
-              transform: [{ translateX: underlineX }],
-              width: underlineWidth,
-            },
-          ]}
-        />
-      </BottomSheetScrollView>
-
+              <Text
+                style={region === activeRegion ? styles.activeText : styles.text}
+              >
+                {region}
+              </Text>
+            </TouchableOpacity>
+          ))}
+          <Animated.View
+            style={[
+              styles.underline,
+              {
+                transform: [{ translateX: underlineX }],
+                width: underlineWidth,
+              },
+            ]}
+          />
+        </ScrollView>
+      </View>
+  
       {/* 바 리스트 */}
       <View style={styles.listContainer}>
         {barList.map((item) => (
@@ -151,22 +157,28 @@ const SelectedRegions = ({ selectedRegions = [], onRegionSelect }) => {
             <View style={styles.infoContainer}>
               <Text style={styles.title}>{item.bar_name}</Text>
               <Text style={styles.address}>{item.address}</Text>
-              <Text style={styles.label}>인기메뉴</Text>
-              <View style={styles.tags}>
-                {item.menus && item.menus.length > 0 ? (
-                  item.menus.map((menu, idx) => (
-                    <Text key={idx} style={styles.tag}>#{menu.name}</Text>
-                  ))
-                ) : (
-                  <Text style={styles.tag}>#메뉴정보 없음</Text>
+              {item.menus && item.menus.length > 0 && (
+                <Text style={styles.label}>인기메뉴</Text>
+              )}  
+              <View style={styles.tags}>          
+                {item.menus && item.menus.length > 0 && (
+                  <>
+                  
+                    {item.menus.map((menu, idx) => (
+                      <Text key={idx} style={styles.tag}>
+                        #{menu.name}
+                      </Text>
+                    ))}
+                  </>
                 )}
               </View>
             </View>
           </View>
         ))}
       </View>
-    </View>
+    </BottomSheetScrollView>
   );
+  
 };
 
 const styles = StyleSheet.create({
@@ -236,12 +248,13 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   tag: {
-    fontSize: 12,
-    backgroundColor: "#F1F1F1",
+    backgroundColor: "#F3EFE6",
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 8,
-    color: "#444",
+    fontSize: 12,
+    color: "#7D7A6F",
+    marginRight: 4,
   },
 });
 
