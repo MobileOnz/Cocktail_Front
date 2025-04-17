@@ -5,6 +5,7 @@
 	<key>GIDClientID</key>
 	<string>1058340377075-an8fq49j4mg29fq9rm88qpi253dd2vts.apps.googleusercontent.com</string>
 
+
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -18,6 +19,7 @@
 		<dict>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
+
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>com.googleusercontent.apps.1058340377075-an8fq49j4mg29fq9rm88qpi253dd2vts</string>
@@ -79,6 +81,7 @@
 	<key>KAKAO_APP_KEY</key>
 	<string>7798f0108bf85f0f9a3149d4bedae99c</string>
 
+
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>kakao7798f0108bf85f0f9a3149d4bedae99c</string>
@@ -87,7 +90,6 @@
 		<string>kakaolink</string>
 		<string>kakaotalk</string>
 	</array>
-
 	<key>FirebaseAppDelegateProxyEnabled</key>
 	<false/>
 	<key>GADApplicationIdentifier</key>

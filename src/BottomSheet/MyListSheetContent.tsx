@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from "react";
+
 import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import { BottomSheetFlatList } from "@gorhom/bottom-sheet";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
@@ -8,17 +9,81 @@ import axios from "axios";
 import { API_BASE_URL } from "@env";
 import MoreOptionMenu from "../Components/MoreOptionMenu";
 import Feather from "react-native-vector-icons/Feather";
+
 import {
   widthPercentage,
   heightPercentage,
   fontPercentage,
 } from "../assets/styles/FigmaScreen";
 
-const MyListSheetContent = ({ handleTabPress, bookmarkedBars }) => {
-  const navigation = useNavigation();
-  const server = API_BASE_URL;
+import MoreOptionMenu from "../Components/MoreOptionMenu";
+import { PaperProvider } from "react-native-paper";
+import { useNavigation } from "@react-navigation/native";
+import { API_BASE_URL } from "@env";
+import { ScrollView } from "react-native-gesture-handler";
+import instance from "../tokenRequest/axios_interceptor";
+import LoginBottomSheet from "./LoginBottomSheetProps";
 
-  const handleEdit = (itemId: number) => {
+const server = API_BASE_URL;
+
+interface MyListItem {
+  id: string;
+  name: string;
+  location: string;
+  tags: string[];
+  icon_tag: number;
+}
+
+const imageMap = {
+  1: require("../assets/newListIcon/Name=Classic_Status=Default.png"),
+  2: require("../assets/newListIcon/Name=Light_Status=Default.png"),
+  3: require("../assets/newListIcon/Name=Party_Status=Default.png"),
+  4: require("../assets/newListIcon/Name=Play_Status=Default.png"),
+  5: require("../assets/newListIcon/Name=Primary_Status=Default.png"),
+  6: require("../assets/newListIcon/Name=Shine_Status=Default.png"),
+  7: require("../assets/newListIcon/Name=Summer_Status=Default.png"),
+};
+
+const MyListSheetContent = ({ handleTabPress, bookmarkedBars }) => {
+  const [loginModalVisible, setLoginModalVisible] = useState(false);
+  const navigation = useNavigation();
+  const [myList, setMyList] = useState<MyListItem[]>([]);
+
+
+const fetchMyList = async () => {
+  
+  try {
+    const response = await instance.get('/api/list/all');
+    const transformed = response.data.data.map((item) => ({
+      id: item.id.toString(),
+      name: item.main_tag.name,
+      location: null,
+      tags: Object.values(item.sub_tags)
+        .flat()
+        .map((tag) => `#${tag.name}`),
+      icon_tag: item.icon_tag ?? 1,
+    }));
+
+    setMyList(transformed);
+  } catch (error) {
+    console.error('나의 리스트 가져오기 실패:', error);
+    if (error instanceof Error && error.message.includes("로그인 필요")) {
+      setLoginModalVisible(true);
+    }
+
+    if (error.message === '리프레시 토큰 만료') {
+     navigation.navigate("Login" as never);
+    }
+  }
+};
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchMyList();
+    }, [])
+  );
+
+  const handleEdit = (itemId : number) => {
     navigation.navigate("CreateNewListScreen" as never, {
       editMode: true,
       itemId: itemId,
@@ -27,18 +92,16 @@ const MyListSheetContent = ({ handleTabPress, bookmarkedBars }) => {
 
   const handleDelete = async (itemId: number) => {
     try {
-      const token = await AsyncStorage.getItem("accessToken");
-      if (!token) return;
 
-      await axios.delete(`${server}/api/list/${itemId}`, {
-        headers: {
-          Authorization: `${token}`,
-        },
-      });
-
+      await instance.delete(`/api/list/${itemId}`);
       console.log(`리스트 ${itemId} 삭제 완료`);
+      fetchMyList(); 
     } catch (error) {
       console.error("리스트 삭제 실패:", error);
+      if (error.message === '리프레시 토큰 만료') {
+        navigation.navigate("Login" as never);
+       }
+
     }
   };
 
@@ -49,26 +112,36 @@ const MyListSheetContent = ({ handleTabPress, bookmarkedBars }) => {
         keyExtractor={(item) => item.id.toString()}
         style={styles.container}
         ListHeaderComponent={
-          <>
-            <View style={styles.headerContainer}>
-              <Text style={styles.header}>나의 리스트</Text>
-              <View style={styles.line}></View>
-            </View>
+          
+        <>
+          <View style={{ flex: 1 }}>
+            <ScrollView contentContainerStyle={styles.container}>
+              {/* 헤더 */}
+              <View style={styles.headerContainer}>
+                <Text style={styles.header}>나의 리스트</Text>
+                <View style={styles.line}></View>
+              </View>
 
-            <TouchableOpacity
-              style={styles.newListButton}
-              onPress={() => navigation.navigate("CreateNewListScreen" as never)}
-            >
-              <Image
-                source={require("../assets/drawable/newlist.png")}
-                style={styles.newlistImage}
-              />
-              <Text style={styles.newListText}>새 리스트 만들기</Text>
-            </TouchableOpacity>
-          </>
-        }
-        renderItem={({ item }) => (
-          <TouchableOpacity onPress={() => handleTabPress("myBardetailList", item)}>
+              {/* 새 리스트 버튼 */}
+              <TouchableOpacity
+                style={styles.newListButton}
+                onPress={() => navigation.navigate("CreateNewListScreen" as never)}
+              >
+                <Image
+                  source={require("../assets/drawable/newlist.png")}
+                  style={styles.newlistImage}
+                />
+                <Text style={styles.newListText}>새 리스트 만들기</Text>
+              </TouchableOpacity>
+
+              {/* 리스트 아이템들 */}
+              {myList.map((item) => (
+                <TouchableOpacity
+                  key={item.id}
+                  onPress={() => {
+                    handleTabPress("myBardetailList", item);
+                  }}
+                >
             <View style={styles.listItem}>
               <Image
                 source={{ uri: item.thumbnail }}
@@ -89,9 +162,23 @@ const MyListSheetContent = ({ handleTabPress, bookmarkedBars }) => {
               <MoreOptionMenu itemId={item.id} onEdit={handleEdit} onDelete={handleDelete} />
             </View>
           </TouchableOpacity>
-        )}
+
+        ))}
+      </ScrollView>
+
+      <LoginBottomSheet
+        isVisible={loginModalVisible}
+        onClose={() => {setLoginModalVisible(false);
+          handleTabPress("search");
+           }}
+        onLogin={() => {
+          setLoginModalVisible(false);
+          navigation.navigate("Login" as never);
+        }}
       />
-    </PaperProvider>
+    </View>
+  </>
+</PaperProvider>
   );
 };
 

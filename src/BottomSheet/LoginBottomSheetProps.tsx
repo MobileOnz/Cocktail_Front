@@ -21,7 +21,7 @@ const LoginBottomSheet: React.FC<LoginBottomSheetProps> = ({ isVisible, onClose,
 
     const handleLoginPress = () => {
         onClose(); // ✅ 바텀시트 닫기
-        navigation.navigate("Login"); // ✅ LoginScreen으로 이동
+        navigation.navigate("Login" as never); // ✅ LoginScreen으로 이동
       };
 
   return (

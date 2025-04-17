@@ -48,8 +48,12 @@ const MainBottomSheet = ({ sections, showMyBars, handleTabPress, setSelectedTab,
         <Image style={styles.itemImage} source={item.thumbNail} />
       <View style={styles.textContainer}>
         <Text style={styles.itemTitle} numberOfLines={1} ellipsizeMode="tail">{item.title}</Text>
+        
         <Text style={styles.itemDistance} numberOfLines={1} ellipsizeMode="tail">{item.barAdress}</Text>
-        <Text style={{ color: "#B9B6AD", fontSize: fontPercentage(12), marginTop: heightPercentage(10), }}>인기메뉴</Text>
+        {item.hashtagList && item.hashtagList.length >0 &&(
+           <Text style={{ color: "#B9B6AD", fontSize: fontPercentage(12) }}>인기메뉴</Text>
+        )}
+        
         <View style={styles.hashtagContainer}>
         {Array.isArray(item.hashtagList) && item.hashtagList.map((tag, idx) => (
           <Text key={idx} style={styles.hashtag}>{tag}</Text>

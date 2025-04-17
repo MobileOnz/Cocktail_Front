@@ -13,8 +13,11 @@ import axios from "axios";
 import {API_BASE_URL} from "@env"
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import LoginBottomSheet from "./LoginBottomSheetProps";
+import SelectedRegions from "./SelectedRegions";
+import MapView from "react-native-maps";
 
 import { formatBarForMyList } from "../utils/formatBar";
+
 
 const BaseBottomSheet = ({ 
   animatedPosition, 
@@ -27,6 +30,11 @@ const BaseBottomSheet = ({
   }) => {
   const navigation = useNavigation();
   const snapPoints = useMemo(() => ["10%", "30%", "76%"], []);
+  
+  const mapRef = useRef<MapView>(null);
+  
+  const [selectedTab, setSelectedTab] = useState<"search" | "myList" | "region"|"regionDetail" | "bookmark"| "detail"|"myBardetailList">("search");
+  
   const bottomSheetRef = useRef<BottomSheet>(null);
 
   const [selectedBar, setSelectedBar] = useState<"search" | "myList" | "region" | "bookmark"| "detail"|"myBardetailList">("search");
@@ -135,32 +143,64 @@ const BaseBottomSheet = ({
 
 
   const [isLoginSheetVisible, setLoginSheetVisible] = useState(false);
-  const [barData,setBarData] = useState([]);
-  useEffect(() => {
-    const fetchNearbyBars = async () => {
-      
-      try{
-        const response = await axios.get(`${API_BASE_URL}/api/location/nearby?x=126.9812675&y=37.5718599`)
-        if(response.data.code ===1){
-          console.log("정상적으로 근처 칵테일바 데이터 접근 완료")
-          const transformed = response.data.data.map((bar) => ({
-            id: bar.id,
-            title: bar.bar_name,                     
-            barAdress: bar.address,                  
-            thumbNail: { uri: bar.thumbnail },           
-            hashtagList: bar.menus.map((m) => `#${m.name}`), 
-          }));
-          console.log(transformed);
-          setBarData(transformed);
-        }else
-        console.log("서버 요청중 에러발생",response.data.msg);
-      }catch(error){
-        console.log("잘못된 접근", error);
-      }
-    }
-    fetchNearbyBars();
-  }, []);
+  const [sheetReady, setSheetReady] = useState(false);
+  const [markerList, setMarkerList] = useState([]);
 
+// 🔹 지역 선택 시 주변 바 조회
+useEffect(() => {
+  const fetchNearbyBars = async () => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/api/location/nearby?x=126.9812675&y=37.5718599`);
+      if (response.data.code === 1) {
+        const rawData = response.data.data;
+
+        const formatted = rawData.map((bar) => ({
+          id: bar.id,
+          title: bar.bar_name,
+          barAdress: bar.address,
+          thumbNail: bar.thumbnail ? { uri: bar.thumbnail } : require("../assets/drawable/barExample.png"),
+          hashtagList: bar.menus.map((m) => `#${m.name}`),
+        }));
+
+        const markers = rawData.map((bar) => ({
+          id: bar.id,
+          title: bar.bar_name,
+          coordinate: {
+            latitude: Number(bar.y),
+            longitude: Number(bar.x),
+          },
+        }));
+
+        setBarData(formatted);
+        setMarkerList(markers);
+        setSelectedTab("regionDetail");
+
+        // 📍 지도 줌인
+        setTimeout(() => {
+          if (mapRef.current && markers.length > 0) {
+            mapRef.current.fitToCoordinates(markers.map((m) => m.coordinate), {
+              edgePadding: { top: 100, right: 100, bottom: 300, left: 100 },
+              animated: true,
+            });
+          }
+        }, 600);
+      } else {
+        console.log("서버 요청중 에러발생", response.data.msg);
+      }
+    } catch (error) {
+      console.log("잘못된 접근", error);
+    }
+  };
+
+  if (selectedRegions.length > 0) {
+    fetchNearbyBars();
+
+  } else {
+    setSelectedTab("search");
+  }
+}, [selectedRegions]);
+
+  
 const headerCheck = async () =>{
   const token = await AsyncStorage.getItem("accessToken");
   if(token){
@@ -175,7 +215,6 @@ const headerCheck = async () =>{
       bottomSheetRef.current?.expand();
     }
   }, [selectedTab]);
-
 
   const [sections, setSections] = useState([
     { title: "나의 칵테일 바", data: [] },
@@ -284,38 +323,48 @@ const headerCheck = async () =>{
     } catch (err) {
       console.error("북마크 해제 요청 실패:", err);
       Alert.alert("에러", "네트워크 오류 발생");
+
     }
   };
   
 
   return (
     <>
-    <BottomSheet 
-    ref={bottomSheetRef}
-    index={0} 
-    snapPoints={snapPoints} 
-    animatedPosition={animatedPosition}
-    enablePanDownToClose={false} 
-    backgroundStyle={{ backgroundColor: theme.background }}
-    containerStyle={{ position: 'absolute', zIndex: 100 }}>
-    {selectedTab !== "detail" && selectedTab !== "search" && selectedTab !== "bookmark" &&(
-      /* 네비게이션 버튼 */
-      <View style={styles.sheetHeader}>
-        <TouchableOpacity
-          style={[styles.listButton, selectedTab === "myList" && styles.activeButton]}
-          onPress={() => headerCheck()}
-        >
-          <Text style={[styles.listText, selectedTab === "myList" && styles.activeText]}>나의 리스트</Text>
-        </TouchableOpacity>
+        
+<BottomSheet
+  ref={bottomSheetRef}
+  index={0}
+  snapPoints={snapPoints}
+  animatedPosition={animatedPosition}
+  onLayout={() => {
+    setSheetReady(true);
+  }}
+  enablePanDownToClose={false}
+  backgroundStyle={{ backgroundColor: theme.background }}
+  containerStyle={{ position: 'absolute', zIndex: 100 }}
+>
+  
+{selectedTab !== "detail" && selectedTab !== "regionDetail" && (
+  <View style={styles.sheetHeader}>
+    <TouchableOpacity
+      style={[styles.listButton, selectedTab === "myList" && styles.activeButton]}
+      onPress={() => headerCheck()}
+    >
+      <Text style={[styles.listText, selectedTab === "myList" && styles.activeText]}>
+        나의 리스트
+      </Text>
+    </TouchableOpacity>
 
-        <TouchableOpacity
-          style={[styles.listButton, selectedTab === "region" && styles.activeButton]}
-          onPress={() => navigation.navigate("RegionSelectScreen")}
-        >
-          <Text style={[styles.listText, selectedTab === "region" && styles.activeText]}>지역</Text>
-        </TouchableOpacity>
-      </View>
-    )}
+    <TouchableOpacity
+      style={[styles.listButton, selectedTab === "region" && styles.activeButton]}
+      onPress={() => navigation.navigate("RegionSelectScreen")}
+    >
+      <Text style={[styles.listText, selectedTab === "region" && styles.activeText]}>
+        지역
+      </Text>
+    </TouchableOpacity>
+  </View>
+)}
 
           {/* 클릭시 이동 */}
       {selectedTab === "bookmark" ? (
@@ -427,6 +476,16 @@ const headerCheck = async () =>{
             }}
             bookmarkedBars={myBars} //실제 데이터 전달
             />
+        <MyBardetailListBottomSheet/>
+      ) : selectedTab ==="regionDetail" ? (
+        <SelectedRegions
+        selectedRegions={selectedRegions}
+        onRegionSelect={(region) => {
+          console.log("선택된 지역:", region);
+        }}
+      />
+      ): selectedTab === "myList" ? (
+          <MyListSheetContent handleTabPress={handleTabPress} />
       ) : selectedTab === "detail" ? (
           <MenuListDetail 
             handleTabPress={handleTabPress}
