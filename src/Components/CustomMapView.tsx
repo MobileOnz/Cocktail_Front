@@ -1,7 +1,11 @@
 // CustomMapView.tsx
 import React from "react";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
-import { StyleSheet } from "react-native";
+import { StyleSheet, Image } from "react-native";
+
+
+// 마커 이미지 import
+const classicIcon = require("../assets/newListIcon/Name=Classic_Status=Default.png");
 
 const CustomMapView = ({ initialRegion, mapRef, markerList }) => {
   return (
@@ -18,14 +22,17 @@ const CustomMapView = ({ initialRegion, mapRef, markerList }) => {
       const lng = Number(marker.coordinate.longitude);
 
       if (isNaN(lat) || isNaN(lng)) return null; // 🔒 좌표 유효성 검사
-      
+
       return (
         <Marker
           key={marker.id}
           coordinate={{ latitude: lat, longitude: lng }}
           title={marker.title}
           description="검색된 바"
-        />
+          
+        >
+          <Image source={classicIcon} style={styles.markerIcon} />
+        </Marker>
       );
     })}
     </MapView>
@@ -34,6 +41,11 @@ const CustomMapView = ({ initialRegion, mapRef, markerList }) => {
 
 const styles = StyleSheet.create({
   map: { flex: 1 },
+  markerIcon: {
+    width: 36,
+    height: 36,
+    resizeMode: "contain",
+  },
 });
 
 export default CustomMapView;

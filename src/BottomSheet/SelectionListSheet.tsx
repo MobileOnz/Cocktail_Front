@@ -93,7 +93,14 @@ const SelectionListSheet: React.FC<SelectionListSheetProps> = ({ title, listData
         );
       }}
       ListFooterComponent={
-        <TouchableOpacity style={styles.saveButton} onPress={() => onSave(listData.find((item) => item.id.toString() === selectedListId) || null)}>
+        <TouchableOpacity
+          style={styles.saveButton}
+          onPress={() => {
+            const selected = listData.find((item) => item.id.toString() === selectedListId);
+            console.log("🟡 저장 버튼 클릭됨 - 선택된 리스트:", selected);
+            onSave(selected || null);
+          }}
+        >
           <Text style={styles.saveText}>저장하기</Text>
         </TouchableOpacity>
       }

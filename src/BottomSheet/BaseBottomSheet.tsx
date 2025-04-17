@@ -14,12 +14,16 @@ import {API_BASE_URL} from "@env"
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import LoginBottomSheet from "./LoginBottomSheetProps";
 
+import { formatBarForMyList } from "../utils/formatBar";
+
 const BaseBottomSheet = ({ 
   animatedPosition, 
   barList, 
   setBarList, 
   selectedTab, 
-  setSelectedTab 
+  setSelectedTab,
+  refreshTrigger,
+  setRefreshTrigger,
   }) => {
   const navigation = useNavigation();
   const snapPoints = useMemo(() => ["10%", "30%", "76%"], []);
@@ -37,6 +41,7 @@ const BaseBottomSheet = ({
 
   //북마크된 가게들 체크해서 bookmark_checked.png로 적용하기 위한 변수
   const [bookmarkIds, setBookmarkIds] = useState<Set<number>>(new Set());
+
 
   
 
@@ -172,20 +177,26 @@ const headerCheck = async () =>{
   }, [selectedTab]);
 
 
-  // ✅ sections 설정
-const sections = useMemo(() => {
+  const [sections, setSections] = useState([
+    { title: "나의 칵테일 바", data: [] },
+    { title: "근처 칵테일 바", data: [] },
+  ]);
+  
+  // myBars, barData, barList 상태 변화 시 sections 업데이트
+  useEffect(() => {
     if (selectedTab === "search" && barList.length > 0) {
-      return [{ title: "검색 결과", data: barList }];
+      setSections([{ title: "검색 결과", data: barList }]);
     } else if (selectedTab === "myList") {
-      return [{ title: "나의 칵테일 바", data: myBars }];
+      setSections([{ title: "나의 칵테일 바", data: myBars }]);
     } else if (selectedTab === "region") {
-      return [{ title: "근처 칵테일 바", data: barData }];
+      setSections([{ title: "근처 칵테일 바", data: barData }]);
+    } else {
+      setSections([
+        { title: "나의 칵테일 바", data: myBars },
+        { title: "근처 칵테일 바", data: barData },
+      ]);
     }
-    return [
-      { title: "나의 칵테일 바", data: myBars },
-      { title: "근처 칵테일 바", data: barData },
-    ];
-  }, [selectedTab, barList, myBars, barData]);
+  }, [selectedTab, barList, myBars, barData, refreshTrigger]);
 
   const handleTabPress = async (
     tab: "search" | "myList" | "region" | "bookmark" | "detail" | "pin" | "myBardetailList",
@@ -198,8 +209,10 @@ const sections = useMemo(() => {
         setLoginSheetVisible(true);
         return;
       }else{
+
+        const barId = bar?.raw?.id ?? bar?.id ?? null;
         console.log("북마크 할 bar id:", selectedBarId, selectedBar);
-        setSelectedBarId(bar?.id ?? null);  // ✅ 리스트 저장용
+        setSelectedBarId(barId);  // ✅ 리스트 저장용
         setSelectedBar(bar);                // ✅ UI 표시용 or Detail 화면용
       }
     }
@@ -248,6 +261,22 @@ const sections = useMemo(() => {
         newMap.delete(barId);
         setBookmarkListMap(newMap);
   
+        //myBars에서 북마크 제거
+        setMyBars((prevBars) => prevBars.filter((bar) => bar.id !== barId));
+
+        //sections 반영해서 북마크 해제된 가게 즉시 제거 후 업데이트
+        setSections((prevSections) =>
+          prevSections.map((section) =>
+            section.title === "나의 칵테일 바"
+              ? {
+                  ...section,
+                  data: section.data.filter((bar) => bar.id !== barId),
+                }
+              : section
+          )
+        );
+
+        setRefreshTrigger(prev => prev + 1); //트리거 변경으로 sections 리렌더 유도
         Alert.alert("북마크 해제", "리스트에서 삭제되었습니다.");
       } else {
         Alert.alert("실패", result.msg || "서버에서 북마크 해제 실패");
@@ -295,7 +324,15 @@ const sections = useMemo(() => {
       listData={myList}
       onClose={() => setSelectedTab("search")}
       onSave={async (selectedItem) => {
-        if (!selectedItem || !selectedBarId) return;
+
+        console.log("🟢 onSave 호출됨 - 선택된 리스트:", selectedItem);
+        console.log("🟢 selectedBarId:", selectedBarId);
+        console.log("🟢 selectedBar(raw or formatted):", selectedBar);
+
+        if (!selectedItem || !selectedBarId || !selectedBar){
+          console.warn("❌ 저장할 값이 부족함 (selectedItem, selectedBarId, selectedBar)");
+          return;
+        } 
       
         try {
           const token = await AsyncStorage.getItem('accessToken');
@@ -316,9 +353,57 @@ const sections = useMemo(() => {
           });
       
           const result = await response.json();
+          console.log("북마크 추가 응답: ", result);
+
           if (result.code === 1) {
             Alert.alert("성공", "리스트에 가게를 추가했습니다.");
             setSelectedTab("search");
+
+            //menuListDetail과의 바 데이터 포맷을 적용시켜주기 위함
+            const formattedBar = formatBarForMyList(selectedBar.raw ?? selectedBar);
+
+            //바로 북마크 Set, Map 업데이트
+            setBookmarkIds((prev) => new Set(prev).add(selectedBarId));
+            setBookmarkListMap((prev) => {
+              const updated = new Map(prev);
+              updated.set(selectedBarId, selectedItem.id);
+              return updated;
+            });
+
+            
+            //바로 myBars에 추가, 이미 있으면 중복 방지까지
+            setMyBars((prevBars) => {
+              const exists = prevBars.some((bar) => bar.id === selectedBarId);
+              return exists ? prevBars : [...prevBars, formattedBar];
+            });
+
+            //sections에 추가 반영
+            setSections((prevSections) => {
+              const updatedSections = prevSections.map((sections) => {
+                if(sections.title === "나의 칵테일 바"){
+                  const exists = sections.data.some((bar) => bar.id === selectedBarId);
+                  return exists
+                    ? sections
+                    : { ...sections, data: [...sections.data, formattedBar]};
+                }
+                return sections;
+              });
+
+              //혹시 "나의 칵테일 바" 섹션이 아예 없을 경우
+              const hasMyBarSection = updatedSections.some(
+                (section) => section.title === "나의 칵테일 바"
+              );
+              if(!hasMyBarSection){
+                updatedSections.unshift({
+                  title: "나의 칵테일 바",
+                  data: [formattedBar],
+                });
+              }
+              return updatedSections;
+            });
+
+            //리프레시 트리거 (의미상 갱신)
+            setRefreshTrigger((prev) => prev + 1);
           } else {
             Alert.alert("실패", result.msg ?? "리스트 추가 실패");
           }
@@ -350,9 +435,16 @@ const sections = useMemo(() => {
             setBookmarkIds={setBookmarkIds}
             bookmarkListMap={bookmarkListMap}
             setBookmarkListMap={setBookmarkListMap}
+            myBars={myBars}
+            setMyBars={setMyBars}
+            setSections={setSections}
+            setRefreshTrigger={setRefreshTrigger}
+            defaultListId={myList?.[0]?.id}
+            refreshTrigger={refreshTrigger}
             />
       ) : (
       <SearchSheetContent
+      key={`search-${refreshTrigger}`}
       sections={sections}
       showMyBars={true}
       handleTabPress={handleTabPress}

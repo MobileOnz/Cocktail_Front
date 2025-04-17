@@ -21,7 +21,12 @@ export type RootStackParamList = {
   Maps: { searchCompleted?: boolean; setSelectedRegions?: string[] };
   SearchScreen: undefined;
   RegionSelectScreen : undefined;
-  BottomTabNavigator : undefined;
+  BottomTabNavigator: {
+    screen?: string;
+    params?: {
+      shouldRefresh?: boolean;
+    };
+  };
   RecommendationFlow: undefined;
   LoadingScreen: undefined;
   ResultScreen: undefined;

@@ -116,31 +116,6 @@ const ProfileScreen: React.FC = () => {
         return;
       }
 
-      if (isProfileChanged && profileUri && selectedImageMeta) {
-        const formData = new FormData();
-
-
-        //이미지 업로드용 파일 구조
-        formData.append("file", {
-          uri: profileUri?.startsWith("file://") ? profileUri : `file://${profileUri}`,
-          name: selectedImageMeta.name,
-          type: selectedImageMeta.type,
-        }as any); //타입 충돌 방지용
-
-        const uploadRes = await fetch(`${API_BASE_URL}/api/upload/profile`, {
-          method: "POST",
-          headers: { Authorization: `${token}` },
-          body: formData,
-        });
-
-        const uploadJson = await safeParseJson(uploadRes);
-        if (uploadJson?.code === 1) {
-          console.log("✅ 프로필 이미지 업로드 성공");
-        } else {
-          console.warn("❌ 프로필 이미지 업로드 실패", uploadJson?.msg);
-        }
-      }
-
       const profileUpdateRes = await fetch(`${API_BASE_URL}/api/update/member`, {
         method: "POST",
         headers: {
@@ -153,7 +128,7 @@ const ProfileScreen: React.FC = () => {
           name: "test",
           addr: "seoul",
           age: 20,
-          profile: profileUri || "",
+          // profile: profileUri || "",
         }),
       });
 
@@ -186,14 +161,15 @@ const ProfileScreen: React.FC = () => {
   
             const resizedImage = await ImageResizer.createResizedImage(
               asset.uri!,
-              800, // 너비 (원본 비율 유지됨)
-              800, // 높이
+              400, // 너비 (원본 비율 유지됨)
+              400, // 높이
               "PNG", // 포맷 강제 지정
-              100 // 품질 (0~100)
+              80 // 품질 (0~100)
             );
   
             const uri = resizedImage.uri;
-            console.log("🧩 변환된 png 이미지:", resizedImage);
+
+            const token = await AsyncStorage.getItem("accessToken");
   
             setSelectedImageMeta({
               name: `profile_${Date.now()}.png`,
@@ -203,6 +179,28 @@ const ProfileScreen: React.FC = () => {
             if (!initialProfileUri) setInitialProfileUri(uri);
             setProfileUri(uri);
   
+
+            // ✅ 여기서 즉시 업로드
+            const formData = new FormData();
+            formData.append("file", {
+              uri: uri.startsWith("file://") ? uri : `file://${uri}`,
+              name: `profile_${Date.now()}.png`,
+              type: "image/png",
+            } as any);
+
+            const uploadRes = await fetch(`${API_BASE_URL}/api/upload/profile`, {
+              method: "POST",
+              headers: { Authorization: `${token}` },
+              body: formData,
+            });
+
+            const uploadJson = await safeParseJson(uploadRes);
+            if (uploadJson?.code === 1) {
+              console.log("✅ 즉시 프로필 이미지 업로드 성공");
+            } else {
+              console.warn("❌ 즉시 업로드 실패:", uploadJson?.msg);
+            }
+
           } catch (error) {
             console.error("❌ 이미지 리사이즈 실패:", error);
           }

@@ -101,10 +101,12 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
         if (backendAccessToken) {
           await AsyncStorage.setItem('accessToken', backendAccessToken);
           showToast("로그인 되었습니다.");
-          // navigation.navigate("BottomTabNavigator");
-          navigation.goBack();
-          // await AsyncStorage.setItem('accessToken', backendAccessToken);
-
+          
+          //로그인을 수행하고 돌아왔을 때도 refresh를 수행해주기 위함
+          navigation.navigate("BottomTabNavigator", {
+            screen: "지도", // Tab name
+            params: { shouldRefresh: true }, // Maps 컴포넌트로 전달할 route.params
+          });
         }
         if (backendRefreshToken) {
           await AsyncStorage.setItem('refreshToken', backendRefreshToken);
@@ -160,8 +162,12 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
         await AsyncStorage.setItem('refreshToken', backendRefreshToken);
       }
       // navigation.navigate("BottomTabNavigator");
-      navigation.goBack();
-      }
+      //로그인을 수행하고 돌아왔을 때도 refresh를 수행해주기 위함
+      navigation.navigate("BottomTabNavigator", {
+        screen: "지도", // Tab name
+        params: { shouldRefresh: true }, // Maps 컴포넌트로 전달할 route.params
+      });
+    }
 
 
       })

@@ -20,6 +20,9 @@ const MyPageScreen = () => {
 
   const {showToast} = useToast();
 
+  //프로필 이미지 띄워주기 위한 변수
+  const [profileImageUri, setProfileImageUri] = useState<string | null>(null);
+
   //닉네임 띄워주기 위한 변수
   const [nickname, setNickname] = useState("");
 
@@ -67,6 +70,44 @@ const MyPageScreen = () => {
     }
   };
   
+  useEffect(() => {
+    const fetchProfileImage = async () => {
+      const token = await AsyncStorage.getItem("accessToken");
+      if (!token) return;
+  
+      try {
+        const profileRes = await fetch(`${API_BASE_URL}/api/profile`, {
+          headers: { Authorization: `${token}` },
+        });
+  
+        const contentType = profileRes.headers.get("content-type");
+  
+        if (contentType?.includes("application/json")) {
+          const profileJson = await profileRes.json();
+          if (profileJson.code === 1 && profileJson.data) {
+            const profileUrl = profileJson.data;
+            const fullUri = profileUrl.startsWith("http")
+              ? profileUrl
+              : `${API_BASE_URL}${profileUrl.startsWith("/") ? "" : "/"}${profileUrl}`;
+            setProfileImageUri(fullUri);
+          }
+        } else if (contentType?.startsWith("image/")) {
+          const blob = await profileRes.blob();
+          const imageUrl = URL.createObjectURL(blob);
+          setProfileImageUri(imageUrl);
+        }
+      } catch (e) {
+        console.warn("프로필 이미지 가져오기 실패", e);
+      }
+    };
+  
+    const unsubscribe = navigation.addListener('focus', () => {
+      fetchProfileImage();
+    });
+  
+    return unsubscribe;
+  }, [navigation]);
+
   
   
   useEffect(() => {
@@ -127,9 +168,19 @@ const MyPageScreen = () => {
       </View>
       {/* 로그인 필요 알림 or 로그인 완료 메시지 */}
       <TouchableOpacity style={styles.loginContainer} onPress={handleLoginPress}>
-        <Text style={styles.loginText}>
-          {isLoggedIn ? nickname : "로그인이 필요합니다."}
-        </Text>
+        <View style={styles.profileInfoContainer}>
+          <Image
+            source={
+              profileImageUri
+                ? { uri: profileImageUri }
+                : require('../assets/drawable/default_profile.png')
+            }
+            style={styles.profileImage}
+          />
+          <Text style={styles.loginText}>
+            {isLoggedIn ? nickname : "로그인이 필요합니다."}
+          </Text>
+        </View>
         <Image source={require('../assets/drawable/right-chevron.png')} style={styles.rightArrow} />
       </TouchableOpacity>
 
@@ -183,6 +234,18 @@ const styles = StyleSheet.create({
     backgroundColor: '#fffcf3',
     padding: widthPercentage(20),
   },
+  profileInfoContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  
+  profileImage: {
+    width: widthPercentage(42),
+    height: widthPercentage(42),
+    borderRadius: widthPercentage(21),
+    marginRight: widthPercentage(12),
+    backgroundColor: "#DDD",
+  },
   withdrawText: {
     marginTop: heightPercentage(20),
     color: "#7D7A6F",
@@ -232,6 +295,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingVertical: heightPercentage(12),
+    paddingHorizontal: widthPercentage(8),
   },
   supportIcon: {
     width: widthPercentage(24),
@@ -246,6 +310,8 @@ const styles = StyleSheet.create({
   rightArrow: {
     width: widthPercentage(24),
     height: widthPercentage(24),
+    marginLeft: widthPercentage(8),
+    alignSelf: 'flex-end',
   },
   divider: {
     width: widthPercentage(343),

@@ -45,6 +45,7 @@ const CurrentLocationButton = ({ animatedPosition, onPress }) => {
     };
   });
 
+
   return (
     <Animated.View style={animatedStyle}>
       <TouchableOpacity style={styles.currentLocationButton} onPress={onPress}>
@@ -73,6 +74,9 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
   const [selectedTab, setSelectedTab] = useState("search");
 
   const [markerList, setMarkerList] = useState([]);
+
+  //어떤 이벤트가 발생하든 ui를 리렌더링하기 위한 트리거
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   // ✅ MapsScreen에서 props로 받은 searchQuery 기반으로 API 요청
   useEffect(() => {
@@ -159,7 +163,12 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
     if (route.params?.resetRequested){
       navigation.setParams({ resetRequested: false });
     }
-  }, [route.params?.searchCompleted, route.params?.selectedRegions, route.params?.resetRequested]);
+    if(route.params?.shouldRefresh){
+      console.log("🔁 로그인 후 리프레시 감지됨");
+      setRefreshTrigger(prev => prev + 1);
+      navigation.setParams({ shouldRefresh: false }); // 다시 초기화
+    }
+  }, [route.params?.searchCompleted, route.params?.selectedRegions, route.params?.resetRequested, route.params?.shouldRefresh]);
 
   const handleRemoveRegion = (region: string) => {
     setSelectedRegions((prevRegions) => prevRegions.filter((r) => r !== region));
@@ -240,6 +249,9 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
       <SelectedRegions selectedRegions={selectedRegions} />
     ) : (
       <BaseBottomSheet
+        key={`base-${refreshTrigger}`}
+        refreshTrigger={refreshTrigger}
+        setRefreshTrigger={setRefreshTrigger}
         animatedPosition={animatedPosition}
         barList={barList}
         setBarList={setBarList}

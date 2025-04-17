@@ -16,6 +16,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useToast } from "../Components/ToastContext";
 
 import Clipboard from '@react-native-clipboard/clipboard';
+import { formatBarForMyList } from "../utils/formatBar";
 
 const MenuListDetail = ({
   handleTabPress,
@@ -24,6 +25,12 @@ const MenuListDetail = ({
   setBookmarkIds,
   bookmarkListMap,
   setBookmarkListMap,
+  myBars,
+  setMyBars,
+  setSections,
+  setRefreshTrigger,
+  defaultListId,
+  refreshTrigger,
 }) => {
   const [barDetail, setBarDetail] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState(null);
@@ -115,7 +122,7 @@ const MenuListDetail = ({
     };
 
     fetchBarDetail();
-  }, [barId]);
+  }, [barId, refreshTrigger]);
 
   if (!barDetail) {
     return (
@@ -137,56 +144,67 @@ const MenuListDetail = ({
       return;
     }
   
-    console.log("🔁 북마크 토글 클릭됨");
-    console.log("현재 북마크 상태:", isBookmarked);
-    console.log("리스트 맵:", bookmarkListMap);
+    if (!barDetail) return;
   
-    if (isBookmarked) {
+    const barId = barDetail.id;
+  
+    if (bookmarkIds.has(barId)) {
+      // 북마크 해제 로직 그대로 유지
+      const listId = bookmarkListMap.get(barId);
+      if (!listId) {
+        Alert.alert("에러", "해당 가게의 리스트 정보가 없습니다.");
+        return;
+      }
+  
       try {
-        const listId = bookmarkListMap.get(barDetail.id);
-        console.log("📌 listId:", listId);
+        const response = await fetch(`${API_BASE_URL}/api/item`, {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: token,
+          },
+          body: JSON.stringify({ listId, barId }),
+        });
   
-        if (listId) {
-          const response = await fetch(`${API_BASE_URL}/api/item`, {
-            method: "DELETE",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: token,
-            },
-            body: JSON.stringify({
-              listId,
-              barId: barDetail.id,
-            }),
-          });
+        const result = await response.json();
+        if (result.code === 1) {
+          const newSet = new Set(bookmarkIds);
+          newSet.delete(barId);
+          setBookmarkIds(newSet);
   
-          const result = await response.json();
-          console.log("🧾 삭제 결과:", result);
+          const newMap = new Map(bookmarkListMap);
+          newMap.delete(barId);
+          setBookmarkListMap(newMap);
   
-          if (result.code === 1) {
-            const newSet = new Set(bookmarkIds);
-            newSet.delete(barDetail.id);
-            setBookmarkIds(newSet);
+          setMyBars((prev) => prev.filter((bar) => bar.id !== barId));
+          
+          setSections((prevSections) =>
+            prevSections.map((section) =>
+              section.title === "나의 칵테일 바"
+                ? { ...section, data: section.data.filter((bar) => bar.id !== barId) }
+                : section
+            )
+          );
   
-            const newMap = new Map(bookmarkListMap);
-            newMap.delete(barDetail.id);
-            setBookmarkListMap(newMap);
-  
-            Alert.alert("북마크 해제", "리스트에서 삭제되었습니다.");
-          } else {
-            Alert.alert("실패", result.msg || "서버에서 북마크 해제 실패");
-          }
+          setRefreshTrigger?.((prev) => prev + 1);
+          Alert.alert("북마크 해제", "리스트에서 삭제되었습니다.");
         } else {
-          console.warn("❌ listId가 없습니다 → API 호출 안함");
-          Alert.alert("에러", "해당 가게의 리스트 정보가 없습니다.");
+          Alert.alert("실패", result.msg || "서버에서 북마크 해제 실패");
         }
       } catch (err) {
         console.error("북마크 해제 요청 실패:", err);
         Alert.alert("에러", "네트워크 오류 발생");
       }
     } else {
+      // 북마크 추가는 SelectionListSheet에서 처리하도록 → 리스트 선택화면으로 이동
       handleTabPress("bookmark", barDetail);
+
+      const formattedBar = formatBarForMyList(barDetail);
+      handleTabPress("bookmark", { raw: barDetail, formatted: formattedBar});
     }
   };
+  
+  
   
   
 
