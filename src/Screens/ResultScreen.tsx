@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
@@ -6,10 +6,44 @@ import { RootStackParamList } from "../navigation/types";
 import { widthPercentage, heightPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
 import Icon from "react-native-vector-icons/Ionicons";
 
+import { API_BASE_URL } from "@env";
 type NavigationProps = StackNavigationProp<RootStackParamList, "ResultScreen">;
 
-const ResultScreen: React.FC = () => {
+const ResultScreen: React.FC = ({route}) => {
   const navigation = useNavigation<NavigationProps>();
+
+  const { alcholType, tasteCategoryId, tasteDetailId } = route.params;
+
+  const [cocktailName, setCocktailName] = useState("");
+  const [cocktailDescription, setCocktailDescription] = useState("");
+  const [notFound, setNotFound] = useState(false);
+
+
+
+  
+
+  useEffect(() => {
+    const fetchResult = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/public/cocktail/personalize?tasteCategoryId=${tasteCategoryId}&tasteDetailid=${tasteDetailId}&alcholType=${alcholType}`);
+
+        const result = await response.json();
+        console.log("추천 결과:", result);
+
+        if (result.code === 1 && result.data?.cocktail) {
+          setCocktailName(result.data.cocktail.cocktail_name);
+          setCocktailDescription(result.data.cocktail.introduce);
+        } else {
+          setNotFound(true);
+        }
+      } catch (error) {
+        console.error("추천 에러:", error);
+        setNotFound(true);
+      }
+    };
+
+    fetchResult();
+  }, [alcholType]);
 
   return (
     <View style={styles.container}>
@@ -21,8 +55,8 @@ const ResultScreen: React.FC = () => {
 
       <Image source={require("../assets/drawable/cocktail_sample.png")} style={styles.cocktailImage} />
 
-      <Text style={styles.cocktailName}>칵테일 명</Text>
-      <Text style={styles.cocktailDescription}>음료 설명</Text>
+      <Text style={styles.cocktailName}>{notFound ? "추천 칵테일 없음" : cocktailName}</Text>
+      <Text style={styles.cocktailDescription}>{notFound ? "앗! 아직 준비된 칵테일이 없어요\n다른 조합으로 다시 추천 받아보세요!" : cocktailDescription}</Text>
 
       <TouchableOpacity 
         style={styles.mainButton}

@@ -4,33 +4,61 @@ import React_RCTAppDelegate
 import ReactAppDependencyProvider
 import GoogleMaps
 import FirebaseCore
+import NaverThirdPartyLogin // ✅ 네이버 SDK import
 import GoogleSignIn 
+import KakaoSDKAuth
 @main
 class AppDelegate: RCTAppDelegate {
-  override func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
+  override func application(
+    _ application: UIApplication,
+    didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil
+  ) -> Bool {
     self.moduleName = "Cocktail_Front"
     self.dependencyProvider = RCTAppDependencyProvider()
 
     GMSServices.provideAPIKey("AIzaSyDeVQ2wHr3QIavBa4RGYwZly8h0sNTfLmQ")
-    // You can add your custom initial props in the dictionary below.
-    // They will be passed down to the ViewController used by React Native.
     self.initialProps = [:]
     FirebaseApp.configure()
+
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
 
-override func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
-  return GIDSignIn.sharedInstance.handle(url)
+override func application(
+  _ application: UIApplication,
+  open url: URL,
+  options: [UIApplication.OpenURLOptionsKey : Any] = [:]
+) -> Bool {
+  // ✅ 네이버 로그인 처리
+  if url.scheme == "naverlogin" {
+    return NaverThirdPartyLoginConnection
+      .getSharedInstance()?
+      .application(application, open: url, options: options) ?? false
+  }
+
+  // ✅ 카카오 로그인 처리
+  if AuthApi.isKakaoTalkLoginUrl(url) {
+    return AuthController.handleOpenUrl(url: url)
+  }
+
+  // ✅ 구글 로그인 처리
+  if GIDSignIn.sharedInstance.handle(url) {
+    return true
+  }
+
+  // ✅ 기타 기본 처리 (super)
+  return super.application(application, open: url, options: options)
 }
+
+
   override func sourceURL(for bridge: RCTBridge) -> URL? {
     self.bundleURL()
   }
 
   override func bundleURL() -> URL? {
-#if DEBUG
+    #if DEBUG
     RCTBundleURLProvider.sharedSettings().jsBundleURL(forBundleRoot: "index")
-#else
+    #else
     Bundle.main.url(forResource: "main", withExtension: "jsbundle")
-#endif
+    #endif
   }
 }

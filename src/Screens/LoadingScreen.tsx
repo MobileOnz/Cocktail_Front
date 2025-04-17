@@ -13,16 +13,16 @@ interface Props {
   navigation: LoadingScreenNavigationProp;
 }
 
-const LoadingScreen: React.FC<Props> = ({ navigation }) => {
+const LoadingScreen: React.FC<Props> = ({ navigation, route }) => {
   const [loadingDots, setLoadingDots] = useState(".");
 
+  const { alcholType, tasteCategoryId, tasteDetailId } = route.params;
+
   useEffect(() => {
-    // 3초 후 결과 화면으로 이동
     const timeout = setTimeout(() => {
-      navigation.navigate("ResultScreen");
+      navigation.navigate("ResultScreen", { alcholType, tasteCategoryId, tasteDetailId });
     }, 3000);
 
-    // 0.4초마다 "..." 애니메이션 효과
     const interval = setInterval(() => {
       setLoadingDots((prev) => (prev.length === 3 ? "." : prev + "."));
     }, 400);

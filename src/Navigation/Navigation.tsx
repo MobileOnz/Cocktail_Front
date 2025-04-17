@@ -14,15 +14,19 @@ import MarketDetail from "../Screens/MarketDetail";
 import RegionSelectScreen from "../Screens/RegionSelectScreen";
 import CreateNewListScreen from "../Screens/CreateNewListScreen";
 import SignupScreen from "../Screens/SignupScreen";
-
-//param
+import ProfileScreen from "../Screens/ProfileScreen";
 export type RootStackParamList = {
   Onboarding: undefined;
   Login: undefined;
   Maps: { searchCompleted?: boolean; setSelectedRegions?: string[] };
   SearchScreen: undefined;
   RegionSelectScreen : undefined;
-  BottomTabNavigator : undefined;
+  BottomTabNavigator: {
+    screen?: string;
+    params?: {
+      shouldRefresh?: boolean;
+    };
+  };
   RecommendationFlow: undefined;
   LoadingScreen: undefined;
   ResultScreen: undefined;
@@ -31,6 +35,7 @@ export type RootStackParamList = {
     itemId: number;
   } | undefined;
   MarketDetail : undefined;
+  ProfileScreen: undefined;
   SignupScreen: {code? : string};
 };
 
@@ -59,6 +64,7 @@ const Navigation: React.FC = () => {
 		/>
         <Stack.Screen name="MarketDetail" component={MarketDetail}/>
         <Stack.Screen name="SignupScreen" component={SignupScreen}/>
+        <Stack.Screen name="ProfileScreen" component={ProfileScreen}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

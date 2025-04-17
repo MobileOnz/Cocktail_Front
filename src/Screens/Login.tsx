@@ -1,4 +1,4 @@
-import React, {useEffect,useState, } from "react";
+import React, {useEffect,useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import { StackScreenProps } from "@react-navigation/stack";
 import * as KakaoLogin from "@react-native-seoul/kakao-login";
@@ -8,11 +8,14 @@ import type {
   GetProfileResponse,
   NaverLoginResponse,
 } from "@react-native-seoul/naver-login";
+
 import axios from 'axios';
 import {API_BASE_URL} from '@env';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import { RootStackParamList } from "../Navigation/Navigation";
+
+import {useToast} from '../Components/ToastContext';
 
 //env에서 서버 주소 가져옴
 const server = API_BASE_URL;
@@ -30,18 +33,20 @@ const config = {
   },
 };
 
-
-
 const consumerKey = "Oc17d0i2lHxKxHhTqL1C";
 const consumerSecret = "PgG9qhIBZP";
 const appName = "onz";
-const serviceUrlScheme = "testapp";
+const serviceUrlScheme = "naverlogin";
+
 
 type LoginScreenProps = StackScreenProps<RootStackParamList, "Login">;
 
 const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
+  const {showToast} = useToast();
+
 
   //네이버 로그인 초기 설정.
+
   useEffect(() => {
      GoogleSignin.configure({
       offlineAccess: true,
@@ -65,7 +70,6 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
 
   const [failure, setFailureResponse] = useState<NaverLoginResponse['failureResponse']>();
 
- 
 
   //네이버 로그인
   const naverLogin = async (): Promise<void> => {
@@ -85,6 +89,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
             'Content-Type': 'application/json',
           },
         });
+
         const code = response.data.data.code;
         if(code){
           navigation.navigate("SignupScreen",{code : code})
@@ -95,11 +100,17 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
           console.log("backendAccessToken: ",backendAccessToken);
         if (backendAccessToken) {
           await AsyncStorage.setItem('accessToken', backendAccessToken);
+          showToast("로그인 되었습니다.");
+          
+          //로그인을 수행하고 돌아왔을 때도 refresh를 수행해주기 위함
+          navigation.navigate("BottomTabNavigator", {
+            screen: "지도", // Tab name
+            params: { shouldRefresh: true }, // Maps 컴포넌트로 전달할 route.params
+          });
         }
         if (backendRefreshToken) {
           await AsyncStorage.setItem('refreshToken', backendRefreshToken);
         }
-
         }
       } else if (failureResponse) {
         console.log('네이버 로그인 실패:', failureResponse);
@@ -145,12 +156,19 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
         console.log("backendAccessToken: ",backendAccessToken);
       if (backendAccessToken) {
         await AsyncStorage.setItem('accessToken', backendAccessToken);
+        showToast("로그인 되었습니다.");
       }
       if (backendRefreshToken) {
         await AsyncStorage.setItem('refreshToken', backendRefreshToken);
       }
-      navigation.navigate("BottomTabNavigator");
-      }
+      // navigation.navigate("BottomTabNavigator");
+      //로그인을 수행하고 돌아왔을 때도 refresh를 수행해주기 위함
+      navigation.navigate("BottomTabNavigator", {
+        screen: "지도", // Tab name
+        params: { shouldRefresh: true }, // Maps 컴포넌트로 전달할 route.params
+      });
+    }
+
 
       })
       .catch((error) => {
@@ -161,6 +179,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
         }
       });
   };
+
 
   const debugDelete = async () => {
     try{

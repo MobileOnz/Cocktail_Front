@@ -1,4 +1,6 @@
-import React, { useState, useEffect,useRef } from "react";
+
+import React, { useState, useEffect, useRef } from "react";
+
 import { StackScreenProps } from "@react-navigation/stack";
 import { View, StyleSheet, StatusBar, Text, TouchableOpacity, TextInput,Image } from "react-native";
 import SearchBar from "../Components/SearchBar";
@@ -7,11 +9,17 @@ import BaseBottomSheet from "../BottomSheet/BaseBottomSheet";
 import theme from "../assets/styles/theme";
 import { heightPercentage, widthPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
 import SelectedRegionTags from "../Components/SelectedRegionTags";
+import MapView from "react-native-maps";
+
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { API_BASE_URL } from "@env";
+
 import Animated, {
   useAnimatedStyle,
   interpolate,
 } from "react-native-reanimated";
 import { useSharedValue } from "react-native-reanimated";
+
 import axios from "axios";
 import {API_BASE_URL} from "@env"
 import MapView from "react-native-maps";
@@ -41,6 +49,7 @@ const CurrentLocationButton = ({ animatedPosition, onPress }) => {
     };
   });
 
+
   return (
     <Animated.View style={animatedStyle}>
       <TouchableOpacity style={styles.currentLocationButton} onPress={onPress}>
@@ -56,6 +65,7 @@ const CurrentLocationButton = ({ animatedPosition, onPress }) => {
 
 const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
   const mapRef = useRef<MapView>(null);
+
   const animatedPosition = useSharedValue(0);
   const [barData, setBarData] = useState([]);
   const [selectedTab, setSelectedTab] = useState("search")
@@ -118,6 +128,85 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
   }, []);
   
 
+  const [barList, setBarList] = useState([]);
+  
+
+  //어떤 이벤트가 발생하든 ui를 리렌더링하기 위한 트리거
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+
+  // ✅ MapsScreen에서 props로 받은 searchQuery 기반으로 API 요청
+  useEffect(() => {
+    if (route.params?.searchCompleted && route.params.searchQuery) {
+      const query = route.params.searchQuery;
+  
+      const fetchData = async () => {
+        try {
+          const token = await AsyncStorage.getItem('accessToken');
+  
+          const res = await fetch(
+            `${API_BASE_URL}/api/search/keyword?search=${encodeURIComponent(query)}`,
+            {
+              method: "GET",
+              headers: {
+                'Content-Type': 'application/json',
+                ...(token ? { Authorization: `Bearer ${token}` } : {}),
+              },
+            }
+          );
+  
+          const result = await res.json();
+          console.log("응답 결과:", result);
+  
+          if (!Array.isArray(result.data)) {
+            throw new Error("검색 결과가 배열이 아닙니다.");
+          }
+  
+          const formatted = result.data.map((bar) => ({
+            id: bar.id,
+            title: bar.bar_name,
+            barAdress: bar.address || "주소 없음",
+            thumbNail: bar.thumbnail 
+              ? { uri: bar.thumbnail } 
+              : require("../assets/drawable/barExample.png"),
+            hashtagList: bar.menus.slice(0, 4).map(menu => `#${menu.name}`),
+          }));
+  
+          //마커용 데이터 저장
+          const markers = result.data.map((bar) => ({
+            id: bar.id,
+            title: bar.bar_name,
+            coordinate: {
+              latitude: Number(bar.y),
+              longitude: Number(bar.x),
+            },
+          }));
+  
+          
+          setBarList(formatted);
+          setMarkerList(markers);
+          setSelectedTab("search");
+          //모든 마커가 보이도록 지도 이동
+          setTimeout(() => {
+            if (mapRef.current && markers.length > 0) {
+              mapRef.current.fitToCoordinates(
+                markers.map((m) => m.coordinate),
+                {
+                  edgePadding: { top: 100, right: 100, bottom: 300, left: 100 },
+                  animated: true,
+                }
+              );
+            }
+          }, 600);
+        } catch (err) {
+          console.error("검색 실패:", err);
+        }
+      };
+  
+      fetchData();
+    }
+  }, [route.params?.searchCompleted]);
+  
+ 
   useEffect(() => {
     console.log("✅ Maps에서 보내는 markerList:", markerList);
   }, [markerList]);
@@ -138,7 +227,12 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
     if (route.params?.resetRequested){
       navigation.setParams({ resetRequested: false });
     }
-  }, [route.params?.searchCompleted, route.params?.selectedRegions, route.params?.resetRequested]);
+    if(route.params?.shouldRefresh){
+      console.log("🔁 로그인 후 리프레시 감지됨");
+      setRefreshTrigger(prev => prev + 1);
+      navigation.setParams({ shouldRefresh: false }); // 다시 초기화
+    }
+  }, [route.params?.searchCompleted, route.params?.selectedRegions, route.params?.resetRequested, route.params?.shouldRefresh]);
 
   const handleRemoveRegion = (region: string) => {
     setSelectedRegions((prevRegions) => prevRegions.filter((r) => r !== region));
@@ -175,7 +269,9 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
 
       {/* 지도 */}
       <View style={styles.mapContainer}>
-      <CustomMapView
+
+        <CustomMapView
+
           initialRegion={{
             latitude: 37.5665,
             longitude: 126.978,
@@ -214,13 +310,21 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
   )}
 
 </View>
-<BaseBottomSheet
-  animatedPosition={animatedPosition}
-  selectedRegions={selectedRegions}
-  barData={barData}
-  setBarData={setBarData}
-  
-/>
+    {selectedRegions.length > 0 ? (
+      <SelectedRegions selectedRegions={selectedRegions} />
+    ) : (
+      <BaseBottomSheet
+        key={`base-${refreshTrigger}`}
+        refreshTrigger={refreshTrigger}
+        setRefreshTrigger={setRefreshTrigger}
+        animatedPosition={animatedPosition}
+        barList={barList}
+        setBarList={setBarList}
+        selectedTab={selectedTab}
+        setSelectedTab={setSelectedTab}
+      />
+    )}
+
     </View>
   );
 };

@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, Image, StyleSheet } from "react-native";
 import { BottomSheetSectionList } from "@gorhom/bottom-sheet";
 import { widthPercentage, heightPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
 
+import { API_BASE_URL } from "@env";
 
 type myBarList = {
   id: number;
@@ -15,11 +16,12 @@ type myBarList = {
 
 
 
-const MainBottomSheet = ({ sections, showMyBars, handleTabPress }) => {
+const MainBottomSheet = ({ sections, showMyBars, handleTabPress, setSelectedTab, setSelectedBarId, bookmarkIds, setBookmarkIds, bookmarkListMap, setBookmarkListMap, handleBookmarkToggle }) => {
   const [isExpanded, setIsExpanded] = useState(true);
   const toggleShowMyBars = () => {
     setIsExpanded(!isExpanded);
   };
+
   const getFilteredSections = () => {
     return sections.map((section) => {
       if (section.title === "나의 칵테일 바") {
@@ -34,24 +36,51 @@ const MainBottomSheet = ({ sections, showMyBars, handleTabPress }) => {
    /*함수를 통해 아이템 리스트너 꾸미기*/ 
   const renderBarItem = ({ item, index, section }: { item: myBarList; index: number; section: any }) => (
     <>
-    <TouchableOpacity onPress={() => handleTabPress("detail", item)}>
+      <TouchableOpacity
+        onPress={() => {
+          // setSelectedBarId(item.id);  // ✅ 상세조회용 바 ID 저장
+          console.log("✅ 바 디테일 보기로 전달:", item);
+          // setSelectedTab("detail", item);       // ✅ 상세 탭으로 전환
+          handleTabPress("detail", item);
+        }}
+      >
       <View style={styles.itemContainer}>
         <Image style={styles.itemImage} source={item.thumbNail} />
       <View style={styles.textContainer}>
-        <Text style={styles.itemTitle}>{item.title}</Text>
+        <Text style={styles.itemTitle} numberOfLines={1} ellipsizeMode="tail">{item.title}</Text>
+        
+        <Text style={styles.itemDistance} numberOfLines={1} ellipsizeMode="tail">{item.barAdress}</Text>
         {item.hashtagList && item.hashtagList.length >0 &&(
            <Text style={{ color: "#B9B6AD", fontSize: fontPercentage(12) }}>인기메뉴</Text>
         )}
+        
         <View style={styles.hashtagContainer}>
-          {item.hashtagList.map((tag, idx) => (
-            <Text key={idx} style={styles.hashtag}>{tag}</Text>
-          ))}
+        {Array.isArray(item.hashtagList) && item.hashtagList.map((tag, idx) => (
+          <Text key={idx} style={styles.hashtag}>{tag}</Text>
+        ))}
+
         </View>
       </View>
       {/* 책갈피 아이콘 */}
-      <TouchableOpacity onPress={() => handleTabPress("bookmark", item)}>
-        <Image source={require("../assets/drawable/bookmark.png")} style={styles.bookmarkImage} />
+      <TouchableOpacity
+        onPress={() => {
+          if (bookmarkIds.has(item.id)) {
+            handleBookmarkToggle(item.id); // ✅ 북마크 해제
+          } else {
+            handleTabPress("bookmark", item); // 북마크 추가
+          }
+        }}
+      >
+        <Image
+          source={
+            bookmarkIds.has(item.id)
+              ? require("../assets/drawable/bookmark_checked.png")
+              : require("../assets/drawable/bookmark.png")
+          }
+          style={styles.bookmarkImage}
+        />
       </TouchableOpacity>
+
 
     </View>
     </TouchableOpacity>
@@ -76,7 +105,7 @@ const MainBottomSheet = ({ sections, showMyBars, handleTabPress }) => {
   return (
       <BottomSheetSectionList
         sections={getFilteredSections()}
-        keyExtractor={(item) => item.id.toString()}
+        keyExtractor={(item, index) => item?.id?.toString?.() ?? index.toString()}
         renderItem={renderBarItem}
         renderSectionHeader={renderSectionHeader}
         stickySectionHeadersEnabled={false}
@@ -107,6 +136,7 @@ const styles = StyleSheet.create({
     marginLeft: widthPercentage(16),
     backgroundColor: "#FFFCF3",
     flexDirection: "row",
+    paddingBottom: heightPercentage(12),
   },
   textContainer: {
     marginLeft: widthPercentage(12),
@@ -116,25 +146,28 @@ const styles = StyleSheet.create({
   itemImage: {
     width: widthPercentage(126),
     height: heightPercentage(156),
+    borderRadius: widthPercentage(8),
   },
   hashtagContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
-    marginTop: heightPercentage(8),
+    marginTop: heightPercentage(16),
     width: widthPercentage(197),
-    height: heightPercentage(50),
-    maxHeight: heightPercentage(52),
+    height: heightPercentage(55),
+    maxHeight: heightPercentage(50),
+    overflow: "hidden",
   },
   hashtag: {
     backgroundColor: "#F3EFE6",
     color: "#7D7A6F",
     paddingVertical: heightPercentage(4),
     paddingHorizontal: widthPercentage(8),
-    borderRadius: widthPercentage(4),
+    borderRadius: widthPercentage(20),
     fontSize: fontPercentage(12),
     textAlign: "center",
     marginRight : widthPercentage(4),
     marginBottom: heightPercentage(4),
+    height: heightPercentage(24),
   },
   itemTitle: {
     fontSize: fontPercentage(18),
@@ -165,6 +198,7 @@ const styles = StyleSheet.create({
     width: widthPercentage(24),
     height: heightPercentage(24),
     resizeMode: "contain",
+    marginLeft: widthPercentage(12),
   },
   bookmarkContainer: {
     position: "absolute",

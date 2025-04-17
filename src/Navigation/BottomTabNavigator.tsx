@@ -10,26 +10,40 @@ import { widthPercentage, heightPercentage, fontPercentage } from "../assets/sty
 import LoginBottomSheet from "../BottomSheet/LoginBottomSheetProps"; // 로그인 바텀시트 추가
 import { useNavigation } from "@react-navigation/native";
 
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 const Tab = createBottomTabNavigator();
 
 const BottomTabNavigator = () => {
   const navigation = useNavigation();
   const [isLoginSheetVisible, setLoginSheetVisible] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(true); // 실제로는 토큰 확인 필요
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // 실제로는 토큰 확인 필요
 
   // 맞춤 추천 탭을 눌렀을 때 실행
   const handleRecommendationPress = () => {
 
-    if (!isLoggedIn) {
-      setLoginSheetVisible(true); // 로그인 바텀시트 표시
-    } else {
-      navigation.navigate("BottomTabNavigator", { screen: "맞춤 추천" });
-    }
+    // if (!isLoggedIn) {
+    //   setLoginSheetVisible(true); // 로그인 바텀시트 표시
+    // } else {
+    //   navigation.navigate("BottomTabNavigator", { screen: "맞춤 추천" });
+    // }
+    setLoginSheetVisible(true);
   };
 
   useEffect(() => {
-   
-  }, [isLoginSheetVisible]);
+    const checkLoginStatus = async () => {
+      try {
+        const token = await AsyncStorage.getItem('accessToken');
+        setIsLoggedIn(!!token); // token이 있으면 true, 없으면 false
+      } catch (error) {
+        console.error('🔒 로그인 상태 확인 실패:', error);
+        setIsLoggedIn(false);
+      }
+    };
+  
+    checkLoginStatus();
+  }, [isLoginSheetVisible]); // 로그인 바텀시트가 닫힐 때마다 재확인
+  
 
   // 커스텀 탭 버튼
   const CustomTabBarButton = (props) => {

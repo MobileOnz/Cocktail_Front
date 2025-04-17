@@ -11,7 +11,7 @@ import {
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../navigation/types";
 import { widthPercentage, heightPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
-
+import {API_BASE_URL} from '@env';
 
 type RecommendationFlowScreenNavigationProp = StackNavigationProp<
   RootStackParamList,
@@ -21,28 +21,31 @@ type RecommendationFlowScreenNavigationProp = StackNavigationProp<
 interface Props {
   navigation: RecommendationFlowScreenNavigationProp;
 }
-const questions = [
-  {
-    id: 1,
-    question: "어서오세요!\n(닉네임)님을 위한 오늘의 칵테일을 준비할게요. 먼저, 어떤 맛을 좋아하세요?",
-    options: ["달콤한 맛", "새콤한 맛", "쌉싸름한 맛", "묵직한 맛"],
-  },
-  {
-    id: 2,
-    question: "좋아요!\n어떤 종류의 단맛이 끌리시나요?",
-    options: ["부드럽고 크리미한 단 맛", "진한 캐러멜 같은 단 맛", "가볍고 상큼한 단 맛"],
-  },
-  {
-    id: 3,
-    question: "마지막으로,\n오늘 어느 정도 도수가 괜찮으세요?",
-    options: ["가볍게 마시고 싶어요", "적당히 취하고 싶어요", "높은 도수가 좋아요"],
-  },
-];
+
+ 
 
 const RecommendationFlowScreen: React.FC<Props> = ({ navigation }) => {
   const [currentStep, setCurrentStep] = useState(-1);
   const [selectedAnswers, setSelectedAnswers] = useState<{ [key: number]: string }>({});
   const [allAnswered, setAllAnswered] = useState(false);
+
+  const [questions, setQuestions] = useState([
+    {
+      id: 1,
+      question: "어서오세요!\n(닉네임)님을 위한 오늘의 칵테일을 준비할게요. 먼저, 어떤 맛을 좋아하세요?",
+      options: [],
+    },
+    {
+      id: 2,
+      question: "좋아요!\n어떤 종류의 단맛이 끌리시나요?",
+      options: ["부드럽고 크리미한 단 맛", "진한 캐러멜 같은 단 맛", "가볍고 상큼한 단 맛"],
+    },
+    {
+      id: 3,
+      question: "마지막으로,\n오늘 어느 정도 도수가 괜찮으세요?",
+      options: ["가볍게 마시고 싶어요", "적당히 취하고 싶어요", "높은 도수가 좋아요"],
+    },
+  ]);
 
   const slideUpValues = useRef(questions.map(() => new Animated.Value(0))).current;
   const typingBubbleOpacity = useRef(new Animated.Value(1)).current;
@@ -50,24 +53,108 @@ const RecommendationFlowScreen: React.FC<Props> = ({ navigation }) => {
   
   const buttonScale = useRef(new Animated.Value(1)).current;
 
-  const handlePress = () => { //버튼 애니메이션 (누르면 움츠려들었다가 펴지는거)
-    Animated.sequence([
-      Animated.timing(buttonScale, {
-        toValue: 0.95, // 버튼 축소
-        duration: 50, 
-        easing: Easing.out(Easing.ease),
-        useNativeDriver: true,
-      }),
-      Animated.timing(buttonScale, {
-        toValue: 1,
-        duration: 50,
-        easing: Easing.out(Easing.ease),
-        useNativeDriver: true,
-      }),
-    ]).start(() => {
-      navigation.navigate("LoadingScreen");
-    });
+  
+ //선택된 카테고리와 ID 매핑 저장용
+ const [tasteCategoryMap, setTasteCategoryMap] = useState<{ [key: string]: number }>({});
+
+ // 추가: 세부 맛 → ID 매핑 저장
+ const [tasteDetailIdMap, setTasteDetailIdMap] = useState<{ [key: string]: number }>({});
+
+  useEffect(() => {
+    const loadTasteCategories = async () => {
+      const categories = await fetchTasteCategories();
+      setQuestions((prevQuestions) => {
+        const updated = [...prevQuestions];
+        updated[0].options = categories;
+        return updated;
+      });
+    };
+  
+    loadTasteCategories();
+  }, []);
+
+  //강렬한맛/달콤한맛/새콤한맛/쌉싸름한맛 호출
+  //첫 번째 질문 옵션 API 호출 → 맵 저장
+const fetchTasteCategories = async () => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/public/cocktail/taste/category`);
+    const result = await response.json();
+
+    if (result.code === 1 && result.data) {
+      const categories = result.data.map((item: any) => item.tasteCategory);
+      const map: { [key: string]: number } = {};
+      result.data.forEach((item: any) => {
+        map[item.tasteCategory] = item.tasteCategoryId;
+      });
+      setTasteCategoryMap(map);
+      return categories;
+    } else {
+      console.error("API 호출 실패:", result.msg);
+      return [];
+    }
+  } catch (error) {
+    console.error("에러 발생:", error);
+    return [];
+  }
+};
+// (3) 세부 맛 호출 함수
+const fetchTasteDetails = async (categoryId: number) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/public/cocktail/taste/detail?tasteCategoryId=${categoryId}`);
+    const result = await response.json();
+
+    if (result.code === 1 && result.data) {
+      const detailMap: { [key: string]: number } = {};
+      result.data.forEach((item: any) => {
+        detailMap[item.tasteDetail] = item.tasteDetailId;
+      });
+      setTasteDetailIdMap(detailMap); // 💡 여기서 저장
+      return result.data.map((item: any) => item.tasteDetail);
+    }
+    
+  } catch (error) {
+    console.error("세부 맛 에러:", error);
+    return [];
+  }
+};
+
+  const handlePress = () => {
+  
+  console.log("🔥 handlePress 호출됨!");
+  const alcoholAnswer = selectedAnswers[2]; // 세 번째 질문의 선택값
+  const alcoholMap: { [key: string]: number } = {
+    "가볍게 마시고 싶어요": 1,
+    "적당히 취하고 싶어요": 2,
+    "높은 도수가 좋아요": 3,
   };
+
+  const alcholType = alcoholMap[alcoholAnswer];
+
+
+  const selectedCategoryId = tasteCategoryMap[selectedAnswers[0]];
+  const selectedDetailId = tasteDetailIdMap[selectedAnswers[1]];
+
+  console.log("alcholType:", alcholType);
+  console.log("tasteCategoryId:", selectedCategoryId);
+  console.log("tasteDetailId:", selectedDetailId);
+  Animated.sequence([
+    Animated.timing(buttonScale, {
+      toValue: 0.95,
+      duration: 50,
+      easing: Easing.out(Easing.ease),
+      useNativeDriver: true,
+    }),
+    Animated.timing(buttonScale, {
+      toValue: 1,
+      duration: 50,
+      easing: Easing.out(Easing.ease),
+      useNativeDriver: true,
+    }),
+  ]).start(() => {
+    navigation.navigate("LoadingScreen", { alcholType, tasteCategoryId: selectedCategoryId, tasteDetailId: selectedDetailId });
+  });
+};
+
 
   useEffect(() => {
     setAllAnswered(Object.keys(selectedAnswers).length === questions.length);
@@ -170,29 +257,48 @@ useEffect(() => {
 
 
 
-const handleOptionSelect = (answer: string) => {
-    setSelectedAnswers((prev) => ({
-        ...prev,
-        [currentStep]: answer,
-    }));
+const handleOptionSelect = async (answer: string) => {
 
-    if (currentStep < questions.length - 1) {
-        const nextStep = currentStep + 1;
 
-        // 슬라이드 업 애니메이션
-        Animated.timing(slideUpValues[currentStep], {
-            toValue: -3,
-            duration: 1000,
-            easing: Easing.out(Easing.quad),
-            useNativeDriver: true,
-        }).start(() => {
-            setIsTyping(true); // "..." 애니메이션 시작
-            setCurrentStep(nextStep); // 다음 질문으로 이동
-        });
-    } else {
-        setAllAnswered(true);
+  setSelectedAnswers((prev) => ({
+    ...prev,
+    [currentStep]: answer,
+  }));
+
+  // 👉 첫 번째 질문을 선택한 경우 → 세부 맛 API 호출
+  if (currentStep === 0) {
+    const selectedCategoryId = tasteCategoryMap[answer];
+    if (selectedCategoryId) {
+      const details = await fetchTasteDetails(selectedCategoryId);
+
+      setQuestions((prevQuestions) => {
+        const updated = [...prevQuestions];
+        updated[1].options = details;
+        return updated;
+      });
     }
+  }
+
+  console.log("🧪 tasteDetailIdMap", tasteDetailIdMap);
+
+  // 다음 질문으로 이동
+  if (currentStep < questions.length - 1) {
+    const nextStep = currentStep + 1;
+
+    Animated.timing(slideUpValues[currentStep], {
+      toValue: -3,
+      duration: 1000,
+      easing: Easing.out(Easing.quad),
+      useNativeDriver: true,
+    }).start(() => {
+      setIsTyping(true);
+      setCurrentStep(nextStep);
+    });
+  } else {
+    setAllAnswered(true);
+  }
 };
+
 
 
 
@@ -251,7 +357,6 @@ const handleOptionSelect = (answer: string) => {
                 </View>
             </Animated.View>
         )}
-
         {/* 질문과 옵션 표시 */}
         {questions.map((item, index) => (
           <Animated.View
