@@ -16,10 +16,6 @@ import {
   fontPercentage,
 } from "../assets/styles/FigmaScreen";
 
-import MoreOptionMenu from "../Components/MoreOptionMenu";
-import { PaperProvider } from "react-native-paper";
-import { useNavigation } from "@react-navigation/native";
-import { API_BASE_URL } from "@env";
 import { ScrollView } from "react-native-gesture-handler";
 import instance from "../tokenRequest/axios_interceptor";
 import LoginBottomSheet from "./LoginBottomSheetProps";
@@ -106,80 +102,92 @@ const fetchMyList = async () => {
   };
 
   return (
-    <PaperProvider>
-      <BottomSheetFlatList
-        data={bookmarkedBars}
-        keyExtractor={(item) => item.id.toString()}
-        style={styles.container}
-        ListHeaderComponent={
-          
-        <>
-          <View style={{ flex: 1 }}>
-            <ScrollView contentContainerStyle={styles.container}>
-              {/* 헤더 */}
-              <View style={styles.headerContainer}>
-                <Text style={styles.header}>나의 리스트</Text>
-                <View style={styles.line}></View>
-              </View>
-
-              {/* 새 리스트 버튼 */}
-              <TouchableOpacity
-                style={styles.newListButton}
-                onPress={() => navigation.navigate("CreateNewListScreen" as never)}
-              >
-                <Image
-                  source={require("../assets/drawable/newlist.png")}
-                  style={styles.newlistImage}
-                />
-                <Text style={styles.newListText}>새 리스트 만들기</Text>
-              </TouchableOpacity>
-
-              {/* 리스트 아이템들 */}
-              {myList.map((item) => (
-                <TouchableOpacity
-                  key={item.id}
-                  onPress={() => {
-                    handleTabPress("myBardetailList", item);
-                  }}
-                >
-            <View style={styles.listItem}>
-              <Image
-                source={{ uri: item.thumbnail }}
-                style={styles.icon}
-              />
-              <View style={styles.info}>
-                <Text style={styles.barName}>{item.bar_name}</Text>
-                <View style={styles.location}>
-                  <Feather name="map-pin" size={14} color="#7D7A6F" />
-                  <Text style={styles.locationText}>{item.address ?? "주소 없음"}</Text>
-                </View>
-                <View style={styles.tagContainer}>
-                  {item.menus?.map((menu, index) => (
-                    <Text key={index} style={styles.tag}>#{menu.name}</Text>
+    <>
+      <PaperProvider>
+        <BottomSheetFlatList
+          data={bookmarkedBars}
+          keyExtractor={(item) => item.id.toString()}
+          style={styles.container}
+          ListHeaderComponent={
+            <>
+              <View style={{ flex: 1 }}>
+                <ScrollView contentContainerStyle={styles.container}>
+                  {/* 헤더 */}
+                  <View style={styles.headerContainer}>
+                    <Text style={styles.header}>나의 리스트</Text>
+                    <View style={styles.line}></View>
+                  </View>
+  
+                  {/* 새 리스트 버튼 */}
+                  <TouchableOpacity
+                    style={styles.newListButton}
+                    onPress={() => navigation.navigate("CreateNewListScreen" as never)}
+                  >
+                    <Image
+                      source={require("../assets/drawable/newlist.png")}
+                      style={styles.newlistImage}
+                    />
+                    <Text style={styles.newListText}>새 리스트 만들기</Text>
+                  </TouchableOpacity>
+  
+                  {/* 리스트 아이템들 */}
+                  {myList.map((item) => (
+                    <TouchableOpacity
+                      key={item.id}
+                      onPress={() => {
+                        handleTabPress("myBardetailList", item);
+                      }}
+                    >
+                      <View style={styles.listItem}>
+                        <Image
+                          source={{ uri: item.thumbnail }}
+                          style={styles.icon}
+                        />
+                        <View style={styles.info}>
+                          <Text style={styles.barName}>{item.bar_name}</Text>
+                          <View style={styles.location}>
+                            <Feather name="map-pin" size={14} color="#7D7A6F" />
+                            <Text style={styles.locationText}>
+                              {item.address ?? "주소 없음"}
+                            </Text>
+                          </View>
+                          <View style={styles.tagContainer}>
+                            {item.menus?.map((menu, index) => (
+                              <Text key={index} style={styles.tag}>
+                                #{menu.name}
+                              </Text>
+                            ))}
+                          </View>
+                        </View>
+                        <MoreOptionMenu
+                          itemId={item.id}
+                          onEdit={handleEdit}
+                          onDelete={handleDelete}
+                        />
+                      </View>
+                    </TouchableOpacity>
                   ))}
-                </View>
+                </ScrollView>
+  
+                <LoginBottomSheet
+                  isVisible={loginModalVisible}
+                  onClose={() => {
+                    setLoginModalVisible(false);
+                    handleTabPress("search");
+                  }}
+                  onLogin={() => {
+                    setLoginModalVisible(false);
+                    navigation.navigate("Login" as never);
+                  }}
+                />
               </View>
-              <MoreOptionMenu itemId={item.id} onEdit={handleEdit} onDelete={handleDelete} />
-            </View>
-          </TouchableOpacity>
-
-        ))}
-      </ScrollView>
-
-      <LoginBottomSheet
-        isVisible={loginModalVisible}
-        onClose={() => {setLoginModalVisible(false);
-          handleTabPress("search");
-           }}
-        onLogin={() => {
-          setLoginModalVisible(false);
-          navigation.navigate("Login" as never);
-        }}
-      />
-    </View>
-  </>
-</PaperProvider>
+            </>
+          }
+        />
+      </PaperProvider>
+    </>
   );
+  
 };
 
 export default MyListSheetContent;

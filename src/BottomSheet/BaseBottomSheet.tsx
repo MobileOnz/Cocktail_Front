@@ -21,6 +21,9 @@ import { formatBarForMyList } from "../utils/formatBar";
 
 const BaseBottomSheet = ({ 
   animatedPosition, 
+  selectedRegions,
+  barData,
+  setBarData,
   barList, 
   setBarList, 
   selectedTab, 
@@ -33,7 +36,7 @@ const BaseBottomSheet = ({
   
   const mapRef = useRef<MapView>(null);
   
-  const [selectedTab, setSelectedTab] = useState<"search" | "myList" | "region"|"regionDetail" | "bookmark"| "detail"|"myBardetailList">("search");
+  // const [selectedTab, setSelectedTab] = useState<"search" | "myList" | "region"|"regionDetail" | "bookmark"| "detail"|"myBardetailList">("search");
   
   const bottomSheetRef = useRef<BottomSheet>(null);
 
@@ -467,16 +470,19 @@ const headerCheck = async () =>{
       ): selectedTab ==="myBardetailList" ? (
         <MyBardetailListBottomSheet listId={selectedBarId} />
       ) : selectedTab === "myList" ? (
+        <>
           <MyListSheetContent 
-            handleTabPress={(tab, bar) => {
-              if (tab === "myBardetailList") {
-                setSelectedBarId(bar.id); // 리스트 ID 설정
-              }
-              handleTabPress(tab, bar);
-            }}
-            bookmarkedBars={myBars} //실제 데이터 전달
-            />
-        <MyBardetailListBottomSheet/>
+              handleTabPress={(tab, bar) => {
+                if (tab === "myBardetailList") {
+                  setSelectedBarId(bar.id); // 리스트 ID 설정
+                }
+                handleTabPress(tab, bar);
+              }}
+              bookmarkedBars={myBars} //실제 데이터 전달
+              />
+          <MyBardetailListBottomSheet/>
+        </>
+          
       ) : selectedTab ==="regionDetail" ? (
         <SelectedRegions
         selectedRegions={selectedRegions}

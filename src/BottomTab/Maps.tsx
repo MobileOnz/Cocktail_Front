@@ -21,8 +21,6 @@ import Animated, {
 import { useSharedValue } from "react-native-reanimated";
 
 import axios from "axios";
-import {API_BASE_URL} from "@env"
-import MapView from "react-native-maps";
 
 type RootStackParamList = {
   SearchScreen: undefined;
@@ -315,6 +313,9 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
     ) : (
       <BaseBottomSheet
         key={`base-${refreshTrigger}`}
+        selectedRegions={selectedRegions}
+        barData={barData}
+        setBarData={setBarData}
         refreshTrigger={refreshTrigger}
         setRefreshTrigger={setRefreshTrigger}
         animatedPosition={animatedPosition}
