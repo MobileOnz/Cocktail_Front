@@ -16,7 +16,10 @@ instance.interceptors.request.use(
       throw new Error("⛔️ 토큰 없음: 로그인 필요");
     }
 
-    config.headers["Content-Type"] = "application/json";
+    // FormData가 아닐 때만 application/json 설정
+    if (!(config.data instanceof FormData)) {
+      config.headers["Content-Type"] = "application/json";
+    }
     config.headers["Authorization"] = `${accessToken}`;
 
     return config;

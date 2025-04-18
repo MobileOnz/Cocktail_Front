@@ -3,11 +3,10 @@ import { View, Text, StyleSheet, TextInput, Image, TouchableOpacity } from "reac
 import { widthPercentage, heightPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
 import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Ionicons";
-import { API_BASE_URL } from "@env";
 import { launchImageLibrary } from "react-native-image-picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
-import ImageResizer from 'react-native-image-resizer';
+import ImageResizer from "react-native-image-resizer";
+import instance from "../tokenRequest/axios_interceptor";
 
 const safeParseJson = async (res: Response) => {
   const text = await res.text();
@@ -30,76 +29,48 @@ const ProfileScreen: React.FC = () => {
   const isProfileChanged = profileUri !== initialProfileUri;
   const isChanged = isNicknameChanged || isProfileChanged;
 
-  //이미지의 type, name을 안전하게 지정해주기 위해 상태를 저장하는 변수 추가
-  const [selectedImageMeta, setSelectedImageMeta] = useState<{name: string; type: string} | null>(null);
+  const [selectedImageMeta, setSelectedImageMeta] = useState<{ name: string; type: string } | null>(null);
 
   useEffect(() => {
     const fetchProfileData = async () => {
-      const token = await AsyncStorage.getItem("accessToken");
-      console.log("fetchProfileData Token:", token);
-      if (!token) return;
-
       try {
-        const res = await fetch(`${API_BASE_URL}/api/get/member`, {
-          headers: { Authorization: `${token}` },
-        });
-        const json = await safeParseJson(res);
-        console.log("👤 get/member 응답:", json);
+        const res = await instance.get("/api/get/member");
+        const result = res.data;
+        console.log("👤 get/member 응답:", result);
 
-        if (json && json.code === 1) {
-          const member = json.data;
+        if (result.code === 1) {
+          const member = result.data;
           setNickname(member.nickname);
           setNewNickname("");
           console.log("✅ 닉네임 불러오기 완료:", member.nickname);
         } else {
-          console.warn("❌ 닉네임 API 실패:", json?.msg || json);
+          console.warn("❌ 닉네임 API 실패:", result.msg);
         }
       } catch (error) {
         console.error("❌ 닉네임 불러오기 실패", error);
       }
 
       try {
-        const profileRes = await fetch(`${API_BASE_URL}/api/profile`, {
-          headers: { Authorization: `${token}` },
-        });
-
-        const contentType = profileRes.headers.get("content-type");
+        const res = await instance.get("/api/profile", { responseType: "blob" });
+        const contentType = res.headers["content-type"];
 
         if (contentType?.includes("application/json")) {
-          const profileJson = await safeParseJson(profileRes);
-          console.log("📷 프로필 응답 (JSON):", profileJson);
-
-          if (profileJson && profileJson.code === 1 && profileJson.data) {
-            const profileUrl = profileJson.data;
-            const fullUri = profileUrl.startsWith("http")
-              ? profileUrl
-              : `${API_BASE_URL}${profileUrl.startsWith("/") ? "" : "/"}${profileUrl}`;
-
+          const { data } = res.data;
+          if (data) {
+            const fullUri = data.startsWith("http") ? data : `${res.config.baseURL}${data.startsWith("/") ? "" : "/"}${data}`;
             setProfileUri(fullUri);
             setInitialProfileUri(fullUri);
-
-            const short = fullUri.length > 100 ? fullUri.slice(0, 100) + "..." : fullUri;
-            console.log("✅ 프로필 이미지 불러오기 완료:", short);
-          } else {
-            console.warn("❌ 프로필 이미지 API 실패:", profileJson?.msg || profileJson);
           }
-
         } else if (contentType?.startsWith("image/")) {
-          const blob = await profileRes.blob();
-          const imageUrl = URL.createObjectURL(blob);
-
+          const imageUrl = URL.createObjectURL(res.data);
           setProfileUri(imageUrl);
           setInitialProfileUri(imageUrl);
-
-          console.log("📷 이미지 직접 응답으로 설정:", imageUrl);
         } else {
-          console.warn("❓ 알 수 없는 Content-Type 응답:", contentType);
+          console.warn("❓ 알 수 없는 Content-Type:", contentType);
         }
-      
       } catch (error) {
         console.error("❌ 프로필 이미지 불러오기 실패", error);
       }
-      
     };
 
     fetchProfileData();
@@ -109,32 +80,17 @@ const ProfileScreen: React.FC = () => {
     if (!isChanged) return;
 
     try {
-      const token = await AsyncStorage.getItem("accessToken");
-      console.log("handleSave Token:", token);
-      if (!token) {
-        console.warn("AccessToken is missing");
-        return;
-      }
-
-      const profileUpdateRes = await fetch(`${API_BASE_URL}/api/update/member`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `${token}`,
-        },
-        body: JSON.stringify({
-          gender: "none",
-          nickName: newNickname || nickname,
-          name: "test",
-          addr: "seoul",
-          age: 20,
-          // profile: profileUri || "",
-        }),
+      const res = await instance.post("/api/update/member", {
+        gender: "none",
+        nickName: newNickname || nickname,
+        name: "test",
+        addr: "seoul",
+        age: 20,
       });
 
-      const profileJson = await safeParseJson(profileUpdateRes);
-      if (profileJson?.code === 1) {
-        console.log("✅ 프로필 정보 업데이트 성공", profileJson.data);
+      const result = res.data;
+      if (result.code === 1) {
+        console.log("✅ 프로필 정보 업데이트 성공", result.data);
         if (isNicknameChanged) {
           setNickname(newNickname);
           setNewNickname("");
@@ -143,7 +99,7 @@ const ProfileScreen: React.FC = () => {
           setInitialProfileUri(profileUri);
         }
       } else {
-        console.warn("❌ 프로필 정보 업데이트 실패", profileJson?.msg);
+        console.warn("❌ 프로필 정보 업데이트 실패", result.msg);
       }
     } catch (error) {
       console.error("🔥 프로필 저장 중 에러 발생", error);
@@ -151,62 +107,51 @@ const ProfileScreen: React.FC = () => {
   };
 
   const handleProfileImageChange = async () => {
-    launchImageLibrary(
-      { mediaType: "photo", selectionLimit: 1 },
-      async (response) => {
-        if (!response.didCancel && response.assets && response.assets.length > 0) {
-          try {
-            const asset = response.assets[0];
-            console.log("📸 선택된 원본 이미지:", asset);
-  
-            const resizedImage = await ImageResizer.createResizedImage(
-              asset.uri!,
-              400, // 너비 (원본 비율 유지됨)
-              400, // 높이
-              "PNG", // 포맷 강제 지정
-              80 // 품질 (0~100)
-            );
-  
-            const uri = resizedImage.uri;
+    launchImageLibrary({ mediaType: "photo", selectionLimit: 1 }, async (response) => {
+      if (!response.didCancel && response.assets && response.assets.length > 0) {
+        try {
+          const asset = response.assets[0];
+          console.log("📸 선택된 원본 이미지:", asset);
 
-            const token = await AsyncStorage.getItem("accessToken");
-  
-            setSelectedImageMeta({
-              name: `profile_${Date.now()}.png`,
-              type: "image/png",
-            });
-  
-            if (!initialProfileUri) setInitialProfileUri(uri);
-            setProfileUri(uri);
-  
+          const resizedImage = await ImageResizer.createResizedImage(
+            asset.uri!,
+            400,
+            400,
+            "PNG",
+            80
+          );
 
-            // ✅ 여기서 즉시 업로드
-            const formData = new FormData();
-            formData.append("file", {
-              uri: uri.startsWith("file://") ? uri : `file://${uri}`,
-              name: `profile_${Date.now()}.png`,
-              type: "image/png",
-            } as any);
+          const uri = resizedImage.uri;
+          setSelectedImageMeta({
+            name: `profile_${Date.now()}.png`,
+            type: "image/png",
+          });
 
-            const uploadRes = await fetch(`${API_BASE_URL}/api/upload/profile`, {
-              method: "POST",
-              headers: { Authorization: `${token}` },
-              body: formData,
-            });
+          if (!initialProfileUri) setInitialProfileUri(uri);
+          setProfileUri(uri);
 
-            const uploadJson = await safeParseJson(uploadRes);
-            if (uploadJson?.code === 1) {
-              console.log("✅ 즉시 프로필 이미지 업로드 성공");
-            } else {
-              console.warn("❌ 즉시 업로드 실패:", uploadJson?.msg);
-            }
+          const formData = new FormData();
+          formData.append("file", {
+            uri: uri.startsWith("file://") ? uri : `file://${uri}`,
+            name: `profile_${Date.now()}.png`,
+            type: "image/png",
+          } as any);
 
-          } catch (error) {
-            console.error("❌ 이미지 리사이즈 실패:", error);
+          const uploadRes = await instance.post("/api/upload/profile", formData, {
+            headers: { "Content-Type": "multipart/form-data" },
+            timeout: 10000,
+          });
+
+          if (uploadRes.data.code === 1) {
+            console.log("✅ 즉시 프로필 이미지 업로드 성공");
+          } else {
+            console.warn("❌ 즉시 업로드 실패:", uploadRes.data?.msg);
           }
+        } catch (error) {
+          console.error("❌ 이미지 리사이즈/업로드 실패:", error);
         }
       }
-    );
+    });
   };
 
   return (
@@ -273,7 +218,7 @@ const styles = StyleSheet.create({
   profileWrapper: {
     width: widthPercentage(90),
     height: widthPercentage(90),
-    position: "relative", // 자식의 absolute 기준
+    position: "relative",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -353,6 +298,6 @@ const styles = StyleSheet.create({
   backIcon: {
     width: widthPercentage(28),
     height: widthPercentage(28),
-    resizeMode: 'contain',
-  }
+    resizeMode: "contain",
+  },
 });
