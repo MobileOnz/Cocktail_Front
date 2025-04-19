@@ -73,6 +73,12 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
   const [markerList, setMarkerList] = useState([]);
   const {searchQuery} = route.params|| "";
   useEffect(() => {
+    if (route.params?.selectedRegions) {
+      setSelectedRegions(route.params.selectedRegions);
+    }
+  }, [route.params?.selectedRegions]);
+  useEffect(() => {
+    
     const fetchNearbyBars = async () => {
       try {
         const response = await axios.get(`${API_BASE_URL}/api/location/nearby?x=126.9812675&y=37.5718599`);
@@ -132,7 +138,7 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
   //어떤 이벤트가 발생하든 ui를 리렌더링하기 위한 트리거
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
-  // ✅ MapsScreen에서 props로 받은 searchQuery 기반으로 API 요청
+  // MapsScreen에서 props로 받은 searchQuery 기반으로 API 요청
   useEffect(() => {
     if (route.params?.searchCompleted && route.params.searchQuery) {
       const query = route.params.searchQuery;
@@ -216,21 +222,17 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
 
 
   useEffect(() => {
-    if (route.params?.searchCompleted) {
-      setIsSearchCompleted(true);
-    }
-    if (route.params?.selectedRegions) {
-      setSelectedRegions(route.params.selectedRegions);
-    }
-    if (route.params?.resetRequested){
-      navigation.setParams({ resetRequested: false });
-    }
-    if(route.params?.shouldRefresh){
+    const { searchCompleted, selectedRegions, resetRequested, shouldRefresh } = route.params || {};
+  
+    if (searchCompleted) setIsSearchCompleted(true);
+    if (selectedRegions) setSelectedRegions(selectedRegions);
+    if (resetRequested) navigation.setParams({ resetRequested: false });
+    if (shouldRefresh) {
       console.log("🔁 로그인 후 리프레시 감지됨");
       setRefreshTrigger(prev => prev + 1);
-      navigation.setParams({ shouldRefresh: false }); // 다시 초기화
+      navigation.setParams({ shouldRefresh: false });
     }
-  }, [route.params?.searchCompleted, route.params?.selectedRegions, route.params?.resetRequested, route.params?.shouldRefresh]);
+  }, [route.params]);
 
   const handleRemoveRegion = (region: string) => {
     setSelectedRegions((prevRegions) => prevRegions.filter((r) => r !== region));

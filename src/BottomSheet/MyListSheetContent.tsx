@@ -1,14 +1,10 @@
 import React, { useState, useCallback } from "react";
 
 import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
-import { BottomSheetFlatList } from "@gorhom/bottom-sheet";
+import {BottomSheetScrollView } from "@gorhom/bottom-sheet";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
-import { PaperProvider } from "react-native-paper";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import axios from "axios";
 import { API_BASE_URL } from "@env";
 import MoreOptionMenu from "../Components/MoreOptionMenu";
-import Feather from "react-native-vector-icons/Feather";
 
 import {
   widthPercentage,
@@ -16,11 +12,8 @@ import {
   fontPercentage,
 } from "../assets/styles/FigmaScreen";
 
-import { ScrollView } from "react-native-gesture-handler";
 import instance from "../tokenRequest/axios_interceptor";
 import LoginBottomSheet from "./LoginBottomSheetProps";
-
-const server = API_BASE_URL;
 
 interface MyListItem {
   id: string;
@@ -59,14 +52,13 @@ const fetchMyList = async () => {
         .map((tag) => `#${tag.name}`),
       icon_tag: item.icon_tag ?? 1,
     }));
-
     setMyList(transformed);
+
   } catch (error) {
     console.error('나의 리스트 가져오기 실패:', error);
     if (error instanceof Error && error.message.includes("로그인 필요")) {
       setLoginModalVisible(true);
     }
-
     if (error.message === '리프레시 토큰 만료') {
      navigation.navigate("Login" as never);
     }
@@ -100,96 +92,83 @@ const fetchMyList = async () => {
 
     }
   };
-
   return (
     <>
-      <PaperProvider>
-        <BottomSheetFlatList
-          data={bookmarkedBars}
-          keyExtractor={(item) => item.id.toString()}
-          style={styles.container}
-          ListHeaderComponent={
-            <>
-              <View style={{ flex: 1 }}>
-                <ScrollView contentContainerStyle={styles.container}>
-                  {/* 헤더 */}
-                  <View style={styles.headerContainer}>
-                    <Text style={styles.header}>나의 리스트</Text>
-                    <View style={styles.line}></View>
-                  </View>
+      <BottomSheetScrollView
+        contentContainerStyle={{
+          flexGrow: 1,
+          backgroundColor: "#FFFCF3",
+        }}
+      >
+        {/* 헤더 */}
+        <View style={styles.headerContainer}>
+          <Text style={styles.header}>나의 리스트</Text>
+          <View style={styles.line} />
+        </View>
   
-                  {/* 새 리스트 버튼 */}
-                  <TouchableOpacity
-                    style={styles.newListButton}
-                    onPress={() => navigation.navigate("CreateNewListScreen" as never)}
-                  >
-                    <Image
-                      source={require("../assets/drawable/newlist.png")}
-                      style={styles.newlistImage}
-                    />
-                    <Text style={styles.newListText}>새 리스트 만들기</Text>
-                  </TouchableOpacity>
+        {/* 새 리스트 버튼 */}
+        <TouchableOpacity
+          style={styles.newListButton}
+          onPress={() => navigation.navigate("CreateNewListScreen" as never)}
+        >
+          <Image
+            source={require("../assets/drawable/newlist.png")}
+            style={styles.newlistImage}
+          />
+          <Text style={styles.newListText}>새 리스트 만들기</Text>
+        </TouchableOpacity>
   
-                  {/* 리스트 아이템들 */}
-                  {myList.map((item) => (
-                    <TouchableOpacity
-                      key={item.id}
-                      onPress={() => {
-                        handleTabPress("myBardetailList", item);
-                      }}
-                    >
-                      <View style={styles.listItem}>
-                        <Image
-                          source={{ uri: item.thumbnail }}
-                          style={styles.icon}
-                        />
-                        <View style={styles.info}>
-                          <Text style={styles.barName}>{item.bar_name}</Text>
-                          <View style={styles.location}>
-                            <Feather name="map-pin" size={14} color="#7D7A6F" />
-                            <Text style={styles.locationText}>
-                              {item.address ?? "주소 없음"}
-                            </Text>
-                          </View>
-                          <View style={styles.tagContainer}>
-                            {item.menus?.map((menu, index) => (
-                              <Text key={index} style={styles.tag}>
-                                #{menu.name}
-                              </Text>
-                            ))}
-                          </View>
-                        </View>
-                        <MoreOptionMenu
-                          itemId={item.id}
-                          onEdit={handleEdit}
-                          onDelete={handleDelete}
-                        />
-                      </View>
-                    </TouchableOpacity>
+        {/* 리스트 아이템들 */}
+        {myList.map((item) => (
+          <TouchableOpacity
+            key={item.id}
+            onPress={() => {
+              handleTabPress("myBardetailList", item);
+            }}
+          >
+            <View style={styles.listItem}>
+              <Image
+                source={
+                  imageMap[item.icon_tag] || require("../assets/drawable/classic.png")
+                }
+                style={styles.icon}
+              />
+              <View style={styles.info}>
+                <Text style={styles.barName}>{item.name}</Text>
+                <View style={styles.tagContainer}>
+                  {item.tags.map((tag, index) => (
+                    <Text key={index} style={styles.tag}>
+                      {tag}
+                    </Text>
                   ))}
-                </ScrollView>
-  
-                <LoginBottomSheet
-                  isVisible={loginModalVisible}
-                  onClose={() => {
-                    setLoginModalVisible(false);
-                    handleTabPress("search");
-                  }}
-                  onLogin={() => {
-                    setLoginModalVisible(false);
-                    navigation.navigate("Login" as never);
-                  }}
-                />
+                </View>
               </View>
-            </>
-          }
-        />
-      </PaperProvider>
+  
+              <MoreOptionMenu
+                itemId={item.id}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+                message={`"${item.name}" 리스트 메뉴입니다.`}
+              />
+            </View>
+          </TouchableOpacity>
+        ))}
+      </BottomSheetScrollView>
+  
+      <LoginBottomSheet
+        isVisible={loginModalVisible}
+        onClose={() => {
+          setLoginModalVisible(false);
+          handleTabPress("search");
+        }}
+        onLogin={() => {
+          setLoginModalVisible(false);
+          navigation.navigate("Login" as never);
+        }}
+      />
     </>
   );
-  
 };
-
 export default MyListSheetContent;
 
 const styles = StyleSheet.create({

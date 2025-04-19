@@ -107,7 +107,7 @@ const RegionSelectScreen = () => {
               screen: "지도",
               params: { selectedRegions: filteredRegions,
                 resetRequested: true  
-               } //선택 지역 넘김, 초기화 함수 챙기기 
+               } 
             } as any);
           }}
         >

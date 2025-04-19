@@ -87,6 +87,7 @@ const styles = StyleSheet.create({
   container: {
     alignItems: "center",
     justifyContent: "center",
+    padding : 10
   },
   menuButton: {
     padding: 2,

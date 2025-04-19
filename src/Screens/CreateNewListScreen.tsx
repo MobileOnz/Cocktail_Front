@@ -8,6 +8,7 @@ import axios from "axios";
 import { API_BASE_URL } from "@env";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { RouteProp, useRoute } from "@react-navigation/native";
+import instance from "../tokenRequest/axios_interceptor";
 
 interface Tag {
   id: number;
@@ -71,30 +72,18 @@ const handleSaveList = async () => {
 
   try {
     if (editMode && itemId) {
-      //수정 요청 (PUT)
-      const response = await axios.patch(`${API_BASE_URL}/api/list`, patchPayload, {
-        headers: {
-          Authorization: `${token}`,
-          "Content-Type": "application/json",
-        },
-      });
+      // 수정 요청 (PATCH)
+      const response = await instance.patch(`/api/list`, patchPayload);
       console.log("리스트 수정 성공:", response.data);
     } else {
       // 생성 요청 (POST)
-      const response = await axios.post(`${API_BASE_URL}/api/list`, payload, {
-        headers: {
-          Authorization: `${token}`,
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await instance.post(`/api/list`, payload);
       console.log("리스트 저장 성공:", response.data);
     }
     navigation.goBack();
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.error("서버 응답:", error.response?.data);
-    } else {
-      console.error("저장 중 에러:", error);
+  }catch (error) {
+    if (error.message === '리프레시 토큰 만료') {
+     navigation.navigate("Login" as never);
     }
   }
 };
@@ -178,28 +167,37 @@ const handleSaveList = async () => {
 	  <View style={{ flex: 1 }}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
 
-      <View style={styles.selectedTags}>
-        {/* 선택된 태그가 없을 때 기본 텍스트 표시 */}
-        {!selectedMain && selectedSub.length === 0 ? (
-          <Text style={styles.tagText}>이 리스트의 컨셉을 선택해 주세요</Text>
-        ) : (
-          <>
-            {/* 선택된 메인 태그 */}
-            {selectedMain && (
-              <TouchableOpacity onPress={() => setSelectedMain(null)} style={styles.selectedMainTag}>
-                <Text style={styles.selectedMainTagText}>{selectedMain} ✖</Text>
-              </TouchableOpacity>
-            )}
+      <ScrollView
+  horizontal
+  showsHorizontalScrollIndicator={false}
+  contentContainerStyle={{ paddingHorizontal: widthPercentage(16) }}
+  style={{ marginTop: heightPercentage(12) }}
+>
+  {/* 선택된 태그가 없을 때 기본 텍스트 표시 */}
+  {!selectedMain && selectedSub.length === 0 ? (
+    <Text style={styles.tagText}>이 리스트의 컨셉을 선택해 주세요</Text>
+  ) : (
+    <View style={{ flexDirection: "row" }}>
+      {/* 선택된 메인 태그 */}
+      {selectedMain && (
+        <TouchableOpacity onPress={() => setSelectedMain(null)} style={styles.selectedMainTag}>
+          <Text style={styles.selectedMainTagText}>{selectedMain} X</Text>
+        </TouchableOpacity>
+      )}
 
-            {/* 선택된 서브 태그 */}
-            {selectedSub.map((tag, index) => (
-              <TouchableOpacity key={index} onPress={() => handleSelectSub(tag)} style={styles.selectedSubTag}>
-                <Text style={styles.selectedSubTagText}>{tag} ✖</Text>
-              </TouchableOpacity>
-            ))}
-          </>
-        )}
-      </View>
+      {/* 선택된 서브 태그 */}
+      {selectedSub.map((tag, index) => (
+        <TouchableOpacity
+          key={index}
+          onPress={() => handleSelectSub(tag)}
+          style={styles.selectedSubTag}
+        >
+          <Text style={styles.selectedSubTagText}>{tag} X</Text>
+        </TouchableOpacity>
+      ))}
+    </View>
+  )}
+</ScrollView>
     
       {/* 메인 컨셉 선택 */}
       <View style={styles.titleContainer}>
@@ -234,8 +232,7 @@ const handleSaveList = async () => {
   horizontal
   showsHorizontalScrollIndicator={false}
   style={{ padding : 10 }}
-  contentContainerStyle={{ paddingHorizontal: widthPercentage(16) }}
->
+  >
   {Object.keys(imageMap).map((idStr) => {
     const id = Number(idStr);
     const isSelected = selectedImageId === id;
