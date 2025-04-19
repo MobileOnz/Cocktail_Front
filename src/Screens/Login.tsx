@@ -159,6 +159,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
         showToast("로그인 되었습니다.");
       }
       if (backendRefreshToken) {
+        console.log(backendRefreshToken);
         await AsyncStorage.setItem('refreshToken', backendRefreshToken);
       }
       // navigation.navigate("BottomTabNavigator");

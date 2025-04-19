@@ -43,7 +43,7 @@ instance.interceptors.response.use(
 
           if (refreshExpired) {
             await AsyncStorage.clear(); // 로그아웃 처리
-            return Promise.reject(new Error("⛔️ 리프레시 토큰 만료: 재로그인 필요"));
+            return Promise.reject(new Error("리프레시 토큰 만료: 재로그인 필요"));
           }
 
           // 새 access token을 다시 설정 후 재요청

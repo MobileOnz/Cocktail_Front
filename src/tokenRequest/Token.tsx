@@ -23,7 +23,7 @@ export async function isTokenExpired(): Promise<boolean> {
 export async function tokenRefresh() {
     try{
         const refreshToken = await AsyncStorage.getItem("refreshToken");
-        console.log("🔄 [tokenRefresh] 보내는 refresh token:", refreshToken);
+        console.log("보내는 refresh token:", refreshToken);
         if(!refreshToken){
           console.log("리프레시 토큰이 없습니다.");
           return true;
@@ -35,8 +35,11 @@ export async function tokenRefresh() {
               },
         });
 
-        const { accessToken : newAccessToken, refreshToken: newRefreshToken } = response.data;
-
+        const { access_token : newAccessToken, refresh_token: newRefreshToken } = response.data.data;
+       if (!newAccessToken || !newRefreshToken) {
+          console.error("access 또는 refresh 토큰이 응답에 없습니다.");
+          return true; // 실패로 간주하고 로그아웃 처리 유도
+        }
    
     if (newAccessToken) {
       await AsyncStorage.setItem('accessToken', newAccessToken);
