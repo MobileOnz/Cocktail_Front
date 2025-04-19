@@ -31,6 +31,7 @@ const MenuListDetail = ({
   setRefreshTrigger,
   defaultListId,
   refreshTrigger,
+  centerMapOnBar,
 }) => {
   const [barDetail, setBarDetail] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState(null);
@@ -113,8 +114,16 @@ const MenuListDetail = ({
         });
         const result = await res.json();
         if (result && result.id) {
+          console.log("📍 barDetail 응답값:", result); // 👉 좌표 포함 여부 확인
           setBarDetail(result);
           setSelectedCategory(result.menus?.[0]?.category ?? null);
+
+          const x = Number(result.x);
+          const y = Number(result.y);
+
+          if(!isNaN(x) && !isNaN(y)){
+            centerMapOnBar?.(x,y);
+          }
         }
       } catch (err) {
         console.error("Bar detail fetch error:", err);

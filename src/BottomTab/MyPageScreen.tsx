@@ -135,8 +135,10 @@ const iconMap: { [key: string]: any } = {
 const renderSupportItem = (icon: string, text: string) => {
   return (
     <View style={styles.supportItem}>
-      <Image source={iconMap[icon]} style={styles.supportIcon} />
-      <Text style={styles.supportText}>{text}</Text>
+      <View style={styles.leftContent}>
+        <Image source={iconMap[icon]} style={styles.supportIcon} />
+        <Text style={styles.supportText}>{text}</Text>
+      </View>
       <Image source={iconMap['right-chevron.png']} style={styles.rightArrow} />
     </View>
   );
@@ -189,9 +191,7 @@ const styles = StyleSheet.create({
   },
   supportSection: {
     backgroundColor: '#fffcf3',
-    paddingHorizontal: widthPercentage(16),
     paddingVertical: heightPercentage(12),
-    marginHorizontal: widthPercentage(16),
   },
   supportItem: {
     flexDirection: 'row',
@@ -207,8 +207,7 @@ const styles = StyleSheet.create({
   supportText: {
     fontSize: fontPercentage(16),
     color: '#2D2D2D',
-    flex: 1,
-    marginLeft: widthPercentage(16),
+    marginLeft: widthPercentage(12),
   },
   rightArrow: {
     width: widthPercentage(24),
@@ -221,5 +220,9 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: '#E0E0E0',
     alignSelf: 'center',
+  },
+  leftContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
 });

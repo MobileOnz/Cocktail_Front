@@ -28,8 +28,12 @@ const BaseBottomSheet = ({
   setBarList, 
   selectedTab, 
   setSelectedTab,
+  selectedBarId,
+  setSelectedBarId,
   refreshTrigger,
   setRefreshTrigger,
+  centerMapOnBar,
+  onBarMarkerPress,
   }) => {
   const navigation = useNavigation();
   const snapPoints = useMemo(() => ["10%", "30%", "76%"], []);
@@ -41,7 +45,6 @@ const BaseBottomSheet = ({
   const bottomSheetRef = useRef<BottomSheet>(null);
 
   const [selectedBar, setSelectedBar] = useState<"search" | "myList" | "region" | "bookmark"| "detail"|"myBardetailList">("search");
-  const [selectedBarId, setSelectedBarId] = useState<number | null>(null);
 
   //북마크 체크/해제를 위해 북마크 리스트를 맵으로 저장
   const [bookmarkListMap, setBookmarkListMap] = useState<Map<number, number>>(new Map());
@@ -214,10 +217,10 @@ const headerCheck = async () =>{
 }
 
   useEffect(() => {
-    if (selectedTab === "detail") {
+    if (selectedTab === "detail" && selectedBarId) {
       bottomSheetRef.current?.expand();
     }
-  }, [selectedTab]);
+  }, [selectedTab, selectedBarId]);
 
   const [sections, setSections] = useState([
     { title: "나의 칵테일 바", data: [] },
@@ -495,7 +498,7 @@ const headerCheck = async () =>{
       ) : selectedTab === "detail" ? (
           <MenuListDetail 
             handleTabPress={handleTabPress}
-            barId={selectedBar?.id}
+            barId={selectedBarId}
             bookmarkIds={bookmarkIds}
             setBookmarkIds={setBookmarkIds}
             bookmarkListMap={bookmarkListMap}
@@ -506,6 +509,7 @@ const headerCheck = async () =>{
             setRefreshTrigger={setRefreshTrigger}
             defaultListId={myList?.[0]?.id}
             refreshTrigger={refreshTrigger}
+            centerMapOnBar={centerMapOnBar}
             />
       ) : (
       <SearchSheetContent
