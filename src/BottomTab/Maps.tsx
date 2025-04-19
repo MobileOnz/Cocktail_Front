@@ -75,6 +75,7 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
   const {searchQuery} = route.params|| "";
   const [selectedBarId, setSelectedBarId] = useState<number | null>(null);
 
+  
   const centerMapOnBar = (x: number, y: number) => {
 
     console.log("🗺️ centerMapOnBar 내부 실행됨. 좌표값:", x, y);
@@ -103,6 +104,7 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
         if (response.data.code === 1) {
           const rawData = response.data.data;
   
+          console.log("리스트아이디가져오나요?", rawData);
           const formatted = rawData.map((bar) => ({
             id: bar.id,
             title: bar.bar_name,
@@ -238,6 +240,9 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
     }
   }, [selectedRegions]);
 
+  
+  
+
 
   useEffect(() => {
     if (route.params?.searchCompleted) {
@@ -359,6 +364,8 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
           setSelectedTab("detail");
           setSelectedBarId(barId);
         }}
+        markerList={markerList}
+        setMarkerList={setMarkerList}
       />
     )}
 

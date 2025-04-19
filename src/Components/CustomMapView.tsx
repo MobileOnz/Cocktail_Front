@@ -8,6 +8,16 @@ import { StyleSheet, Image, View, Text } from "react-native";
 // 마커 이미지 import
 const classicIcon = require("../assets/newListIcon/Name=Primary_Status=Default.png");
 
+const imageMap = {
+  1: require("../assets/newListIcon/Name=Classic_Status=Default.png"),
+  2: require("../assets/newListIcon/Name=Light_Status=Default.png"),
+  3: require("../assets/newListIcon/Name=Party_Status=Default.png"),
+  4: require("../assets/newListIcon/Name=Play_Status=Default.png"),
+  5: require("../assets/newListIcon/Name=Primary_Status=Default.png"),
+  6: require("../assets/newListIcon/Name=Shine_Status=Default.png"),
+  7: require("../assets/newListIcon/Name=Summer_Status=Default.png"),
+};
+
 
 const CustomMapView = ({ initialRegion, mapRef, markerList, onMarkerPress }) => {
   return (
@@ -27,6 +37,8 @@ const CustomMapView = ({ initialRegion, mapRef, markerList, onMarkerPress }) => 
       if (isNaN(lat) || isNaN(lng)) return null; // 🔒 좌표 유효성 검사
 
 
+      const iconSource = imageMap[marker.icon_tag] ?? imageMap[5];
+
       return (
         <Marker
           key={marker.id}
@@ -35,7 +47,7 @@ const CustomMapView = ({ initialRegion, mapRef, markerList, onMarkerPress }) => 
           onPress={() => onMarkerPress?.(marker.id)}
         >
           <View style={styles.markerWrapper}>
-            <Image source={classicIcon} style={styles.markerIcon} />
+            <Image source={iconSource} style={styles.markerIcon} />
             <View style={styles.labelContainer}>
               <Text style={styles.labelText}>{marker.title}</Text>
             </View>
@@ -51,13 +63,13 @@ const CustomMapView = ({ initialRegion, mapRef, markerList, onMarkerPress }) => 
 const styles = StyleSheet.create({
   map: { flex: 1 },
   markerIcon: {
-    width: 20,
-    height: 20,
+    width: 24,
+    height: 24,
     resizeMode: "contain",
   },
   labelContainer: {
     marginTop: 4,
-    backgroundColor: "#1C1238", // 진한 보라
+    backgroundColor: "#2d2d2d", // 진한 보라
     paddingVertical: 3,
     paddingHorizontal: 6,
     borderRadius: 12,
