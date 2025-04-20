@@ -28,8 +28,14 @@ const BaseBottomSheet = ({
   setBarList, 
   selectedTab, 
   setSelectedTab,
+  selectedBarId,
+  setSelectedBarId,
   refreshTrigger,
   setRefreshTrigger,
+  centerMapOnBar,
+  onBarMarkerPress,
+  setMarkerList,
+  markerList,
   }) => {
   const navigation = useNavigation();
   const snapPoints = useMemo(() => ["10%", "30%", "76%"], []);
@@ -41,7 +47,6 @@ const BaseBottomSheet = ({
   const bottomSheetRef = useRef<BottomSheet>(null);
 
   const [selectedBar, setSelectedBar] = useState<"search" | "myList" | "region" | "bookmark"| "detail"|"myBardetailList">("search");
-  const [selectedBarId, setSelectedBarId] = useState<number | null>(null);
 
   //북마크 체크/해제를 위해 북마크 리스트를 맵으로 저장
   const [bookmarkListMap, setBookmarkListMap] = useState<Map<number, number>>(new Map());
@@ -53,7 +58,27 @@ const BaseBottomSheet = ({
   //북마크된 가게들 체크해서 bookmark_checked.png로 적용하기 위한 변수
   const [bookmarkIds, setBookmarkIds] = useState<Set<number>>(new Set());
 
+  const hasMappedRef = useRef(false);
+  const isReady = myList.length > 0 && bookmarkListMap.size > 0 && markerList.length > 0;
 
+  useEffect(() => {
+    if (!isReady || hasMappedRef.current) return;
+
+    console.log("🧩 icon_tag 매핑 시작 (isReady)");
+
+    const enriched = markerList.map((marker) => {
+      const listId = bookmarkListMap.get(marker.id);
+      const iconTag = myList.find((list) => list.id === listId)?.icon_tag ?? 5;
+      return {
+        ...marker,
+        icon_tag: iconTag,
+      };
+    });
+
+    console.log("✅ enriched markerList:", enriched);
+    setMarkerList(enriched);
+    hasMappedRef.current = true;
+  }, [isReady]); // 핵심은 단 하나의 트리거로
   
 
   useEffect(() => {
@@ -147,7 +172,7 @@ const BaseBottomSheet = ({
 
   const [isLoginSheetVisible, setLoginSheetVisible] = useState(false);
   const [sheetReady, setSheetReady] = useState(false);
-  const [markerList, setMarkerList] = useState([]);
+  // const [markerList, setMarkerList] = useState([]);
 
 // 🔹 지역 선택 시 주변 바 조회
 useEffect(() => {
@@ -214,10 +239,10 @@ const headerCheck = async () =>{
 }
 
   useEffect(() => {
-    if (selectedTab === "detail") {
+    if (selectedTab === "detail" && selectedBarId) {
       bottomSheetRef.current?.expand();
     }
-  }, [selectedTab]);
+  }, [selectedTab, selectedBarId]);
 
   const [sections, setSections] = useState([
     { title: "나의 칵테일 바", data: [] },
@@ -495,7 +520,7 @@ const headerCheck = async () =>{
       ) : selectedTab === "detail" ? (
           <MenuListDetail 
             handleTabPress={handleTabPress}
-            barId={selectedBar?.id}
+            barId={selectedBarId}
             bookmarkIds={bookmarkIds}
             setBookmarkIds={setBookmarkIds}
             bookmarkListMap={bookmarkListMap}
@@ -506,6 +531,7 @@ const headerCheck = async () =>{
             setRefreshTrigger={setRefreshTrigger}
             defaultListId={myList?.[0]?.id}
             refreshTrigger={refreshTrigger}
+            centerMapOnBar={centerMapOnBar}
             />
       ) : (
       <SearchSheetContent

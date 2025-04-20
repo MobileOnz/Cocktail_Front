@@ -47,6 +47,7 @@ const CurrentLocationButton = ({ animatedPosition, onPress, searchQuery }) => {
   });
 
 
+
   return (
     <Animated.View style={animatedStyle}>
     {searchQuery && (
@@ -86,6 +87,30 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
   const [activeRegion, setActiveRegion] = useState<string|null>(null);
   const [markerList, setMarkerList] = useState([]);
   const {searchQuery} = route.params|| "";
+  const [selectedBarId, setSelectedBarId] = useState<number | null>(null);
+
+  
+  const centerMapOnBar = (x: number, y: number) => {
+
+    console.log("🗺️ centerMapOnBar 내부 실행됨. 좌표값:", x, y);
+    console.log("📌 mapRef.current 존재 여부:", !!mapRef.current);
+
+    if(mapRef.current && !isNaN(x) && !isNaN(y)){
+      mapRef.current.animateToRegion(
+        {
+          latitude: y,
+          longitude: x,
+          latitudeDelta: 0.005,
+          longitudeDelta: 0.005,
+        }
+        
+      ),
+      500
+    }else{
+      console.log("❌ mapRef 또는 좌표값 문제 있음");
+    }
+  };
+
   useEffect(() => {
     if (route.params?.searchCompleted) {
       setIsSearchCompleted(true);
@@ -107,6 +132,7 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
         if (response.data.code === 1) {
           const rawData = response.data.data;
   
+          console.log("리스트아이디가져오나요?", rawData);
           const formatted = rawData.map((bar) => ({
             id: bar.id,
             title: bar.bar_name,
@@ -242,6 +268,9 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
     }
   }, [selectedRegions]);
 
+  
+  
+
 
   useEffect(() => {
     const { searchCompleted, selectedRegions, resetRequested, shouldRefresh } = route.params || {};
@@ -302,6 +331,10 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
           }}
           mapRef={mapRef}
           markerList={markerList}
+          onMarkerPress={(barId) => {
+            setSelectedTab("detail");
+            setSelectedBarId(barId);
+          }}
         />
       </View>
       <CurrentLocationButton
@@ -347,6 +380,16 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
         setBarList={setBarList}
         selectedTab={selectedTab}
         setSelectedTab={setSelectedTab}
+        selectedBarId={selectedBarId}
+        setSelectedBarId={setSelectedBarId}
+        centerMapOnBar={centerMapOnBar}
+        onBarMarkerPress={(barId: number) => {
+          console.log("마커 클릭됨 -> barId:", barId);
+          setSelectedTab("detail");
+          setSelectedBarId(barId);
+        }}
+        markerList={markerList}
+        setMarkerList={setMarkerList}
       />
   
 

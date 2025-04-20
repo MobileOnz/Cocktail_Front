@@ -19,10 +19,20 @@ interface SelectionListSheetProps {
 //   icon: any;
 // }
 
+const imageMap = {
+  1: require("../assets/newListIcon/Name=Classic_Status=Default.png"),
+  2: require("../assets/newListIcon/Name=Light_Status=Default.png"),
+  3: require("../assets/newListIcon/Name=Party_Status=Default.png"),
+  4: require("../assets/newListIcon/Name=Play_Status=Default.png"),
+  5: require("../assets/newListIcon/Name=Primary_Status=Default.png"),
+  6: require("../assets/newListIcon/Name=Shine_Status=Default.png"),
+  7: require("../assets/newListIcon/Name=Summer_Status=Default.png"),
+};
+
 //api에 맞는 ListItem 형태
 interface ListItem {
   id: number;
-  icon_url: string;
+  icon_tag: number;
   main_tag: {
     id: number;
     name: string;
@@ -69,7 +79,13 @@ const SelectionListSheet: React.FC<SelectionListSheetProps> = ({ title, listData
         const allTags = Object.values(item.sub_tags ?? {}).flat();
         return (
           <View style={styles.listItem}>
-            <Image source={item.icon_url ? { uri: item.icon_url } : require("../assets/drawable/listicon1.png")} style={styles.icon} />
+            <Image
+            source={
+              imageMap[item.icon_tag] ??
+              require("../assets/drawable/listicon1.png") // fallback 아이콘
+            }
+            style={styles.icon}
+          />
             <View style={styles.info}>
               <Text style={styles.barName}>{item.main_tag?.name ?? "이름 없음"}</Text>
               <View style={styles.location}>
