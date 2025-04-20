@@ -105,7 +105,7 @@ const RegionSelectScreen = () => {
             setSelectedRegions([]);
             navigation.navigate("BottomTabNavigator", {
               screen: "지도",
-              params: { selectedRegions: filteredRegions,
+              params: { selectedRegions: filteredRegions, //지역 선택 및 초기화 함수 넘기기 
                 resetRequested: true  
                } 
             } as any);

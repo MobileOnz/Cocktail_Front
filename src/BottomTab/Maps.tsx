@@ -10,7 +10,6 @@ import theme from "../assets/styles/theme";
 import { heightPercentage, widthPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
 import SelectedRegionTags from "../Components/SelectedRegionTags";
 import MapView from "react-native-maps";
-
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API_BASE_URL } from "@env";
 
@@ -31,7 +30,7 @@ type RootStackParamList = {
 type MapsProps = StackScreenProps<RootStackParamList, "Maps">; 
 const buttonStartY = heightPercentage(980); // 예: 바텀시트가 "10%"일 때 버튼은 아래쪽
 const buttonEndY = heightPercentage(100);
-const CurrentLocationButton = ({ animatedPosition, onPress }) => {
+const CurrentLocationButton = ({ animatedPosition, onPress, searchQuery }) => {
  
   const animatedStyle = useAnimatedStyle(() => {
     const translateY = interpolate(
@@ -50,6 +49,21 @@ const CurrentLocationButton = ({ animatedPosition, onPress }) => {
 
   return (
     <Animated.View style={animatedStyle}>
+    {searchQuery && (
+    <TouchableOpacity
+      style={[styles.currentLocationButton, { right: 145,bottom : 90 }]} // 왼쪽으로 20px 이동
+      onPress={() => {
+        console.log("🔍 다시 검색 버튼 클릭");
+      }}
+    >
+      <Image
+        source={require("../assets/drawable/researchButton.png")}
+        style={styles.researchButton}
+        resizeMode="contain"
+      />
+    </TouchableOpacity>
+  )}
+      
       <TouchableOpacity style={styles.currentLocationButton} onPress={onPress}>
         <Image
           source={require("../assets/drawable/currentlocation.png")}
@@ -73,10 +87,18 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
   const [markerList, setMarkerList] = useState([]);
   const {searchQuery} = route.params|| "";
   useEffect(() => {
+    if (route.params?.searchCompleted) {
+      setIsSearchCompleted(true);
+    }
     if (route.params?.selectedRegions) {
       setSelectedRegions(route.params.selectedRegions);
     }
-  }, [route.params?.selectedRegions]);
+    if (route.params?.resetRequested){
+      navigation.setParams({ resetRequested: false });
+    }
+  }, [route.params?.searchCompleted, route.params?.selectedRegions, route.params?.resetRequested]);
+
+
   useEffect(() => {
     
     const fetchNearbyBars = async () => {
@@ -288,6 +310,7 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
     
     console.log("현재 위치 버튼 클릭됨");
   }}
+  searchQuery={searchQuery}
 />
       <View style={styles.searchContainer}>
   
@@ -305,14 +328,13 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
         onRemoveAllRegions={() => {
           setSelectedRegions([]);
         }}
+        activeRegion={activeRegion} 
       />
     </View>
   )}
 
 </View>
-    {selectedRegions.length > 0 ? (
-      <SelectedRegions selectedRegions={selectedRegions} />
-    ) : (
+   
       <BaseBottomSheet
         key={`base-${refreshTrigger}`}
         selectedRegions={selectedRegions}
@@ -326,7 +348,7 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
         selectedTab={selectedTab}
         setSelectedTab={setSelectedTab}
       />
-    )}
+  
 
     </View>
   );
@@ -345,7 +367,12 @@ const styles = StyleSheet.create({
     height: 50,
     justifyContent: "center",
     alignItems: "center",
-    zIndex: 0,  // iOS에서 최상단
+    zIndex: -1,  // iOS에서 최상단
+  },
+  researchButton : {
+    width : widthPercentage(147),
+    height : heightPercentage(36),
+    resizeMode : "contain"
   },
   locationIcon: {
     width: widthPercentage(48),
@@ -371,6 +398,7 @@ const styles = StyleSheet.create({
     backgroundColor: theme.background,
     flexDirection: "row",
     alignItems: "center",
+    zIndex : 10
   },
   searchButton: {
     width: widthPercentage(275),

@@ -1,14 +1,18 @@
 import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView,Image } from "react-native";
 import { widthPercentage, heightPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
+import {useToast} from '../Components/ToastContext';
+
 
 interface SelectedRegionTagsProps {
   selectedRegions: string[];
   onRemoveRegion: (region: string) => void;
   onRemoveAllRegions: () => void;
+  activeRegion: string | null;
 }
 
-const SelectedRegionTags: React.FC<SelectedRegionTagsProps> = ({ selectedRegions, onRemoveRegion, onRemoveAllRegions}) => {
+const SelectedRegionTags: React.FC<SelectedRegionTagsProps> = ({ selectedRegions, onRemoveRegion, onRemoveAllRegions,activeRegion}) => {
+   const {showToast} = useToast();
     return (
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.container}>
           {/* 초기화 버튼 */}
@@ -20,7 +24,13 @@ const SelectedRegionTags: React.FC<SelectedRegionTagsProps> = ({ selectedRegions
           {selectedRegions.map((region, index) => (
             <View key={index} style={styles.tag}>
               <Text style={styles.tagText}>{region}</Text>
-              <TouchableOpacity onPress={() => onRemoveRegion(region)} style={styles.removeButton}>
+              <TouchableOpacity onPress={() => {
+                if(region === activeRegion){
+                  showToast("활성화된 지역입니다.")
+                }else{
+                  onRemoveRegion(region)
+                }
+                }} style={styles.removeButton}>
                 <Text style={styles.removeText}>✖</Text>
               </TouchableOpacity>
             </View>
