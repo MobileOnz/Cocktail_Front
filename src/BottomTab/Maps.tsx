@@ -28,15 +28,13 @@ type RootStackParamList = {
 };
 
 type MapsProps = StackScreenProps<RootStackParamList, "Maps">; 
-const CurrentLocationButton = ({ onPress, searchQuery }) => {
+const CurrentLocationButton = ({ onPress, onreSearch,searchQuery }) => {
   return (
     <View pointerEvents="box-none" style={styles.buttonRowContainer}>
       {searchQuery && (
         <TouchableOpacity
           style={[styles.researchButtonContainer]}
-          onPress={() => {
-            console.log("🔍 다시 검색 버튼 클릭");
-          }}
+          onPress={onreSearch}
         >
           <Image
             source={require("../assets/drawable/researchButton.png")}
@@ -62,6 +60,21 @@ const CurrentLocationButton = ({ onPress, searchQuery }) => {
 
 
 const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
+
+  const handleSearchInCurrentMapRegion = async () => {
+    try {
+      const camera = await mapRef.current?.getCamera();
+      if (!camera) return;
+  
+      const { latitude, longitude } = camera.center;
+      console.log("지도 중심 좌표:", latitude, longitude);
+  
+      fetchNearbyBars(longitude, latitude);
+    } catch (e) {
+      console.error("다시 검색 중 에러:", e);
+    }
+  };
+  
   const handleCurrentLocationPress = async () => {
     const coords = await getCurrentLocation();
     if (coords) {
@@ -75,12 +88,69 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
           longitudeDelta: 0.01,
         }, 500); // 0.5초 동안 부드럽게 이동
       }
+      fetchNearbyBars(coords.longitude, coords.latitude);
     } else {
       console.log("위치 가져오기 실패 또는 권한 없음");
     }
   };
   
   const mapRef = useRef<MapView>(null);
+
+  const fetchNearbyBars = async (x: number, y: number) => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/api/location/nearby`, {
+        params: { x, y },
+      });
+
+      if (response.data.code === 1) {
+        const rawData = response.data.data;
+
+        const formatted = rawData.map((bar) => ({
+          id: bar.id,
+          title: bar.bar_name,
+          barAdress: bar.address,
+          thumbNail: bar.thumbnail
+            ? { uri: bar.thumbnail }
+            : require("../assets/drawable/barExample.png"),
+          hashtagList: bar.menus.map((m) => `#${m.name}`),
+        }));
+
+        const markers = rawData.map((bar) => ({
+          id: bar.id,
+          title: bar.bar_name,
+          coordinate: {
+            latitude: Number(bar.y),
+            longitude: Number(bar.x),
+          },
+        }));
+
+        setBarData(formatted);
+        setMarkerList(markers);
+        setSelectedTab("search");
+
+        setTimeout(() => {
+          if (mapRef.current && markers.length > 0) {
+            mapRef.current.fitToCoordinates(
+              markers.map((m) => m.coordinate),
+              {
+                edgePadding: { top: 100, right: 100, bottom: 300, left: 100 },
+                animated: true,
+              }
+            );
+          }
+        }, 600);
+      } else {
+        console.log("서버 요청 에러:", response.data.msg);
+      }
+    } catch (error) {
+      console.log("서버 호출 실패:", error);
+    }
+  };
+
+  useEffect(() => {
+    // 앱 첫 진입 시 서울 고정 좌표로 바 조회
+    fetchNearbyBars(126.9812675, 37.5718599);
+  }, []);
   const animatedPosition = useSharedValue(0); // 이 줄을 위로!
   const BUTTON_HEIGHT = heightPercentage(50); // 버튼 높이 정도
   const BOTTOM_MARGIN = heightPercentage(12);
@@ -120,61 +190,12 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
       navigation.setParams({ resetRequested: false });
     }
   }, [route.params?.searchCompleted, route.params?.selectedRegions, route.params?.resetRequested]);
-
+  
 
   useEffect(() => {
-    
-    const fetchNearbyBars = async () => {
-      try {
-        const response = await axios.get(`${API_BASE_URL}/api/location/nearby?x=126.9812675&y=37.5718599`);
-        if (response.data.code === 1) {
-          const rawData = response.data.data;
-  
-          const formatted = rawData.map((bar) => ({
-            id: bar.id,
-            title: bar.bar_name,
-            barAdress: bar.address,
-            thumbNail: bar.thumbnail
-              ? { uri: bar.thumbnail }
-              : require("../assets/drawable/barExample.png"),
-            hashtagList: bar.menus.map((m) => `#${m.name}`),
-          }));
-  
-  
-          const markers = rawData.map((bar) => ({
-            id: bar.id,
-            title: bar.bar_name,
-            coordinate: {
-              latitude: Number(bar.y),
-              longitude: Number(bar.x),
-            },
-          }));
-  
-          setBarData(formatted);       // UI용 바텀시트
-          setMarkerList(markers);      // 지도 마커용
-          setSelectedTab("search");    // 바텀시트 탭도 맞춰주면 좋음
-  
-          setTimeout(() => {
-            if (mapRef.current && markers.length > 0) {
-              mapRef.current.fitToCoordinates(
-                markers.map((m) => m.coordinate),
-                {
-                  edgePadding: { top: 100, right: 100, bottom: 300, left: 100 },
-                  animated: true,
-                }
-              );
-            }
-          }, 600);
-        } else {
-          console.log("서버 요청 에러:", response.data.msg);
-        }
-      } catch (error) {
-        console.log("서버 호출 실패:", error);
-      }
-    };
-  
-    fetchNearbyBars();
+    fetchNearbyBars(126.9812675, 37.5718599);
   }, []);
+  
   
 
   const [barList, setBarList] = useState([]);
@@ -368,6 +389,7 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
         
   <CurrentLocationButton
     onPress={handleCurrentLocationPress}
+    onreSearch={handleSearchInCurrentMapRegion}
     searchQuery={searchQuery}
   />
 </Animated.View>
