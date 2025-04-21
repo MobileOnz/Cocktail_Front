@@ -12,7 +12,7 @@ import SelectedRegionTags from "../Components/SelectedRegionTags";
 import MapView from "react-native-maps";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API_BASE_URL } from "@env";
-
+import { getCurrentLocation,requestLocationPermission } from "../utils/requestLocationPermission";
 import Animated, {
   useAnimatedStyle,
   interpolate,
@@ -28,58 +28,80 @@ type RootStackParamList = {
 };
 
 type MapsProps = StackScreenProps<RootStackParamList, "Maps">; 
-const buttonStartY = heightPercentage(980); // 예: 바텀시트가 "10%"일 때 버튼은 아래쪽
-const buttonEndY = heightPercentage(100);
-const CurrentLocationButton = ({ animatedPosition, onPress, searchQuery }) => {
- 
-  const animatedStyle = useAnimatedStyle(() => {
-    const translateY = interpolate(
-      animatedPosition.value,
-      [0,800],
-      [buttonEndY, buttonStartY],
-      "clamp"
-    );
-    return {
-      transform: [{ translateY }],
-      position: "absolute",
-      right: 20,
-    };
-  });
-
-
-
+const CurrentLocationButton = ({ onPress, searchQuery }) => {
   return (
-    <Animated.View style={animatedStyle}>
-    {searchQuery && (
-    <TouchableOpacity
-      style={[styles.currentLocationButton, { right: 145,bottom : 90 }]} // 왼쪽으로 20px 이동
-      onPress={() => {
-        console.log("🔍 다시 검색 버튼 클릭");
-      }}
-    >
-      <Image
-        source={require("../assets/drawable/researchButton.png")}
-        style={styles.researchButton}
-        resizeMode="contain"
-      />
-    </TouchableOpacity>
-  )}
-      
-      <TouchableOpacity style={styles.currentLocationButton} onPress={onPress}>
+    <View pointerEvents="box-none" style={styles.buttonRowContainer}>
+      {searchQuery && (
+        <TouchableOpacity
+          style={[styles.researchButtonContainer]}
+          onPress={() => {
+            console.log("🔍 다시 검색 버튼 클릭");
+          }}
+        >
+          <Image
+            source={require("../assets/drawable/researchButton.png")}
+            style={styles.researchButton}
+            resizeMode="contain"
+          />
+        </TouchableOpacity>
+      )}
+
+      <TouchableOpacity
+        style={styles.currentLocationButton}
+        onPress={onPress}
+      >
         <Image
           source={require("../assets/drawable/currentlocation.png")}
           style={styles.locationIcon}
           resizeMode="contain"
         />
       </TouchableOpacity>
-    </Animated.View>
+    </View>
   );
 };
 
-const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
-  const mapRef = useRef<MapView>(null);
 
-  const animatedPosition = useSharedValue(0);
+const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
+  const handleCurrentLocationPress = async () => {
+    const coords = await getCurrentLocation();
+    if (coords) {
+      console.log("현재 위치 좌표:", coords);
+  
+      if (mapRef.current) {
+        mapRef.current.animateToRegion({
+          latitude: coords.latitude,
+          longitude: coords.longitude,
+          latitudeDelta: 0.01,
+          longitudeDelta: 0.01,
+        }, 500); // 0.5초 동안 부드럽게 이동
+      }
+    } else {
+      console.log("위치 가져오기 실패 또는 권한 없음");
+    }
+  };
+  
+  const mapRef = useRef<MapView>(null);
+  const animatedPosition = useSharedValue(0); // 이 줄을 위로!
+  const BUTTON_HEIGHT = heightPercentage(50); // 버튼 높이 정도
+  const BOTTOM_MARGIN = heightPercentage(12);
+  const buttonWrapperStyle = useAnimatedStyle(() => {
+    return {
+      position: "absolute",
+      transform: [
+        {
+          translateY: interpolate(
+            animatedPosition.value,
+            [0, 800], // 바텀시트 움직이는 범위에 맞춰
+            [-100, 750], // 버튼 위치 (픽셀로!)
+            "clamp"
+          ),
+        },
+      ],
+      right: 20, // 그냥 고정값으로
+      zIndex: 1000,
+    };
+  });
+
   const [barData, setBarData] = useState([]);
   const [selectedTab, setSelectedTab] = useState("search")
   const [isSearchCompleted, setIsSearchCompleted] = useState(false);
@@ -87,30 +109,6 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
   const [activeRegion, setActiveRegion] = useState<string|null>(null);
   const [markerList, setMarkerList] = useState([]);
   const {searchQuery} = route.params|| "";
-  const [selectedBarId, setSelectedBarId] = useState<number | null>(null);
-
-  
-  const centerMapOnBar = (x: number, y: number) => {
-
-    console.log("🗺️ centerMapOnBar 내부 실행됨. 좌표값:", x, y);
-    console.log("📌 mapRef.current 존재 여부:", !!mapRef.current);
-
-    if(mapRef.current && !isNaN(x) && !isNaN(y)){
-      mapRef.current.animateToRegion(
-        {
-          latitude: y,
-          longitude: x,
-          latitudeDelta: 0.005,
-          longitudeDelta: 0.005,
-        }
-        
-      ),
-      500
-    }else{
-      console.log("❌ mapRef 또는 좌표값 문제 있음");
-    }
-  };
-
   useEffect(() => {
     if (route.params?.searchCompleted) {
       setIsSearchCompleted(true);
@@ -132,7 +130,6 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
         if (response.data.code === 1) {
           const rawData = response.data.data;
   
-          console.log("리스트아이디가져오나요?", rawData);
           const formatted = rawData.map((bar) => ({
             id: bar.id,
             title: bar.bar_name,
@@ -268,9 +265,6 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
     }
   }, [selectedRegions]);
 
-  
-  
-
 
   useEffect(() => {
     const { searchCompleted, selectedRegions, resetRequested, shouldRefresh } = route.params || {};
@@ -331,20 +325,9 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
           }}
           mapRef={mapRef}
           markerList={markerList}
-          onMarkerPress={(barId) => {
-            setSelectedTab("detail");
-            setSelectedBarId(barId);
-          }}
         />
       </View>
-      <CurrentLocationButton
-    animatedPosition={animatedPosition}
-    onPress={() => {
-    
-    console.log("현재 위치 버튼 클릭됨");
-  }}
-  searchQuery={searchQuery}
-/>
+  
       <View style={styles.searchContainer}>
   
 {!isSearchCompleted &&(
@@ -380,18 +363,14 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
         setBarList={setBarList}
         selectedTab={selectedTab}
         setSelectedTab={setSelectedTab}
-        selectedBarId={selectedBarId}
-        setSelectedBarId={setSelectedBarId}
-        centerMapOnBar={centerMapOnBar}
-        onBarMarkerPress={(barId: number) => {
-          console.log("마커 클릭됨 -> barId:", barId);
-          setSelectedTab("detail");
-          setSelectedBarId(barId);
-        }}
-        markerList={markerList}
-        setMarkerList={setMarkerList}
       />
-  
+      <Animated.View style={buttonWrapperStyle}>
+        
+  <CurrentLocationButton
+    onPress={handleCurrentLocationPress}
+    searchQuery={searchQuery}
+  />
+</Animated.View>
 
     </View>
   );
@@ -403,14 +382,22 @@ const styles = StyleSheet.create({
     backgroundColor: theme.background,
   },
   currentLocationButton: {
-    position: "absolute",
-    bottom:100, // BottomSheet 위로 띄우기 (필요에 따라 조정)
-    right: 20,
-    width:50,
+    width: 50,
     height: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  buttonRowContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  
+  researchButtonContainer: {
+    marginRight: 40, // 위치 버튼과 간격
+    width: widthPercentage(147),
+    height: heightPercentage(36),
     justifyContent: "center",
     alignItems: "center",
-    zIndex: -1,  // iOS에서 최상단
   },
   researchButton : {
     width : widthPercentage(147),
@@ -441,7 +428,6 @@ const styles = StyleSheet.create({
     backgroundColor: theme.background,
     flexDirection: "row",
     alignItems: "center",
-    zIndex : 10
   },
   searchButton: {
     width: widthPercentage(275),
