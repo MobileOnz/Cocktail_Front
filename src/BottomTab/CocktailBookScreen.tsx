@@ -18,8 +18,8 @@ const server = API_BASE_URL;
 
 
 const bannerImages = [
-  require("../assets/drawable/banner.jpg"),
-  require("../assets/drawable/banner.jpg"),
+  require("../assets/drawable/banner1.png"),
+  require("../assets/drawable/banner2.png"),
 ];
 const categories = [
   {

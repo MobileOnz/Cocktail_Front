@@ -26,11 +26,12 @@ const LoginBottomSheet: React.FC<LoginBottomSheetProps> = ({ isVisible, onClose,
 
   return (
     <Modal
+
       isVisible={isVisible} // ✅ 모달 보이기 여부
       onBackdropPress={onClose} // ✅ 바깥 클릭 시 닫힘
       onSwipeComplete={onClose} // ✅ 스와이프해서 닫기 가능
       swipeDirection="down"
-      style={styles.modal}
+      style={StyleSheet.flatten([styles.modal, { zIndex: 9999 }])}
       animationIn="slideInUp" // ✅ 모달 애니메이션 (아래에서 위로)
       animationOut="slideOutDown" // ✅ 닫힐 때 애니메이션
       backdropOpacity={0.3} // ✅ 배경 흐림 효과 추가
@@ -63,6 +64,7 @@ const styles = StyleSheet.create({
   modal: {
     justifyContent: "flex-end", // ✅ 화면 하단에서 띄우기
     margin: 0, // ✅ 전체 화면을 덮도록 설정
+    elevation: 9999 
   },
   container: {
     backgroundColor: "#FFFCF3",
@@ -70,6 +72,7 @@ const styles = StyleSheet.create({
     padding: widthPercentage(16),
     borderTopLeftRadius: 20, // ✅ 상단 둥근 처리
     borderTopRightRadius: 20,
+    zIndex: 9999,
   },
   title: {
     fontSize: fontPercentage(18),

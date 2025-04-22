@@ -10,7 +10,7 @@ import BottomTabNavigator from "./BottomTabNavigator";
 import RecommendationFlowScreen from "../Screens/RecommendationFlowScreen";
 import LoadingScreen from "../Screens/LoadingScreen";
 import ResultScreen from "../Screens/ResultScreen";
-import MarketDetail from "../Screens/MarketDetail";
+
 import RegionSelectScreen from "../Screens/RegionSelectScreen";
 import CreateNewListScreen from "../Screens/CreateNewListScreen";
 import SignupScreen from "../Screens/SignupScreen";
@@ -34,7 +34,6 @@ export type RootStackParamList = {
     editMode: boolean;
     itemId: number;
   } | undefined;
-  MarketDetail : undefined;
   ProfileScreen: undefined;
   SignupScreen: {code? : string};
 };
@@ -62,7 +61,6 @@ const Navigation: React.FC = () => {
   		component={CreateNewListScreen} 
   		options={{ headerShown: false }} 
 		/>
-        <Stack.Screen name="MarketDetail" component={MarketDetail}/>
         <Stack.Screen name="SignupScreen" component={SignupScreen}/>
         <Stack.Screen name="ProfileScreen" component={ProfileScreen}/>
       </Stack.Navigator>
