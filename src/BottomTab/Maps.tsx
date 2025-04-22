@@ -335,7 +335,9 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
         <View style={styles.resultHeader}>
           {/* 뒤로가기 버튼 */}
           <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-            <Text style={styles.buttonText}>🔙</Text>
+          <Image source={require("../assets/search/backspace.png")}
+                          style={styles.buttonText}
+                    />
           </TouchableOpacity>
 
           {/* 검색 결과 화면 */}
@@ -351,7 +353,7 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
 
           {/* 검색 초기화 버튼 */}
           <TouchableOpacity style={styles.clearButton} onPress={() => navigation.navigate("SearchScreen")}>
-            <Text style={styles.buttonText}>X</Text>
+            <Text style={styles.textButton}>X</Text>
           </TouchableOpacity>
         </View>
       )}
@@ -369,10 +371,6 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
           }}
           mapRef={mapRef}
           markerList={markerList}
-          onMarkerPress={(barId) => {
-            setSelectedTab("detail");
-            setSelectedBarId(barId);
-          }}
         />
       </View>
   
@@ -516,6 +514,11 @@ const styles = StyleSheet.create({
     width: widthPercentage(24),
     height: heightPercentage(24),
   },
+  textButton : {
+    marginLeft: widthPercentage(5),
+    marginBottom: heightPercentage(10),
+    fontSize: fontPercentage(24)
+  }
 });
 
 export default Maps;

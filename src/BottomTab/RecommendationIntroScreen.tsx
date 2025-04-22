@@ -115,9 +115,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     width: widthPercentage(40),
     height: heightPercentage(40),
-    // backgroundColor: "rgba(255, 0, 0, 0.3)", // 🔥 터치 영역 확인용 (빨간색 반투명)
-    // borderWidth: 1, 
-    // borderColor: "red",
+
   },
   icon: {
     width: widthPercentage(28),
