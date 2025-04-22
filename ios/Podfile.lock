@@ -22,7 +22,7 @@ PODS:
   - glog (0.3.5)
   - Google-Maps-iOS-Utils (5.0.0):
     - GoogleMaps (~> 8.0)
-  - Google-Mobile-Ads-SDK (12.3.0):
+  - Google-Mobile-Ads-SDK (12.2.0):
     - GoogleUserMessagingPlatform (>= 1.1)
   - GoogleMaps (8.4.0):
     - GoogleMaps/Maps (= 8.4.0)
@@ -33,7 +33,7 @@ PODS:
     - AppAuth (< 2.0, >= 1.7.3)
     - GTMAppAuth (< 5.0, >= 4.1.1)
     - GTMSessionFetcher/Core (~> 3.3)
-  - GoogleUserMessagingPlatform (3.0.0)
+  - GoogleUserMessagingPlatform (2.7.0)
   - GoogleUtilities/Environment (8.0.2):
     - GoogleUtilities/Privacy
   - GoogleUtilities/Logger (8.0.2):
@@ -1754,6 +1754,29 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
+  - RNGoogleMobileAds (15.1.0):
+    - DoubleConversion
+    - glog
+    - Google-Mobile-Ads-SDK (= 12.2.0)
+    - GoogleUserMessagingPlatform (= 2.7.0)
+    - hermes-engine
+    - RCT-Folly (= 2024.11.18.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
   - RNGoogleSignin (13.2.0):
     - DoubleConversion
     - glog
@@ -2015,7 +2038,6 @@ DEPENDENCIES:
   - fmt (from `../node_modules/react-native/third-party-podspecs/fmt.podspec`)
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
   - Google-Maps-iOS-Utils (= 5.0.0)
-  - Google-Mobile-Ads-SDK
   - GoogleMaps (~> 8.4.0)
   - hermes-engine (from `../node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec`)
   - "kakao-login (from `../node_modules/@react-native-seoul/kakao-login`)"
@@ -2093,6 +2115,7 @@ DEPENDENCIES:
   - "RNCClipboard (from `../node_modules/@react-native-clipboard/clipboard`)"
   - "RNFBApp (from `../node_modules/@react-native-firebase/app`)"
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
+  - RNGoogleMobileAds (from `../node_modules/react-native-google-mobile-ads`)
   - "RNGoogleSignin (from `../node_modules/@react-native-google-signin/google-signin`)"
   - "RNNaverLogin (from `../node_modules/@react-native-seoul/naver-login`)"
   - RNPermissions (from `../node_modules/react-native-permissions`)
@@ -2282,6 +2305,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-firebase/app"
   RNGestureHandler:
     :path: "../node_modules/react-native-gesture-handler"
+  RNGoogleMobileAds:
+    :path: "../node_modules/react-native-google-mobile-ads"
   RNGoogleSignin:
     :path: "../node_modules/@react-native-google-signin/google-signin"
   RNNaverLogin:
@@ -2310,10 +2335,10 @@ SPEC CHECKSUMS:
   fmt: a40bb5bd0294ea969aaaba240a927bd33d878cdd
   glog: eb93e2f488219332457c3c4eafd2738ddc7e80b8
   Google-Maps-iOS-Utils: 66d6de12be1ce6d3742a54661e7a79cb317a9321
-  Google-Mobile-Ads-SDK: 01b1b77e0bdba8b4027ae62e9bd52e5a95d930aa
+  Google-Mobile-Ads-SDK: 1dfb0c3cb46c7e2b00b0f4de74a1e06d9ea25d67
   GoogleMaps: 8939898920281c649150e0af74aa291c60f2e77d
   GoogleSignIn: d4281ab6cf21542b1cfaff85c191f230b399d2db
-  GoogleUserMessagingPlatform: f8d0cdad3ca835406755d0a69aa634f00e76d576
+  GoogleUserMessagingPlatform: a8b56893477f67212fbc8411c139e61d463349f5
   GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
   GTMAppAuth: f69bd07d68cd3b766125f7e072c45d7340dea0de
   GTMSessionFetcher: 5aea5ba6bd522a239e236100971f10cb71b96ab6
@@ -2394,6 +2419,7 @@ SPEC CHECKSUMS:
   RNCClipboard: 86342298a16010051a6f2fa92688fb83dfd3f4c4
   RNFBApp: 5e27e8311042d41fa8350f1751ab42e042c39d52
   RNGestureHandler: f7b3a72c099e1e29b5b81688678bc9108d44057c
+  RNGoogleMobileAds: 08e63fc86a46a188bce5943d1dcca020f4f8e795
   RNGoogleSignin: 1a215139c537bb0430abdb9ff9a8e437578e515d
   RNNaverLogin: da97da237828a05a310bbb83ef11292be830091d
   RNPermissions: 6fd43366e1470bd06b15ebcc8010b19cc721f030
@@ -2403,6 +2429,6 @@ SPEC CHECKSUMS:
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
   Yoga: be02ca501b03c79d7027a6bbbd0a8db985034f11
 
-PODFILE CHECKSUM: 7dac436808f74a737c409bb163517dce804244c2
+PODFILE CHECKSUM: 763a8cf77d7ffc8d27c7ef0daf7ef7acd98cb5fc
 
 COCOAPODS: 1.16.2

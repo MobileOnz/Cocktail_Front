@@ -9,6 +9,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useToast } from '../Components/ToastContext';
 import instance from '../tokenRequest/axios_interceptor';
 
+import { BannerAd, BannerAdSize, TestIds } from 'react-native-google-mobile-ads';
+
+
 type NavigationProp = StackNavigationProp<RootStackParamList>;
 
 const MyPageScreen = () => {
@@ -83,6 +86,21 @@ const MyPageScreen = () => {
 
   return (
     <View style={styles.container}>
+      <View style={styles.bannerAd}>
+        <BannerAd
+            unitId={TestIds.BANNER} // 실제 배너 ID로 교체 필요
+            size={BannerAdSize.BANNER}
+            requestOptions={{
+              requestNonPersonalizedAdsOnly: true,
+            }}
+            onAdLoaded={() => {
+              console.log('✅ 광고 로드됨');
+            }}
+            onAdFailedToLoad={(error) => {
+              console.log('❌ 광고 로드 실패:', error);
+            }}
+          />
+      </View>
       <TouchableOpacity style={styles.loginContainer} onPress={handleLoginPress}>
         <View style={styles.profileInfoContainer}>
           <Image
@@ -176,7 +194,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: widthPercentage(16),
     paddingVertical: heightPercentage(12),
-    marginTop: heightPercentage(72),
+    marginTop: heightPercentage(20),
   },
   loginText: {
     fontSize: fontPercentage(18),
@@ -225,4 +243,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
+  bannerAd: {
+    width: widthPercentage(343),
+    height: heightPercentage(56),
+    alignItems: 'center',
+    marginTop: heightPercentage(72),
+  },
+
 });
