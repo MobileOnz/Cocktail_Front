@@ -12,6 +12,7 @@ import { useNavigation } from "@react-navigation/native";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+import { isTokenExpired } from "../tokenRequest/Token";
 const Tab = createBottomTabNavigator();
 
 const BottomTabNavigator = () => {
@@ -34,7 +35,15 @@ const BottomTabNavigator = () => {
     const checkLoginStatus = async () => {
       try {
         const token = await AsyncStorage.getItem('accessToken');
-        setIsLoggedIn(!!token); // token이 있으면 true, 없으면 false
+  
+        if (!token) {
+          setIsLoggedIn(false);
+          return;
+        }
+  
+        const expired = await isTokenExpired();
+  
+        setIsLoggedIn(!expired); // 만료되었으면 false, 아니면 true
       } catch (error) {
         console.error('🔒 로그인 상태 확인 실패:', error);
         setIsLoggedIn(false);
@@ -42,7 +51,7 @@ const BottomTabNavigator = () => {
     };
   
     checkLoginStatus();
-  }, [isLoginSheetVisible]); // 로그인 바텀시트가 닫힐 때마다 재확인
+  }, [isLoginSheetVisible]);
   
 
   // 커스텀 탭 버튼

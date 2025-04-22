@@ -59,7 +59,10 @@ const BaseBottomSheet = ({
   const [bookmarkIds, setBookmarkIds] = useState<Set<number>>(new Set());
 
   const hasMappedRef = useRef(false);
-  const isReady = myList.length > 0 && bookmarkListMap.size > 0 && markerList.length > 0;
+  const isReady =
+    Array.isArray(myList) && myList.length > 0 &&
+    bookmarkListMap instanceof Map && bookmarkListMap.size > 0 &&
+    Array.isArray(markerList) && markerList.length > 0;
 
   useEffect(() => {
     if (!isReady || hasMappedRef.current) return;

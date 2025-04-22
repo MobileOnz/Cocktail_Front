@@ -63,8 +63,6 @@
 		<true/>
 	</dict>
 
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>앱이 사용자의 위치를 활용하여 주변 바를 추천합니다.</string>
 
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
