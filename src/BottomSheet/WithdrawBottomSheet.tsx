@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, Image } from "react-native";
 import Modal from "react-native-modal";
 import { widthPercentage, heightPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
 
@@ -23,7 +23,11 @@ const WithdrawBottomSheet: React.FC<WithdrawBottomSheetProps> = ({ isVisible, on
     >
       <View style={styles.container}>
         <Text style={styles.title}>회원 탈퇴</Text>
-        <View style={styles.imagePlaceholder} />
+        <Image
+          source={require("../assets/drawable/delete_account.png")}
+          style={styles.imagePlaceholder}
+          resizeMode="contain"
+        />
         <Text style={styles.subTitle}>정말 떠나시는 건가요?</Text>
         <Text style={styles.description}>모든 기록은 삭제되고 계정은 복구할 수 없어요.</Text>
         <View style={styles.buttonContainer}>
@@ -62,7 +66,6 @@ const styles = StyleSheet.create({
     width: widthPercentage(296),
     height: heightPercentage(161),
     borderRadius: 20,
-    backgroundColor: "#D1C9BA",
     marginBottom: heightPercentage(16),
   },
   subTitle: {

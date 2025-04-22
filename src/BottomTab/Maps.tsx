@@ -369,6 +369,10 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
           }}
           mapRef={mapRef}
           markerList={markerList}
+          onMarkerPress={(barId) => {
+            setSelectedTab("detail");
+            setSelectedBarId(barId);
+          }}
         />
       </View>
   

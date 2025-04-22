@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, Image } from "react-native";
 import Modal from "react-native-modal"; // ✅ react-native-modal 사용
 import { widthPercentage, heightPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
 import { useNavigation } from "@react-navigation/native";
@@ -37,7 +37,11 @@ const LoginBottomSheet: React.FC<LoginBottomSheetProps> = ({ isVisible, onClose,
     >
       <View style={styles.container}>
         <Text style={styles.title}>로그인하기</Text>
-        <View style={styles.imagePlaceholder} />
+        <Image
+          source={require("../assets/drawable/login_modal.png")}
+          style={styles.imagePlaceholder}
+          resizeMode="contain"
+        />
         <Text style={styles.subTitle}>로그인을 하시겠어요?</Text>
         <Text style={styles.description}>로그인 후 해당 서비스를 이용할 수 있습니다.</Text>
         <View style={styles.buttonContainer}>
@@ -76,7 +80,6 @@ const styles = StyleSheet.create({
     width: widthPercentage(296),
     height: heightPercentage(161),
     borderRadius: 20,
-    backgroundColor: "#D1C9BA",
     marginBottom: heightPercentage(16),
   },
   subTitle: {
