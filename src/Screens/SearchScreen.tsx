@@ -69,12 +69,24 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation }) => {
 
       try {
         const accessToken = await AsyncStorage.getItem('accessToken');
+        // const res = await fetch(`${API_BASE_URL}/api/search/suggestions?query=${encodeURIComponent(searchText)}`, {
+        //   method: "GET",
+        //   headers: {
+        //     Authorization: accessToken ? `Bearer ${accessToken}` : '',
+        //   },
+        // });
+
+        const headers: Record<string, string> = {};
+
+        if (accessToken) {
+          headers.Authorization = `Bearer ${accessToken}`;
+        }
+
         const res = await fetch(`${API_BASE_URL}/api/search/suggestions?query=${encodeURIComponent(searchText)}`, {
           method: "GET",
-          headers: {
-            Authorization: accessToken ? `Bearer ${accessToken}` : '',
-          },
+          headers,
         });
+
 
         const result = await res.json();
         if (result.code === 1 && Array.isArray(result.data)) {
