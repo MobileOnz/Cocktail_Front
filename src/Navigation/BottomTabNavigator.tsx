@@ -22,36 +22,33 @@ const BottomTabNavigator = () => {
 
 
   // 맞춤 추천 탭을 눌렀을 때 실행
-  const handleRecommendationPress = () => {
-
-    if (!isLoggedIn) {
-      setLoginSheetVisible(true); // 로그인 바텀시트 표시
-    } else {
+  const handleRecommendationPress = async () => {
+    try {
+      const token = await AsyncStorage.getItem('accessToken');
+  
+      if (!token) {
+        setIsLoggedIn(false);
+        setLoginSheetVisible(true); // 로그인 바텀시트 표시
+        return;
+      }
+  
+      const expired = await isTokenExpired();
+  
+      if (expired) {
+        setIsLoggedIn(false);
+        setLoginSheetVisible(true); // 만료된 경우 로그인 바텀시트 표시
+        return;
+      }
+  
+      // 유효한 토큰
+      setIsLoggedIn(true);
       navigation.navigate("BottomTabNavigator", { screen: "맞춤 추천" });
+  
+    } catch (error) {
+      console.error("🔒 토큰 확인 중 오류 발생:", error);
+      setLoginSheetVisible(true); // 오류 시에도 로그인 바텀시트 표시
     }
   };
-
-  useEffect(() => {
-    const checkLoginStatus = async () => {
-      try {
-        const token = await AsyncStorage.getItem('accessToken');
-  
-        if (!token) {
-          setIsLoggedIn(false);
-          return;
-        }
-  
-        const expired = await isTokenExpired();
-  
-        setIsLoggedIn(!expired); // 만료되었으면 false, 아니면 true
-      } catch (error) {
-        console.error('🔒 로그인 상태 확인 실패:', error);
-        setIsLoggedIn(false);
-      }
-    };
-  
-    checkLoginStatus();
-  }, [isLoginSheetVisible]);
   
 
   // 커스텀 탭 버튼
