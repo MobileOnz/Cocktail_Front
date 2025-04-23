@@ -214,44 +214,91 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
 
 
       //구글 로그인 
+  // const signInWithGoogle = async () => {
+  //   try {
+  //     const accessToken = (await GoogleSignin.getTokens()).accessToken;
+
+  //     const payload = {
+  //       provider: 'google',
+  //       code: null,
+  //       state: null,
+  //       accessToken : accessToken,
+  //     };
+      
+  //     const response = await axios.post(`${server}/api/auth/social-login`, payload, {
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+        
+  //     });
+  //     const code = response.data.data.code;
+  //     if(code){
+  //       navigation.navigate("SignupScreen",{code : code})
+  //     }else{
+  //       //여기서 토큰을 발행함. 만약 새로운 유저가 가입을 한 것이라면 SignupScreen에 code값을 담아 옮겨주면 된다. 
+  //       const backendAccessToken = response.data.data.access_token;
+  //       const backendRefreshToken = response.data.data.refresh_token;
+  //       console.log("backendAccessToken: ",backendAccessToken);
+  //     if (backendAccessToken) {
+  //       await AsyncStorage.setItem('accessToken', backendAccessToken);
+  //     }
+  //     if (backendRefreshToken) {
+  //       await AsyncStorage.setItem('refreshToken', backendRefreshToken);
+  //     }
+  //     navigation.navigate("BottomTabNavigator");
+  //     }
+      
+  //   } catch (error) {
+  //     console.log('Google Sign-In Error:', JSON.stringify(error, null, 2));
+  //   }
+  // };
   const signInWithGoogle = async () => {
     try {
-      const accessToken = (await GoogleSignin.getTokens()).accessToken;
-
+      // 1. 플레이서비스 체크 (Android용이지만 iOS에서도 무방)
+      await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+  
+      // 2. 로그인 UI 띄우기
+      const userInfo = await GoogleSignin.signIn();
+  
+      // 3. 로그인 성공했으면 토큰 가져오기
+      const { accessToken } = await GoogleSignin.getTokens();
+  
+      console.log("✅ 구글 로그인 성공, accessToken:", accessToken);
+  
+      // 4. 서버로 소셜 로그인 요청 보내기
       const payload = {
         provider: 'google',
         code: null,
         state: null,
-        accessToken : accessToken,
+        accessToken: accessToken,
       };
-      
+  
       const response = await axios.post(`${server}/api/auth/social-login`, payload, {
         headers: {
           'Content-Type': 'application/json',
         },
-        
       });
+  
       const code = response.data.data.code;
-      if(code){
-        navigation.navigate("SignupScreen",{code : code})
-      }else{
-        //여기서 토큰을 발행함. 만약 새로운 유저가 가입을 한 것이라면 SignupScreen에 code값을 담아 옮겨주면 된다. 
+      if (code) {
+        navigation.navigate("SignupScreen", { code });
+      } else {
         const backendAccessToken = response.data.data.access_token;
         const backendRefreshToken = response.data.data.refresh_token;
-        console.log("backendAccessToken: ",backendAccessToken);
-      if (backendAccessToken) {
-        await AsyncStorage.setItem('accessToken', backendAccessToken);
+  
+        if (backendAccessToken) {
+          await AsyncStorage.setItem('accessToken', backendAccessToken);
+        }
+        if (backendRefreshToken) {
+          await AsyncStorage.setItem('refreshToken', backendRefreshToken);
+        }
+        navigation.navigate("BottomTabNavigator");
       }
-      if (backendRefreshToken) {
-        await AsyncStorage.setItem('refreshToken', backendRefreshToken);
-      }
-      navigation.navigate("BottomTabNavigator");
-      }
-      
     } catch (error) {
-      console.log('Google Sign-In Error:', JSON.stringify(error, null, 2));
+      console.error('❌ Google Sign-In Error:', JSON.stringify(error, null, 2));
     }
   };
+  
 
 
 

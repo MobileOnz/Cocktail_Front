@@ -90,6 +90,9 @@
 		<string>storykompassauth</string>
 		<string>kakaolink</string>
 		<string>kakaotalk</string>
+
+		<string>google</string>
+  		<string>com.googleusercontent.apps.1058340377075-an8fq49j4mg29fq9rm88qpi253dd2vts</string>
 	</array>
 	<key>FirebaseAppDelegateProxyEnabled</key>
 	<false/>
