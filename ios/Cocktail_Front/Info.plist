@@ -5,6 +5,9 @@
 	<key>GIDClientID</key>
 	<string>1058340377075-an8fq49j4mg29fq9rm88qpi253dd2vts.apps.googleusercontent.com</string>
 	
+	<key>CFBundleIconName</key>
+	<string>AppIcon</string>
+
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>이 앱은 현재 위치를 사용합니다.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
