@@ -149,7 +149,10 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
 
   useEffect(() => {
     // 앱 첫 진입 시 서울 고정 좌표로 바 조회
-    fetchNearbyBars(126.9812675, 37.5718599);
+    // 검색을 통해 진입한 경우는 fetchNearbyBars를 호출하지 않음
+    if (!route.params?.searchCompleted) {
+      fetchNearbyBars(126.9812675, 37.5718599);
+    }
   }, []);
   const animatedPosition = useSharedValue(0); // 이 줄을 위로!
   const BUTTON_HEIGHT = heightPercentage(50); // 버튼 높이 정도
@@ -272,6 +275,7 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
               latitude: Number(bar.y),
               longitude: Number(bar.x),
             },
+            // icon_tag: bar.icon_tag ?? 5,
           }));
   
           
@@ -289,7 +293,7 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
                 }
               );
             }
-          }, 600);
+          }, 1000);
         } catch (err) {
           console.error("검색 실패:", err);
         }
@@ -371,6 +375,10 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
           }}
           mapRef={mapRef}
           markerList={markerList}
+          onMarkerPress={(barId) => {
+            setSelectedTab("detail");
+            setSelectedBarId(barId);
+          }}
         />
       </View>
   

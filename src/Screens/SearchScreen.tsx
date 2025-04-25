@@ -19,12 +19,25 @@ type SearchLog = {
   search_type: "NAME" | "MENU";
 };
 
-const SearchScreen: React.FC<SearchScreenProps> = ({ navigation }) => {
+const SearchScreen: React.FC<SearchScreenProps> = ({ navigation, route }) => {
   const [searchText, setSearchText] = useState('');
   const [suggestions, setSuggestions] = useState<string[]>([]);
 
   const [recentNameSearches, setRecentNameSearches] = useState<SearchLog[]>([]);
   const [recentMenuSearches, setRecentMenuSearches] = useState<SearchLog[]>([]);
+
+  const {initialKeyword} = route.params || {};
+
+  //맞춤 추천에서 가져온 키워드가 있는지 확인 후 있다면 바로 Maps로 검색 로직 수행
+  useEffect(() => {
+    if (initialKeyword){
+      
+      navigation.navigate("Maps", {
+        searchCompleted: true,
+        searchQuery: initialKeyword,
+      });
+    }
+  }, [initialKeyword]);
 
   // 🔹 최근 검색어 불러오기
   useEffect(() => {

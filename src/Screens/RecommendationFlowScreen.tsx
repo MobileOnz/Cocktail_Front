@@ -12,7 +12,7 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../navigation/types";
 import { widthPercentage, heightPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
 import {API_BASE_URL} from '@env';
-
+import AsyncStorage from "@react-native-async-storage/async-storage";
 type RecommendationFlowScreenNavigationProp = StackNavigationProp<
   RootStackParamList,
   "RecommendationFlow"
@@ -28,6 +28,30 @@ const RecommendationFlowScreen: React.FC<Props> = ({ navigation }) => {
   const [currentStep, setCurrentStep] = useState(-1);
   const [selectedAnswers, setSelectedAnswers] = useState<{ [key: number]: string }>({});
   const [allAnswered, setAllAnswered] = useState(false);
+
+  const [nickname, setNickname] = useState("");
+
+  useEffect(() => {
+    const fetchNickname = async () => {
+      try {
+        const token = await AsyncStorage.getItem("accessToken");
+        const response = await fetch(`${API_BASE_URL}/api/get/member`, {
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { Authorization: `${token}` } : {})
+          }
+        });
+        const result = await response.json();
+        if (result.code === 1) {
+          setNickname(result.data.nickname || "고객");
+        }
+      } catch (err) {
+        console.error("닉네임 가져오기 실패:", err);
+      }
+    };
+  
+    fetchNickname();
+  }, []);
 
   const [questions, setQuestions] = useState([
     {
@@ -151,7 +175,7 @@ const fetchTasteDetails = async (categoryId: number) => {
       useNativeDriver: true,
     }),
   ]).start(() => {
-    navigation.navigate("LoadingScreen", { alcholType, tasteCategoryId: selectedCategoryId, tasteDetailId: selectedDetailId });
+    navigation.navigate("LoadingScreen", { alcholType, tasteCategoryId: selectedCategoryId, tasteDetailId: selectedDetailId, nickname});
   });
 };
 
@@ -345,7 +369,7 @@ const handleOptionSelect = async (answer: string) => {
             >
                 <View style={styles.questionWrapper}>
                     <Image
-                        source={require("../assets/drawable/thumnail.png")}
+                        source={require("../assets/drawable/recommend_profile.png")}
                         style={styles.profileImage}
                     />
                     <View style={styles.typingBubble}>
@@ -381,7 +405,7 @@ const handleOptionSelect = async (answer: string) => {
           >
             <View style={styles.questionWrapper}>
               <Image
-                source={require("../assets/drawable/thumnail.png")}
+                source={require("../assets/drawable/recommend_profile.png")}
                 style={styles.profileImage}
               />
               <View style={styles.bubble}>

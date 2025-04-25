@@ -12,7 +12,7 @@ type NavigationProps = StackNavigationProp<RootStackParamList, "ResultScreen">;
 const ResultScreen: React.FC = ({route}) => {
   const navigation = useNavigation<NavigationProps>();
 
-  const { alcholType, tasteCategoryId, tasteDetailId } = route.params;
+  const { alcholType, tasteCategoryId, tasteDetailId, nickname } = route.params;
 
   const [cocktailName, setCocktailName] = useState("");
   const [cocktailDescription, setCocktailDescription] = useState("");
@@ -20,7 +20,7 @@ const ResultScreen: React.FC = ({route}) => {
 
 
 
-  
+
 
   useEffect(() => {
     const fetchResult = async () => {
@@ -51,7 +51,7 @@ const ResultScreen: React.FC = ({route}) => {
         <Image source={require("../assets/drawable/left-chevron.png")} style={styles.icon}/>
       </TouchableOpacity>
 
-      <Text style={styles.resultText}>(닉네임)님,{'\n'}당신을 위한 칵테일이 준비되었어요.</Text>
+      <Text style={styles.resultText}>{nickname}님,{'\n'}당신을 위한 칵테일이 준비되었어요.</Text>
 
       <Image source={require("../assets/drawable/cocktail_sample.png")} style={styles.cocktailImage} />
 
@@ -60,7 +60,7 @@ const ResultScreen: React.FC = ({route}) => {
 
       <TouchableOpacity 
         style={styles.mainButton}
-        onPress={() => navigation.navigate("SearchScreen")}
+        onPress={() => navigation.navigate("SearchScreen", {initialKeyword: cocktailName})}
         >
         <Text 
           style={styles.mainButtonText}>해당 메뉴가 있는 가게 찾기
@@ -132,6 +132,7 @@ const styles = StyleSheet.create({
     fontSize: fontPercentage(14),
     color: "#7D7A6F",
     marginTop: heightPercentage(10),
+    marginHorizontal: widthPercentage(20),
   },
   mainButton: {
     width: widthPercentage(343),

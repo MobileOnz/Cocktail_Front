@@ -19,7 +19,7 @@ export type RootStackParamList = {
   Onboarding: undefined;
   Login: undefined;
   Maps: { searchCompleted?: boolean; setSelectedRegions?: string[] };
-  SearchScreen: undefined;
+  SearchScreen: {initialKeyword?: string};
   RegionSelectScreen : undefined;
   BottomTabNavigator: {
     screen?: string;

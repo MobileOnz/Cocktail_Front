@@ -16,11 +16,11 @@ interface Props {
 const LoadingScreen: React.FC<Props> = ({ navigation, route }) => {
   const [loadingDots, setLoadingDots] = useState(".");
 
-  const { alcholType, tasteCategoryId, tasteDetailId } = route.params;
+  const { alcholType, tasteCategoryId, tasteDetailId, nickname } = route.params;
 
   useEffect(() => {
     const timeout = setTimeout(() => {
-      navigation.navigate("ResultScreen", { alcholType, tasteCategoryId, tasteDetailId });
+      navigation.navigate("ResultScreen", { alcholType, tasteCategoryId, tasteDetailId, nickname});
     }, 3000);
 
     const interval = setInterval(() => {
@@ -36,7 +36,7 @@ const LoadingScreen: React.FC<Props> = ({ navigation, route }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.loadingText}>
-        (닉네임)님만을 위한{"\n"}칵테일을 만들고 있어요{loadingDots}
+        {nickname}님만을 위한{"\n"}칵테일을 만들고 있어요{loadingDots}
       </Text>
       <Image
         source={require("../assets/drawable/cocktail_making.png")}
