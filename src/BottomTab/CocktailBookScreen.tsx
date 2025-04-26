@@ -12,9 +12,7 @@ import {
 //import { BannerAd, BannerAdSize, TestIds } from "react-native-google-mobile-ads"; 
 import CocktailDetailModal from "../Components/CocktailDetailModal";
 import { widthPercentage, heightPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
-import {API_BASE_URL} from '@env';
-
-const server = API_BASE_URL;
+import instance from "../tokenRequest/axios_interceptor";
 
 
 const bannerImages = [
@@ -66,9 +64,15 @@ const categories = [
   }
 ];
 const fetchCocktailById = async (id: number) => {
-  const res = await fetch(`${server}/api/public/cocktail?cocktailId=${id}`);
-  const json = await res.json();
-  return json.data;
+  try {
+    const response = await instance.get(`/api/public/cocktail`, {
+      params: { cocktailId: id },
+    });
+    return response.data.data;
+  } catch (error) {
+    console.log("칵테일 상세 가져오기 실패:", error);
+    throw error;
+  }
 };
 
 //4씩 나누기
@@ -254,6 +258,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    marginTop : widthPercentage(10),
     paddingHorizontal: widthPercentage(15),
     paddingVertical: heightPercentage(10),
   },

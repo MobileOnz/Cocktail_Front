@@ -13,6 +13,7 @@ import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { isTokenExpired } from "../tokenRequest/Token";
+import { Portal } from "react-native-paper";
 const Tab = createBottomTabNavigator();
 
 const BottomTabNavigator = () => {
@@ -139,15 +140,17 @@ const BottomTabNavigator = () => {
         <Tab.Screen name="마이페이지" component={MyPageScreen} options={{ headerShown: false }} />
       </Tab.Navigator>
       {/* 로그인 바텀시트 */}
+      <Portal>
       <LoginBottomSheet
       isVisible={isLoginSheetVisible}
       onClose={() => setLoginSheetVisible(false)}
       onLogin={() => {
         setIsLoggedIn(true);
         setLoginSheetVisible(false);
-        navigation.navigate("맞춤 추천" as never);
       }}
+      navigation={navigation}
     />
+    </Portal>
     
     </View>
   );

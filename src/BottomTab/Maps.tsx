@@ -98,6 +98,7 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
 
   const fetchNearbyBars = async (x: number, y: number) => {
     try {
+      
       const response = await axios.get(`${API_BASE_URL}/api/location/nearby`, {
         params: { x, y },
       });
@@ -155,8 +156,6 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
     }
   }, []);
   const animatedPosition = useSharedValue(0); // 이 줄을 위로!
-  const BUTTON_HEIGHT = heightPercentage(50); // 버튼 높이 정도
-  const BOTTOM_MARGIN = heightPercentage(12);
   const buttonWrapperStyle = useAnimatedStyle(() => {
     return {
       position: "absolute",

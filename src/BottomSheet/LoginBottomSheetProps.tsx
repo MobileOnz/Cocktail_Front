@@ -8,12 +8,10 @@ interface LoginBottomSheetProps {
   isVisible: boolean;
   onClose: () => void;
   onLogin: () => void;
+  navigation: any;
 }
 
-const LoginBottomSheet: React.FC<LoginBottomSheetProps> = ({ isVisible, onClose, onLogin }) => {
-  
-  
-    const navigation = useNavigation();
+const LoginBottomSheet: React.FC<LoginBottomSheetProps> = ({ isVisible, onClose, onLogin,navigation }) => {
 
     useEffect(() => {
         console.log("🛠 LoginBottomSheet 모달 렌더링됨 isVisible:", isVisible);

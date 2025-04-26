@@ -56,9 +56,11 @@ function App(): React.JSX.Element {
   }
 
   return (
+    <PaperProvider>
     <ToastProvider>
       <Navigation />
     </ToastProvider>
+    </PaperProvider>
     );
 }
 

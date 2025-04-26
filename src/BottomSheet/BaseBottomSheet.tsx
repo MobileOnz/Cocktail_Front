@@ -19,6 +19,7 @@ import MapView from "react-native-maps";
 
 import { useToast } from "../Components/ToastContext";
 import { formatBarForMyList } from "../utils/formatBar";
+import { Portal } from "react-native-paper";
 
 
 const BaseBottomSheet = ({ 
@@ -559,6 +560,7 @@ const headerCheck = async () =>{
   />
 )}
     </BottomSheet>
+    <Portal>
      <LoginBottomSheet
       isVisible={isLoginSheetVisible}
       onClose={() => setLoginSheetVisible(false)}
@@ -566,7 +568,9 @@ const headerCheck = async () =>{
         setLoginSheetVisible(false);
         navigation.navigate("Login");
       }}
+      navigation={navigation}
     />
+    </Portal>
   </>
   );
 };
