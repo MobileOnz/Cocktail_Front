@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, TouchableOpacity, FlatList, Image, StyleSheet } from "react-native";
 import { widthPercentage, heightPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
 import { useNavigation } from "@react-navigation/native";
@@ -47,7 +47,7 @@ interface ListItem {
 }
 
 
-const SelectionListSheet: React.FC<SelectionListSheetProps> = ({ title, listData, onClose, onSave }) => {
+const SelectionListSheet: React.FC<SelectionListSheetProps> = ({ title, listData, onClose, onSave}) => {
   const [selectedListId, setSelectedListId] = useState<string | null>(null);
   const navigation = useNavigation();
 
@@ -62,7 +62,11 @@ const SelectionListSheet: React.FC<SelectionListSheetProps> = ({ title, listData
       </View>
 
       {/* 새 리스트 만들기 버튼 */}
-      <TouchableOpacity style={styles.newListButton} onPress={() => navigation.navigate("CreateNewListScreen" as never)}>
+      <TouchableOpacity style={styles.newListButton} 
+      onPress={async () => {
+        await navigation.navigate("CreateNewListScreen" as never);
+        onRequestRefresh(); // ✅ 새 리스트 만들고 돌아오면 부모 리프레시 트리거
+      }}>
         <Image source={require("../assets/drawable/newlist.png")} style={styles.newlistImage} />
         <Text style={styles.newListText}>새 리스트 만들기</Text>
       </TouchableOpacity>

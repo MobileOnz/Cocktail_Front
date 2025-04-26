@@ -216,16 +216,12 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
       navigation.setParams({ resetRequested: false });
     }
   }, [route.params?.searchCompleted, route.params?.selectedRegions, route.params?.resetRequested]);
-  
 
-  useEffect(() => {
-    fetchNearbyBars(126.9812675, 37.5718599);
-  }, []);
-  
-  
+
+
 
   const [barList, setBarList] = useState([]);
-  
+
 
   //어떤 이벤트가 발생하든 ui를 리렌더링하기 위한 트리거
   const [refreshTrigger, setRefreshTrigger] = useState(0);
