@@ -32,9 +32,12 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation, route }) => {
   useEffect(() => {
     if (initialKeyword){
       
-      navigation.navigate("Maps", {
-        searchCompleted: true,
-        searchQuery: initialKeyword,
+      navigation.navigate("BottomTabNavigator", {
+        screen: "지도",
+        params: {
+          searchCompleted: true,
+          searchQuery: searchText,
+        },
       });
     }
   }, [initialKeyword]);
@@ -142,9 +145,12 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation, route }) => {
           returnKeyType="done"
           onSubmitEditing={() => {
             if (searchText.length > 0) {
-              navigation.navigate("Maps", {
-                searchCompleted: true,
-                searchQuery: searchText
+              navigation.navigate("BottomTabNavigator", {
+                screen: "지도",
+                params: {
+                  searchCompleted: true,
+                  searchQuery: searchText,
+                },
               });
             }
           }}
@@ -173,9 +179,12 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation, route }) => {
               <TouchableOpacity
                 key={index}
                 style={styles.keywordButton}
-                onPress={() => navigation.navigate("Maps", {
-                  searchCompleted: true,
-                  searchQuery: keyword
+                onPress={() => navigation.navigate("BottomTabNavigator", {
+                  screen: "지도",
+                  params: {
+                    searchCompleted: true,
+                    searchQuery: keyword,
+                  },
                 })}
               >
                 <Text style={styles.keywordText}>{keyword}</Text>
@@ -193,9 +202,12 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation, route }) => {
                 style={styles.recentItem}
                 onPress={() => {
                   if (item.keyword?.length > 0) {
-                    navigation.navigate("Maps", {
-                      searchCompleted: true,
-                      searchQuery: item.keyword
+                    navigation.navigate("BottomTabNavigator", {
+                      screen: "지도",
+                      params: {
+                        searchCompleted: true,
+                        searchQuery: item.keyword,
+                      },
                     });
                   }
                 }}

@@ -322,7 +322,14 @@ const MenuListDetail = ({
               style={[styles.tab, selectedCategory === menu.category && styles.tabActive]}
               onPress={() => setSelectedCategory(menu.category)}
             >
-              <Text style={styles.tabText}>{menu.name}</Text>
+              <Text
+                style={[
+                  styles.tabText,
+                  selectedCategory === menu.category && { color: "#3E3E3E", fontWeight: "bold" },
+                ]}
+              >
+                {menu.name}
+              </Text>
             </TouchableOpacity>
           ))}
         </View>

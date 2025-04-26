@@ -52,7 +52,15 @@ const RecommendationFlowScreen: React.FC<Props> = ({ navigation }) => {
   
     fetchNickname();
   }, []);
-
+  useEffect(() => {
+    if (nickname) {
+      setQuestions((prev) => {
+        const updated = [...prev];
+        updated[0].question = `어서오세요!\n${nickname}님을 위한 오늘의 칵테일을 준비할게요. 먼저, 어떤 맛을 좋아하세요?`;
+        return updated;
+      });
+    }
+  }, [nickname]);
   const [questions, setQuestions] = useState([
     {
       id: 1,

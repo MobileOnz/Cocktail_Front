@@ -1,4 +1,5 @@
-import React, { useMemo, useState,useRef,useEffect } from "react";
+import React, { useMemo, useState,useRef,useEffect, useCallback } from "react";
+import { useFocusEffect } from "@react-navigation/native";
 import { View, StyleSheet, TouchableOpacity, Text, Alert } from "react-native";
 import BottomSheet from "@gorhom/bottom-sheet";
 import theme from "../assets/styles/theme";
@@ -16,6 +17,7 @@ import LoginBottomSheet from "./LoginBottomSheetProps";
 import SelectedRegions from "./SelectedRegions";
 import MapView from "react-native-maps";
 
+import { useToast } from "../Components/ToastContext";
 import { formatBarForMyList } from "../utils/formatBar";
 
 
@@ -51,7 +53,10 @@ const BaseBottomSheet = ({
   //북마크 체크/해제를 위해 북마크 리스트를 맵으로 저장
   const [bookmarkListMap, setBookmarkListMap] = useState<Map<number, number>>(new Map());
 
-  
+
+  //토스트
+  const {showToast} = useToast();
+
   //나의 리스트 가져오기
   const[myList, setMyList] = useState([]);
 
@@ -84,34 +89,36 @@ const BaseBottomSheet = ({
   }, [isReady]); // 핵심은 단 하나의 트리거로
   
 
-  useEffect(() => {
-    const fetchMyList = async () => {
-      try {
-        const token = await AsyncStorage.getItem('accessToken');
-        if(!token){
-          console.warn("로그인이 필요합니다.");
-          return;
-        }
-        const response = await fetch(`${API_BASE_URL}/api/item/public/list`, {
-          method: "GET",
-          headers: {
-            Authorization: `${token}`,
-          },
-        });
+  const fetchMyList = useCallback(async () => {
+  try {
+    const token = await AsyncStorage.getItem('accessToken');
+    if (!token) {
+      console.warn("로그인이 필요합니다.");
+      return;
+    }
+    const response = await fetch(`${API_BASE_URL}/api/item/public/list`, {
+      method: "GET",
+      headers: {
+        Authorization: `${token}`,
+      },
+    });
 
-        const result = await response.json();
-        if (result.code === 1) {
-          setMyList(result.data);
-        } else {
-          console.warn("리스트 불러오기 실패:", result.msg);
-        }
-      } catch (error) {
-        console.error("리스트 가져오기 실패:", error);
-      }
-    };
-  
+    const result = await response.json();
+    if (result.code === 1) {
+      setMyList(result.data);
+    } else {
+      console.warn("리스트 불러오기 실패:", result.msg);
+    }
+  } catch (error) {
+    console.error("리스트 가져오기 실패:", error);
+  }
+}, []);
+
+useFocusEffect(
+  useCallback(() => {
     fetchMyList();
-  }, []);
+  }, [fetchMyList])
+);
 
   //북마크된 가게 불러오기위한 변수
   const [myBars, setMyBars] = useState([]);
@@ -347,13 +354,13 @@ const headerCheck = async () =>{
         );
 
         setRefreshTrigger(prev => prev + 1); //트리거 변경으로 sections 리렌더 유도
-        Alert.alert("북마크 해제", "리스트에서 삭제되었습니다.");
+        showToast("리스트에서 삭제되었습니다.");
       } else {
-        Alert.alert("실패", result.msg || "서버에서 북마크 해제 실패");
+        showToast("서버 오류");
       }
     } catch (err) {
       console.error("북마크 해제 요청 실패:", err);
-      Alert.alert("에러", "네트워크 오류 발생");
+      showToast("네트워크 오류");
 
     }
   };
@@ -437,7 +444,7 @@ const headerCheck = async () =>{
           console.log("북마크 추가 응답: ", result);
 
           if (result.code === 1) {
-            Alert.alert("성공", "리스트에 가게를 추가했습니다.");
+            showToast("가게를 추가했습니다.");
             setSelectedTab("search");
 
             //menuListDetail과의 바 데이터 포맷을 적용시켜주기 위함
@@ -486,14 +493,13 @@ const headerCheck = async () =>{
             //리프레시 트리거 (의미상 갱신)
             setRefreshTrigger((prev) => prev + 1);
           } else {
-            Alert.alert("실패", result.msg ?? "리스트 추가 실패");
+            showToast("리스트 추가 실패");
           }
         } catch (error) {
           console.error("가게 추가 에러:", error);
-          Alert.alert("에러", "네트워크 오류");
+          showToast("네트워크 오류");
         }
       }}
-      
 
       />
       ): selectedTab ==="myBardetailList" ? (
