@@ -9,7 +9,7 @@ import {Provider as PaperProvider} from "react-native-paper"
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 // import MobileAds from "react-native-google-mobile-ads";
-import { firebase } from "@react-native-firebase/app";
+// import { firebase } from "@react-native-firebase/app";
 
 import { ToastProvider } from "./src/Components/ToastContext";
 

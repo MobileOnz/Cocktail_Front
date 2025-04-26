@@ -26,7 +26,6 @@ const LoginBottomSheet: React.FC<LoginBottomSheetProps> = ({ isVisible, onClose,
 
   return (
     <Modal
-
       isVisible={isVisible} // ✅ 모달 보이기 여부
       onBackdropPress={onClose} // ✅ 바깥 클릭 시 닫힘
       onSwipeComplete={onClose} // ✅ 스와이프해서 닫기 가능
@@ -35,6 +34,7 @@ const LoginBottomSheet: React.FC<LoginBottomSheetProps> = ({ isVisible, onClose,
       animationIn="slideInUp" // ✅ 모달 애니메이션 (아래에서 위로)
       animationOut="slideOutDown" // ✅ 닫힐 때 애니메이션
       backdropOpacity={0.3} // ✅ 배경 흐림 효과 추가
+      statusBarTranslucent={true} //상태바까지 흐림 효과 넣어줌
     >
       <View style={styles.container}>
         <Text style={styles.title}>로그인하기</Text>

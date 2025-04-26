@@ -392,6 +392,7 @@ const styles = StyleSheet.create({
     marginBottom: heightPercentage(20),
   },
   bookmarkIcon: {
+    padding : 4,
     width: widthPercentage(76),
     height: heightPercentage(36),
     marginBottom: heightPercentage(20),
