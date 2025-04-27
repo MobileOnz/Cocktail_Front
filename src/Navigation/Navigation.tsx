@@ -15,6 +15,7 @@ import RegionSelectScreen from "../Screens/RegionSelectScreen";
 import CreateNewListScreen from "../Screens/CreateNewListScreen";
 import SignupScreen from "../Screens/SignupScreen";
 import ProfileScreen from "../Screens/ProfileScreen";
+import TermsAndConditionsScreen from "../Screens/TermsAndConditionsScreen";
 export type RootStackParamList = {
   Onboarding: undefined;
   Login: undefined;
@@ -36,6 +37,7 @@ export type RootStackParamList = {
   } | undefined;
   ProfileScreen: undefined;
   SignupScreen: {code? : string};
+  TermsAndConditionsScreen : undefined
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -47,6 +49,7 @@ const Navigation: React.FC = () => {
         initialRouteName="Onboarding"
         screenOptions={{ headerShown: false }}
       >
+        <Stack.Screen name="TermsAndConditionsScreen" component={TermsAndConditionsScreen}/>
         <Stack.Screen name="Onboarding" component={OnboardingScreen} />
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="SearchScreen" component={SearchScreen} />

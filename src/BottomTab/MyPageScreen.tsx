@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, Image, TouchableOpacity, Linking } from 'react-native';
 import { widthPercentage, heightPercentage, fontPercentage } from '../assets/styles/FigmaScreen';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -19,6 +19,9 @@ const MyPageScreen = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const { showToast } = useToast();
 
+  const link = () => {
+    Linking.openURL("https://sites.google.com/view/onz-info/")
+}
   const [profileImageUri, setProfileImageUri] = useState<string | null>(null);
   const [nickname, setNickname] = useState("");
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
@@ -124,9 +127,13 @@ const MyPageScreen = () => {
         <View style={styles.divider} />
         {renderSupportItem('smile_face.png', '서비스 리뷰 남기기')}
         <View style={styles.divider} />
+        <TouchableOpacity onPress={()=>navigation.navigate("TermsAndConditionsScreen")}>
         {renderSupportItem('book_closed.png', '이용약관')}
+        </TouchableOpacity>
         <View style={styles.divider} />
+        <TouchableOpacity onPress={link}>
         {renderSupportItem('lock.png', '개인정보처리방침')}
+        </TouchableOpacity>
       </View>
 
       <TouchableOpacity onPress={() => setShowWithdrawModal(true)}>
