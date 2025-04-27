@@ -13,7 +13,7 @@ import {
 import CocktailDetailModal from "../Components/CocktailDetailModal";
 import { widthPercentage, heightPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
 import instance from "../tokenRequest/axios_interceptor";
-
+import { API_BASE_URL } from "@env";
 
 const bannerImages = [
   require("../assets/drawable/banner1.png"),
@@ -64,15 +64,9 @@ const categories = [
   }
 ];
 const fetchCocktailById = async (id: number) => {
-  try {
-    const response = await instance.get(`/api/public/cocktail`, {
-      params: { cocktailId: id },
-    });
-    return response.data.data;
-  } catch (error) {
-    console.log("칵테일 상세 가져오기 실패:", error);
-    throw error;
-  }
+  const res = await fetch(`${API_BASE_URL}/api/public/cocktail?cocktailId=${id}`);
+  const json = await res.json();
+  return json.data;
 };
 
 //4씩 나누기
