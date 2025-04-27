@@ -329,7 +329,7 @@ const headerCheck = async () =>{
   containerStyle={{ position: 'absolute', zIndex: 100 }}
 >
   
-{selectedTab !== "detail" && selectedTab !== "regionDetail" && selectedTab !=="search" && (
+{selectedTab !== "detail" && selectedTab !== "regionDetail" && (
   <View style={styles.sheetHeader}>
     <TouchableOpacity
       style={[styles.listButton, selectedTab === "myList" && styles.activeButton]}

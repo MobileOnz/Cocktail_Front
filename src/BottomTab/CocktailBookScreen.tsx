@@ -12,9 +12,8 @@ import {
 //import { BannerAd, BannerAdSize, TestIds } from "react-native-google-mobile-ads"; 
 import CocktailDetailModal from "../Components/CocktailDetailModal";
 import { widthPercentage, heightPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
-import instance from "../tokenRequest/axios_interceptor";
 import { API_BASE_URL } from "@env";
-
+import { useNavigation } from '@react-navigation/native'; 
 const bannerImages = [
   require("../assets/drawable/banner1.png"),
   require("../assets/drawable/banner2.png"),
@@ -100,6 +99,7 @@ type CategoryData = {
 
 
 const CocktailBookScreen: React.FC = () => {
+  const navigation = useNavigation();
   const [selectedCategoryIndex, setSelectedCategoryIndex] = useState<number | null>();
   const [categorizedCocktails, setCategorizedCocktails] = useState<CategoryData[]>([]);
   useEffect(() => {
@@ -154,7 +154,9 @@ const CocktailBookScreen: React.FC = () => {
         {/* 상단 로고 & 아이콘 */}
         <View style={styles.header}>
           <Image source={require("../assets/drawable/Logo.jpg")} style={styles.logo} />
+          <TouchableOpacity onPress={() =>navigation.navigate("BottomTabNavigator", { screen: "지도" })}>
           <Image source={require("../assets/drawable/find.png")} style={styles.icon} />
+          </TouchableOpacity>
         </View>
 
         {/* 배너 슬라이더 */}

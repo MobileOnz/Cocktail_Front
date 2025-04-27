@@ -5,7 +5,6 @@ import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../Navigation/Navigation';
 import WithdrawBottomSheet from '../BottomSheet/WithdrawBottomSheet';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useToast } from '../Components/ToastContext';
 import instance from '../tokenRequest/axios_interceptor';
 
