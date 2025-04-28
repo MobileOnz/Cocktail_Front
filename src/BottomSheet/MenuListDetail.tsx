@@ -212,7 +212,10 @@ const MenuListDetail = ({
       handleTabPress("bookmark", { raw: barDetail, formatted: formattedBar});
     }
   };
-  
+  //카테고리 추출
+  const uniqueCategories = Array.from(
+    new Set(barDetail.menus.map((menu) => menu.category))
+  );
   
   
   
@@ -316,24 +319,27 @@ const MenuListDetail = ({
 
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
         <View style={styles.tabsContainer}>
-          {barDetail.menus.map((menu, index) => (
+          {uniqueCategories.map((category, index) => (
             <TouchableOpacity
               key={index}
-              style={[styles.tab, selectedCategory === menu.category && styles.tabActive]}
-              onPress={() => setSelectedCategory(menu.category)}
+              style={[styles.tab, selectedCategory === category && styles.tabActive]}
+              onPress={() => setSelectedCategory(category)}
             >
               <Text
                 style={[
                   styles.tabText,
-                  selectedCategory === menu.category && { color: "#3E3E3E", fontWeight: "bold" },
+                  selectedCategory === category && { color: "#3E3E3E", fontWeight: "bold" },
                 ]}
               >
-                {menu.name}
+                {category}
               </Text>
             </TouchableOpacity>
           ))}
         </View>
       </ScrollView>
+
+
+
 
       {filteredMenus.map((menu, index) => (
         <View key={index} style={styles.menuItem}>
@@ -344,7 +350,7 @@ const MenuListDetail = ({
           )}
           <View style={styles.menuInfo}>
             <Text style={styles.menuName}>{menu.name}</Text>
-            <Text style={styles.menuPrice}>{menu.sell_price}원</Text>
+            <Text style={styles.menuPrice}>{menu.sell_price}</Text>
           </View>
         </View>
       ))}
