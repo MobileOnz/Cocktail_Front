@@ -46,6 +46,7 @@ return (
         <Marker
           key={marker.id}
           coordinate={{ latitude: lat, longitude: lng }}
+
           onPress={() => onMarkerPress?.(marker.id)}
         >
           <View style={styles.markerWrapper}>

@@ -21,9 +21,8 @@ const imageMap = {
   2: require("../assets/newListIcon/Name=Light_Status=Default.png"),
   3: require("../assets/newListIcon/Name=Party_Status=Default.png"),
   4: require("../assets/newListIcon/Name=Play_Status=Default.png"),
-  5: require("../assets/newListIcon/Name=Primary_Status=Default.png"),
-  6: require("../assets/newListIcon/Name=Shine_Status=Default.png"),
-  7: require("../assets/newListIcon/Name=Summer_Status=Default.png"),
+  5: require("../assets/newListIcon/Name=Shine_Status=Default.png"),
+  6: require("../assets/newListIcon/Name=Summer_Status=Default.png"),
 };
 
 const clickedImageMap = {
@@ -31,9 +30,8 @@ const clickedImageMap = {
   2: require("../assets/newListIcon/Name=Light_Status=Active.png"),
   3: require("../assets/newListIcon/Name=Party_Status=Active.png"),
   4: require("../assets/newListIcon/Name=Play_Status=Active.png"),
-  5: require("../assets/newListIcon/Name=Primary_Status=Active.png"),
-  6: require("../assets/newListIcon/Name=Shine_Status=Active.png"),
-  7: require("../assets/newListIcon/Name=Summer_Status=Active.png"),
+  5: require("../assets/newListIcon/Name=Shine_Status=Active.png"),
+  6: require("../assets/newListIcon/Name=Summer_Status=Active.png"),
 };
 
 const CreateNewListScreen = () => {
