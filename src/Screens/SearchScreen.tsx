@@ -32,14 +32,14 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation, route }) => {
   useEffect(() => {
     if (initialKeyword){
       
-      // navigation.navigate("BottomTabNavigator", {
-      //   screen: "지도",
-      //   params: {
-      //     searchCompleted: true,
-      //     searchQuery: searchText,
-      //   },
-      // });
       setSearchText(initialKeyword);
+      navigation.navigate("BottomTabNavigator", {
+        screen: "지도",
+        params: {
+          searchCompleted: true,
+          searchQuery: initialKeyword,
+        },
+      }, 0);
     }
   }, [initialKeyword]);
 
