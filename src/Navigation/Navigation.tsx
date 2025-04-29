@@ -10,12 +10,12 @@ import BottomTabNavigator from "./BottomTabNavigator";
 import RecommendationFlowScreen from "../Screens/RecommendationFlowScreen";
 import LoadingScreen from "../Screens/LoadingScreen";
 import ResultScreen from "../Screens/ResultScreen";
-
 import RegionSelectScreen from "../Screens/RegionSelectScreen";
 import CreateNewListScreen from "../Screens/CreateNewListScreen";
 import SignupScreen from "../Screens/SignupScreen";
 import ProfileScreen from "../Screens/ProfileScreen";
 import TermsAndConditionsScreen from "../Screens/TermsAndConditionsScreen";
+
 export type RootStackParamList = {
   Onboarding: undefined;
   Login: undefined;
