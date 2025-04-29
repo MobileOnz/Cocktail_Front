@@ -32,13 +32,14 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation, route }) => {
   useEffect(() => {
     if (initialKeyword){
       
-      navigation.navigate("BottomTabNavigator", {
-        screen: "지도",
-        params: {
-          searchCompleted: true,
-          searchQuery: searchText,
-        },
-      });
+      // navigation.navigate("BottomTabNavigator", {
+      //   screen: "지도",
+      //   params: {
+      //     searchCompleted: true,
+      //     searchQuery: searchText,
+      //   },
+      // });
+      setSearchText(initialKeyword);
     }
   }, [initialKeyword]);
 
@@ -193,7 +194,7 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation, route }) => {
           </>
         )}
 
-        {searchText.length === 0 && (
+        {(searchText.length === 0 || initialKeyword) && (
           <>
             <Text style={[styles.sectionTitle, { marginTop: 24 }]}>최근 검색어</Text>
             {[...recentNameSearches, ...recentMenuSearches].map((item, index) => (
