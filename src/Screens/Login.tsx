@@ -380,6 +380,8 @@ const styles = StyleSheet.create({
     textAlign: "center",
     color: "#000",
     marginTop: heightPercentage(150),
+    lineHeight: fontPercentage(22 * 1.364),
+    letterSpacing: fontPercentage(-1.94),
 
   },
   logo: {
