@@ -241,14 +241,14 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
               method: "GET",
               headers: {
                 'Content-Type': 'application/json',
-                ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                ...(token ? { Authorization: `${token}` } : {}),
               },
             }
           );
   
           const result = await res.json();
           console.log("응답 결과:", result);
-  
+
           if (!Array.isArray(result.data)) {
             throw new Error("검색 결과가 배열이 아닙니다.");
           }

@@ -37,9 +37,9 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation, route }) => {
         screen: "지도",
         params: {
           searchCompleted: true,
-          searchQuery: initialKeyword,
+          searchQuery: searchText,
         },
-      }, 0);
+      });
     }
   }, [initialKeyword]);
 
@@ -186,7 +186,8 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation, route }) => {
                     searchCompleted: true,
                     searchQuery: keyword,
                   },
-                })}
+                })
+              }
               >
                 <Text style={styles.keywordText}>{keyword}</Text>
               </TouchableOpacity>
