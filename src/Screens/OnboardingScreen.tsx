@@ -88,27 +88,11 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ navigation }) => {
       <Text style={styles.text}>{item.text}</Text>
       {/*애니메이션 효과 넣기*/}
       {renderPagination()} 
-      <View style={styles.buttonContainer}>
-      {/* 칵테일 바 찾기 버튼 */}
-      <TouchableOpacity 
-      onPress={() => navigation.navigate("BottomTabNavigator", { screen: "지도" }) }
-      style={styles.outlineButton}>
-        <Text style={styles.outlineButtonText}>칵테일 바 찾기</Text>
-        
-      </TouchableOpacity>
-
-      {/* 취향 알아보기 버튼 */}
-      <TouchableOpacity 
-      onPress={() => navigation.navigate("BottomTabNavigator", { screen: "맞춤 추천" }) }
-      style={styles.filledButton}>
-        
-        <Text style={styles.filledButtonText}>취향 알아보기</Text>
-      </TouchableOpacity>
-    </View>
     </View>
   );
 
-  return (
+return (
+  <View style={{ flex: 1, backgroundColor: theme.background }}>
     <AppIntroSlider
       renderItem={renderItem}
       data={slides}
@@ -119,14 +103,33 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ navigation }) => {
       activeDotStyle={{ display: "none" }}
       onSlideChange={onSlideChange}
     />
-  );
+
+    {/* 고정된 버튼 영역 */}
+    <View style={[styles.buttonContainer, { paddingHorizontal: widthPercentage(16) }]}>
+      <TouchableOpacity
+        onPress={() => navigation.navigate("BottomTabNavigator", { screen: "지도" })}
+        style={styles.outlineButton}
+      >
+        <Text style={styles.outlineButtonText}>칵테일 바 찾기</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        onPress={() => navigation.navigate("BottomTabNavigator", { screen: "맞춤 추천" })}
+        style={styles.filledButton}
+      >
+        <Text style={styles.filledButtonText}>취향 알아보기</Text>
+      </TouchableOpacity>
+    </View>
+  </View>
+);
+
 };
 
 const styles = StyleSheet.create({
   buttonContainer: {
-    marginTop : heightPercentage(32),
     flexDirection : "row",
-    justifyContent : "space-between"
+    justifyContent : "space-between",
+    marginBottom : heightPercentage(58)
   },
   outlineButton: {
     borderWidth: 1,
@@ -164,23 +167,23 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "flex-start",
-    padding: widthPercentage(20),
   },
   image: {
     width: widthPercentage(375),
     height: heightPercentage(400),
-    marginTop: heightPercentage(50),
+    marginTop: heightPercentage(38),
   },
   title: {
     fontSize: fontPercentage(24),
     fontWeight: "700",
     textAlign: "center",
-    marginTop: heightPercentage(44),
+    marginTop: heightPercentage(38),
   },
   text: {
     color : "#7D7A6F",
     fontSize: fontPercentage(16),
     textAlign: "center",
+    lineHeight : 24,
     marginTop : heightPercentage(8),
     
   },
