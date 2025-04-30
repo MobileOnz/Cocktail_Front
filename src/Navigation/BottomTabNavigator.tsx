@@ -95,7 +95,7 @@ const BottomTabNavigator = () => {
             return <Image source={iconSource} style={iconStyle} resizeMode="contain" />;
           },
           tabBarStyle: {
-            height: heightPercentage(60),
+            height: heightPercentage(94),
             backgroundColor: theme.background,
           },
           tabBarLabelStyle: {

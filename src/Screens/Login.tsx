@@ -352,12 +352,6 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
             style={styles.buttonImage}
           />
         </TouchableOpacity>
-        <TouchableOpacity 
-          style={styles.loginButton}
-          onPress={debugDelete}
-          >
-          <Text>디버깅용 버튼</Text>
-        </TouchableOpacity>
       </View>
     </View>
   );

@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
   modal: {
     justifyContent: "flex-end", // ✅ 화면 하단에서 띄우기
     margin: 0, // ✅ 전체 화면을 덮도록 설정
-    elevation: 9999 
+    elevation: 9999, 
   },
   container: {
     backgroundColor: "#FFFCF3",
@@ -71,6 +71,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 20, // ✅ 상단 둥근 처리
     borderTopRightRadius: 20,
     zIndex: 9999,
+    height : heightPercentage(450)
   },
   title: {
     fontSize: fontPercentage(18),
@@ -97,6 +98,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     width: "100%",
+    marginTop : heightPercentage(12)
   },
   cancelButton: {
     width: widthPercentage(166),
