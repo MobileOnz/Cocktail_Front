@@ -153,7 +153,7 @@ const CocktailBookScreen: React.FC = () => {
       <ScrollView style={styles.container}>
         {/* 상단 로고 & 아이콘 */}
         <View style={styles.header}>
-          <Image source={require("../assets/drawable/Logo.jpg")} style={styles.logo} />
+          <Image source={require("../assets/drawable/onz_logo.png")} style={styles.logo} />
           <TouchableOpacity onPress={() =>navigation.navigate("BottomTabNavigator", { screen: "지도" })}>
           
           </TouchableOpacity>

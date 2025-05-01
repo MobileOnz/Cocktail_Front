@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, ScrollView, Image } from "react-native";
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, ScrollView, SafeAreaView, Platform} from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../Navigation/Navigation";
@@ -36,7 +36,7 @@ const RegionSelectScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       {/* 상단 네비게이션 바 */}
       <View style={styles.header}>
         <Text style={styles.title}>지역</Text>
@@ -114,18 +114,18 @@ const RegionSelectScreen = () => {
           <Text style={styles.buttonText}>적용하기</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: { 
     flex: 1, 
-    backgroundColor: "#FAF7F2",
+    backgroundColor: "#FFFCF3",
   },
   tagWrapper: {
     position: "absolute",
-    bottom: heightPercentage(70), // 적용 버튼 위에 위치
+    bottom: heightPercentage(100), // 적용 버튼 위에 위치
     left: 0,
     right: 0,
     backgroundColor: "#FFFCF3",
@@ -275,6 +275,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingHorizontal: widthPercentage(16),
     paddingVertical: heightPercentage(12),
+    paddingBottom: Platform.OS === "ios" ? 44 : 0,
     backgroundColor: theme.background,
     borderTopWidth: 1,
     borderColor: "#E4DFD8",

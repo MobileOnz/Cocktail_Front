@@ -197,7 +197,7 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation, route }) => {
 
         {(searchText.length === 0 || initialKeyword) && (
           <>
-            <Text style={[styles.sectionTitle, { marginTop: 24 }]}>최근 검색어</Text>
+            <Text style={[styles.sectionTitle, { marginTop: 24, fontSize: 18 }]}>최근 검색어</Text>
             {[...recentNameSearches, ...recentMenuSearches].map((item, index) => (
               <TouchableOpacity
                 key={index}
@@ -241,7 +241,7 @@ const styles = StyleSheet.create({
   },
   clearButton: {
     right: widthPercentage(9),
-    top: heightPercentage(36),
+    top: heightPercentage(38),
     position: 'absolute',
     width: widthPercentage(18),
     height: heightPercentage(18),
@@ -255,12 +255,15 @@ const styles = StyleSheet.create({
   searchInput: {
     marginRight: widthPercentage(30),
     paddingHorizontal: heightPercentage(12),
-    paddingVertical: widthPercentage(10),
     backgroundColor: "#F3EFE6",
     borderRadius: 8,
     width: widthPercentage(309),
     height: heightPercentage(48),
-    marginTop: heightPercentage(49)
+    marginTop: heightPercentage(49),
+    lineHeight: fontPercentage(22),     // 150%
+    letterSpacing: fontPercentage(16) * 0.0057,
+    fontSize: fontPercentage(16),
+    textAlignVertical: "center",
   },
   scrollContent: {
     paddingHorizontal: widthPercentage(16),
