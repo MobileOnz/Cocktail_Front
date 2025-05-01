@@ -27,6 +27,7 @@ const MoreOptionMenu = ({ itemId, onEdit, onDelete, message }) => {
         placement="bottom"
         arrowStyle={{ backgroundColor: "#FFFCF3" }}
         backgroundStyle={{ backgroundColor: "transparent" }}
+        popoverStyle={styles.popoverShadow} //그림자 효과 적용
       >
         <TouchableOpacity
           style={styles.menuItem}
@@ -36,11 +37,12 @@ const MoreOptionMenu = ({ itemId, onEdit, onDelete, message }) => {
           }}
         >
           <View style={styles.menuItemContent}>
+            
+            <Text style={styles.menuText}>수정하기</Text>
             <Image
               source={require("../assets/drawable/pencil.png")}
               style={styles.icon}
             />
-            <Text style={styles.menuText}>수정하기</Text>
           </View>
         </TouchableOpacity>
 
@@ -54,11 +56,12 @@ const MoreOptionMenu = ({ itemId, onEdit, onDelete, message }) => {
           }}
         >
           <View style={styles.menuItemContent}>
+            
+            <Text style={styles.menuText}>삭제하기</Text>
             <Image
               source={require("../assets/drawable/trash.png")}
               style={styles.icon}
             />
-            <Text style={styles.menuText}>삭제하기</Text>
           </View>
         </TouchableOpacity>
       </Popover>
@@ -100,13 +103,18 @@ const styles = StyleSheet.create({
     resizeMode: "contain",
   },
   menuItem: {
-    paddingVertical: 12,
-    paddingHorizontal: 16,
+    width: widthPercentage(152),
+    height: heightPercentage(44),
+    justifyContent: "center",
     backgroundColor: "#FFFCF3",
   },
   menuItemContent: {
     flexDirection: "row",
+    justifyContent: "space-between",
     alignItems: "center",
+    paddingHorizontal: widthPercentage(16),
+    width: "100%",
+    height: "100%",
   },
   menuText: {
     fontSize: fontPercentage(14),
@@ -118,5 +126,21 @@ const styles = StyleSheet.create({
     width: widthPercentage(20),
     height: heightPercentage(20),
     resizeMode: "contain",
+  },
+  popoverShadow: {
+    backgroundColor: "#FFFCF3",
+    borderRadius: 8,
+
+    // iOS 그림자
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 1, // 하단 그림자
+    },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+
+    // Android 그림자
+    elevation: 4,
   },
 });

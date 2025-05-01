@@ -73,7 +73,7 @@ const SelectionListSheet: React.FC<SelectionListSheetProps> = ({ title, listData
 
       {/* 리스트 목록 */}
       <FlatList
-      style={{flexGrow: 0}}
+      // style={{flexGrow: 0}}
       contentContainerStyle={{
         paddingBottom: heightPercentage(160), // ✅ 저장 버튼이 가려지지 않게 여유 공간 확보
       }}
@@ -91,10 +91,16 @@ const SelectionListSheet: React.FC<SelectionListSheetProps> = ({ title, listData
             style={styles.icon}
           />
             <View style={styles.info}>
-              <Text style={styles.barName}>{item.main_tag?.name ?? "이름 없음"}</Text>
-              <View style={styles.location}>
+
+              <View style={styles.titleRow}>
+                <Text style={styles.barName}>{item.main_tag?.name ?? "이름 없음"}</Text>
+                <Image
+                  source={require("../assets/drawable/location.png")}
+                  style={styles.locationIcon}
+                />
                 <Text style={styles.locationText}>{item.store_count?.toString() ?? "0"}</Text>
               </View>
+
               <View style={styles.tagContainer}>
                 {allTags.map((tag, index) => (
                   <Text key={index} style={styles.tag}>#{tag.name}</Text>
@@ -136,6 +142,7 @@ const SelectionListSheet: React.FC<SelectionListSheetProps> = ({ title, listData
 // 스타일 정의
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     padding: widthPercentage(16),
     backgroundColor: "#FFFCF3",
     borderTopLeftRadius: widthPercentage(16),
@@ -197,6 +204,8 @@ const styles = StyleSheet.create({
   barName: {
     fontSize: fontPercentage(16),
     fontWeight: "bold",
+    color: '#2D2D2D',
+    marginRight: widthPercentage(6),
   },
   location: {
     flexDirection: "row",
@@ -238,6 +247,17 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontSize: fontPercentage(16),
     fontWeight: "bold",
+  },
+  titleRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: heightPercentage(4),
+  },
+  locationIcon: {
+    width: widthPercentage(14),
+    height: heightPercentage(14),
+    resizeMode: "contain",
+    marginRight: widthPercentage(2),
   },
 });
 

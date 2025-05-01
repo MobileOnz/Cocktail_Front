@@ -1,6 +1,6 @@
 import React, { useMemo, useState,useRef,useEffect, useCallback } from "react";
 import { useFocusEffect } from "@react-navigation/native";
-import { View, StyleSheet, TouchableOpacity, Text, Alert } from "react-native";
+import { View, StyleSheet, TouchableOpacity, Text, Alert, Platform} from "react-native";
 import BottomSheet from "@gorhom/bottom-sheet";
 import theme from "../assets/styles/theme";
 import SearchSheetContent from "../BottomSheet/SearchSheetContent";
@@ -314,6 +314,7 @@ const headerCheck = async () =>{
     
     <>
         
+        {selectedTab === "bookmark" && <View style={styles.dimmedBackground} />}
 <BottomSheet
   ref={bottomSheetRef}
   index={0}
@@ -323,8 +324,9 @@ const headerCheck = async () =>{
     setSheetReady(true);
   }}
   enablePanDownToClose={false}
+  keyboardBlurBehavior="restore" 
   backgroundStyle={{ backgroundColor: theme.background }}
-  containerStyle={{ position: 'absolute', zIndex: 100 }}
+  containerStyle={{ position: 'absolute', zIndex: 100, ...(Platform.OS === "ios" && { marginTop: heightPercentage(40) }),}}
 >
   
 {selectedTab !== "detail" && selectedTab !== "regionDetail" && (
@@ -503,6 +505,7 @@ const headerCheck = async () =>{
   />
 )}
     </BottomSheet>
+
     <Portal>
      <LoginBottomSheet
       isVisible={isLoginSheetVisible}
@@ -544,6 +547,15 @@ const styles = StyleSheet.create({
   activeText: {
     fontWeight: "bold",
     color: "#FFFFFF",
+  },
+  dimmedBackground: {
+    position: "absolute",
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: "rgba(0,0,0,0.4)",
+    zIndex: 99,
   },
 });
 

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity, FlatList, StyleSheet,Image,ScrollView } from "react-native";
+import { View, Text, TouchableOpacity, FlatList, StyleSheet,Image,ScrollView, SafeAreaView } from "react-native";
 import { widthPercentage, heightPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
 import { useNavigation } from "@react-navigation/native";
 import { RootStackParamList } from "../Navigation/Navigation";
@@ -152,12 +152,12 @@ const handleSaveList = async () => {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
 	  {/* 맨 위 헤더 데이터  */}
       <View style={styles.headerContainer}>
   <Text style={styles.headerTitle}>새 리스트 만들기</Text>
   <TouchableOpacity onPress={() => navigation.goBack()} style={styles.closeButton}>
-    <Text style={styles.closeText}>X</Text>
+    <Image source={require("../assets/drawable/close.png")} style={{width: widthPercentage(18), height: heightPercentage(18)}}/>
   </TouchableOpacity>
 </View>
 
@@ -296,10 +296,10 @@ const handleSaveList = async () => {
 
 
 <View style={styles.titleContainer}>
-  <Image source={require("../assets/drawable/location.png")}
+  <Image source={require("../assets/drawable/site.png")}
     style={{
-      width: widthPercentage(13.33),
-      height: heightPercentage(15),
+      width: widthPercentage(18),
+      height: heightPercentage(18),
     }}
   />
   <Text style={{
@@ -343,7 +343,7 @@ const handleSaveList = async () => {
           저장하기
         </Text>
       </TouchableOpacity>
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -362,7 +362,7 @@ const styles = StyleSheet.create({
 	alignItems: "center",
 	justifyContent: "center",
 	position: "relative",
-	marginTop: heightPercentage(30),
+	marginTop: heightPercentage(24),
 	paddingHorizontal: widthPercentage(20),
 	height: heightPercentage(40),
   },
@@ -485,11 +485,13 @@ const styles = StyleSheet.create({
     fontSize: fontPercentage(14),
   },
   saveButton: {
-    marginTop: 20,
-    padding: 15,
-    borderRadius: 10,
+    marginTop: heightPercentage(20),
+    padding: widthPercentage(15),
+    borderRadius: widthPercentage(10),
     alignItems: "center",
     backgroundColor: "#DDD",
+    marginBottom: heightPercentage(10),
+    marginHorizontal: widthPercentage(10),
   },
   activeSaveButton: {
     backgroundColor: "#21103C",

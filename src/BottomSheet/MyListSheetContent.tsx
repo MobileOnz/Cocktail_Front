@@ -51,6 +51,7 @@ const fetchMyList = async () => {
         .flat()
         .map((tag) => `#${tag.name}`),
       icon_tag: item.icon_tag ?? 1,
+      store_count: item.store_count ?? 0,
     }));
     setMyList(transformed);
 
@@ -133,17 +134,29 @@ const fetchMyList = async () => {
                 }
                 style={styles.icon}
               />
+              
               <View style={styles.info}>
-                <Text style={styles.barName}>{item.name}</Text>
+              <View style={styles.titleRow}>
+                <View style={styles.nameWithCount}>
+                  <Text style={styles.barName}>{item.name}</Text>
+                  <View style={styles.countBox}>
+                    <Image
+                      source={require("../assets/drawable/location.png")}
+                      style={styles.locationIcon}
+                    />
+                    <Text style={styles.countText}>{item.store_count ?? 0}</Text>
+                  </View>
+                </View>
+              </View>
+
+
                 <View style={styles.tagContainer}>
                   {item.tags.map((tag, index) => (
-                    <Text key={index} style={styles.tag}>
-                      {tag}
-                    </Text>
+                    <Text key={index} style={styles.tag}>{tag}</Text>
                   ))}
                 </View>
               </View>
-  
+
               <MoreOptionMenu
                 itemId={item.id}
                 onEdit={handleEdit}
@@ -151,6 +164,8 @@ const fetchMyList = async () => {
                 message={`"${item.name}" 리스트 메뉴입니다.`}
               />
             </View>
+
+
           </TouchableOpacity>
         ))}
       </BottomSheetScrollView>
@@ -232,9 +247,10 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   barName: {
-    fontSize: 14,
+    fontSize: fontPercentage(14),
     fontWeight: "bold",
     color: "#2D2D2D",
+    marginRight: widthPercentage(8),
   },
   location: {
     flexDirection: "row",
@@ -259,5 +275,28 @@ const styles = StyleSheet.create({
     color: "#7D7A6F",
     marginRight: 4,
     marginTop: 4,
+  },
+  titleRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: heightPercentage(4), // 바 이름과 태그 사이 여백
+  },
+  nameWithCount: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  countBox: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  locationIcon: {
+    width: widthPercentage(14),
+    height: heightPercentage(14),
+    resizeMode: "contain",
+    marginRight: widthPercentage(2),
+  },
+  countText: {
+    fontSize: fontPercentage(12),
+    color: "#7D7A6F",
   },
 });
