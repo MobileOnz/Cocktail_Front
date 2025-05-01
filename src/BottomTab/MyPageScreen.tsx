@@ -63,7 +63,7 @@ const MyPageScreen = () => {
   }, [navigation]);
 
   useEffect(() => {
-    const checkToken = async () => {
+    const checkTokenAndProfile = async () => {
       try {
         const res = await instance.get('/api/get/member');
         if (res.data.code === 1) {
@@ -71,16 +71,22 @@ const MyPageScreen = () => {
           setNickname(res.data.data.nickname);
         } else {
           setIsLoggedIn(false);
+          setNickname("");
+          setProfileImageUri(null); // <- 프로필 초기화는 유지
         }
       } catch (err) {
-        console.log("🚨 닉네임 불러오기 실패:", err);
+        console.log("🚨 로그인 체크 실패:", err);
         setIsLoggedIn(false);
+        setNickname("");
+        setProfileImageUri(null);
       }
     };
-
-    const unsubscribe = navigation.addListener('focus', checkToken);
+  
+    const unsubscribe = navigation.addListener('focus', checkTokenAndProfile);
     return unsubscribe;
   }, [navigation]);
+  
+  
 
   const handleLoginPress = () => {
     navigation.navigate(isLoggedIn ? "ProfileScreen" : "Login");
@@ -135,9 +141,18 @@ const MyPageScreen = () => {
         </TouchableOpacity>
       </View>
 
-      <TouchableOpacity onPress={() => setShowWithdrawModal(true)}>
-        <Text style={styles.withdrawText}>회원 탈퇴</Text>
-      </TouchableOpacity>
+
+      {/* 개인정보처리방침 아래 divider */}
+      <View style={styles.bottomDivider} />
+
+      {isLoggedIn && (
+        <>
+          <TouchableOpacity onPress={() => setShowWithdrawModal(true)}>
+            <Text style={styles.withdrawText}>회원 탈퇴</Text>
+          </TouchableOpacity>
+        </>
+      )}
+
 
       <WithdrawBottomSheet
         isVisible={showWithdrawModal}
@@ -174,7 +189,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fffcf3',
-    padding: widthPercentage(20),
   },
   profileInfoContainer: {
     flexDirection: 'row',
@@ -188,17 +202,18 @@ const styles = StyleSheet.create({
     backgroundColor: "#DDD",
   },
   withdrawText: {
-    marginTop: heightPercentage(20),
+    marginTop: heightPercentage(27),
     color: "#7D7A6F",
     textDecorationLine: "underline",
     fontSize: fontPercentage(14),
     alignSelf: "flex-start",
+    marginLeft: widthPercentage(24),
   },
   loginContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: widthPercentage(16),
+    paddingLeft: widthPercentage(24),
     paddingVertical: heightPercentage(12),
     marginTop: heightPercentage(20),
   },
@@ -210,19 +225,19 @@ const styles = StyleSheet.create({
   supportTitle: {
     fontSize: fontPercentage(14),
     color: '#7D7A6F',
-    paddingLeft: widthPercentage(16),
-    paddingVertical: heightPercentage(10),
+    paddingLeft: widthPercentage(24),
+    paddingTop: heightPercentage(15),
   },
   supportSection: {
     backgroundColor: '#fffcf3',
-    paddingVertical: heightPercentage(12),
+    paddingTop: heightPercentage(27),
   },
   supportItem: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingVertical: heightPercentage(12),
-    paddingHorizontal: widthPercentage(8),
+    paddingLeft: widthPercentage(24),
   },
   supportIcon: {
     width: widthPercentage(24),
@@ -236,8 +251,8 @@ const styles = StyleSheet.create({
   rightArrow: {
     width: widthPercentage(24),
     height: widthPercentage(24),
-    marginLeft: widthPercentage(8),
     alignSelf: 'flex-end',
+    marginRight: widthPercentage(18),
   },
   divider: {
     width: widthPercentage(343),
@@ -255,5 +270,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: heightPercentage(72),
   },
-
+  bottomDivider: {
+    height: heightPercentage(8),
+    backgroundColor: '#F3EFE6',
+    width: '100%',
+    marginTop: heightPercentage(10),
+  },
 });
