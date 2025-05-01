@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, Image, TouchableOpacity, Linking } from 'react-native';
+import { StyleSheet, Text, View, Image, TouchableOpacity, Linking, Alert } from 'react-native';
 import { widthPercentage, heightPercentage, fontPercentage } from '../assets/styles/FigmaScreen';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -34,6 +34,32 @@ const MyPageScreen = () => {
     } finally {
       setShowWithdrawModal(false);
     }
+  };
+
+  const handleLogout = () => {
+    Alert.alert(
+      "로그아웃 하시겠어요?",
+      "",
+      [
+        { text: "취소", style: "cancel" },
+        {
+          text: "로그아웃",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await instance.post("/api/auth/logout");
+              showToast("로그아웃 되었습니다.");
+              setIsLoggedIn(false);
+              setNickname("");
+              setProfileImageUri(null);
+            } catch (err) {
+              console.error("🚨 로그아웃 실패:", err);
+              showToast("로그아웃 실패");
+            }
+          }
+        }
+      ]
+    );
   };
 
   useEffect(() => {
@@ -146,12 +172,17 @@ const MyPageScreen = () => {
       <View style={styles.bottomDivider} />
 
       {isLoggedIn && (
-        <>
-          <TouchableOpacity onPress={() => setShowWithdrawModal(true)}>
-            <Text style={styles.withdrawText}>회원 탈퇴</Text>
+        <View>
+          <TouchableOpacity onPress={handleLogout}>
+            {renderSupportItemWithoutIcon('로그아웃')}
           </TouchableOpacity>
-        </>
+          <View style={styles.divider} />
+          <TouchableOpacity onPress={() => setShowWithdrawModal(true)}>
+            {renderSupportItemWithoutIcon('회원탈퇴')}
+          </TouchableOpacity>
+        </View>
       )}
+
 
 
       <WithdrawBottomSheet
@@ -182,6 +213,14 @@ const renderSupportItem = (icon: string, text: string) => {
     </View>
   );
 };
+
+const renderSupportItemWithoutIcon = (text: string) => (
+  <View style={styles.supportItem}>
+    <Text style={[styles.supportText, { marginLeft: 0 }]}>{text}</Text>
+    <Image source={iconMap['right-chevron.png']} style={styles.rightArrow} />
+  </View>
+);
+
 
 export default MyPageScreen;
 
