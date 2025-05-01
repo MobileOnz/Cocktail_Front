@@ -13,6 +13,7 @@ import {
 import Icon from "react-native-vector-icons/Ionicons";
 import { widthPercentage, heightPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
 import {API_BASE_URL} from '@env';
+import { WINDOW_HEIGHT } from "@gorhom/bottom-sheet";
 
 const server = API_BASE_URL;
 
@@ -51,7 +52,10 @@ interface CocktailDetailModalProps {
   const  ITEM_WIDTH = widthPercentage(311);
   const ITEM_SPACING = widthPercentage(20);
 
+  const SIDE_SPACING = (widthPercentage(375) - ITEM_WIDTH) / 2;
 
+
+  
   // 데이터 
   const fetchCocktailById = async (id: number) => {
     const res = await fetch(`${server}/api/public/cocktail?cocktailId=${id}`);
@@ -71,24 +75,40 @@ const CocktailDetailModal: React.FC<CocktailDetailModalProps> = ({
   const [currentIndex, setCurrentIndex] = useState(cocktailIndex);
   const [fetchedData, setFetchedData] = useState<any | null>(null);
 
-  useEffect(() => {
-    if (visible && selectedCocktailId) {
-      (async () => {
-        try {
-          const data = await fetchCocktailById(selectedCocktailId);
-          setFetchedData(data);
-        } catch (err) {
-          console.error("불러오기 실패:", err);
-        }
-      })();
-    }
-  }, [visible, selectedCocktailId]);
+  const [localCocktailData, setLocalCocktailData] = useState<any[]>([]);
+  
 
+  // useEffect(() => {
+  //   if (visible && selectedCocktailId) {
+  //     (async () => {
+  //       try {
+  //         const data = await fetchCocktailById(selectedCocktailId);
+  //         setFetchedData(data);
+  //       } catch (err) {
+  //         console.error("불러오기 실패:", err);
+  //       }
+  //     })();
+  //   }
+  // }, [visible, selectedCocktailId]);
+
+  useEffect(() => {
+    if (visible) {
+      const fetchAll = async () => {
+        const allData = await Promise.all(
+          cocktails.map((c) => fetchCocktailById(c.cocktail.id))
+        );
+        setLocalCocktailData(allData); // 한 번에 다 저장
+      };
+      fetchAll();
+    }
+  }, [visible]);
+
+  
   useEffect(() => {
     if (visible) {
       setTimeout(() => {
         flatListRef.current?.scrollToOffset({
-          offset: cocktailIndex * ITEM_WIDTH,
+          offset: cocktailIndex * (ITEM_WIDTH + ITEM_SPACING),
           animated: false,
         });
         setCurrentIndex(cocktailIndex);
@@ -106,7 +126,7 @@ const CocktailDetailModal: React.FC<CocktailDetailModalProps> = ({
     const index = Math.round(contentOffsetX / widthPercentage(311));
 
     flatListRef.current?.scrollToOffset({
-      offset: index * widthPercentage(311),
+      offset: index * (ITEM_WIDTH + ITEM_SPACING),
       animated: true,
     });
 
@@ -127,6 +147,7 @@ const CocktailDetailModal: React.FC<CocktailDetailModalProps> = ({
   };
 
 
+  
 return (
   <Modal visible={visible} animationType="fade" transparent>
     <TouchableWithoutFeedback onPress={onClose}>
@@ -146,7 +167,10 @@ return (
             [{ nativeEvent: { contentOffset: { x: scrollX } } }],
             { useNativeDriver: false }
           )}
-          contentContainerStyle={{ alignItems: "center" }}
+          contentContainerStyle={{ 
+            paddingHorizontal: SIDE_SPACING - widthPercentage(10), 
+            alignItems: "center" 
+          }}
           style={{ height: heightPercentage(550) }}
           renderItem={({ item, index }) => {
             const inputRange = [
@@ -166,6 +190,7 @@ return (
               outputRange: [10, 0, 10],
               extrapolate: "clamp",
             });
+            const currentData = localCocktailData[index];
 
             return (
               <TouchableWithoutFeedback>
@@ -176,26 +201,28 @@ return (
                   ]}
                 >
                   <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-                    <Icon name="close" size={widthPercentage(24)} color="#000" />
+                    <Image source={require("../assets/drawable/cancel.png")} style={styles.closeButton} />
                   </TouchableOpacity>
 
-                  {fetchedData && (
-                    <>
-                      <Image
-                        source={
-                          fetchedData.cocktail.image_url
-                            ? { uri: fetchedData.cocktail.image_url }
-                            : require("../assets/drawable/cocktail.jpg")
-                        }
-                        style={styles.cocktailImage}
-                      />
+                  
+                  
+                  {currentData && (
+                      <>
+                        <Image
+                          source={
+                            currentData.cocktail.image_url
+                              ? { uri: currentData.cocktail.image_url }
+                              : require("../assets/drawable/cocktail.jpg")
+                          }
+                          style={styles.cocktailImage}
+                        />
 
                       <View style={styles.content}>
                         <Text style={styles.cocktailName}>
-                          {fetchedData.cocktail.cocktail_name}
+                          {currentData.cocktail.cocktail_name}
                         </Text>
                         <Text style={styles.cocktailDescription}>
-                          {fetchedData.cocktail.introduce}
+                          {currentData.cocktail.introduce}
                         </Text>
 
                         <View style={styles.infoContainer}>
@@ -203,33 +230,33 @@ return (
                           <View style={styles.infoRow}>
                             <Text style={styles.infoLabel}>잔 크기</Text>
                             <Text style={styles.infoText}>
-                              {fetchedData.cocktail.cocktail_size}ml
+                              {currentData.cocktail.cocktail_size}ml
                             </Text>
                           </View>
                           <View style={styles.infoRow}>
                             <Text style={styles.infoLabel}>기본 맛</Text>
                             <Text style={styles.infoText}>
-                              {fetchedData.tastes?.[0]?.tasteDetail},{" "}
-                              {fetchedData.tastes?.[0]?.category}
+                              {currentData.tastes?.[0]?.tasteDetail},{" "}
+                              {currentData.tastes?.[0]?.category}
                             </Text>
                           </View>
                           <View style={styles.infoRow}>
                             <Text style={styles.infoLabel}>도수</Text>
                             <Text style={styles.infoText}>
-                              {fetchedData.cocktail.min_alchol} ~{" "}
-                              {fetchedData.cocktail.max_alchol}
+                              {currentData.cocktail.min_alchol} ~{" "}
+                              {currentData.cocktail.max_alchol}
                             </Text>
                           </View>
                           <View style={styles.infoRow}>
                             <Text style={styles.infoLabel}>추천 상황</Text>
                             <Text style={styles.infoText}>
-                              {fetchedData.recommends?.[0]?.mood}
+                              {currentData.recommends?.[0]?.mood}
                             </Text>
                           </View>
                           <View style={styles.infoRow}>
                             <Text style={styles.infoLabel}>재료</Text>
                             <Text style={styles.infoText}>
-                              {fetchedData.ingredients
+                              {currentData.ingredients
                                 .map((i) => `${i.ingredient} ${i.quantity}${i.unit}`)
                                 .join(", ")}
                             </Text>
@@ -268,6 +295,8 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: heightPercentage(10),
     right: widthPercentage(10),
+    width: widthPercentage(18),
+    height: heightPercentage(18),
     zIndex: 10,
   },
   cocktailImage: {

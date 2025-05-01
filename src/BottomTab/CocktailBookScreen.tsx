@@ -155,7 +155,7 @@ const CocktailBookScreen: React.FC = () => {
         <View style={styles.header}>
           <Image source={require("../assets/drawable/Logo.jpg")} style={styles.logo} />
           <TouchableOpacity onPress={() =>navigation.navigate("BottomTabNavigator", { screen: "지도" })}>
-          <Image source={require("../assets/drawable/find.png")} style={styles.icon} />
+          
           </TouchableOpacity>
         </View>
 
