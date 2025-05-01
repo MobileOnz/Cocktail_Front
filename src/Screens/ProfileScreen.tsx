@@ -1,22 +1,20 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, TextInput, Image, TouchableOpacity } from "react-native";
+import React, { useState, useEffect, useRef } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  Image,
+  TouchableOpacity,
+  Keyboard,
+  Platform,
+  InputAccessoryView, // <- 여기
+} from "react-native";
 import { widthPercentage, heightPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
 import { useNavigation } from "@react-navigation/native";
-import Icon from "react-native-vector-icons/Ionicons";
 import { launchImageLibrary } from "react-native-image-picker";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import ImageResizer from "react-native-image-resizer";
 import instance from "../tokenRequest/axios_interceptor";
-
-const safeParseJson = async (res: Response) => {
-  const text = await res.text();
-  try {
-    return JSON.parse(text);
-  } catch (e) {
-    console.error("❌ JSON 파싱 실패:", text);
-    return null;
-  }
-};
 
 const ProfileScreen: React.FC = () => {
   const navigation = useNavigation();
@@ -25,26 +23,21 @@ const ProfileScreen: React.FC = () => {
   const [profileUri, setProfileUri] = useState<string | null>(null);
   const [initialProfileUri, setInitialProfileUri] = useState<string | null>(null);
 
+  const inputAccessoryViewID = "nicknameInputAccessory";
+
   const isNicknameChanged = newNickname.trim() !== "" && newNickname !== nickname;
   const isProfileChanged = profileUri !== initialProfileUri;
   const isChanged = isNicknameChanged || isProfileChanged;
-
-  const [selectedImageMeta, setSelectedImageMeta] = useState<{ name: string; type: string } | null>(null);
 
   useEffect(() => {
     const fetchProfileData = async () => {
       try {
         const res = await instance.get("/api/get/member");
         const result = res.data;
-        console.log("👤 get/member 응답:", result);
-
         if (result.code === 1) {
           const member = result.data;
           setNickname(member.nickname);
           setNewNickname("");
-          console.log("✅ 닉네임 불러오기 완료:", member.nickname);
-        } else {
-          console.warn("❌ 닉네임 API 실패:", result.msg);
         }
       } catch (error) {
         console.error("❌ 닉네임 불러오기 실패", error);
@@ -53,7 +46,6 @@ const ProfileScreen: React.FC = () => {
       try {
         const res = await instance.get("/api/profile", { responseType: "blob" });
         const contentType = res.headers["content-type"];
-
         if (contentType?.includes("application/json")) {
           const { data } = res.data;
           if (data) {
@@ -65,8 +57,6 @@ const ProfileScreen: React.FC = () => {
           const imageUrl = URL.createObjectURL(res.data);
           setProfileUri(imageUrl);
           setInitialProfileUri(imageUrl);
-        } else {
-          console.warn("❓ 알 수 없는 Content-Type:", contentType);
         }
       } catch (error) {
         console.error("❌ 프로필 이미지 불러오기 실패", error);
@@ -90,7 +80,6 @@ const ProfileScreen: React.FC = () => {
 
       const result = res.data;
       if (result.code === 1) {
-        console.log("✅ 프로필 정보 업데이트 성공", result.data);
         if (isNicknameChanged) {
           setNickname(newNickname);
           setNewNickname("");
@@ -98,64 +87,15 @@ const ProfileScreen: React.FC = () => {
         if (isProfileChanged) {
           setInitialProfileUri(profileUri);
         }
-      } else {
-        console.warn("❌ 프로필 정보 업데이트 실패", result.msg);
       }
     } catch (error) {
       console.error("🔥 프로필 저장 중 에러 발생", error);
     }
   };
 
-  const handleProfileImageChange = async () => {
-    launchImageLibrary({ mediaType: "photo", selectionLimit: 1 }, async (response) => {
-      if (!response.didCancel && response.assets && response.assets.length > 0) {
-        try {
-          const asset = response.assets[0];
-          console.log("📸 선택된 원본 이미지:", asset);
-
-          const resizedImage = await ImageResizer.createResizedImage(
-            asset.uri!,
-            400,
-            400,
-            "PNG",
-            80
-          );
-
-          const uri = resizedImage.uri;
-          setSelectedImageMeta({
-            name: `profile_${Date.now()}.png`,
-            type: "image/png",
-          });
-
-          if (!initialProfileUri) setInitialProfileUri(uri);
-          setProfileUri(uri);
-
-          const formData = new FormData();
-          formData.append("file", {
-            uri: uri.startsWith("file://") ? uri : `file://${uri}`,
-            name: `profile_${Date.now()}.png`,
-            type: "image/png",
-          } as any);
-
-          const uploadRes = await instance.post("/api/upload/profile", formData, {
-            headers: { "Content-Type": "multipart/form-data" },
-            timeout: 10000,
-          });
-
-          if (uploadRes.data.code === 1) {
-            console.log("✅ 즉시 프로필 이미지 업로드 성공");
-          } else {
-            console.warn("❌ 즉시 업로드 실패:", uploadRes.data?.msg);
-          }
-        } catch (error) {
-          console.error("❌ 이미지 리사이즈/업로드 실패:", error);
-        }
-      }
-    });
-  };
-
   return (
     <View style={styles.container}>
+      {/* 상단 헤더 */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Image source={require("../assets/drawable/left-chevron.png")} style={styles.backIcon} />
@@ -164,8 +104,9 @@ const ProfileScreen: React.FC = () => {
         <View style={{ width: 28 }} />
       </View>
 
+      {/* 프로필 이미지 */}
       <View style={styles.profileSection}>
-        <TouchableOpacity style={styles.profileWrapper} onPress={handleProfileImageChange}>
+        <TouchableOpacity style={styles.profileWrapper}>
           <Image
             source={
               profileUri
@@ -178,6 +119,7 @@ const ProfileScreen: React.FC = () => {
         </TouchableOpacity>
       </View>
 
+      {/* 닉네임 입력 */}
       <View style={styles.nicknameSection}>
         <Text style={styles.nicknameLabel}>닉네임</Text>
         <TextInput
@@ -185,9 +127,26 @@ const ProfileScreen: React.FC = () => {
           value={newNickname}
           onChangeText={setNewNickname}
           placeholder={nickname}
+          returnKeyType="default"
+          inputAccessoryViewID={inputAccessoryViewID}
         />
       </View>
 
+      {/* 키보드 상단 '완료' 버튼 (iOS 한정) */}
+      {Platform.OS === "ios" && (
+        <InputAccessoryView nativeID={inputAccessoryViewID}>
+          <View style={styles.accessory}>
+            {/* 좌측 화살표들 생략 가능 */}
+            <View style={{ flex: 1 }} />
+            <TouchableOpacity onPress={Keyboard.dismiss}>
+              <Text style={styles.accessoryDoneText}>완료</Text>
+            </TouchableOpacity>
+          </View>
+        </InputAccessoryView>
+      )}
+
+
+      {/* 저장하기 버튼 */}
       <TouchableOpacity
         style={[styles.saveButton, isChanged ? styles.activeButton : styles.disabledButton]}
         disabled={!isChanged}
@@ -215,13 +174,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: widthPercentage(16),
     paddingTop: heightPercentage(60),
   },
-  profileWrapper: {
-    width: widthPercentage(90),
-    height: widthPercentage(90),
-    position: "relative",
-    alignItems: "center",
-    justifyContent: "center",
-  },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -234,9 +186,21 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#000",
   },
+  backIcon: {
+    width: widthPercentage(28),
+    height: widthPercentage(28),
+    resizeMode: "contain",
+  },
   profileSection: {
     alignItems: "center",
     marginBottom: heightPercentage(30),
+  },
+  profileWrapper: {
+    width: widthPercentage(90),
+    height: widthPercentage(90),
+    position: "relative",
+    alignItems: "center",
+    justifyContent: "center",
   },
   profileImage: {
     width: widthPercentage(90),
@@ -295,9 +259,25 @@ const styles = StyleSheet.create({
   disabledButtonText: {
     color: "#C1C1C1",
   },
-  backIcon: {
-    width: widthPercentage(28),
-    height: widthPercentage(28),
-    resizeMode: "contain",
+  accessory: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    alignItems: "center",
+    paddingHorizontal: widthPercentage(16),
+    paddingVertical: heightPercentage(10),
+    backgroundColor: "#F3EFE6",
+    borderTopWidth: 1,
+    borderColor: "#DCDCDC",
+  },
+  doneButton: {
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    backgroundColor: "#21103C",
+    borderRadius: 8,
+  },
+  accessoryDoneText: {
+    fontSize: fontPercentage(16),
+    fontWeight: "500",
+    color: "#007AFF", // iOS 기본 파란 텍스트
   },
 });
