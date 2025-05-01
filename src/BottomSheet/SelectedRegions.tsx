@@ -10,7 +10,7 @@ import {
 import { BottomSheetScrollView } from "@gorhom/bottom-sheet";
 import axios from "axios";
 import { ScrollView } from "react-native-gesture-handler";
-
+import { API_BASE_URL } from "@env";
 // 지역 이름 → 서버 코드 매핑
 const REGION_CODE_MAP = {
   "서울 전체": "SEOUL_ALL",
@@ -73,7 +73,7 @@ const SelectedRegions = ({ selectedRegions = [], onRegionSelect }) => {
 
     try {
       const response = await axios.get(
-        "https://www.onzbackend.shop/api/location/filter",
+        `${API_BASE_URL}/api/location/filter`,
         {
           params: { areaCodes: regionCode },
         }

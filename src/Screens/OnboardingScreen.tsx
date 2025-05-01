@@ -1,9 +1,12 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { View, Text, Image, StyleSheet, Animated, Dimensions, StatusBar, TouchableOpacity} from "react-native";
 import AppIntroSlider from "react-native-app-intro-slider";
 import { StackScreenProps } from "@react-navigation/stack";
 import { widthPercentage, heightPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
 import theme from "../assets/styles/theme";
+import { Portal } from "react-native-paper";
+import LoginBottomSheet from "../BottomSheet/LoginBottomSheetProps";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 type RootStackParamList = {
   Onboarding: undefined;
   Login: undefined;
@@ -42,6 +45,7 @@ const slides: SlideItem[] = [
 ];
 
 const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ navigation }) => {
+    const [isLoginSheetVisible, setLoginSheetVisible] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
   const animatedValue = useRef(new Animated.Value(0)).current;
 
@@ -92,6 +96,7 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ navigation }) => {
   );
 
 return (
+  <>
   <View style={{ flex: 1, backgroundColor: theme.background }}>
     <AppIntroSlider
       renderItem={renderItem}
@@ -114,13 +119,32 @@ return (
       </TouchableOpacity>
 
       <TouchableOpacity
-        onPress={() => navigation.navigate("BottomTabNavigator", { screen: "맞춤 추천" })}
-        style={styles.filledButton}
-      >
-        <Text style={styles.filledButtonText}>취향 알아보기</Text>
-      </TouchableOpacity>
+      onPress={async () => {
+      const token = await AsyncStorage.getItem("accessToken");
+      if (token) {
+        navigation.navigate("BottomTabNavigator", { screen: "맞춤 추천" });
+      } else {
+      setLoginSheetVisible(true); // 로그인 모달 표시
+      }
+      }}
+  style={styles.filledButton}
+>
+  <Text style={styles.filledButtonText}>취향 알아보기</Text>
+</TouchableOpacity>
     </View>
   </View>
+  <Portal>
+  <LoginBottomSheet
+   isVisible={isLoginSheetVisible}
+   onClose={() => setLoginSheetVisible(false)}
+   onLogin={() => {
+     setLoginSheetVisible(false);
+     navigation.navigate("Login");
+   }}
+   navigation={navigation}
+ />
+ </Portal>
+ </>
 );
 
 };

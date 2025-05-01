@@ -45,8 +45,6 @@ const BaseBottomSheet = ({
   
   const mapRef = useRef<MapView>(null);
   
-  // const [selectedTab, setSelectedTab] = useState<"search" | "myList" | "region"|"regionDetail" | "bookmark"| "detail"|"myBardetailList">("search");
-  
   const bottomSheetRef = useRef<BottomSheet>(null);
 
   const [selectedBar, setSelectedBar] = useState<"search" | "myList" | "region" | "bookmark"| "detail"|"myBardetailList">("search");

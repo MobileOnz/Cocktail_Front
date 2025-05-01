@@ -9,7 +9,7 @@ import BaseBottomSheet from "../BottomSheet/BaseBottomSheet";
 import theme from "../assets/styles/theme";
 import { heightPercentage, widthPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
 import SelectedRegionTags from "../Components/SelectedRegionTags";
-import MapView from "react-native-maps";
+import MapView, { Region } from "react-native-maps";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API_BASE_URL } from "@env";
 import { getCurrentLocation,requestLocationPermission } from "../utils/requestLocationPermission";
@@ -88,13 +88,21 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
           longitudeDelta: 0.01,
         }, 500); // 0.5초 동안 부드럽게 이동
       }
-      fetchNearbyBars(coords.longitude, coords.latitude);
+      setTimeout(() => {
+        fetchNearbyBars(coords.longitude, coords.latitude);
+      }, 600);
     } else {
       console.log("위치 가져오기 실패 또는 권한 없음");
     }
   };
-  
+  const [isRegionChanged, setIsRegionChanged] = useState(false);
   const mapRef = useRef<MapView>(null);
+  const handleRegionChangeComplete = (region) => {
+    console.log("변경된 지도 중심:", region.latitude, region.longitude);
+    
+    // 중심 좌표가 변경되었으므로, 버튼 활성화 상태로 설정
+    setIsRegionChanged(true);
+  };
 
   const fetchNearbyBars = async (x: number, y: number) => {
     try {
@@ -466,8 +474,8 @@ const styles = StyleSheet.create({
     resizeMode : "contain"
   },
   locationIcon: {
-    width: widthPercentage(48),
-    height: heightPercentage(48),
+    width: widthPercentage(54),
+    height: heightPercentage(54),
   },
   searchContainer: {
     position: "absolute",

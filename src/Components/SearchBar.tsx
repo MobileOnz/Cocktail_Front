@@ -16,7 +16,7 @@ const SearchBar = () => {
           style={{width : widthPercentage(24), height : heightPercentage(24), marginRight : widthPercentage(10)}}
           resizeMode="contain"
         />
-      <Text style={styles.searchButtonText}>서울시 소공동</Text>
+      <Text style={styles.searchButtonText}>가게 또는 메뉴명을 입력하세요</Text>
       </View>
     </TouchableOpacity>
   );
