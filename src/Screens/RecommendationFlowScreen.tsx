@@ -357,8 +357,8 @@ const handleOptionSelect = async (answer: string) => {
           />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate("BottomTabNavigator")}>  
-            <Image source={require("../assets/drawable/home.png")}
-            style={styles.icon} />
+            <Image source={require("../assets/drawable/home_recommend.png")}
+            style={styles.home_icon} />
         </TouchableOpacity>
       </View>
 
@@ -507,6 +507,13 @@ const styles = StyleSheet.create({
     width: widthPercentage(28),
     height: widthPercentage(28),
     resizeMode: "contain",
+  },
+  home_icon: {
+    width: widthPercentage(21),
+    height: widthPercentage(21),
+    resizeMode: "contain",
+    marginTop: heightPercentage(15),
+    marginRight: widthPercentage(15),
   },
   centralContainer: {
     flex: 1,

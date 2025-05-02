@@ -81,7 +81,7 @@ const RecommendationIntroScreen: React.FC<Props> = ({ navigation }) => {
 
       {/* 칵테일 이미지 */}
       <Image
-        source={require("../assets/drawable/cocktail_draw.png")}
+        source={require("../assets/drawable/cocktail_recommend.gif")}
         style={styles.cocktailImage}
       />
 
