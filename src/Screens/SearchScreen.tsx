@@ -37,7 +37,7 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation, route }) => {
         screen: "지도",
         params: {
           searchCompleted: true,
-          searchQuery: searchText,
+          searchQuery: initialKeyword,
         },
       });
     }
