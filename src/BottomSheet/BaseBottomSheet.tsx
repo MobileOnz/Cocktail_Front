@@ -10,13 +10,12 @@ import { widthPercentage, heightPercentage, fontPercentage } from "../assets/sty
 import { useNavigation } from "@react-navigation/native"; 
 import MenuListDetail from "./MenuListDetail";
 import MyBardetailListBottomSheet from "./MyBardetailListBottomSheet";
-import axios from "axios";
 import {API_BASE_URL} from "@env"
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import LoginBottomSheet from "./LoginBottomSheetProps";
 import SelectedRegions from "./SelectedRegions";
 import MapView from "react-native-maps";
-
+import axios from "axios";
 import { useToast } from "../Components/ToastContext";
 import { formatBarForMyList } from "../utils/formatBar";
 import { Portal } from "react-native-paper";
@@ -182,6 +181,61 @@ useFocusEffect(
   const [isLoginSheetVisible, setLoginSheetVisible] = useState(false);
   const [sheetReady, setSheetReady] = useState(false);
   // const [markerList, setMarkerList] = useState([]);
+
+  //지역 선택시 조회
+  useEffect(() => {
+    const fetchNearbyBars = async () => {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/api/location/nearby?x=126.9812675&y=37.5718599`);
+        if (response.data.code === 1) {
+          const rawData = response.data.data;
+  
+          const formatted = rawData.map((bar) => ({
+            id: bar.id,
+            title: bar.bar_name,
+            barAdress: bar.address,
+            thumbNail: bar.thumbnail ? { uri: bar.thumbnail } : require("../assets/drawable/barExample.png"),
+            hashtagList: bar.menus.map((m) => `#${m.name}`),
+          }));
+  
+          const markers = rawData.map((bar) => ({
+            id: bar.id,
+            title: bar.bar_name,
+            coordinate: {
+              latitude: Number(bar.y),
+              longitude: Number(bar.x),
+            },
+          }));
+  
+          setBarData(formatted);
+          setMarkerList(markers);
+          setSelectedTab("regionDetail");
+  
+          // 📍 지도 줌인
+          setTimeout(() => {
+            if (mapRef.current && markers.length > 0) {
+              mapRef.current.fitToCoordinates(markers.map((m) => m.coordinate), {
+                edgePadding: { top: 100, right: 100, bottom: 300, left: 100 },
+                animated: true,
+              });
+            }
+          }, 600);
+        } else {
+          console.log("서버 요청중 에러발생", response.data.msg);
+        }
+      } catch (error) {
+        console.log("잘못된 접근", error);
+      }
+    };
+  
+    if (selectedRegions.length > 0) {
+      fetchNearbyBars();
+  
+    } else {
+      setSelectedTab("search");
+    }
+  }, [selectedRegions]);
+
   
 const headerCheck = async () =>{
   const token = await AsyncStorage.getItem("accessToken");
