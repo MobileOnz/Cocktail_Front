@@ -3,5 +3,5 @@
   "include": [
     "src",
     "src/config/env.d.ts"
-  ]
+, "react-native.config.js"  ]
 }
