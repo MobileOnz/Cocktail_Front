@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Image,
   Easing,
+  Platform,
 } from "react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../navigation/types";
@@ -15,6 +16,8 @@ import {
   heightPercentage,
   fontPercentage,
 } from "../assets/styles/FigmaScreen";
+
+import LottieView from "lottie-react-native";
 
 type RecommendationIntroScreenNavigationProp = StackNavigationProp<
   RootStackParamList,
@@ -80,10 +83,22 @@ const RecommendationIntroScreen: React.FC<Props> = ({ navigation }) => {
       </Animated.View>
 
       {/* 칵테일 이미지 */}
-      <Image
-        source={require("../assets/drawable/cocktail_recommend.gif")}
-        style={styles.cocktailImage}
-      />
+      {
+        Platform.OS === 'ios' ? (
+          <Image
+            source={require("../assets/drawable/cocktail_recommend.gif")}
+            style={styles.cocktailImage}
+          />
+        ) : (
+          <LottieView
+            source={require("../assets/drawable/cocktail_recommend.json")}
+            autoPlay
+            loop
+            style={styles.cocktailImage}
+          />
+        )
+      }
+
 
       {/* 버튼 */}
       <Animated.View style = {[styles.animatedButtonWrapper, { transform: [{ scale: buttonScale}] }]}>

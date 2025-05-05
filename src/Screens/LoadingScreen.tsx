@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, Image, StyleSheet } from "react-native";
+import { View, Text, Image, StyleSheet, Platform } from "react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../navigation/types";
 import { widthPercentage, heightPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
 
 import { API_BASE_URL } from "@env";
+
+import LottieView from "lottie-react-native";
+
 type LoadingScreenNavigationProp = StackNavigationProp<
   RootStackParamList,
   "LoadingScreen"
@@ -71,11 +74,21 @@ const LoadingScreen: React.FC<Props> = ({ navigation, route }) => {
       <Text style={styles.loadingText}>
         {nickname}님만을 위한{"\n"}칵테일을 만들고 있어요.
       </Text>
-      <Image
-        source={require("../assets/drawable/cocktail_waiting.gif")}
-        style={styles.image}
-        resizeMode="contain"
-      />
+      {Platform.OS === "ios" ? (
+        <Image
+          source={require("../assets/drawable/cocktail_waiting.gif")}
+          style={styles.image}
+          resizeMode="contain"
+        />
+      ) : (
+        <LottieView
+          source={require("../assets/drawable/recommend_complete.json")}
+          autoPlay
+          loop
+          style={styles.image}
+        />
+      )}
+
     </View>
   );
 };
