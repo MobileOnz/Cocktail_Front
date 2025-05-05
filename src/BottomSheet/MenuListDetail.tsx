@@ -8,7 +8,9 @@ import {
   StyleSheet,
   Alert,
   Linking,
+
 } from "react-native";
+import { ScrollView as GestureScrollView } from 'react-native-gesture-handler';
 import { BottomSheetScrollView } from "@gorhom/bottom-sheet";
 import { widthPercentage, heightPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
 import { API_BASE_URL } from "@env";
@@ -17,7 +19,7 @@ import { useToast } from "../Components/ToastContext";
 
 import Clipboard from '@react-native-clipboard/clipboard';
 import { formatBarForMyList } from "../utils/formatBar";
-
+import { SafeAreaView } from 'react-native-safe-area-context';
 const MenuListDetail = ({
   handleTabPress,
   barId,
@@ -242,6 +244,7 @@ const MenuListDetail = ({
                 : require("../assets/drawable/bookmark_box.png")
             }
             style={styles.bookmarkIcon}
+            resizeMode="contain"
           />
         </TouchableOpacity>
       </View>
@@ -316,28 +319,33 @@ const MenuListDetail = ({
       <View style={styles.divider} />
 
       <Text style={[styles.menuTitle, { paddingLeft: widthPercentage(16) }]}>메뉴</Text>
-
-      <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-        <View style={styles.tabsContainer}>
-          {uniqueCategories.map((category, index) => (
-            <TouchableOpacity
-              key={index}
-              style={[styles.tab, selectedCategory === category && styles.tabActive]}
-              onPress={() => setSelectedCategory(category)}
-            >
-              <Text
-                style={[
-                  styles.tabText,
-                  selectedCategory === category && { color: "#3E3E3E", fontWeight: "bold" },
-                ]}
-              >
-                {category}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-      </ScrollView>
-
+      
+      <GestureScrollView
+  horizontal
+  showsHorizontalScrollIndicator={false}
+  style={{width: '100%'}}
+  contentContainerStyle={{
+    flexDirection: 'row',
+    paddingHorizontal: widthPercentage(14),
+  }}
+>
+  {uniqueCategories.map((category, index) => (
+    <TouchableOpacity
+      key={index}
+      style={[styles.tab, selectedCategory === category && styles.tabActive]}
+      onPress={() => setSelectedCategory(category)}
+    >
+      <Text
+        style={[
+          styles.tabText,
+          selectedCategory === category && { color: "#3E3E3E", fontWeight: "bold" },
+        ]}
+      >
+        {category}
+      </Text>
+    </TouchableOpacity>
+  ))}
+</GestureScrollView>
 
 
 
@@ -354,6 +362,7 @@ const MenuListDetail = ({
           </View>
         </View>
       ))}
+     
     </BottomSheetScrollView>
   );
 };
@@ -364,6 +373,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#FFFCF3",
+  },
+  safeArea : {
+    flex: 1,
+    padding: 16,
   },
   backButton: {
     alignSelf: "flex-end",
@@ -380,7 +393,7 @@ const styles = StyleSheet.create({
   copyButton: {
     width: widthPercentage(47),
     height: heightPercentage(28),
-    paddingLeft: widthPercentage(5),
+    marginLeft : widthPercentage(10),
     borderRadius: widthPercentage(8),
   },
   headerRow: {
@@ -410,6 +423,7 @@ const styles = StyleSheet.create({
     height: heightPercentage(36),
     marginBottom: heightPercentage(20),
     marginTop: heightPercentage(4),
+    
   },
   scrollContainer: {
     paddingHorizontal: widthPercentage(12),
@@ -424,11 +438,13 @@ const styles = StyleSheet.create({
   infoContainer: {
     paddingHorizontal: widthPercentage(16),
     paddingTop: heightPercentage(10),
+    width : '70%'
   },
   infoItem: {
     flexDirection: "row",
     alignItems: "center",
     marginVertical: heightPercentage(6),
+   
   },
   icon: {
     width: widthPercentage(20),
@@ -438,6 +454,8 @@ const styles = StyleSheet.create({
   infoText: {
     fontSize: fontPercentage(14),
     color: "#3E3E3E",
+    flexWrap: 'wrap',        
+    width: '100%',
   },
   divider: {
     height: heightPercentage(8),
@@ -451,7 +469,7 @@ const styles = StyleSheet.create({
   },
   tabsContainer: {
     flexDirection: "row",
-    paddingHorizontal: widthPercentage(14),
+    flexGrow: 1,
     paddingTop: heightPercentage(10),
   },
   tab: {

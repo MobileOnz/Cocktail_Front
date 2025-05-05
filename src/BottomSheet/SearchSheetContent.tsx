@@ -49,7 +49,6 @@ const MainBottomSheet = ({ sections, showMyBars, handleTabPress, setSelectedTab,
       <View style={styles.textContainer}>
         <Text style={styles.itemTitle} numberOfLines={1} ellipsizeMode="tail">{item.title}</Text>
         
-        <Text style={styles.itemDistance} numberOfLines={1} ellipsizeMode="tail">{item.barAdress}</Text>
         {item.hashtagList && item.hashtagList.length >0 &&(
            <Text style={{ color: "#B9B6AD", fontSize: fontPercentage(12) }}>인기메뉴</Text>
         )}
@@ -151,7 +150,7 @@ const styles = StyleSheet.create({
   hashtagContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
-    marginTop: heightPercentage(16),
+    marginTop: heightPercentage(8),
     width: widthPercentage(197),
     height: heightPercentage(55),
     maxHeight: heightPercentage(50),

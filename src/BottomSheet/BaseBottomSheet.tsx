@@ -277,6 +277,7 @@ const headerCheck = async () =>{
     tab: "search" | "myList" | "region" | "bookmark" | "detail" | "pin" | "myBardetailList",
     bar = null
   ) => {
+
     if (tab === "bookmark") {
       const token = await AsyncStorage.getItem("accessToken");
 
@@ -291,6 +292,7 @@ const headerCheck = async () =>{
         setSelectedBar(bar);                // ✅ UI 표시용 or Detail 화면용
       }
     }
+    
 
     if (tab === "detail") {
       console.log("📦 handleTabPress로 전달된 bar:", bar);

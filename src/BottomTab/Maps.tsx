@@ -89,7 +89,7 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
         }, 500); // 0.5초 동안 부드럽게 이동
       }
       setTimeout(() => {
-        fetchNearbyBars(coords.longitude, coords.latitude);
+      fetchNearbyBars(coords.longitude, coords.latitude);
       }, 600);
     } else {
       console.log("위치 가져오기 실패 또는 권한 없음");
@@ -159,7 +159,7 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
     // 앱 첫 진입 시 서울 고정 좌표로 바 조회
     // 검색을 통해 진입한 경우는 fetchNearbyBars를 호출하지 않음
     if (!route.params?.searchCompleted) {
-      fetchNearbyBars(126.9812675, 37.5718599);
+    fetchNearbyBars(126.9812675, 37.5718599);
     }
   }, []);
   const animatedPosition = useSharedValue(0); // 이 줄을 위로!
@@ -224,12 +224,12 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
       navigation.setParams({ resetRequested: false });
     }
   }, [route.params?.searchCompleted, route.params?.selectedRegions, route.params?.resetRequested]);
+  
 
-
-
+  
 
   const [barList, setBarList] = useState([]);
-
+  
 
   //어떤 이벤트가 발생하든 ui를 리렌더링하기 위한 트리거
   const [refreshTrigger, setRefreshTrigger] = useState(0);
@@ -256,7 +256,7 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
   
           const result = await res.json();
           console.log("응답 결과:", result);
-
+  
           if (!Array.isArray(result.data)) {
             throw new Error("검색 결과가 배열이 아닙니다.");
           }
@@ -279,7 +279,6 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
               latitude: Number(bar.y),
               longitude: Number(bar.x),
             },
-            // icon_tag: bar.icon_tag ?? 5,
           }));
   
           
@@ -358,6 +357,7 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
               navigation.navigate("Maps", { searchCompleted: true });
             }}
           />
+
 
           {/* 검색 초기화 버튼 */}
           <TouchableOpacity style={styles.clearButton} onPress={() => navigation.navigate("SearchScreen")}>
