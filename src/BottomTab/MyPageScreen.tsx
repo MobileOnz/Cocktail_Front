@@ -76,8 +76,12 @@ const MyPageScreen = () => {
             setProfileImageUri(fullUri);
           }
         } else if (contentType?.startsWith("image/")) {
-          const imageUrl = URL.createObjectURL(res.data);
-          setProfileImageUri(imageUrl);
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            const base64data = reader.result as string;
+            setProfileImageUri(base64data);
+          };
+          reader.readAsDataURL(res.data);
         }
       } catch (e) {
         console.warn("프로필 이미지 오류:", e);
