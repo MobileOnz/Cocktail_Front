@@ -83,13 +83,17 @@ const ProfileScreen: React.FC = () => {
   
         } else if (contentType?.startsWith("image/")) {
           const blob = profileRes.data;
-          const imageUrl = URL.createObjectURL(blob);
-  
-          setProfileUri(imageUrl);
-          setInitialProfileUri(imageUrl);
-  
-          console.log("📷 이미지 직접 응답으로 설정:", imageUrl);
-        } else {
+        
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            const base64data = reader.result as string;
+            setProfileUri(base64data);
+            setInitialProfileUri(base64data);
+            console.log("📷 Base64 이미지 설정 완료");
+          };
+          reader.readAsDataURL(blob);
+        }
+         else {
           console.warn("❓ 알 수 없는 Content-Type 응답:", contentType);
         }
   
@@ -100,6 +104,7 @@ const ProfileScreen: React.FC = () => {
   
     fetchProfileData();
   }, []);
+
   
 
   const handleSave = async () => {
