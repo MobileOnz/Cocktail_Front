@@ -164,6 +164,7 @@ const ProfileScreen: React.FC = () => {
               headers: {
                 "Content-Type": "multipart/form-data", // FormData일 땐 직접 설정
               },
+              timeout: 10000,
             });
   
             const uploadJson = uploadRes.data;
