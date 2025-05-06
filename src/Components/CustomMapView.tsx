@@ -31,6 +31,7 @@ return (
       provider={PROVIDER_GOOGLE}
       style={styles.map}
       region={region}
+      
     >
       {markerList?.map((marker) => {
       console.log("📍 마커 찍음", marker);
@@ -46,8 +47,8 @@ return (
         <Marker
           key={marker.id}
           coordinate={{ latitude: lat, longitude: lng }}
-
           onPress={() => onMarkerPress?.(marker.id)}
+          anchor={{ x: 0.1, y: 0.5 }}
         >
           <View style={styles.markerWrapper}>
             <Image source={iconSource} style={styles.markerIcon} />
@@ -84,6 +85,7 @@ const styles = StyleSheet.create({
   },
   markerWrapper: {
     alignItems: "center",
+    
   },
 });
 
