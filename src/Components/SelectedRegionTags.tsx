@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
     marginTop: heightPercentage(10),
   },
   tag: {
-    height : heightPercentage(36),
+    height: heightPercentage(36),
     flexDirection: "row",
     backgroundColor: "#F3EFE6",
     borderRadius: widthPercentage(20),
@@ -54,6 +54,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: widthPercentage(12),
     marginRight: widthPercentage(8),
     alignItems: "center",
+  
+    // 💡 Drop Shadow 설정 (iOS)
+    shadowColor: "#000000",
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.12,
+    shadowRadius: 8,
+  
+    // 💡 Drop Shadow 설정 (Android)
+    elevation: 4,
   },
   resetIcon : {
       width: widthPercentage(44), 
