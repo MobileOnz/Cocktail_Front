@@ -27,7 +27,7 @@
     "expo-font": "^13.0.4",
     "geolocation": "^0.2.0",
     "jwt-decode": "^4.0.0",
-    "lottie-react-native": "7.2.2",
+    "lottie-react-native": "^7.2.2",
     "native": "^0.3.3",
     "patch-package": "8.0.0",
     "react": "19.0.0",
