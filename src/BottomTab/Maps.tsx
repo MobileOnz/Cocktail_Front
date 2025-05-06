@@ -378,7 +378,11 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
 
 
           {/* 검색 초기화 버튼 */}
-          <TouchableOpacity style={styles.clearButton} onPress={() => navigation.navigate("SearchScreen")}>
+          <TouchableOpacity 
+            style={styles.clearButton} 
+            onPress={() => navigation.pop(2)}
+            
+            >
             <Image source={require("../assets/search/mapsdelete.png")}
             style={[{width : widthPercentage(16),height: heightPercentage(16)}]}></Image>
           </TouchableOpacity>
