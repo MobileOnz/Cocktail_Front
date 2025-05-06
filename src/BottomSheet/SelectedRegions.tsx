@@ -6,11 +6,18 @@ import {
   StyleSheet,
   Animated,
   Image,
+  Alert,
 } from "react-native";
 import { BottomSheetScrollView } from "@gorhom/bottom-sheet";
 import axios from "axios";
 import { ScrollView } from "react-native-gesture-handler";
 import { API_BASE_URL } from "@env";
+
+import { widthPercentage, heightPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+import SelectionListSheet from "./SelectionListSheet";
+
 // 지역 이름 → 서버 코드 매핑
 const REGION_CODE_MAP = {
   "서울 전체": "SEOUL_ALL",
@@ -38,19 +45,26 @@ const REGION_CODE_MAP = {
   "수서/복정/장지": "SUSEO",
 };
 
-const SelectedRegions = ({ selectedRegions = [], onRegionSelect }) => {
+const SelectedRegions = ({
+  selectedRegions = [],
+  onRegionSelect,
+  handleTabPress,
+  bookmarkIds,
+  setBookmarkIds,
+  bookmarkListMap,
+  setBookmarkListMap,
+  handleBookmarkToggle,
+}) => {
+  const [barList, setBarList] = useState([]);
+  const regionLayouts = useRef({});
   const scrollRef = useRef(null);
   const underlineX = useRef(new Animated.Value(0)).current;
   const underlineWidth = useRef(new Animated.Value(0)).current;
-
   const [activeRegion, setActiveRegion] = useState(null);
-  const [barList, setBarList] = useState([]);
-  const regionLayouts = useRef({});
 
   const handleRegionPress = async (region) => {
     setActiveRegion(region);
     onRegionSelect?.(region);
-
     const layout = regionLayouts.current[region];
     if (layout) {
       Animated.timing(underlineX, {
@@ -66,18 +80,12 @@ const SelectedRegions = ({ selectedRegions = [], onRegionSelect }) => {
     }
 
     const regionCode = REGION_CODE_MAP[region];
-    if (!regionCode) {
-      console.warn("지역 코드 없음:", region);
-      return;
-    }
+    if (!regionCode) return;
 
     try {
-      const response = await axios.get(
-        `${API_BASE_URL}/api/location/filter`,
-        {
-          params: { areaCodes: regionCode },
-        }
-      );
+      const response = await axios.get(`${API_BASE_URL}/api/location/filter`, {
+        params: { areaCodes: regionCode },
+      });
       const data = response.data?.data?.[regionCode] || [];
       setBarList(data);
     } catch (err) {
@@ -88,173 +96,197 @@ const SelectedRegions = ({ selectedRegions = [], onRegionSelect }) => {
 
   useEffect(() => {
     if (selectedRegions.length === 0) return;
-
     const isActiveRegionStillValid = selectedRegions.includes(activeRegion);
     const firstRegion = selectedRegions[0];
-
     if (!activeRegion || !isActiveRegionStillValid) {
       const layout = regionLayouts.current[firstRegion];
       if (layout) {
         underlineX.setValue(layout.x);
         underlineWidth.setValue(layout.width);
       }
-
       setActiveRegion(firstRegion);
       onRegionSelect?.(firstRegion);
-      handleRegionPress(firstRegion); 
+      handleRegionPress(firstRegion);
     }
   }, [selectedRegions]);
 
+  const handleBookmarkPress = (bar) => {
+    handleTabPress("bookmark", { raw: bar }); // 👉 MenuListDetail처럼 처리
+  };
+
   return (
-    <BottomSheetScrollView
-      showsVerticalScrollIndicator={false}
-      contentContainerStyle={{ paddingBottom: 40 }}
-    >
-      {/* 지역 탭 */}
-      <View>
-        <ScrollView
-          ref={scrollRef}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.scrollContainer}
-        >
-          {selectedRegions.map((region) => (
-            <TouchableOpacity
-              key={region}
-              style={styles.tab}
-              onPress={() => handleRegionPress(region)}
-              onLayout={(e) => {
-                regionLayouts.current[region] = {
-                  x: e.nativeEvent.layout.x,
-                  width: e.nativeEvent.layout.width,
-                };
-              }}
+    <BottomSheetScrollView contentContainerStyle={{ paddingBottom: heightPercentage(40) }}>
+      <ScrollView
+        ref={scrollRef}
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContainer}
+      >
+        {selectedRegions.map((region) => (
+          <TouchableOpacity
+            key={region}
+            style={styles.tab}
+            onPress={() => handleRegionPress(region)}
+            onLayout={(e) => {
+              regionLayouts.current[region] = {
+                x: e.nativeEvent.layout.x,
+                width: e.nativeEvent.layout.width,
+              };
+            }}
+          >
+            <Text
+              style={region === activeRegion ? styles.activeText : styles.text}
             >
-              <Text
-                style={region === activeRegion ? styles.activeText : styles.text}
-              >
-                {region}
-              </Text>
-            </TouchableOpacity>
-          ))}
-          <Animated.View
-            style={[
-              styles.underline,
-              {
-                transform: [{ translateX: underlineX }],
-                width: underlineWidth,
-              },
-            ]}
-          />
-        </ScrollView>
-      </View>
-  
+              {region}
+            </Text>
+          </TouchableOpacity>
+        ))}
+        <Animated.View
+          style={[
+            styles.underline,
+            {
+              transform: [{ translateX: underlineX }],
+              width: underlineWidth,
+            },
+          ]}
+        />
+      </ScrollView>
+
       {/* 바 리스트 */}
       <View style={styles.listContainer}>
         {barList.map((item) => (
-          <View key={item.id} style={styles.itemContainer}>
-            <Image source={{ uri: item.thumbnail }} style={styles.image} />
-            <View style={styles.infoContainer}>
-              <Text style={styles.title}>{item.bar_name}</Text>
-              <Text style={styles.address}>{item.address}</Text>
-              {item.menus && item.menus.length > 0 && (
+          <TouchableOpacity key={item.id} style={styles.itemContainer}>
+            <Image
+              source={{ uri: item.thumbnail }}
+              style={styles.itemImage}
+              resizeMode="cover"
+            />
+            <View style={styles.textContainer}>
+              <Text style={styles.title} numberOfLines={1}>
+                {item.bar_name}
+              </Text>
+              {item.menus?.length > 0 && (
                 <Text style={styles.label}>인기메뉴</Text>
-              )}  
-              <View style={styles.tags}>          
-                {item.menus && item.menus.length > 0 && (
-                  <>
-                  
-                    {item.menus.map((menu, idx) => (
-                      <Text key={idx} style={styles.tag}>
-                        #{menu.name}
-                      </Text>
-                    ))}
-                  </>
-                )}
+              )}
+              <View style={styles.hashtagContainer}>
+                {item.menus?.map((menu, idx) => (
+                  <Text key={idx} style={styles.hashtag}>
+                    #{menu.name}
+                  </Text>
+                ))}
               </View>
             </View>
-          </View>
+            <TouchableOpacity
+              onPress={() => {
+                if (bookmarkIds?.has(item.id)) {
+                  handleBookmarkToggle(item.id); // ❌ 해제
+                } else {
+                  handleTabPress("bookmark", { raw: item }); // ✅ 추가 시 SelectionListSheet 열기
+                }
+              }}
+              style={styles.bookmarkIcon}
+            >
+              <Image
+                source={
+                  bookmarkIds?.has(item.id)
+                    ? require("../assets/drawable/bookmark_checked.png")
+                    : require("../assets/drawable/bookmark.png")
+                }
+                style={styles.bookmarkImage}
+            />
+            </TouchableOpacity>
+          </TouchableOpacity>
         ))}
       </View>
     </BottomSheetScrollView>
   );
-  
 };
+
 
 const styles = StyleSheet.create({
   scrollContainer: {
-    paddingBottom: 4,
+    paddingHorizontal: widthPercentage(16),
+    paddingBottom: heightPercentage(4),
     position: "relative",
-    paddingHorizontal: 16,
   },
   tab: {
-    marginHorizontal: 12,
+    marginHorizontal: widthPercentage(12),
   },
   text: {
-    fontSize: 16,
+    fontSize: fontPercentage(16),
     color: "#999",
   },
   activeText: {
-    fontSize: 16,
+    fontSize: fontPercentage(16),
     color: "#000",
     fontWeight: "bold",
   },
   underline: {
-    height: 2,
+    height: heightPercentage(2),
     backgroundColor: "#000",
     position: "absolute",
     bottom: 0,
     left: 0,
   },
   listContainer: {
-    paddingHorizontal: 16,
-    paddingVertical: 16,
-    gap: 20,
+    paddingHorizontal: widthPercentage(16),
+    paddingVertical: heightPercentage(16),
+    gap: heightPercentage(20),
   },
   itemContainer: {
     flexDirection: "row",
-    marginBottom: 20,
-    gap: 12,
+    marginTop: heightPercentage(12),
+    backgroundColor: "#FFFCF3",
+    paddingBottom: heightPercentage(12),
   },
-  image: {
-    width: 100,
-    height: 100,
-    borderRadius: 12,
+  itemImage: {
+    width: widthPercentage(126),
+    height: heightPercentage(156),
+    borderRadius: widthPercentage(8),
     backgroundColor: "#eee",
   },
-  infoContainer: {
-    flex: 1,
-    justifyContent: "space-between",
+  textContainer: {
+    marginLeft: widthPercentage(12),
+    width: widthPercentage(168),
+    height: heightPercentage(48),
   },
   title: {
-    fontSize: 16,
+    fontSize: fontPercentage(18),
     fontWeight: "bold",
-    color: "#222",
-  },
-  address: {
-    fontSize: 14,
-    color: "#777",
-    marginTop: 4,
+    marginBottom: heightPercentage(4),
   },
   label: {
-    fontSize: 12,
-    color: "#aaa",
-    marginTop: 8,
+    fontSize: fontPercentage(12),
+    color: "#B9B6AD",
   },
-  tags: {
+  hashtagContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: 6,
-    marginTop: 4,
+    marginTop: heightPercentage(8),
+    width: widthPercentage(197),
+    maxHeight: heightPercentage(50),
+    overflow: "hidden",
   },
-  tag: {
+  hashtag: {
     backgroundColor: "#F3EFE6",
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 8,
-    fontSize: 12,
     color: "#7D7A6F",
-    marginRight: 4,
+    paddingVertical: heightPercentage(4),
+    paddingHorizontal: widthPercentage(8),
+    borderRadius: widthPercentage(20),
+    fontSize: fontPercentage(12),
+    textAlign: "center",
+    marginRight: widthPercentage(4),
+    marginBottom: heightPercentage(4),
+    height: heightPercentage(24),
+  },
+  bookmarkIcon: {
+    padding: widthPercentage(10),
+  },
+  bookmarkImage: {
+    width: widthPercentage(24),
+    height: heightPercentage(24),
+    resizeMode: "contain",
+    marginLeft: widthPercentage(12),
   },
 });
 

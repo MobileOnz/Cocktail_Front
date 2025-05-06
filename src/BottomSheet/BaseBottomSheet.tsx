@@ -121,62 +121,60 @@ useFocusEffect(
   //북마크된 가게 불러오기위한 변수
   const [myBars, setMyBars] = useState([]);
 
-  //북마크 가게 불러오기
-  useEffect(() => {
-    const fetchBookmarkedBars = async () => {
-      try {
-        const token = await AsyncStorage.getItem("accessToken");
-        if (!token) return;
-  
-        const response = await fetch(`${API_BASE_URL}/api/item/public/all`, {
-          method: "GET",
-          headers: { Authorization: `${token}` },
-        });
-  
-        const result = await response.json();
-        console.log("✅ 북마크 응답:", result);
-  
-        if (result.code === 1) {
-          // ✅ 북마크 데이터 변환
-          const transformed = result.data.map((bar) => ({
-            id: bar.id,
-            title: bar.bar_name,
-            barAdress: bar.address,
-            thumbNail: { uri: bar.thumbnail },
-            hashtagList: bar.menus?.map((menu) => `#${menu.name}`) ?? [],
-          }));
-          setMyBars(transformed);
-  
-          result.data.forEach((bar, idx) => {
-            console.log(`[${idx}] id=${bar.id}, name=${bar.bar_name}, addr=${bar.address}`);
+  useFocusEffect(
+    useCallback(() => {
+      const fetchBookmarkedBars = async () => {
+        try {
+          const token = await AsyncStorage.getItem("accessToken");
+          if (!token) return;
+    
+          const response = await fetch(`${API_BASE_URL}/api/item/public/all`, {
+            method: "GET",
+            headers: { Authorization: `${token}` },
           });
-
-          console.log("result.data 예시", result.data[0]);
-
-          // ✅ 북마크 ID Set 및 barId -> listId Map 구성
-          const ids = new Set<number>();
-          const map = new Map<number, number>();
+    
+          const result = await response.json();
+          console.log("✅ 북마크 응답:", result);
+    
+          if (result.code === 1) {
+            // ✅ 북마크 데이터 변환
+            const transformed = result.data.map((bar) => ({
+              id: bar.id,
+              title: bar.bar_name,
+              barAdress: bar.address,
+              thumbNail: { uri: bar.thumbnail },
+              hashtagList: bar.menus?.map((menu) => `#${menu.name}`) ?? [],
+            }));
+            setMyBars(transformed);
+    
+            result.data.forEach((bar, idx) => {
+              console.log(`[${idx}] id=${bar.id}, name=${bar.bar_name}, addr=${bar.address}`);
+            });
   
-          result.data.forEach((bar) => {
-            ids.add(bar.id);
-            if (bar.list_id !== undefined) {
-              map.set(bar.id, bar.list_id);
-            }
-          });
+            console.log("result.data 예시", result.data[0]);
   
-          console.log("✅ 최종 map:", map);
-          setBookmarkIds(ids);
-          setBookmarkListMap(map);
+            // ✅ 북마크 ID Set 및 barId -> listId Map 구성
+            const ids = new Set<number>();
+            const map = new Map<number, number>();
+    
+            result.data.forEach((bar) => {
+              ids.add(bar.id);
+              if (bar.list_id !== undefined) {
+                map.set(bar.id, bar.list_id);
+              }
+            });
+    
+            console.log("✅ 최종 map:", map);
+            setBookmarkIds(ids);
+            setBookmarkListMap(map);
+          }
+        } catch (error) {
+          console.error("북마크 가게 불러오기 실패:", error);
         }
-      } catch (error) {
-        console.error("북마크 가게 불러오기 실패:", error);
-      }
-    };
-  
-    fetchBookmarkedBars();
-  }, []);
-  
-
+      };
+      fetchBookmarkedBars();
+    }, [])
+  );
 
   const [isLoginSheetVisible, setLoginSheetVisible] = useState(false);
   const [sheetReady, setSheetReady] = useState(false);
@@ -528,6 +526,12 @@ const headerCheck = async () =>{
         onRegionSelect={(region) => {
           console.log("선택된 지역:", region);
         }}
+        handleTabPress={handleTabPress}
+        bookmarkIds={bookmarkIds}
+        setBookmarkIds={setBookmarkIds}
+        bookmarkListMap={bookmarkListMap}
+        setBookmarkListMap={setBookmarkListMap}
+        handleBookmarkToggle={handleBookmarkToggle}
       />
       ): selectedTab === "myList" ? (
           <MyListSheetContent handleTabPress={handleTabPress} />
