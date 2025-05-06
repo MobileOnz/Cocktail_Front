@@ -8844,6 +8844,14 @@ react-native-vector-icons@*, react-native-vector-icons@10.2.0:
     prop-types "^15.7.2"
     yargs "^16.1.1"
 
+react-native-webview@*:
+  version "13.13.5"
+  resolved "https://registry.npmjs.org/react-native-webview/-/react-native-webview-13.13.5.tgz"
+  integrity sha512-MfC2B+woL4Hlj2WCzcb1USySKk+SteXnUKmKktOk/H/AQy5+LuVdkPKm8SknJ0/RxaxhZ48WBoTRGaqgR137hw==
+  dependencies:
+    escape-string-regexp "^4.0.0"
+    invariant "2.2.4"
+
 react-native@*, "react-native@^0.0.0-0 || >=0.60 <1.0", "react-native@^0.0.0-0 || >=0.65 <1.0", react-native@^0.79.2, "react-native@>= 0.59", "react-native@>= 0.61.5", "react-native@>= 0.64.3", react-native@>=0.44.1, react-native@>=0.46, react-native@>=0.56, react-native@>=0.57.0, react-native@>=0.59.0, react-native@>=0.63.0, react-native@>=0.70.0, react-native@>=0.73.0, react-native@>=v0.40.0:
   version "0.79.2"
   resolved "https://registry.npmjs.org/react-native/-/react-native-0.79.2.tgz"

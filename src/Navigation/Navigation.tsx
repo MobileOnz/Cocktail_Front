@@ -37,7 +37,7 @@ export type RootStackParamList = {
   } | undefined;
   ProfileScreen: undefined;
   SignupScreen: {code? : string};
-  TermsAndConditionsScreen : undefined
+  TermsAndConditionsScreen : undefined  
 };
 
 const Stack = createStackNavigator<RootStackParamList>();

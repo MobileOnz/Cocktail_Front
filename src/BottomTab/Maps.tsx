@@ -79,15 +79,14 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
     const coords = await getCurrentLocation();
     if (coords) {
       console.log("현재 위치 좌표:", coords);
-  
-      if (mapRef.current) {
-        mapRef.current.animateToRegion({
-          latitude: coords.latitude,
-          longitude: coords.longitude,
-          latitudeDelta: 0.01,
-          longitudeDelta: 0.01,
-        }, 500); // 0.5초 동안 부드럽게 이동
-      }
+      const newLongitude = coords.longitude + 0.001;
+      setRegion({
+        latitude: coords.latitude,
+        longitude: coords.longitude,
+        latitudeDelta: 0.01, // 기본 zoom 설정
+        longitudeDelta: 0.01,
+      });
+
       setTimeout(() => {
       fetchNearbyBars(coords.longitude, coords.latitude);
       }, 600);
@@ -190,6 +189,13 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
   const [activeRegion, setActiveRegion] = useState<string|null>(null);
   const [markerList, setMarkerList] = useState([]);
   const {searchQuery} = route.params|| "";
+
+  const [region, setRegion] = useState({
+    latitude: 37.5665, // 기본값: 서울
+    longitude: 126.978,
+    latitudeDelta: 0.02,
+    longitudeDelta: 0.02,
+  });
 
   const [selectedBarId, setSelectedBarId] = useState<number | null>(null);
   const centerMapOnBar = (x: number, y: number) => {
@@ -383,13 +389,7 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
       <View style={styles.mapContainer}>
 
         <CustomMapView
-
-          initialRegion={{
-            latitude: 37.5665,
-            longitude: 126.978,
-            latitudeDelta: 0.02,
-            longitudeDelta: 0.02,
-          }}
+        region={region} // 지역 상태를 사용
           mapRef={mapRef}
           markerList={markerList}
           onMarkerPress={(barId) => {

@@ -20,7 +20,7 @@ const imageMap = {
 
 
  
-const CustomMapView = ({ initialRegion, mapRef, markerList, onMarkerPress }) => {
+const CustomMapView = ({ region, mapRef, markerList, onMarkerPress }) => {
 const [iconLoaded, setIconLoaded] = useState(false);
  
 return (
@@ -30,7 +30,7 @@ return (
   
       provider={PROVIDER_GOOGLE}
       style={styles.map}
-      region={initialRegion}
+      region={region}
     >
       {markerList?.map((marker) => {
       console.log("📍 마커 찍음", marker);
