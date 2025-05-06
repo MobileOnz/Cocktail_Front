@@ -21,8 +21,11 @@ const imageMap = {
 
  
 const CustomMapView = ({ region, mapRef, markerList, onMarkerPress }) => {
-const [iconLoaded, setIconLoaded] = useState(false);
- 
+  const [iconLoadedMap, setIconLoadedMap] = useState({});
+
+  const handleImageLoad = (id) => {
+    setIconLoadedMap((prev) => ({ ...prev, [id]: true }));
+  };
 return (
     <MapView
       key={markerList.length} //markerList가 바뀔 때마다 MapView를 강제 리렌더링
@@ -42,16 +45,21 @@ return (
 
 
       const iconSource = imageMap[marker.icon_tag] ?? imageMap[5];
+      const isLoaded = iconLoadedMap[marker.id] ?? false;
 
       return (
         <Marker
+          tracksViewChanges={!isLoaded}
           key={marker.id}
           coordinate={{ latitude: lat, longitude: lng }}
           onPress={() => onMarkerPress?.(marker.id)}
           anchor={{ x: 0.1, y: 0.5 }}
+          
         >
           <View style={styles.markerWrapper}>
-            <Image source={iconSource} style={styles.markerIcon} />
+            <Image source={iconSource}
+             style={styles.markerIcon} 
+             onLoad={() => handleImageLoad(marker.id)}/>
             <View style={styles.labelContainer}>
               <Text style={styles.labelText}>{marker.title}</Text>
             </View>
