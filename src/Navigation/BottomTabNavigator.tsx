@@ -148,7 +148,9 @@ const BottomTabNavigator = () => {
         setLoginSheetVisible(false);
         navigation.navigate("맞춤 추천" as never);
       }}
+      navigation={navigation}
     />
+
     
     </View>
   );

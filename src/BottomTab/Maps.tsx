@@ -349,7 +349,19 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
 
           {/* 검색 결과 화면 */}
           <TextInput
-            style={[styles.searchButton, { backgroundColor: "white" }]}
+            style={[styles.searchButton, {
+              backgroundColor: "white",
+              fontSize: fontPercentage(14),
+              lineHeight: fontPercentage(14 * 1.429), 
+              letterSpacing: fontPercentage(14 * 0.0145), 
+              fontWeight: "700",
+              paddingVertical: heightPercentage(12), 
+              borderRadius: widthPercentage(8),
+              borderWidth: widthPercentage(1),
+              borderColor: "#E4DFD8",
+              marginBottom: heightPercentage(12),
+            },
+            ]}
             placeholder={searchQuery}
             placeholderTextColor="black"
             returnKeyType="done"
@@ -361,7 +373,8 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
 
           {/* 검색 초기화 버튼 */}
           <TouchableOpacity style={styles.clearButton} onPress={() => navigation.navigate("SearchScreen")}>
-            <Text style={styles.textButton}>X</Text>
+            <Image source={require("../assets/search/mapsdelete.png")}
+            style={[{width : widthPercentage(16),height: heightPercentage(16)}]}></Image>
           </TouchableOpacity>
         </View>
       )}
@@ -497,28 +510,39 @@ const styles = StyleSheet.create({
     backgroundColor: theme.background,
     flexDirection: "row",
     alignItems: "center",
+    paddingHorizontal: 10,
+    height: 50,
   },
   searchButton: {
     width: widthPercentage(275),
     height: heightPercentage(48),
     borderRadius: widthPercentage(8),
-    backgroundColor: theme.background,
+    backgroundColor: "white",
     paddingHorizontal: widthPercentage(10),
     zIndex: 10,
     marginBottom: heightPercentage(12),
     borderWidth: widthPercentage(1),
     borderColor: "#E4DFD8",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  searchButtonText: {
+    fontSize: fontPercentage(14),
+    fontWeight: "700", // Pretendard Bold
+    lineHeight: fontPercentage(14 * 1.429), // 142.9%
+    letterSpacing: fontPercentage(14 * 0.0145), // 1.45%
+    color: "#000000",
   },
   backButton: {
     marginBottom: heightPercentage(10),
     width: widthPercentage(24),
     height: heightPercentage(24),
-    marginLeft: widthPercentage(16),
     marginRight: widthPercentage(10),
   },
   clearButton: {
     padding: widthPercentage(10),
     borderRadius: widthPercentage(8),
+    marginBottom : heightPercentage(8),
   },
   buttonText: {
     marginLeft: widthPercentage(5),
