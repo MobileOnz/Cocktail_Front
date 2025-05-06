@@ -8,13 +8,15 @@ import {
   TouchableOpacity,
   Keyboard,
   Platform,
-  InputAccessoryView, // <- 여기
+  InputAccessoryView,
 } from "react-native";
 import { widthPercentage, heightPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
 import { useNavigation } from "@react-navigation/native";
 import { launchImageLibrary } from "react-native-image-picker";
 import ImageResizer from "react-native-image-resizer";
 import instance from "../tokenRequest/axios_interceptor";
+import { API_BASE_URL } from "@env";
+
 
 const ProfileScreen: React.FC = () => {
   const navigation = useNavigation();
@@ -29,42 +31,76 @@ const ProfileScreen: React.FC = () => {
   const isProfileChanged = profileUri !== initialProfileUri;
   const isChanged = isNicknameChanged || isProfileChanged;
 
+
   useEffect(() => {
     const fetchProfileData = async () => {
+  
       try {
         const res = await instance.get("/api/get/member");
-        const result = res.data;
-        if (result.code === 1) {
-          const member = result.data;
+  
+        const json = res.data;
+        console.log("👤 get/member 응답:", json);
+  
+        if (json && json.code === 1) {
+          const member = json.data;
           setNickname(member.nickname);
           setNewNickname("");
+          console.log("✅ 닉네임 불러오기 완료:", member.nickname);
+        } else {
+          console.warn("❌ 닉네임 API 실패:", json?.msg || json);
         }
       } catch (error) {
         console.error("❌ 닉네임 불러오기 실패", error);
       }
-
+  
       try {
-        const res = await instance.get("/api/profile", { responseType: "blob" });
-        const contentType = res.headers["content-type"];
+        const profileRes = await instance.get("/api/profile", {
+          responseType: "blob",
+        });
+  
+        const contentType = profileRes.headers["content-type"];
+  
         if (contentType?.includes("application/json")) {
-          const { data } = res.data;
-          if (data) {
-            const fullUri = data.startsWith("http") ? data : `${res.config.baseURL}${data.startsWith("/") ? "" : "/"}${data}`;
+          // blob -> text -> json 파싱
+          const text = await profileRes.data.text();
+          const profileJson = JSON.parse(text);
+          console.log("📷 프로필 응답 (JSON):", profileJson);
+  
+          if (profileJson && profileJson.code === 1 && profileJson.data) {
+            const profileUrl = profileJson.data;
+            const fullUri = profileUrl.startsWith("http")
+              ? profileUrl
+              : `${API_BASE_URL}${profileUrl.startsWith("/") ? "" : "/"}${profileUrl}`;
+  
             setProfileUri(fullUri);
             setInitialProfileUri(fullUri);
+  
+            const short = fullUri.length > 100 ? fullUri.slice(0, 100) + "..." : fullUri;
+            console.log("✅ 프로필 이미지 불러오기 완료:", short);
+          } else {
+            console.warn("❌ 프로필 이미지 API 실패:", profileJson?.msg || profileJson);
           }
+  
         } else if (contentType?.startsWith("image/")) {
-          const imageUrl = URL.createObjectURL(res.data);
+          const blob = profileRes.data;
+          const imageUrl = URL.createObjectURL(blob);
+  
           setProfileUri(imageUrl);
           setInitialProfileUri(imageUrl);
+  
+          console.log("📷 이미지 직접 응답으로 설정:", imageUrl);
+        } else {
+          console.warn("❓ 알 수 없는 Content-Type 응답:", contentType);
         }
+  
       } catch (error) {
         console.error("❌ 프로필 이미지 불러오기 실패", error);
       }
     };
-
+  
     fetchProfileData();
   }, []);
+  
 
   const handleSave = async () => {
     if (!isChanged) return;
@@ -93,6 +129,58 @@ const ProfileScreen: React.FC = () => {
     }
   };
 
+  const handleProfileImageChange = async () => {
+    launchImageLibrary(
+      { mediaType: "photo", selectionLimit: 1 },
+      async (response) => {
+        if (!response.didCancel && response.assets && response.assets.length > 0) {
+          try {
+            const asset = response.assets[0];
+            console.log("📸 선택된 원본 이미지:", asset);
+  
+            const resizedImage = await ImageResizer.createResizedImage(
+              asset.uri!,
+              400, // 너비 (원본 비율 유지됨)
+              400, // 높이
+              "PNG", // 포맷 강제 지정
+              80 // 품질 (0~100)
+            );
+  
+            const uri = resizedImage.uri;
+  
+  
+            if (!initialProfileUri) setInitialProfileUri(uri);
+            setProfileUri(uri);
+  
+            // ✅ 여기서 즉시 업로드 (instance 사용)
+            const formData = new FormData();
+            formData.append("file", {
+              uri: uri.startsWith("file://") ? uri : `file://${uri}`,
+              name: `profile_${Date.now()}.png`,
+              type: "image/png",
+            } as any);
+  
+            const uploadRes = await instance.post("/api/upload/profile", formData, {
+              headers: {
+                "Content-Type": "multipart/form-data", // FormData일 땐 직접 설정
+              },
+            });
+  
+            const uploadJson = uploadRes.data;
+            if (uploadJson?.code === 1) {
+              console.log("✅ 즉시 프로필 이미지 업로드 성공");
+            } else {
+              console.warn("❌ 즉시 업로드 실패:", uploadJson?.msg);
+            }
+          } catch (error) {
+            console.error("❌ 이미지 리사이즈 실패 또는 업로드 오류:", error);
+          }
+        }
+      }
+    );
+  };
+
+
   return (
     <View style={styles.container}>
       {/* 상단 헤더 */}
@@ -106,7 +194,7 @@ const ProfileScreen: React.FC = () => {
 
       {/* 프로필 이미지 */}
       <View style={styles.profileSection}>
-        <TouchableOpacity style={styles.profileWrapper}>
+        <TouchableOpacity style={styles.profileWrapper} onPress={handleProfileImageChange}>
           <Image
             source={
               profileUri
