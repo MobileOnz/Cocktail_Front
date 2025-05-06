@@ -462,6 +462,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: theme.background,
+    position: "relative",
+  zIndex: 9999,
+  elevation: 9999,
+
   },
   currentLocationButton: {
     width: 50,
@@ -512,6 +516,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 10,
     height: 50,
+    zIndex: 9999,                 
+   elevation: 9999,  
   },
   searchButton: {
     width: widthPercentage(275),

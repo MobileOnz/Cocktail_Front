@@ -40,7 +40,7 @@ const BaseBottomSheet = ({
   markerList,
   }) => {
   const navigation = useNavigation();
-  const snapPoints = useMemo(() => ["10%", "30%", "76%"], []);
+  const snapPoints = useMemo(() => ["19%", "38%", "85%"], []);
   
   const mapRef = useRef<MapView>(null);
   
