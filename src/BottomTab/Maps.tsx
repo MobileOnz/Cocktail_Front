@@ -155,6 +155,7 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
   };
 
   useEffect(() => {
+    
     // 앱 첫 진입 시 서울 고정 좌표로 바 조회
     // 검색을 통해 진입한 경우는 fetchNearbyBars를 호출하지 않음
     if (!route.params?.searchCompleted) {
@@ -341,10 +342,22 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
   };
 
   return (
+    
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" translucent backgroundColor="transparent" />
-
+  
       {isSearchCompleted && (
+        <>
+        <View
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          height: heightPercentage(60), // 버튼 높이보다 약간 더 크게
+          backgroundColor: theme.background,
+          zIndex: 9999, // 버튼보다 높게
+        }}/>
         <View style={styles.resultHeader}>
           {/* 뒤로가기 버튼 */}
           <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
@@ -387,6 +400,7 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
             style={[{width : widthPercentage(16),height: heightPercentage(16)}]}></Image>
           </TouchableOpacity>
         </View>
+        </>
       )}
 
       {/* 지도 */}
@@ -466,10 +480,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: theme.background,
-    position: "relative",
-  zIndex: 9999,
-  elevation: 9999,
-
+    zIndex: 100,
   },
   currentLocationButton: {
     width: 50,
@@ -480,6 +491,7 @@ const styles = StyleSheet.create({
   buttonRowContainer: {
     flexDirection: "row",
     alignItems: "center",
+    zIndex: 1,
   },
   
   researchButtonContainer: {
@@ -488,17 +500,20 @@ const styles = StyleSheet.create({
     height: heightPercentage(36),
     justifyContent: "center",
     alignItems: "center",
+    zIndex : 1
   },
   researchButton : {
     width : widthPercentage(147),
     height : heightPercentage(36),
-    resizeMode : "contain"
+    resizeMode : "contain",
+    zIndex : 1
   },
   locationIcon: {
     width: widthPercentage(54),
     height: heightPercentage(54),
   },
   searchContainer: {
+    
     position: "absolute",
     flexDirection: "column",
     top: heightPercentage(50), 
@@ -521,7 +536,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     height: 50,
     zIndex: 9999,                 
-   elevation: 9999,  
+    elevation: 9999,  
   },
   searchButton: {
     width: widthPercentage(275),
