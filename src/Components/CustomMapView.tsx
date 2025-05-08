@@ -20,7 +20,7 @@ const imageMap = {
 
 
  
-const CustomMapView = ({ region, mapRef, markerList, onMarkerPress }) => {
+const CustomMapView = ({ region, mapRef, markerList, onMarkerPress,onDrag}) => {
   const [iconLoadedMap, setIconLoadedMap] = useState({});
 
   const handleImageLoad = (id) => {
@@ -30,10 +30,14 @@ return (
     <MapView
       key={markerList.length} //markerList가 바뀔 때마다 MapView를 강제 리렌더링
       ref={mapRef}
-  
       provider={PROVIDER_GOOGLE}
       style={styles.map}
       region={region}
+      onPanDrag={() => {
+        console.log("지도 움직이는 중...");
+        onDrag?.(); // 부모에게 알림
+      }}
+      
       
     >
       {markerList?.map((marker) => {

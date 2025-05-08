@@ -28,28 +28,34 @@ type RootStackParamList = {
 };
 
 type MapsProps = StackScreenProps<RootStackParamList, "Maps">; 
-const CurrentLocationButton = ({ onPress, onreSearch,searchQuery }) => {
+const CurrentLocationButton = ({ onPress, onreSearch,searchQuery,isUsingCurrentLocation,buttonsEnabled }) => {
   return (
     <View pointerEvents="box-none" style={styles.buttonRowContainer}>
-      {searchQuery && (
-        <TouchableOpacity
-          style={[styles.researchButtonContainer]}
-          onPress={onreSearch}
-        >
-          <Image
-            source={require("../assets/drawable/researchButton.png")}
-            style={styles.researchButton}
-            resizeMode="contain"
-          />
-        </TouchableOpacity>
-      )}
+      
+      {buttonsEnabled && (
+  <TouchableOpacity
+    style={styles.researchButtonContainer}
+    onPress={onreSearch}
+  >
+    <Image
+      source={require("../assets/drawable/researchButton.png")}
+      style={styles.researchButton}
+      resizeMode="contain"
+    />
+  </TouchableOpacity>
+)}
+      
 
       <TouchableOpacity
         style={styles.currentLocationButton}
         onPress={onPress}
       >
         <Image
-          source={require("../assets/drawable/currentlocation.png")}
+          source={
+            buttonsEnabled&&isUsingCurrentLocation
+              ? require("../assets/drawable/currentlocation_active.png") // 현재 위치 사용 중인 아이콘
+              : require("../assets/drawable/currentlocation.png") // 비활성화 아이콘
+          }
           style={styles.locationIcon}
           resizeMode="contain"
         />
@@ -60,6 +66,18 @@ const CurrentLocationButton = ({ onPress, onreSearch,searchQuery }) => {
 
 
 const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
+  const [buttonsEnabled, setButtonsEnabled] = useState(false)
+  const [isUsingCurrentLocation, setIsUsingCurrentLocation] = useState(false)
+
+  const handleMapDrag = () => {
+    console.log("지도 드래그 발생");
+    setButtonsEnabled(true); 
+    if(isUsingCurrentLocation){
+      setIsUsingCurrentLocation(false)
+      
+    }
+    
+  };
 
   const handleSearchInCurrentMapRegion = async () => {
     try {
@@ -70,6 +88,7 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
       console.log("지도 중심 좌표:", latitude, longitude);
   
       fetchNearbyBars(longitude, latitude);
+      setButtonsEnabled(false);
     } catch (e) {
       console.error("다시 검색 중 에러:", e);
     }
@@ -79,13 +98,13 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
     const coords = await getCurrentLocation();
     if (coords) {
       console.log("현재 위치 좌표:", coords);
-      const newLongitude = coords.longitude + 0.001;
       setRegion({
         latitude: coords.latitude,
         longitude: coords.longitude,
         latitudeDelta: 0.01, // 기본 zoom 설정
         longitudeDelta: 0.01,
       });
+      setIsUsingCurrentLocation(true); 
 
       setTimeout(() => {
       fetchNearbyBars(coords.longitude, coords.latitude);
@@ -94,14 +113,8 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
       console.log("위치 가져오기 실패 또는 권한 없음");
     }
   };
-  const [isRegionChanged, setIsRegionChanged] = useState(false);
   const mapRef = useRef<MapView>(null);
-  const handleRegionChangeComplete = (region) => {
-    console.log("변경된 지도 중심:", region.latitude, region.longitude);
-    
-    // 중심 좌표가 변경되었으므로, 버튼 활성화 상태로 설정
-    setIsRegionChanged(true);
-  };
+
 
   const fetchNearbyBars = async (x: number, y: number) => {
     try {
@@ -160,6 +173,7 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
     // 검색을 통해 진입한 경우는 fetchNearbyBars를 호출하지 않음
     if (!route.params?.searchCompleted) {
     fetchNearbyBars(126.9812675, 37.5718599);
+    setIsUsingCurrentLocation(false);
     }
   }, []);
   const animatedPosition = useSharedValue(0); // 이 줄을 위로!
@@ -414,6 +428,7 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
             setSelectedTab("detail");
             setSelectedBarId(barId);
           }}
+          onDrag={handleMapDrag}
         />
       </View>
   
@@ -469,6 +484,9 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
     onPress={handleCurrentLocationPress}
     onreSearch={handleSearchInCurrentMapRegion}
     searchQuery={searchQuery}
+    isUsingCurrentLocation={isUsingCurrentLocation}
+    buttonsEnabled={buttonsEnabled} 
+    
   />
 </Animated.View>
 
