@@ -28,7 +28,7 @@ type RootStackParamList = {
 };
 
 type MapsProps = StackScreenProps<RootStackParamList, "Maps">; 
-const CurrentLocationButton = ({ onPress, onreSearch,searchQuery,isUsingCurrentLocation,buttonsEnabled }) => {
+const CurrentLocationButton = ({ handleCurrentLocationPress, onreSearch,searchQuery,isUsingCurrentLocation,buttonsEnabled }) => {
   return (
     <View pointerEvents="box-none" style={styles.buttonRowContainer}>
       
@@ -48,7 +48,7 @@ const CurrentLocationButton = ({ onPress, onreSearch,searchQuery,isUsingCurrentL
 
       <TouchableOpacity
         style={styles.currentLocationButton}
-        onPress={onPress}
+        onPress={handleCurrentLocationPress}
       >
         <Image
           source={
@@ -69,8 +69,8 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
   const [buttonsEnabled, setButtonsEnabled] = useState(false)
   const [isUsingCurrentLocation, setIsUsingCurrentLocation] = useState(false)
 
+  //드래그 확인 
   const handleMapDrag = () => {
-    console.log("지도 드래그 발생");
     setButtonsEnabled(true); 
     if(isUsingCurrentLocation){
       setIsUsingCurrentLocation(false)
@@ -98,12 +98,24 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
     const coords = await getCurrentLocation();
     if (coords) {
       console.log("현재 위치 좌표:", coords);
+
+      if (mapRef.current) {
+        mapRef.current.animateToRegion({
+          latitude: coords.latitude,
+          longitude: coords.longitude,
+          latitudeDelta: 0.01,
+          longitudeDelta: 0.01,
+        }, 500);
+      }
       setRegion({
         latitude: coords.latitude,
         longitude: coords.longitude,
         latitudeDelta: 0.01, // 기본 zoom 설정
         longitudeDelta: 0.01,
       });
+
+      
+      
       setIsUsingCurrentLocation(true); 
 
       setTimeout(() => {
@@ -112,7 +124,7 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
     } else {
       console.log("위치 가져오기 실패 또는 권한 없음");
     }
-  };
+  }
   const mapRef = useRef<MapView>(null);
 
 
@@ -173,12 +185,10 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
     // 검색을 통해 진입한 경우는 fetchNearbyBars를 호출하지 않음
     if (!route.params?.searchCompleted) {
     fetchNearbyBars(126.9812675, 37.5718599);
-    setIsUsingCurrentLocation(false);
     }
   }, []);
-  const animatedPosition = useSharedValue(0); // 이 줄을 위로!
-  const BUTTON_HEIGHT = heightPercentage(50); // 버튼 높이 정도
-  const BOTTOM_MARGIN = heightPercentage(12);
+  const animatedPosition = useSharedValue(0)
+
   const buttonWrapperStyle = useAnimatedStyle(() => {
     return {
       position: "absolute",
@@ -223,12 +233,12 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
         {
           latitude: y,
           longitude: x,
-          latitudeDelta: 0.005,
-          longitudeDelta: 0.005,
-        }
-        
-      ),
-      500
+          latitudeDelta: 0.02,
+          longitudeDelta: 0.02,
+        },
+        500
+      )
+
     }else{
       console.log("❌ mapRef 또는 좌표값 문제 있음");
     }
@@ -481,7 +491,7 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
       <Animated.View style={buttonWrapperStyle}>
         
   <CurrentLocationButton
-    onPress={handleCurrentLocationPress}
+    handleCurrentLocationPress={handleCurrentLocationPress}
     onreSearch={handleSearchInCurrentMapRegion}
     searchQuery={searchQuery}
     isUsingCurrentLocation={isUsingCurrentLocation}

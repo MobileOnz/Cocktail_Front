@@ -34,7 +34,6 @@ return (
       style={styles.map}
       region={region}
       onPanDrag={() => {
-        console.log("지도 움직이는 중...");
         onDrag?.(); // 부모에게 알림
       }}
       
