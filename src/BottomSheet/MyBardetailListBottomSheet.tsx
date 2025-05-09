@@ -72,7 +72,7 @@ const MyBardetailListBottomSheet = ({listId}: {listId: number}) => {
           console.warn("로그인이 필요합니다.");
           return;
         }
-        const response = await fetch(`${API_BASE_URL}/api/list/${listId}/item`, {
+        const response = await fetch(`${API_BASE_URL}/api/item/${listId}`, {
           method: "GET",
           headers: {
             Authorization: `${token}`,
