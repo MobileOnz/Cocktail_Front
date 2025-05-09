@@ -1,24 +1,28 @@
 import React from "react";
-import { View, Text, Modal, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, Modal, TouchableOpacity, StyleSheet, TouchableWithoutFeedback } from "react-native";
 import { widthPercentage, heightPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
 
 const CustomAlertModal = ({ visible, message, onCancel, onConfirm }) => {
+  if (!visible) return null; // 직접 제어
+
   return (
-    <Modal transparent visible={visible} animationType="fade">
-      <TouchableOpacity style={styles.overlay} activeOpacity={1} onPress={onCancel}>
-        <View style={styles.alertBox}>
-          <Text style={styles.message}>{message}</Text>
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity onPress={onCancel}>
-              <Text style={[styles.cancelText, styles.cancelButton]}>취소</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={onConfirm}>
-              <Text style={[styles.confirmText,styles.selectButton ]}>삭제</Text>
-            </TouchableOpacity>
+    <TouchableWithoutFeedback onPress={onCancel}>
+      <View style={styles.overlay}>
+        <TouchableWithoutFeedback>
+          <View style={styles.alertBox}>
+            <Text style={styles.message}>{message}</Text>
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity style={[styles.button]} onPress={onConfirm}>
+                <Text style={styles.confirmText}>삭제</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={[styles.button, styles.leftBorder]} onPress={onCancel}>
+                <Text style={styles.cancelText}>취소</Text>
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
-      </TouchableOpacity>
-    </Modal>
+        </TouchableWithoutFeedback>
+      </View>
+    </TouchableWithoutFeedback>
   );
 };
 
@@ -59,16 +63,20 @@ const styles = StyleSheet.create({
     borderRightColor : "#E4DFD8",
     
   },
-  selectButton: {
-    width : widthPercentage(129),
-    height : heightPercentage(44),
-    textAlign : "center",
-    textAlignVertical : "center",
-  },
   cancelText: {
     color: "#B9B6AD",
     fontWeight: "500",
     fontSize: fontPercentage(16),
+  },
+  button: {
+    width: widthPercentage(129),
+    height: heightPercentage(44),
+    justifyContent: "center",   // ✅ 수직 중앙
+    alignItems: "center",       // ✅ 수평 중앙
+  },
+  leftBorder: {
+    borderLeftWidth: 1,
+    borderLeftColor: "#E4DFD8",
   },
   confirmText: {
     color: "#FF465C",

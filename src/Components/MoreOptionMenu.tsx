@@ -3,6 +3,7 @@ import { TouchableOpacity, Image, View, StyleSheet, Text } from "react-native";
 import CustomAlertModal from "./CustomAlertModal";
 import { widthPercentage, heightPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
 import Popover from "react-native-popover-view";
+import { Portal } from "react-native-paper";
 
 const MoreOptionMenu = ({ itemId, onEdit, onDelete, message }) => {
   const [visible, setVisible] = useState(false);
@@ -67,7 +68,8 @@ const MoreOptionMenu = ({ itemId, onEdit, onDelete, message }) => {
       </Popover>
 
       {/* 커스텀 알림 모달 */}
-      <CustomAlertModal
+      <Portal>
+        <CustomAlertModal
         visible={alertVisible}
         message={"나의 리스트에서 \n삭제할까요?"}
         onCancel={() => setAlertVisible(false)}
@@ -76,6 +78,8 @@ const MoreOptionMenu = ({ itemId, onEdit, onDelete, message }) => {
           setAlertVisible(false);
         }}
       />
+      </Portal>
+      
     </View>
   );
 };
