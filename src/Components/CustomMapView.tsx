@@ -28,7 +28,7 @@ const CustomMapView = ({ region, mapRef, markerList, onMarkerPress,onDrag}) => {
   };
 return (
     <MapView
-      key={markerList.length} //markerList가 바뀔 때마다 MapView를 강제 리렌더링
+      key={markerList.map(m => `${m.id}-${m.icon_tag}`).join(",")} //markerList가 바뀔 때마다 MapView를 강제 리렌더링
       ref={mapRef}
       provider={PROVIDER_GOOGLE}
       style={styles.map}
