@@ -21,6 +21,32 @@ import { useSharedValue } from "react-native-reanimated";
 
 import axios from "axios";
 
+const REGION_CODE_MAP = {
+  "서울 전체": "SEOUL_ALL",
+  "강남/신논현/양재": "GANGNAM",
+  "청담/압구정/신사": "CHEONGDAM",
+  "선릉/삼성": "SEONREUNG",
+  "논현/반포/학동": "NONHYEON",
+  "서초/교대/방배": "SEOCHO",
+  "대치/도곡/한티": "DAECHI",
+  "홍대/합정/신촌": "HONGDAE",
+  "서울역/명동/회현": "SEOULSTATION",
+  "잠실/석촌/천호": "JAMSIL",
+  "신당/왕십리": "SINDANG",
+  "뚝섬/성수/서울숲/건대입구": "SEONGSU",
+  "종로/을지로/충정로": "JONGRO",
+  "마곡/화곡/목동": "MAGOK",
+  "영등포/여의도/노량진": "YEOUIDO",
+  "미아/도봉/노원": "NOWON",
+  "이태원/용산/삼각지": "ITAEWON",
+  "서울대/사당/동작": "DONGJAK",
+  "은평/상암": "EUNPYEONG",
+  "신도림/구로": "GURO",
+  "마포/공덕": "MAPO",
+  "금천/가산": "GASAN",
+  "수서/복정/장지": "SUSEO",
+}
+
 type RootStackParamList = {
   SearchScreen: undefined;
   Maps: { searchCompleted?: boolean; selectedRegions? : string[], searchQuery : string,
@@ -66,9 +92,14 @@ const CurrentLocationButton = ({ handleCurrentLocationPress, onreSearch,searchQu
 
 
 const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
+
+  
+
+  
   const [buttonsEnabled, setButtonsEnabled] = useState(false)
   const [isUsingCurrentLocation, setIsUsingCurrentLocation] = useState(false)
 
+  
   //드래그 확인 
   const handleMapDrag = () => {
     setButtonsEnabled(true); 
@@ -80,6 +111,7 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
   };
 
   const handleSearchInCurrentMapRegion = async () => {
+   
     try {
       const camera = await mapRef.current?.getCamera();
       if (!camera) return;
@@ -128,64 +160,61 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
   const mapRef = useRef<MapView>(null);
 
 
-  const fetchNearbyBars = async (x: number, y: number) => {
+  const fetchNearbyBars = async (x: number, y: number, shouldSetTab = false) => {
     try {
       const response = await axios.get(`${API_BASE_URL}/api/location/nearby`, {
         params: { x, y },
       });
-
-      if (response.data.code === 1) {
-        const rawData = response.data.data;
-
-        const formatted = rawData.map((bar) => ({
-          id: bar.id,
-          title: bar.bar_name,
-          barAdress: bar.address,
-          thumbNail: bar.thumbnail
-            ? { uri: bar.thumbnail }
-            : require("../assets/drawable/barExample.png"),
-          hashtagList: bar.menus.map((m) => `#${m.name}`),
-        }));
-
-        const markers = rawData.map((bar) => ({
-          id: bar.id,
-          title: bar.bar_name,
-          coordinate: {
-            latitude: Number(bar.y),
-            longitude: Number(bar.x),
-          },
-          icon_tag: 5,
-        }));
-
-        setBarData(formatted);
-        setMarkerList(markers);
-        setSelectedTab("search");
-
-        setTimeout(() => {
-          if (mapRef.current && markers.length > 0) {
-            mapRef.current.fitToCoordinates(
-              markers.map((m) => m.coordinate),
-              {
-                edgePadding: { top: 100, right: 100, bottom: 300, left: 100 },
-                animated: true,
-              }
-            );
-          }
-        }, 600);
-      } else {
-        console.log("서버 요청 에러:", response.data.msg);
-      }
+  
+      const rawData = response.data.data || [];
+  
+      const formatted = rawData.map((bar) => ({
+        id: bar.id,
+        title: bar.bar_name,
+        barAdress: bar.address,
+        thumbNail: bar.thumbnail
+          ? { uri: bar.thumbnail }
+          : require("../assets/drawable/barExample.png"),
+        hashtagList: bar.menus.map((m) => `#${m.name}`),
+      }));
+  
+      const markers = rawData.map((bar) => ({
+        id: bar.id,
+        title: bar.bar_name,
+        coordinate: {
+          latitude: Number(bar.y),
+          longitude: Number(bar.x),
+        },
+        icon_tag: 5,
+      }));
+  
+      setBarList(formatted);
+      setMarkerList(markers);
+      if (shouldSetTab) setSelectedTab("search");
+  
+      setTimeout(() => {
+        if (mapRef.current && markers.length > 0) {
+          mapRef.current.fitToCoordinates(
+            markers.map((m) => m.coordinate),
+            {
+              edgePadding: { top: 100, right: 100, bottom: 300, left: 100 },
+              animated: true,
+            }
+          );
+        }
+      }, 600);
     } catch (error) {
-      console.log("서버 호출 실패:", error);
+      console.error("❌ 서버 호출 실패:", error);
     }
   };
+  
 
   useEffect(() => {
     
     // 앱 첫 진입 시 서울 고정 좌표로 바 조회
     // 검색을 통해 진입한 경우는 fetchNearbyBars를 호출하지 않음
     if (!route.params?.searchCompleted) {
-    fetchNearbyBars(126.9812675, 37.5718599);
+    fetchNearbyBars(126.9812675, 37.5718599)
     }
   }, []);
   const animatedPosition = useSharedValue(0)
@@ -216,6 +245,7 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
   const [markerList, setMarkerList] = useState([]);
   const {searchQuery} = route.params|| "";
 
+  
   const [region, setRegion] = useState({
     latitude: 37.5665, // 기본값: 서울
     longitude: 126.978,
@@ -245,18 +275,6 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
     }
   };
 
-  useEffect(() => {
-    if (route.params?.searchCompleted) {
-      setIsSearchCompleted(true);
-    }
-    if (route.params?.selectedRegions) {
-      setSelectedRegions(route.params.selectedRegions);
-    }
-    if (route.params?.resetRequested){
-      navigation.setParams({ resetRequested: false });
-    }
-  }, [route.params?.searchCompleted, route.params?.selectedRegions, route.params?.resetRequested]);
-  
 
   
 
@@ -338,15 +356,75 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
     }
   }, [route.params?.searchCompleted]);
   
- 
+
   useEffect(() => {
     console.log("✅ Maps에서 보내는 markerList:", markerList);
   }, [markerList]);
   useEffect(() => {
     if (selectedRegions.length > 0 && !activeRegion) {
-      setActiveRegion(selectedRegions[0]); 
+      setActiveRegion(selectedRegions[0]);
     }
   }, [selectedRegions]);
+  
+  useEffect(() => {
+    console.log("✅ activeRegion 값 변경됨:", activeRegion);
+  
+    if (!activeRegion) return;
+  
+    const regionCode = REGION_CODE_MAP[activeRegion];
+    if (!regionCode) return;
+  
+    const fetchRegionBars = async () => {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/api/location/filter`, {
+          params: { areaCodes: regionCode },
+        });
+  
+        const data = response.data?.data?.[regionCode] || [];
+  
+        const markers = data.map((bar) => ({
+          id: bar.id,
+          title: bar.bar_name,
+          coordinate: {
+            latitude: Number(bar.y),
+            longitude: Number(bar.x),
+          },
+          icon_tag: 5,
+        }));
+  
+        setBarList(data);
+        setMarkerList(markers);
+  
+        if (mapRef.current && markers.length > 0) {
+          mapRef.current.animateToRegion(
+            {
+              latitude: markers[0].coordinate.latitude,
+              longitude: markers[0].coordinate.longitude,
+              latitudeDelta: 0.02,
+              longitudeDelta: 0.02,
+            },
+            500
+          );
+  
+          setTimeout(() => {
+            mapRef.current?.fitToCoordinates(
+              markers.map((m) => m.coordinate),
+              {
+                edgePadding: { top: 100, right: 100, bottom: 300, left: 100 },
+                animated: true,
+              }
+            );
+          }, 600);
+        }
+      } catch (err) {
+        console.error("❌ 지역 바 불러오기 실패:", err);
+      }
+    };
+  
+    fetchRegionBars();
+  }, [activeRegion]);
+
+
 
 
   useEffect(() => {
@@ -458,7 +536,50 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
         onRemoveRegion={handleRemoveRegion} 
         onRemoveAllRegions={() => {
           setSelectedRegions([]);
+          setActiveRegion(null);
+          setSelectedTab("region")
+        
+          const restoreDefault = async () => {
+            try {
+              const response = await axios.get(`${API_BASE_URL}/api/location/nearby`, {
+                params: { x: 126.9812675, y: 37.5718599 },
+              });
+        
+              if (response.data.code === 1) {
+                const data = response.data.data;
+        
+                const formatted = data.map((bar) => ({
+                  id: bar.id,
+                  title: bar.bar_name,
+                  barAdress: bar.address,
+                  thumbNail: bar.thumbnail
+                    ? { uri: bar.thumbnail }
+                    : require("../assets/drawable/barExample.png"),
+                  hashtagList: bar.menus.map((m) => `#${m.name}`),
+                }));
+        
+                const markers = data.map((bar) => ({
+                  id: bar.id,
+                  title: bar.bar_name,
+                  coordinate: {
+                    latitude: Number(bar.y),
+                    longitude: Number(bar.x),
+                  },
+                  icon_tag: 5,
+                }));
+        
+                setBarList(formatted);       // ✅ search 탭에서 필요한 데이터
+                setMarkerList(markers);      // ✅ 지도에 찍을 마커
+                setBarData(formatted);       // ✅ bottomsheet 내에서도 fallback
+              }
+            } catch (error) {
+              console.error("기본 바 리스트 불러오기 실패:", error);
+            }
+          };
+        
+          restoreDefault();
         }}
+        
         activeRegion={activeRegion} 
       />
     </View>
@@ -469,6 +590,7 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
       <BaseBottomSheet
         key={`base-${refreshTrigger}`}
         selectedRegions={selectedRegions}
+        onRegionSelect={setActiveRegion} 
         barData={barData}
         setBarData={setBarData}
         refreshTrigger={refreshTrigger}

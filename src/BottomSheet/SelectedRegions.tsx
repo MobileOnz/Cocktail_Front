@@ -1,22 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
-import {
-  Text,
-  View,
-  TouchableOpacity,
-  StyleSheet,
-  Animated,
-  Image,
-  Alert,
-} from "react-native";
+import {Text,View,TouchableOpacity,StyleSheet,Animated,Image,Alert,} from "react-native";
 import { BottomSheetScrollView } from "@gorhom/bottom-sheet";
+import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs"
 import axios from "axios";
 import { ScrollView } from "react-native-gesture-handler";
 import { API_BASE_URL } from "@env";
 
 import { widthPercentage, heightPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
-import SelectionListSheet from "./SelectionListSheet";
+const Tab = createMaterialTopTabNavigator()
 
 // 지역 이름 → 서버 코드 매핑
 const REGION_CODE_MAP = {
@@ -43,7 +35,7 @@ const REGION_CODE_MAP = {
   "마포/공덕": "MAPO",
   "금천/가산": "GASAN",
   "수서/복정/장지": "SUSEO",
-};
+}
 
 const SelectedRegions = ({
   selectedRegions = [],

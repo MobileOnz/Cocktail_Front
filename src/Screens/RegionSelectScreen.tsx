@@ -125,7 +125,7 @@ const styles = StyleSheet.create({
   },
   tagWrapper: {
     position: "absolute",
-    bottom: heightPercentage(100), // 적용 버튼 위에 위치
+    bottom: heightPercentage(60), // 적용 버튼 위에 위치
     left: 0,
     right: 0,
     backgroundColor: "#FFFCF3",

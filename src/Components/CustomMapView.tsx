@@ -32,7 +32,7 @@ return (
       ref={mapRef}
       provider={PROVIDER_GOOGLE}
       style={styles.map}
-      region={region}
+      initialRegion={region}
       onPanDrag={() => {
         onDrag?.(); // 부모에게 알림
       }}

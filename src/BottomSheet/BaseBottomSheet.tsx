@@ -27,6 +27,7 @@ const BaseBottomSheet = ({
   barData,
   setBarData,
   barList, 
+  onRegionSelect,
   setBarList, 
   selectedTab, 
   setSelectedTab,
@@ -499,7 +500,7 @@ const headerCheck = async () =>{
           }
         } catch (error) {
           console.error("가게 추가 에러:", error);
-          showToast("네트워크 오류");
+          showToast("네트워크 오류");ㅌ
         }
       }}
 
@@ -523,9 +524,7 @@ const headerCheck = async () =>{
       ) : selectedTab ==="regionDetail" ? (
         <SelectedRegions
         selectedRegions={selectedRegions}
-        onRegionSelect={(region) => {
-          console.log("선택된 지역:", region);
-        }}
+        onRegionSelect={onRegionSelect}
         handleTabPress={handleTabPress}
         bookmarkIds={bookmarkIds}
         setBookmarkIds={setBookmarkIds}
