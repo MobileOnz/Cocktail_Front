@@ -103,10 +103,12 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
           showToast("로그인 되었습니다.");
           
           //로그인을 수행하고 돌아왔을 때도 refresh를 수행해주기 위함
-          navigation.navigate("BottomTabNavigator", {
-            screen: "지도", // Tab name
-            params: { shouldRefresh: true }, // Maps 컴포넌트로 전달할 route.params
-          });
+          setTimeout(() => {
+            navigation.navigate("BottomTabNavigator", {
+              screen: "지도", // <- MyPage 탭의 이름으로 정확히 수정
+              params: { shouldRefresh: true },
+            });
+          }, 100);
         }
         if (backendRefreshToken) {
           await AsyncStorage.setItem('refreshToken', backendRefreshToken);
