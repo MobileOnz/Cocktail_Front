@@ -32,6 +32,10 @@ const MyPageScreen = () => {
     try {
       await instance.delete('/api/delete/member');
       showToast("탈퇴가 완료되었습니다.");
+
+      setIsLoggedIn(false);
+      setNickname("");
+      setProfileImageUri(null);
     } catch (err) {
       console.log("🚨 탈퇴 오류:", err);
     } finally {
@@ -134,14 +138,13 @@ const MyPageScreen = () => {
       </View>
       <TouchableOpacity style={styles.loginContainer} onPress={handleLoginPress}>
         <View style={styles.profileInfoContainer}>
+        {isLoggedIn && (
           <Image
-            source={
-              profileImageUri
-                ? { uri: profileImageUri }
-                : require('../assets/drawable/default_profile.png')
-            }
+            source={{ uri: profileImageUri ?? '' }}
             style={styles.profileImage}
           />
+        )}
+
           <Text style={styles.loginText}>
             {isLoggedIn ? nickname : "로그인이 필요합니다."}
           </Text>
@@ -166,7 +169,8 @@ const MyPageScreen = () => {
 
 
       {/* 개인정보처리방침 아래 divider */}
-      <View style={styles.bottomDivider} />
+      {isLoggedIn && <View style={styles.bottomDivider} />}
+      
 
       {isLoggedIn && (
         <View>
