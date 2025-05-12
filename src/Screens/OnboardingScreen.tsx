@@ -90,8 +90,7 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ navigation }) => {
       <Image source={item.image} style={styles.image} />
       <Text style={styles.title}>{item.title}</Text>
       <Text style={styles.text}>{item.text}</Text>
-      {/*애니메이션 효과 넣기*/}
-      {renderPagination()} 
+       
     </View>
   );
 
@@ -108,6 +107,9 @@ return (
       activeDotStyle={{ display: "none" }}
       onSlideChange={onSlideChange}
     />
+
+    {/*애니메이션 효과 넣기*/}
+    {renderPagination()}
 
     {/* 고정된 버튼 영역 */}
     <View style={[styles.buttonContainer, { paddingHorizontal: widthPercentage(16) }]}>
@@ -153,7 +155,8 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection : "row",
     justifyContent : "space-between",
-    marginBottom : heightPercentage(58)
+    marginBottom : heightPercentage(19),
+    marginTop : heightPercentage(42)
   },
   outlineButton: {
     borderWidth: 1,
@@ -195,13 +198,13 @@ const styles = StyleSheet.create({
   image: {
     width: widthPercentage(375),
     height: heightPercentage(400),
-    marginTop: heightPercentage(38),
+    marginTop: heightPercentage(29),
   },
   title: {
     fontSize: fontPercentage(24),
     fontWeight: "700",
     textAlign: "center",
-    marginTop: heightPercentage(38),
+    marginTop: heightPercentage(44),
   },
   text: {
     color : "#7D7A6F",
