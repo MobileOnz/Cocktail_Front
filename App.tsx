@@ -44,7 +44,7 @@ function App(): React.JSX.Element {
     // SplashScreen 숨기기
     setTimeout(() => {
       SplashScreen.hide();
-    }, 2000);
+    }, 3000);
   }, []);
 
   if (isFirstLaunch === null) {
