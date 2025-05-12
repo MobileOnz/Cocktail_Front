@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { View, Text, Image, StyleSheet, Animated, Dimensions, StatusBar, TouchableOpacity} from "react-native";
+import { View, Text, Image, StyleSheet, Animated, Dimensions, StatusBar, TouchableOpacity, SafeAreaView} from "react-native";
 import AppIntroSlider from "react-native-app-intro-slider";
 import { StackScreenProps } from "@react-navigation/stack";
 import { widthPercentage, heightPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
@@ -96,7 +96,7 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ navigation }) => {
 
 return (
   <>
-  <View style={{ flex: 1, backgroundColor: theme.background }}>
+  <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }}>
     <AppIntroSlider
       renderItem={renderItem}
       data={slides}
@@ -134,7 +134,7 @@ return (
   <Text style={styles.filledButtonText}>취향 알아보기</Text>
 </TouchableOpacity>
     </View>
-  </View>
+  </SafeAreaView>
   <Portal>
   <LoginBottomSheet
    isVisible={isLoginSheetVisible}

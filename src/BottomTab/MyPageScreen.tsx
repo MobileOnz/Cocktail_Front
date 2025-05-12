@@ -7,6 +7,7 @@ import { RootStackParamList } from '../Navigation/Navigation';
 import WithdrawBottomSheet from '../BottomSheet/WithdrawBottomSheet';
 import { useToast } from '../Components/ToastContext';
 import instance from '../tokenRequest/axios_interceptor';
+import SignOutModal from '../Components/SignOutModal';
 
 //import { BannerAd, BannerAdSize, TestIds } from 'react-native-google-mobile-ads';
 
@@ -17,6 +18,8 @@ const MyPageScreen = () => {
   const navigation = useNavigation<NavigationProp>();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const { showToast } = useToast();
+
+  const [showSignOutModal, setShowSignOutModal] = useState(false);
 
   const link = () => {
     Linking.openURL("https://sites.google.com/view/onz-info/")
@@ -36,31 +39,21 @@ const MyPageScreen = () => {
     }
   };
 
-  const handleLogout = () => {
-    Alert.alert(
-      "로그아웃 하시겠어요?",
-      "",
-      [
-        { text: "취소", style: "cancel" },
-        {
-          text: "로그아웃",
-          style: "destructive",
-          onPress: async () => {
-            try {
-              await instance.post("/api/auth/logout");
-              showToast("로그아웃 되었습니다.");
-              setIsLoggedIn(false);
-              setNickname("");
-              setProfileImageUri(null);
-            } catch (err) {
-              console.error("🚨 로그아웃 실패:", err);
-              showToast("로그아웃 실패");
-            }
-          }
-        }
-      ]
-    );
+  const handleLogout = async () => {
+    try {
+      await instance.post("/api/auth/logout");
+      showToast("로그아웃 되었습니다.");
+      setIsLoggedIn(false);
+      setNickname("");
+      setProfileImageUri(null);
+    } catch (err) {
+      console.error("🚨 로그아웃 실패:", err);
+      showToast("로그아웃 실패");
+    } finally {
+      setShowSignOutModal(false);
+    }
   };
+
 
   useEffect(() => {
     const fetchProfileImage = async () => {
@@ -177,9 +170,10 @@ const MyPageScreen = () => {
 
       {isLoggedIn && (
         <View>
-          <TouchableOpacity onPress={handleLogout}>
+          <TouchableOpacity onPress={() => setShowSignOutModal(true)}>
             {renderSupportItemWithoutIcon('로그아웃')}
           </TouchableOpacity>
+
           <View style={styles.divider} />
           <TouchableOpacity onPress={() => setShowWithdrawModal(true)}>
             {renderSupportItemWithoutIcon('회원탈퇴')}
@@ -187,14 +181,21 @@ const MyPageScreen = () => {
         </View>
       )}
 
-
-
       <WithdrawBottomSheet
         isVisible={showWithdrawModal}
         onClose={() => setShowWithdrawModal(false)}
         onWithdraw={handleWithdraw}
       />
+
+    <SignOutModal
+      visible={showSignOutModal}
+      onClose={() => setShowSignOutModal(false)}
+      onSignOut={handleLogout}
+    />
+
     </View>
+
+    
   );
 };
 
