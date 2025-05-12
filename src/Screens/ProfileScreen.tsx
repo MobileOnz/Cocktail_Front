@@ -9,6 +9,7 @@ import {
   Keyboard,
   Platform,
   InputAccessoryView,
+  useColorScheme,
 } from "react-native";
 import { widthPercentage, heightPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
 import { useNavigation } from "@react-navigation/native";
@@ -31,6 +32,8 @@ const ProfileScreen: React.FC = () => {
   const isProfileChanged = profileUri !== initialProfileUri;
   const isChanged = isNicknameChanged || isProfileChanged;
 
+
+  const colorScheme = useColorScheme();
 
   useEffect(() => {
     const fetchProfileData = async () => {
@@ -224,17 +227,29 @@ const ProfileScreen: React.FC = () => {
           placeholder={nickname}
           returnKeyType="default"
           inputAccessoryViewID={inputAccessoryViewID}
+          keyboardAppearance={colorScheme === 'dark' ? 'dark' : 'light'}
         />
       </View>
 
       {/* 키보드 상단 '완료' 버튼 (iOS 한정) */}
       {Platform.OS === "ios" && (
         <InputAccessoryView nativeID={inputAccessoryViewID}>
-          <View style={styles.accessory}>
+          <View style={
+            [
+              styles.accessory,
+              colorScheme === 'dark' ? styles.accessoryDark : styles.accessoryLight,
+            ]}>
             {/* 좌측 화살표들 생략 가능 */}
             <View style={{ flex: 1 }} />
             <TouchableOpacity onPress={Keyboard.dismiss}>
-              <Text style={styles.accessoryDoneText}>완료</Text>
+            <Text
+              style={[
+                styles.accessoryDoneText,
+                colorScheme === 'dark' && { color: '#fff' },
+              ]}
+            >
+              완료
+            </Text>
             </TouchableOpacity>
           </View>
         </InputAccessoryView>
@@ -374,5 +389,11 @@ const styles = StyleSheet.create({
     fontSize: fontPercentage(16),
     fontWeight: "500",
     color: "#007AFF", // iOS 기본 파란 텍스트
+  },
+  accessoryLight: {
+    backgroundColor: '#F3EFE6', // 밝은 테마용 배경
+  },
+  accessoryDark: {
+    backgroundColor: '#2C2C2E', // 다크모드 키보드 배경에 맞춘 어두운 배경 (iOS 기본 다크와 유사)
   },
 });
