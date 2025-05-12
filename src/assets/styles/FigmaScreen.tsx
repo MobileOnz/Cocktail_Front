@@ -1,26 +1,22 @@
+import { Dimensions, PixelRatio } from "react-native";
 
-import {} from "react-native"
-import {
-  responsiveHeight,
-  responsiveWidth,
-  responsiveFontSize
-}from "react-native-responsive-dimensions"
-
-// Figma 기준 사이즈: 375 x (812 - 88) 
+// Figma 기준 사이즈
 const FIGMA_BASE_WIDTH = 375;
-const FIGMA_BASE_HEIGHT = 724;
+const FIGMA_BASE_HEIGHT = 812;
 
-export function widthPercentage(width : number) : number {
-  const percentage = (width / FIGMA_BASE_WIDTH) * 100
-  return responsiveWidth(percentage)
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
+
+export function widthPercentage(width: number): number {
+  return (SCREEN_WIDTH / FIGMA_BASE_WIDTH) * width;
 }
 
-export function heightPercentage(height : number) : number {
-  const percentage = (height / FIGMA_BASE_HEIGHT) * 100
-  return responsiveHeight(percentage)
+
+export function heightPercentage(height: number): number {
+  return (SCREEN_HEIGHT / FIGMA_BASE_HEIGHT) * height;
 }
 
-export function fontPercentage(size : number): number{
-  const percentage = size*0.13
-  return responsiveFontSize(percentage)
+export function fontPercentage(size: number): number {
+  const scale = SCREEN_WIDTH / FIGMA_BASE_WIDTH;
+  const scaledSize = size * scale;
+  return Math.round(PixelRatio.roundToNearestPixel(scaledSize));
 }
