@@ -26,6 +26,20 @@ const CustomMapView = ({ region, mapRef, markerList, onMarkerPress,onDrag}) => {
   const handleImageLoad = (id) => {
     setIconLoadedMap((prev) => ({ ...prev, [id]: true }));
   };
+  const customMapStyle = [
+    {
+      featureType: "poi", // 모든 POI (장소 정보) 숨김
+      elementType: "all",
+      stylers: [{ visibility: "off" }],
+    },
+    {
+      featureType: "transit", // 지하철, 버스 등의 교통 정보 숨김
+      elementType: "all",
+      stylers: [{ visibility: "off" }],
+    },
+  ];
+
+  
 return (
     <MapView
       key={markerList.map(m => `${m.id}-${m.icon_tag}`).join(",")} //markerList가 바뀔 때마다 MapView를 강제 리렌더링
@@ -36,8 +50,7 @@ return (
       onPanDrag={() => {
         onDrag?.(); // 부모에게 알림
       }}
-      
-      
+      customMapStyle={customMapStyle}
     >
       {markerList?.map((marker) => {
       console.log("📍 마커 찍음", marker);
