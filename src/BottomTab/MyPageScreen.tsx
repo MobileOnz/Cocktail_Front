@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, Image, TouchableOpacity, Linking, Alert } from 'react-native';
+import { StyleSheet, Text, View, Image, TouchableOpacity, Linking, SafeAreaView } from 'react-native';
 import { widthPercentage, heightPercentage, fontPercentage } from '../assets/styles/FigmaScreen';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -7,6 +7,7 @@ import { RootStackParamList } from '../Navigation/Navigation';
 import WithdrawBottomSheet from '../BottomSheet/WithdrawBottomSheet';
 import { useToast } from '../Components/ToastContext';
 import instance from '../tokenRequest/axios_interceptor';
+import SignOutModal from '../Components/SignOutModal';
 
 //import { BannerAd, BannerAdSize, TestIds } from 'react-native-google-mobile-ads';
 
@@ -17,6 +18,8 @@ const MyPageScreen = () => {
   const navigation = useNavigation<NavigationProp>();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const { showToast } = useToast();
+
+  const [showSignOutModal, setShowSignOutModal] = useState(false);
 
   const link = () => {
     Linking.openURL("https://sites.google.com/view/onz-info/")
@@ -29,6 +32,10 @@ const MyPageScreen = () => {
     try {
       await instance.delete('/api/delete/member');
       showToast("탈퇴가 완료되었습니다.");
+
+      setIsLoggedIn(false);
+      setNickname("");
+      setProfileImageUri(null);
     } catch (err) {
       console.log("🚨 탈퇴 오류:", err);
     } finally {
@@ -36,31 +43,21 @@ const MyPageScreen = () => {
     }
   };
 
-  const handleLogout = () => {
-    Alert.alert(
-      "로그아웃 하시겠어요?",
-      "",
-      [
-        { text: "취소", style: "cancel" },
-        {
-          text: "로그아웃",
-          style: "destructive",
-          onPress: async () => {
-            try {
-              await instance.post("/api/auth/logout");
-              showToast("로그아웃 되었습니다.");
-              setIsLoggedIn(false);
-              setNickname("");
-              setProfileImageUri(null);
-            } catch (err) {
-              console.error("🚨 로그아웃 실패:", err);
-              showToast("로그아웃 실패");
-            }
-          }
-        }
-      ]
-    );
+  const handleLogout = async () => {
+    try {
+      await instance.post("/api/auth/logout");
+      showToast("로그아웃 되었습니다.");
+      setIsLoggedIn(false);
+      setNickname("");
+      setProfileImageUri(null);
+    } catch (err) {
+      console.error("🚨 로그아웃 실패:", err);
+      showToast("로그아웃 실패");
+    } finally {
+      setShowSignOutModal(false);
+    }
   };
+
 
   useEffect(() => {
     const fetchProfileImage = async () => {
@@ -123,9 +120,9 @@ const MyPageScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.bannerAd}>
-        {/* <BannerAd
+    <SafeAreaView style={styles.container}>
+      {/* <View style={styles.bannerAd}>
+        <BannerAd
             unitId={TestIds.BANNER} // 실제 배너 ID로 교체 필요
             size={BannerAdSize.BANNER}
             requestOptions={{
@@ -137,18 +134,17 @@ const MyPageScreen = () => {
             onAdFailedToLoad={(error) => {
               console.log('❌ 광고 로드 실패:', error);
             }}
-          /> */}
-      </View>
+          />
+      </View> */}
       <TouchableOpacity style={styles.loginContainer} onPress={handleLoginPress}>
         <View style={styles.profileInfoContainer}>
+        {isLoggedIn && (
           <Image
-            source={
-              profileImageUri
-                ? { uri: profileImageUri }
-                : require('../assets/drawable/default_profile.png')
-            }
+            source={{ uri: profileImageUri ?? '' }}
             style={styles.profileImage}
           />
+        )}
+
           <Text style={styles.loginText}>
             {isLoggedIn ? nickname : "로그인이 필요합니다."}
           </Text>
@@ -173,13 +169,15 @@ const MyPageScreen = () => {
 
 
       {/* 개인정보처리방침 아래 divider */}
-      <View style={styles.bottomDivider} />
+      {isLoggedIn && <View style={styles.bottomDivider} />}
+      
 
       {isLoggedIn && (
         <View>
-          <TouchableOpacity onPress={handleLogout}>
+          <TouchableOpacity onPress={() => setShowSignOutModal(true)}>
             {renderSupportItemWithoutIcon('로그아웃')}
           </TouchableOpacity>
+
           <View style={styles.divider} />
           <TouchableOpacity onPress={() => setShowWithdrawModal(true)}>
             {renderSupportItemWithoutIcon('회원탈퇴')}
@@ -187,14 +185,21 @@ const MyPageScreen = () => {
         </View>
       )}
 
-
-
       <WithdrawBottomSheet
         isVisible={showWithdrawModal}
         onClose={() => setShowWithdrawModal(false)}
         onWithdraw={handleWithdraw}
       />
-    </View>
+
+    <SignOutModal
+      visible={showSignOutModal}
+      onClose={() => setShowSignOutModal(false)}
+      onSignOut={handleLogout}
+    />
+
+    </SafeAreaView>
+
+    
   );
 };
 
@@ -258,7 +263,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingLeft: widthPercentage(24),
     paddingVertical: heightPercentage(12),
-    marginTop: heightPercentage(20),
+    marginTop: heightPercentage(30),
   },
   loginText: {
     fontSize: fontPercentage(18),
