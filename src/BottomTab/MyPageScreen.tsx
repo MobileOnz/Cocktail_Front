@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, Image, TouchableOpacity, Linking, Alert } from 'react-native';
+import { StyleSheet, Text, View, Image, TouchableOpacity, Linking, SafeAreaView } from 'react-native';
 import { widthPercentage, heightPercentage, fontPercentage } from '../assets/styles/FigmaScreen';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -120,9 +120,9 @@ const MyPageScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.bannerAd}>
-        {/* <BannerAd
+    <SafeAreaView style={styles.container}>
+      {/* <View style={styles.bannerAd}>
+        <BannerAd
             unitId={TestIds.BANNER} // 실제 배너 ID로 교체 필요
             size={BannerAdSize.BANNER}
             requestOptions={{
@@ -134,8 +134,8 @@ const MyPageScreen = () => {
             onAdFailedToLoad={(error) => {
               console.log('❌ 광고 로드 실패:', error);
             }}
-          /> */}
-      </View>
+          />
+      </View> */}
       <TouchableOpacity style={styles.loginContainer} onPress={handleLoginPress}>
         <View style={styles.profileInfoContainer}>
         {isLoggedIn && (
@@ -197,7 +197,7 @@ const MyPageScreen = () => {
       onSignOut={handleLogout}
     />
 
-    </View>
+    </SafeAreaView>
 
     
   );
@@ -263,7 +263,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingLeft: widthPercentage(24),
     paddingVertical: heightPercentage(12),
-    marginTop: heightPercentage(20),
+    marginTop: heightPercentage(30),
   },
   loginText: {
     fontSize: fontPercentage(18),
