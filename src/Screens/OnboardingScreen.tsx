@@ -7,6 +7,7 @@ import theme from "../assets/styles/theme";
 import { Portal } from "react-native-paper";
 import LoginBottomSheet from "../BottomSheet/LoginBottomSheetProps";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 type RootStackParamList = {
   Onboarding: undefined;
   Login: undefined;
@@ -45,6 +46,7 @@ const slides: SlideItem[] = [
 ];
 
 const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ navigation }) => {
+  const insets = useSafeAreaInsets()
     const [isLoginSheetVisible, setLoginSheetVisible] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
   const animatedValue = useRef(new Animated.Value(0)).current;
@@ -96,7 +98,7 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ navigation }) => {
 
 return (
   <>
-  <View style={{ flex: 1, backgroundColor: theme.background }}>
+  <View style={{ flex: 1, backgroundColor: theme.background,paddingTop: insets.top, paddingBottom: insets.bottom  }}>
     <AppIntroSlider
       renderItem={renderItem}
       data={slides}
@@ -135,6 +137,8 @@ return (
 </TouchableOpacity>
     </View>
   </View>
+
+  
   <Portal>
   <LoginBottomSheet
    isVisible={isLoginSheetVisible}
@@ -153,6 +157,7 @@ return (
 
 const styles = StyleSheet.create({
   buttonContainer: {
+  
     flexDirection : "row",
     justifyContent : "space-between",
     marginBottom : heightPercentage(19),
@@ -164,8 +169,8 @@ const styles = StyleSheet.create({
     justifyContent : "center",
     alignItems : "center",
     borderColor: '#2D2D2D',
-    paddingHorizontal : heightPercentage(37.25),
-    paddingVertical :widthPercentage(12),
+    paddingHorizontal : widthPercentage(37.25),
+    paddingVertical :heightPercentage(12),
     borderRadius: 8,
     backgroundColor: '#FFFCF3', 
   },
@@ -181,8 +186,8 @@ const styles = StyleSheet.create({
     alignItems : "center",
     backgroundColor: '#21103C', 
     borderRadius: 8,
-    paddingHorizontal : heightPercentage(38.75),
-    paddingVertical :widthPercentage(12),
+    paddingHorizontal : widthPercentage(38.75),
+    paddingVertical :heightPercentage(12),
     
   },
   filledButtonText: {

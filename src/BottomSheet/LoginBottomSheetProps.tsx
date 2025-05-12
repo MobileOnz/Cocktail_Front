@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 20, // ✅ 상단 둥근 처리
     borderTopRightRadius: 20,
     zIndex: 9999,
-    height : heightPercentage(450)
+    maxHeight : heightPercentage(450)
   },
   title: {
     fontSize: fontPercentage(18),

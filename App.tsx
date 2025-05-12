@@ -56,13 +56,15 @@ function App(): React.JSX.Element {
   }
 
   return (
-    <SafeAreaProvider>
+    
     <PaperProvider>
+      <SafeAreaProvider>
     <ToastProvider>
       <Navigation />
     </ToastProvider>
-    </PaperProvider>
     </SafeAreaProvider>
+    </PaperProvider>
+
     );
 }
 
