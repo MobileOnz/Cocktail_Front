@@ -129,6 +129,7 @@ const ProfileScreen: React.FC = () => {
           setInitialProfileUri(profileUri);
         }
       }
+      navigation.goBack();
     } catch (error) {
       console.error("🔥 프로필 저장 중 에러 발생", error);
     }
