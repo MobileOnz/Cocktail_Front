@@ -4,9 +4,9 @@ import { StyleSheet, View, ActivityIndicator, useColorScheme } from "react-nativ
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import SplashScreen from "react-native-splash-screen";
 import Navigation from "./src/Navigation/Navigation";
-
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import {Provider as PaperProvider} from "react-native-paper"
-import { GestureHandlerRootView } from "react-native-gesture-handler";
+
 
 // import MobileAds from "react-native-google-mobile-ads";
 // import { firebase } from "@react-native-firebase/app";
@@ -56,11 +56,13 @@ function App(): React.JSX.Element {
   }
 
   return (
+    <SafeAreaProvider>
     <PaperProvider>
     <ToastProvider>
       <Navigation />
     </ToastProvider>
     </PaperProvider>
+    </SafeAreaProvider>
     );
 }
 
