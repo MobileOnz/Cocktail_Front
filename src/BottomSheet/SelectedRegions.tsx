@@ -199,6 +199,7 @@ const styles = StyleSheet.create({
   scrollContainer: {
     paddingHorizontal: widthPercentage(16),
     paddingBottom: heightPercentage(4),
+    marginTop: heightPercentage(11),
     position: "relative",
   },
   tab: {
