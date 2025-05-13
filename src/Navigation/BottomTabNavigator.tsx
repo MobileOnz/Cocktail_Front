@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Image, TouchableOpacity, View, Text } from "react-native";
+import { Image, TouchableOpacity, View, Text, SafeAreaView } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import MapScreen from "../BottomTab/Maps";
 import CocktailBookScreen from "../BottomTab/CocktailBookScreen";
@@ -69,7 +69,7 @@ const BottomTabNavigator = () => {
 
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1}}>
       <Tab.Navigator
         initialRouteName="지도"
         screenOptions={({ route }) => ({
@@ -151,6 +151,10 @@ const BottomTabNavigator = () => {
       navigation={navigation}
     />
 
+  <SafeAreaView 
+    edges={['bottom']}
+    style={{backgroundColor: theme.background}}
+  />
     
     </View>
   );

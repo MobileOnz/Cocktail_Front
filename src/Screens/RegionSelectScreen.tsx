@@ -15,6 +15,8 @@ const regions = [
   "서울대/사당/동작", "은평/상암", "신도림/구로", "마포/공덕", "금천/가산", "수서/복정/장지"
 ];
 
+const TAG_BOTTOM = Platform.OS === "ios" ? heightPercentage(100) : heightPercentage(60);
+
 type NavigationProps = StackNavigationProp<RootStackParamList, "RegionSelectScreen">;
 
 const RegionSelectScreen = () => {
@@ -39,9 +41,10 @@ const RegionSelectScreen = () => {
     <SafeAreaView style={styles.container}>
       {/* 상단 네비게이션 바 */}
       <View style={styles.header}>
+        <View style={styles.placeholder} />
         <Text style={styles.title}>지역</Text>
         <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Text style={styles.closeText}>X</Text>
+          <Image style={styles.closeText} source={require("../assets/drawable/region_select_header_close.png")}/>
         </TouchableOpacity>
       </View>
 
@@ -134,7 +137,7 @@ const styles = StyleSheet.create({
   },
   tagWrapper: {
     position: "absolute",
-    bottom: heightPercentage(60), // 적용 버튼 위에 위치
+    bottom: TAG_BOTTOM, // 적용 버튼 위에 위치
     left: 0,
     right: 0,
     backgroundColor: "#FFFCF3",
@@ -183,19 +186,23 @@ const styles = StyleSheet.create({
   paddingBottom: heightPercentage(12), 
   backgroundColor: "#FFFCF3", 
   borderBottomColor: "#EEE",
-  borderBottomWidth: 1, 
-  paddingLeft : widthPercentage(150),
+  borderBottomWidth: 1,
 },
   title: { fontSize: 18, 
     fontWeight: "bold",
+    textAlign: "center",
+    flex: 1,
   
   },
- 
-  closeText: { 
-    fontSize: fontPercentage(18.67),
-    marginRight : widthPercentage(8),
+  placeholder: {
+    width: widthPercentage(24), // 오른쪽 아이콘과 동일한 폭
+    height: heightPercentage(24),
+  },
+  closeText: {
+    width: widthPercentage(24),
+    height: heightPercentage(24),
     marginTop : heightPercentage(8),
-    color: "#2D2D2D" },
+  },
 
   // 리스트 스타일
   listItem: {
@@ -232,7 +239,7 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     marginLeft : 16,
     marginRight : 8,
-    marginHorizontal : 8
+    marginHorizontal : 8,
   },
   tag: {
     flexDirection: "row",
