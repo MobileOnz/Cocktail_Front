@@ -4,16 +4,31 @@ import { StyleSheet, View, ActivityIndicator, useColorScheme } from "react-nativ
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import SplashScreen from "react-native-splash-screen";
 import Navigation from "./src/Navigation/Navigation";
-import { SafeAreaProvider } from 'react-native-safe-area-context';
 import {Provider as PaperProvider} from "react-native-paper"
-
+import { useSafeAreaInsets, SafeAreaProvider } from "react-native-safe-area-context";
+import { setGlobalInsets } from "./src/assets/contexts/globalInsets"; 
 
 // import MobileAds from "react-native-google-mobile-ads";
 // import { firebase } from "@react-native-firebase/app";
 
 import { ToastProvider } from "./src/Components/ToastContext";
 
+function AppContent() {
+  const insets = useSafeAreaInsets();
+
+  useEffect(() => {
+    setGlobalInsets(insets);
+  }, [insets]);
+
+  return (
+    <ToastProvider>
+      <Navigation />
+    </ToastProvider>
+  );
+}
+
 function App(): React.JSX.Element {
+  
   const isDarkMode = useColorScheme() === "dark";
   const [isFirstLaunch, setIsFirstLaunch] = useState<null | boolean>(null);
 
@@ -58,12 +73,10 @@ function App(): React.JSX.Element {
   return (
     
     <PaperProvider>
-      <SafeAreaProvider>
-    <ToastProvider>
-      <Navigation />
-    </ToastProvider>
+    <SafeAreaProvider>
+      <AppContent />
     </SafeAreaProvider>
-    </PaperProvider>
+  </PaperProvider>
 
     );
 }

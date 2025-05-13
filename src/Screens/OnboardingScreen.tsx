@@ -1,19 +1,25 @@
 import React, { useEffect, useRef, useState } from "react";
-import { View, Text, Image, StyleSheet, Animated, Dimensions, StatusBar, TouchableOpacity, SafeAreaView} from "react-native";
+import { View, Text, Image, StyleSheet, Animated, Dimensions, StatusBar, TouchableOpacity, SafeAreaView, Platform} from "react-native";
 import AppIntroSlider from "react-native-app-intro-slider";
 import { StackScreenProps } from "@react-navigation/stack";
-import { widthPercentage, heightPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
+import { widthPercentage, heightPercentage, fontPercentage, getResponsiveHeight } from "../assets/styles/FigmaScreen";
 import theme from "../assets/styles/theme";
 import { Portal } from "react-native-paper";
 import LoginBottomSheet from "../BottomSheet/LoginBottomSheetProps";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from 'react-native-responsive-screen';
 type RootStackParamList = {
   Onboarding: undefined;
   Login: undefined;
   BottomTabNavigator: { screen: "지도" | "칵테일 백과" | "맞춤 추천" | "마이페이지" };
 };
-
+const { height: screenHeight } = Dimensions.get("window");
+const isSmallDevice = screenHeight < 700;
+const isLargeDevice = screenHeight >= 800;
 
 type OnboardingScreenProps = StackScreenProps<RootStackParamList, "Onboarding">;
 
@@ -69,6 +75,7 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ navigation }) => {
             inputRange: [i - 1, i, i + 1],
             outputRange: [1, 1, 1],
             extrapolate: "clamp",
+            
           });
           return (
             <Animated.View
@@ -88,7 +95,10 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ navigation }) => {
   };
 
   const renderItem = ({item}: { item: SlideItem; index: number }) => (
+    
     <View style={[styles.slide, {backgroundColor : theme.background}]}>
+
+
       <Image source={item.image} style={styles.image} />
       <Text style={styles.title}>{item.title}</Text>
       <Text style={styles.text}>{item.text}</Text>
@@ -99,8 +109,8 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ navigation }) => {
 return (
   <>
 
-  <View style={{ flex: 1, backgroundColor: theme.background,paddingTop: insets.top, paddingBottom: insets.bottom  }}>
-
+  <View style={{flex : 1,backgroundColor: theme.background,paddingTop: insets.top, paddingBottom: insets.bottom  }}>
+    
     <AppIntroSlider
       renderItem={renderItem}
       data={slides}
@@ -115,8 +125,10 @@ return (
     {/*애니메이션 효과 넣기*/}
     {renderPagination()}
 
+    
     {/* 고정된 버튼 영역 */}
-    <View style={[styles.buttonContainer, { paddingHorizontal: widthPercentage(16) }]}>
+    <View style={[styles.buttonContainer, {  paddingHorizontal: widthPercentage(16),
+      paddingBottom: Platform.OS === "android" ? 24 : insets.bottom || 24,  }]}>
       <TouchableOpacity
         onPress={() => navigation.navigate("BottomTabNavigator", { screen: "지도" })}
         style={styles.outlineButton}
@@ -162,35 +174,33 @@ return (
 const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection : "row",
-    justifyContent : "space-between",
-    marginBottom : heightPercentage(19),
-    marginTop : heightPercentage(42)
+    alignItems : "center",
+    marginBottom : getResponsiveHeight(20,10,20,30),
+    marginTop : getResponsiveHeight(80,70,40,30)
   },
   outlineButton: {
     borderWidth: 1,
-    height : heightPercentage(48),
+    width : wp(45),
+    height : hp(6),
     justifyContent : "center",
     alignItems : "center",
     borderColor: '#2D2D2D',
-    paddingHorizontal : widthPercentage(37.25),
-    paddingVertical :heightPercentage(12),
     borderRadius: 8,
     backgroundColor: '#FFFCF3', 
   },
   outlineButtonText: {
     color: '#2D2D2D',
-    fontSize: 16,
+    fontSize: fontPercentage(16),
     fontWeight: '700',
   },
   filledButton: {
     marginLeft : widthPercentage(12),
-    height : heightPercentage(48),
+    width : wp(45),
+    height : hp(6),
     justifyContent : "center",
     alignItems : "center",
     backgroundColor: '#21103C', 
     borderRadius: 8,
-    paddingHorizontal : widthPercentage(38.75),
-    paddingVertical :heightPercentage(12),
     
   },
   filledButtonText: {
@@ -204,29 +214,29 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start",
   },
   image: {
-    width: widthPercentage(375),
-    height: heightPercentage(400),
-    marginTop: heightPercentage(29),
+    width: wp(100),
+    height: getResponsiveHeight(500,400,500,300),
   },
   title: {
     fontSize: fontPercentage(24),
     fontWeight: "700",
     textAlign: "center",
-    marginTop: heightPercentage(44),
+    marginTop: getResponsiveHeight(34,54,19,24),
   },
   text: {
+    fontWeight: '500',
     color : "#7D7A6F",
     fontSize: fontPercentage(16),
     textAlign: "center",
-    lineHeight : 24,
-    marginTop : heightPercentage(8),
+    lineHeight : fontPercentage(24),
+    letterSpacing: 0.57 / 100 * 16,
+    marginTop : hp(1),
     
   },
   paginationContainer: {
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    marginTop: heightPercentage(20),
   },
   dot: {
     width: widthPercentage(8),

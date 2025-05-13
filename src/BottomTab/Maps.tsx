@@ -664,7 +664,6 @@ const styles = StyleSheet.create({
     height: heightPercentage(54),
   },
   searchContainer: {
-    
     position: "absolute",
     flexDirection: "column",
     top: heightPercentage(50), 
