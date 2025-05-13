@@ -164,6 +164,7 @@ const fetchMyList = async () => {
                 message={`"${item.name}" 리스트 메뉴입니다.`}
               />
             </View>
+            <View style={styles.itemDivider} />
 
 
           </TouchableOpacity>
@@ -188,7 +189,11 @@ export default MyListSheetContent;
 
 const styles = StyleSheet.create({
   container: {
+    padding: widthPercentage(16),
+    flex: 1,
     backgroundColor: "#FFFCF3",
+    borderTopLeftRadius: widthPercentage(16),
+    borderTopRightRadius: widthPercentage(16),
   },
   headerContainer: {
     marginTop: heightPercentage(28),
@@ -233,9 +238,14 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#FFFCF3",
-    padding: 12,
-    borderBottomColor: "#FFF",
-    elevation: 2,
+    paddingHorizontal: widthPercentage(12),
+    marginTop: heightPercentage(10),
+  },
+  itemDivider: {
+    height: 1,
+    backgroundColor: "#E4DFD8",
+    marginHorizontal: widthPercentage(18), // 양옆 18 잘라내기
+    marginTop: heightPercentage(12), // 위 요소와의 간격 (선택)
   },
   icon: {
     width: 32,
