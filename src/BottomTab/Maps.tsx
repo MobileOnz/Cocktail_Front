@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef } from "react";
 
 import { StackScreenProps } from "@react-navigation/stack";
-import { View, StyleSheet, StatusBar, Text, TouchableOpacity, TextInput,Image } from "react-native";
+import { View, StyleSheet, StatusBar, Text, TouchableOpacity, TextInput,Image, Dimensions } from "react-native";
 import SearchBar from "../Components/SearchBar";
 import CustomMapView from "../Components/CustomMapView";
 import BaseBottomSheet from "../BottomSheet/BaseBottomSheet";
@@ -219,7 +219,22 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
   }, []);
   const animatedPosition = useSharedValue(0)
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      console.log("📐 animatedPosition:", animatedPosition.value);
+    }, 500);
+  
+    return () => clearInterval(interval);
+  }, []);
+
+  
+  const screenHeight = Dimensions.get("window").height;
+  const bottomSheetThreshold = screenHeight * 0.25;
+
   const buttonWrapperStyle = useAnimatedStyle(() => {
+
+    const isVisible = animatedPosition.value >= bottomSheetThreshold;
+
     return {
       position: "absolute",
       transform: [
@@ -234,6 +249,8 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
       ],
       right: 20, // 그냥 고정값으로
       zIndex: 1000,
+      opacity: isVisible ? 1:0,
+      display: isVisible ? "flex" : "none",
     };
   });
 

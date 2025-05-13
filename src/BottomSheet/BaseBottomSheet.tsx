@@ -385,7 +385,7 @@ const headerCheck = async () =>{
   enablePanDownToClose={false}
   keyboardBlurBehavior="restore" 
   backgroundStyle={{ backgroundColor: theme.background }}
-  containerStyle={{ position: 'absolute', zIndex: 100, ...(Platform.OS === "ios" && { marginTop: heightPercentage(40) }),}}
+  containerStyle={{ position: 'absolute', zIndex: 100}}
   //바텀시트 상단 마진 : containerStyle에 marginTop, 현재는 ios만 margin 준 상태
   //
 >
