@@ -170,7 +170,7 @@ const fetchMyList = async () => {
         ))}
       </BottomSheetScrollView>
   
-      <LoginBottomSheet
+      {/* <LoginBottomSheet
         isVisible={loginModalVisible}
         onClose={() => {
           setLoginModalVisible(false);
@@ -180,7 +180,7 @@ const fetchMyList = async () => {
           setLoginModalVisible(false);
           navigation.navigate("Login" as never);
         }}
-      />
+      /> */}
     </>
   );
 };

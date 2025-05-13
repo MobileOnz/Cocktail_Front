@@ -175,10 +175,10 @@ const MyBardetailListBottomSheet = ({listId}: {listId: number}) => {
             <Image style={styles.itemImage} source={{ uri: item.thumbnail }} />
             <View style={styles.textContainer}>
               <Text style={styles.itemTitle}>{item.bar_name}</Text>
-              <View style={styles.addressRow}>
+              {/* <View style={styles.addressRow}>
                 <Feather name="map-pin" size={14} color="#7D7A6F" />
                 <Text style={styles.itemAddress}>{item.address}</Text>
-              </View>
+              </View> */}
               <Text style={styles.menuText}>인기메뉴</Text>
               <View style={styles.hashtagContainer}>
                 {item.menus?.map((menu, idx) => (
@@ -254,11 +254,13 @@ const styles = StyleSheet.create({
   itemAddress: {
     fontSize: fontPercentage(14),
     color: "#7D7A6F",
-    marginLeft: widthPercentage(4),
+    marginLeft: heightPercentage(4),
+    marginTop: heightPercentage(4),
   },
   menuText: {
     fontSize: fontPercentage(12),
     color: "#B9B6AD",
+    marginBottom: heightPercentage(4),
   },
   hashtagContainer: {
     flexDirection: "row",

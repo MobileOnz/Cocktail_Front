@@ -171,7 +171,7 @@ const styles = StyleSheet.create({
   itemTitle: {
     fontSize: fontPercentage(18),
     fontWeight: "bold",
-    marginBottom: heightPercentage(4),
+    marginBottom: heightPercentage(7),
   },
   itemDistance: {
     fontSize: fontPercentage(14),

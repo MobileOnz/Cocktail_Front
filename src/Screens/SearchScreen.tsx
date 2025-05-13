@@ -198,25 +198,40 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation, route }) => {
         {(searchText.length === 0 || initialKeyword) && (
           <>
             <Text style={[styles.sectionTitle, { marginTop: 24, fontSize: 18 }]}>최근 검색어</Text>
-            {[...recentNameSearches, ...recentMenuSearches].map((item, index) => (
-              <TouchableOpacity
-                key={index}
-                style={styles.recentItem}
-                onPress={() => {
-                  if (item.keyword?.length > 0) {
-                    navigation.navigate("BottomTabNavigator", {
-                      screen: "지도",
-                      params: {
-                        searchCompleted: true,
-                        searchQuery: item.keyword,
-                      },
-                    });
-                  }
-                }}
-              >
-                <Text style={styles.recentText}>{item.keyword}</Text>
-              </TouchableOpacity>
-            ))}
+              {[...recentNameSearches, ...recentMenuSearches].map((item, index) => {
+                const iconSource =
+                  item.search_type === "NAME"
+                    ? require("../assets/drawable/search_location_icon.png")
+                    : require("../assets/drawable/search_menu_icon.png");
+
+                return (
+                  <TouchableOpacity
+                    key={index}
+                    style={styles.recentItem}
+                    onPress={() => {
+                      if (item.keyword?.length > 0) {
+                        navigation.navigate("BottomTabNavigator", {
+                          screen: "지도",
+                          params: {
+                            searchCompleted: true,
+                            searchQuery: item.keyword,
+                          },
+                        });
+                      }
+                    }}
+                  >
+                    <View style={styles.recentRow}>
+                      <Image
+                        source={iconSource}
+                        style={styles.recentIcon}
+                        resizeMode="contain"
+                      />
+                      <Text style={styles.recentText}>{item.keyword}</Text>
+                    </View>
+                  </TouchableOpacity>
+                );
+              })}
+
           </>
         )}
       </ScrollView>
@@ -285,13 +300,23 @@ const styles = StyleSheet.create({
     color: "#333",
   },
   recentItem: {
-    height: heightPercentage(40),
+    height: heightPercentage(48),
     justifyContent: "center",
     borderBottomWidth: 1,
     borderBottomColor: "#eee",
   },
+  recentRow: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  recentIcon: {
+    width: widthPercentage(24),
+    height: widthPercentage(24),
+    marginRight: widthPercentage(12),
+  },
   recentText: {
-    fontSize: fontPercentage(14),
-    color: "#555",
+    fontSize: fontPercentage(16),
+    color: "#2d2d2d",
+    fontFamily: 'pretendard-Medium',
   },
 });

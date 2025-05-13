@@ -31,7 +31,7 @@ const SelectedRegionTags: React.FC<SelectedRegionTagsProps> = ({ selectedRegions
                   onRemoveRegion(region)
                 }
                 }} style={styles.removeButton}>
-                <Text style={styles.removeText}>✖</Text>
+                <Image style={styles.removeIcon} source={require("../assets/drawable/region_tag_close.png")}/>
               </TouchableOpacity>
             </View>
           ))}
@@ -79,13 +79,13 @@ const styles = StyleSheet.create({
     marginRight: widthPercentage(5),
   },
   removeButton: {
-    backgroundColor: "#E4DFD8",
+    backgroundColor: "#f3efe6",
     borderRadius: widthPercentage(12),
     padding: widthPercentage(4),
   },
-  removeText: {
-    fontSize: fontPercentage(12),
-    color: "#666",
+  removeIcon: {
+    width: widthPercentage(20),
+    height: heightPercentage(20),
   },
 });
 
