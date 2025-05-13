@@ -98,6 +98,8 @@ const styles = StyleSheet.create({
   },
   menuButton: {
     padding: 2,
+    width: widthPercentage(30),
+    height: heightPercentage(30),
     alignItems: "center",
     justifyContent: "center",
   },

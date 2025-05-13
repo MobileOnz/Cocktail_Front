@@ -4,10 +4,6 @@ import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 
 import { StyleSheet, Image, View, Text } from "react-native";
 
-
-// 마커 이미지 import
-const classicIcon = require("../assets/newListIcon/Name=Primary_Status=Default.png");
-
 const imageMap = {
   1: require("../assets/newListIcon/Name=Classic_Status=Default.png"),
   2: require("../assets/newListIcon/Name=Light_Status=Default.png"),
@@ -20,7 +16,7 @@ const imageMap = {
 
 
  
-const CustomMapView = ({ region, mapRef, markerList, onMarkerPress,onDrag}) => {
+const CustomMapView = ({ region, mapRef, markerList, onMarkerPress,onDrag, selectedBarId}) => {
   const [iconLoadedMap, setIconLoadedMap] = useState({});
 
   const handleImageLoad = (id) => {
@@ -42,7 +38,7 @@ const CustomMapView = ({ region, mapRef, markerList, onMarkerPress,onDrag}) => {
   
 return (
     <MapView
-      key={markerList.map(m => `${m.id}-${m.icon_tag}`).join(",")} //markerList가 바뀔 때마다 MapView를 강제 리렌더링
+      key={`${selectedBarId}-${markerList.map(m => `${m.id}-${m.icon_tag}`).join(",")}`}
       ref={mapRef}
       provider={PROVIDER_GOOGLE}
       style={styles.map}
@@ -53,37 +49,48 @@ return (
       customMapStyle={customMapStyle}
     >
       {markerList?.map((marker) => {
-      console.log("📍 마커 찍음", marker);
-      const lat = Number(marker.coordinate.latitude);
-      const lng = Number(marker.coordinate.longitude);
+        const lat = Number(marker.coordinate.latitude);
+        const lng = Number(marker.coordinate.longitude);
+        if (isNaN(lat) || isNaN(lng)) return null;
 
-      if (isNaN(lat) || isNaN(lng)) return null; 
+        const iconSource = imageMap[marker.icon_tag] ?? imageMap[5];
+        const isLoaded = iconLoadedMap[marker.id] ?? false;
+        const isSelected = marker.id === selectedBarId; // ✅ 선택 여부 확인
 
-
-      const iconSource = imageMap[marker.icon_tag] ?? imageMap[5];
-      const isLoaded = iconLoadedMap[marker.id] ?? false;
-
-      return (
-        <Marker
-          tracksViewChanges={!isLoaded}
-          key={marker.id}
-          coordinate={{ latitude: lat, longitude: lng }}
-          onPress={() => onMarkerPress?.(marker.id)}
-          anchor={{ x: 0.1, y: 0.5 }}
-          
-        >
-          <View style={styles.markerWrapper}>
-            <Image source={iconSource}
-             style={styles.markerIcon} 
-             onLoad={() => handleImageLoad(marker.id)}/>
-            <View style={styles.labelContainer}>
-              <Text style={styles.labelText}>{marker.title}</Text>
+        return (
+          <Marker
+            tracksViewChanges={!isLoaded}
+            key={marker.id}
+            coordinate={{ latitude: lat, longitude: lng }}
+            onPress={() => onMarkerPress?.(marker.id)}
+            anchor={{ x: 0.1, y: 0.5 }}
+          >
+            <View style={styles.markerWrapper}>
+              <Image
+                source={iconSource}
+                style={styles.markerIcon}
+                onLoad={() => handleImageLoad(marker.id)}
+              />
+              <View
+                style={[
+                  styles.labelContainer,
+                  isSelected && styles.labelContainerSelected, // ✅ 배경색 다르게
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.labelText,
+                    isSelected && styles.labelTextSelected, // ✅ 텍스트색 다르게
+                  ]}
+                >
+                  {marker.title}
+                </Text>
+              </View>
             </View>
-          </View>
-        </Marker>
+          </Marker>
+        );
+      })}
 
-      );
-    })}
     </MapView>
   );
 };
@@ -109,8 +116,13 @@ const styles = StyleSheet.create({
   },
   markerWrapper: {
     alignItems: "center",
-    
   },
+  labelContainerSelected: {
+    backgroundColor: "#fffcf3", // 선택된 배경색
+  },
+  labelTextSelected: {
+    color: "#000000", // 선택된 텍스트색
+  },  
 });
 
 export default CustomMapView;

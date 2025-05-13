@@ -277,6 +277,10 @@ const headerCheck = async () =>{
     bar = null
   ) => {
 
+    if (tab === "search") {
+      setSelectedBarId(null); // ✅ 상세 뷰 닫을 때 선택 해제
+    }
+    
     if (tab === "bookmark") {
       const token = await AsyncStorage.getItem("accessToken");
 

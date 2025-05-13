@@ -518,6 +518,7 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
             setSelectedBarId(barId);
           }}
           onDrag={handleMapDrag}
+          selectedBarId={selectedBarId}
         />
       </View>
   

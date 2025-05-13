@@ -250,7 +250,7 @@ return (
                           <View style={styles.infoRow}>
                             <Text style={styles.infoLabel}>추천 상황</Text>
                             <Text style={styles.infoText}>
-                              {currentData.recommends?.[0]?.mood}
+                              {currentData.recommends?.[0]?.situation}
                             </Text>
                           </View>
                           <View style={styles.infoRow}>

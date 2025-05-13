@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, ScrollView, SafeAreaView, Platform} from "react-native";
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, ScrollView, SafeAreaView, Platform, Image} from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../Navigation/Navigation";
@@ -60,12 +60,21 @@ const RegionSelectScreen = () => {
           <TouchableOpacity style={styles.listItem} onPress={() => toggleRegion(item)}>
             <Text style={[styles.itemText, selectedRegions.includes(item) && styles.itemCheckText]}>
               {item}
-              </Text>
-            <TouchableOpacity onPress={() => toggleRegion(item)} style={[styles.checkbox, selectedRegions.includes(item) && styles.checked]}>
-              {selectedRegions.includes(item) && <Text style={styles.checkIcon}>✓</Text> }
+            </Text>
+            <TouchableOpacity
+              onPress={() => toggleRegion(item)}
+            >
+              <Image
+                style={styles.checkIcon}
+                source={
+                  selectedRegions.includes(item)
+                    ? require("../assets/drawable/checked_true.png")
+                    : require("../assets/drawable/checked_false.png")
+                }
+              />
             </TouchableOpacity>
           </TouchableOpacity>
-        )}
+        )}        
       />
       </View>
       
@@ -84,7 +93,7 @@ const RegionSelectScreen = () => {
             <View key={index} style={styles.tag}>
               <Text style={styles.tagText}>{region}</Text>
               <TouchableOpacity onPress={() => toggleRegion(region)}>
-                <Text style={styles.removeText}>X</Text>
+                <Image style={styles.removeIcon} source={require("../assets/drawable/region_tag_close.png")}/>
               </TouchableOpacity>
             </View>
           ))}
@@ -208,29 +217,10 @@ const styles = StyleSheet.create({
     color : "#B9B6AD",
     fontWeight : "500",
   },
-
-  // 체크박스 스타일
-  checkbox: {
+  checkIcon: {
     width: widthPercentage(20),
     height: heightPercentage(20),
-    borderRadius: 12,
-    borderWidth: 2,
-    borderColor: "#B9B6AD",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  checked: {
-    backgroundColor: "#21103C",
-    borderColor: "#21103C",
-    
-  },
-  checkIcon: {
-    fontSize: fontPercentage(8),
-    color : "#FFFFFF",
-    paddingTop : heightPercentage(2),
-    paddingLeft : widthPercentage(2),
-    fontWeight: "700",
-    marginBottom : heightPercentage(4)
+    resizeMode: "contain",
   },
 
   // 선택된 지역 태그 스타일
@@ -263,10 +253,9 @@ const styles = StyleSheet.create({
     marginHorizontal : heightPercentage(8)
   },
 
-  removeText: {
-    fontSize: fontPercentage(13.33),
-    color: "#666",
-    fontWeight : "400"
+  removeIcon: {
+    width: widthPercentage(20),
+    height: heightPercentage(20),
   },
 
   // 하단 버튼 스타일
