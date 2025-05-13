@@ -3,9 +3,12 @@ import { View, Text, FlatList, TouchableOpacity, StyleSheet, ScrollView, SafeAre
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../Navigation/Navigation";
-import { widthPercentage, heightPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
+import { widthPercentage, heightPercentage, fontPercentage, getResponsiveHeight } from "../assets/styles/FigmaScreen";
 import theme from "../assets/styles/theme";
-
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from 'react-native-responsive-screen';
 
 const regions = [
   "서울 전체", "강남/신논현/양재", "청담/압구정/신사", "선릉/삼성", "논현/반포/학동",
@@ -15,7 +18,6 @@ const regions = [
   "서울대/사당/동작", "은평/상암", "신도림/구로", "마포/공덕", "금천/가산", "수서/복정/장지"
 ];
 
-const TAG_BOTTOM = Platform.OS === "ios" ? heightPercentage(100) : heightPercentage(60);
 
 type NavigationProps = StackNavigationProp<RootStackParamList, "RegionSelectScreen">;
 
@@ -137,7 +139,7 @@ const styles = StyleSheet.create({
   },
   tagWrapper: {
     position: "absolute",
-    bottom: TAG_BOTTOM, // 적용 버튼 위에 위치
+    bottom: getResponsiveHeight(84,94,75,85),
     left: 0,
     right: 0,
     backgroundColor: "#FFFCF3",
@@ -271,7 +273,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingHorizontal: widthPercentage(16),
     paddingVertical: heightPercentage(12),
-    paddingBottom: Platform.OS === "ios" ? 44 : 0,
+    paddingBottom:  getResponsiveHeight(24,34,14,24),
     backgroundColor: theme.background,
     borderTopWidth: 1,
     borderColor: "#E4DFD8",
@@ -280,18 +282,19 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   resetButton: {
-    width : widthPercentage(100),
-    height : heightPercentage(48),
+    width : wp(30),
+    height : hp(6),
     paddingHorizontal : widthPercentage(16),
-    paddingVertical : heightPercentage(12),
+    paddingVertical : getResponsiveHeight(13,16,13,16),
     alignItems: "center",
     borderRadius: 8,
     backgroundColor: "#E4DFD8",
     marginRight: 8,
   },
   applyButton: {
-    flex: 1,
-    padding: 12,
+    width : wp(60),
+    height : hp(6),
+    paddingVertical : getResponsiveHeight(13,16,13,16),
     alignItems: "center",
     borderRadius: 8,
     backgroundColor: "#21103C",
