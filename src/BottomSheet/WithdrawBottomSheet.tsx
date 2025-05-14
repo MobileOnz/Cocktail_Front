@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, TouchableOpacity, StyleSheet, Image } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, Image, SafeAreaView } from "react-native";
 import Modal from "react-native-modal";
 import { widthPercentage, heightPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
 
@@ -22,6 +22,7 @@ const WithdrawBottomSheet: React.FC<WithdrawBottomSheetProps> = ({ isVisible, on
       backdropOpacity={0.3}
     >
       <View style={styles.container}>
+        <View style={{ height: heightPercentage(12) }} />
         <Text style={styles.title}>회원 탈퇴</Text>
         <Image
           source={require("../assets/drawable/delete_account.png")}
@@ -39,6 +40,7 @@ const WithdrawBottomSheet: React.FC<WithdrawBottomSheetProps> = ({ isVisible, on
           </TouchableOpacity>
         </View>
       </View>
+      <SafeAreaView style={{backgroundColor: "#FFFCF3"}}/>
     </Modal>
   );
 };

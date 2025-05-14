@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { View, Text, TouchableOpacity, StyleSheet, Image } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, Image, SafeAreaView } from "react-native";
 import Modal from "react-native-modal"; // ✅ react-native-modal 사용
 import { widthPercentage, heightPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
 import { useNavigation } from "@react-navigation/native";
@@ -23,6 +23,7 @@ const LoginBottomSheet: React.FC<LoginBottomSheetProps> = ({ isVisible, onClose,
       };
 
   return (
+
     <Modal
       isVisible={isVisible} // ✅ 모달 보이기 여부
       onBackdropPress={onClose} // ✅ 바깥 클릭 시 닫힘
@@ -34,7 +35,9 @@ const LoginBottomSheet: React.FC<LoginBottomSheetProps> = ({ isVisible, onClose,
       backdropOpacity={0.3} // ✅ 배경 흐림 효과 추가
       statusBarTranslucent={true} //상태바까지 흐림 효과 넣어줌
     >
+      
       <View style={styles.container}>
+        <View style={{ height: heightPercentage(12) }} />
         <Text style={styles.title}>로그인하기</Text>
         <Image
           source={require("../assets/drawable/login_modal.png")}
@@ -52,7 +55,9 @@ const LoginBottomSheet: React.FC<LoginBottomSheetProps> = ({ isVisible, onClose,
           </TouchableOpacity>
         </View>
       </View>
+      <SafeAreaView style={{backgroundColor: "#FFFCF3"}}/>
     </Modal>
+
   );
 };
 
