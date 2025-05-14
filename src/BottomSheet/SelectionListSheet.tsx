@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TouchableOpacity, FlatList, Image, StyleSheet } from "react-native";
+import { View, Text, TouchableOpacity, FlatList, Image, StyleSheet, SafeAreaView } from "react-native";
 import { widthPercentage, heightPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
 import { useNavigation } from "@react-navigation/native";
 
@@ -9,6 +9,7 @@ interface SelectionListSheetProps {
   listData: ListItem[];
   onClose: () => void;
   onSave: (selectedItem: ListItem | null) => void;
+
 }
 
 // interface ListItem {
@@ -71,54 +72,72 @@ const SelectionListSheet: React.FC<SelectionListSheetProps> = ({ title, listData
         <Text style={styles.newListText}>새 리스트 만들기</Text>
       </TouchableOpacity>
 
-      {/* 리스트 목록 */}
-      <FlatList
-      // style={{flexGrow: 0}}
-      contentContainerStyle={{
-        paddingBottom: heightPercentage(160), // ✅ 저장 버튼이 가려지지 않게 여유 공간 확보
-      }}
-      data={listData}
-      keyExtractor={(item) => item.id.toString()}
-      renderItem={({ item }) => {
-        const allTags = Object.values(item.sub_tags ?? {}).flat();
-        return (
-          <View style={styles.listItem}>
-            <Image
-            source={
-              imageMap[item.icon_tag] ??
-              require("../assets/drawable/listicon1.png") // fallback 아이콘
-            }
-            style={styles.icon}
-          />
-            <View style={styles.info}>
-
-              <View style={styles.titleRow}>
-                <Text style={styles.barName}>{item.main_tag?.name ?? "이름 없음"}</Text>
-                <Image
-                  source={require("../assets/drawable/location.png")}
-                  style={styles.locationIcon}
-                />
-                <Text style={styles.locationText}>{item.store_count?.toString() ?? "0"}</Text>
-              </View>
-
-              <View style={styles.tagContainer}>
-                {allTags.map((tag, index) => (
-                  <Text key={index} style={styles.tag}>#{tag.name}</Text>
-                ))}
-              </View>
-            </View>
-            <TouchableOpacity style={styles.checkboxContainer} onPress={() => setSelectedListId(item.id.toString())}>
+      <View style={{flex: 1}}>
+        {/* 리스트 목록 */}
+        <FlatList
+        // style={{flexGrow: 0}}
+        contentContainerStyle={{
+          paddingBottom: heightPercentage(160), // ✅ 저장 버튼이 가려지지 않게 여유 공간 확보
+        }}
+        data={listData}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={({ item }) => {
+          const allTags = Object.values(item.sub_tags ?? {}).flat();
+          return (
+            <View style={styles.listItem}>
               <Image
-                source={selectedListId === item.id.toString()
-                  ? require("../assets/drawable/checkbox_checked.png")
-                  : require("../assets/drawable/checkbox_unchecked.png")}
-                style={styles.checkbox}
-              />
-            </TouchableOpacity>
-          </View>
-        );
-      }}
-      ListFooterComponent={
+              source={
+                imageMap[item.icon_tag] ??
+                require("../assets/drawable/listicon1.png") // fallback 아이콘
+              }
+              style={styles.icon}
+            />
+              <View style={styles.info}>
+
+                <View style={styles.titleRow}>
+                  <Text style={styles.barName}>{item.main_tag?.name ?? "이름 없음"}</Text>
+                  <Image
+                    source={require("../assets/drawable/location.png")}
+                    style={styles.locationIcon}
+                  />
+                  <Text style={styles.locationText}>{item.store_count?.toString() ?? "0"}</Text>
+                </View>
+
+                <View style={styles.tagContainer}>
+                  {allTags.map((tag, index) => (
+                    <Text key={index} style={styles.tag}>#{tag.name}</Text>
+                  ))}
+                </View>
+              </View>
+              <TouchableOpacity style={styles.checkboxContainer} onPress={() => setSelectedListId(item.id.toString())}>
+                <Image
+                  source={selectedListId === item.id.toString()
+                    ? require("../assets/drawable/checkbox_checked.png")
+                    : require("../assets/drawable/checkbox_unchecked.png")}
+                  style={styles.checkbox}
+                />
+              </TouchableOpacity>
+            </View>
+          );
+        }}
+        // ListFooterComponent={
+        //   <TouchableOpacity
+        //     style={styles.saveButton}
+        //     onPress={() => {
+        //       const selected = listData.find((item) => item.id.toString() === selectedListId);
+        //       console.log("🟡 저장 버튼 클릭됨 - 선택된 리스트:", selected);
+        //       onSave(selected || null);
+        //     }}
+        //   >
+        //     <Text style={styles.saveText}>저장하기</Text>
+        //   </TouchableOpacity>
+        // }
+      />
+
+      </View>
+
+      {/* ✅ 하단 고정 저장 버튼 (스크롤과 무관) */}
+      {/* <SafeAreaView edges={["bottom"]} style={styles.footer}>
         <TouchableOpacity
           style={styles.saveButton}
           onPress={() => {
@@ -129,12 +148,7 @@ const SelectionListSheet: React.FC<SelectionListSheetProps> = ({ title, listData
         >
           <Text style={styles.saveText}>저장하기</Text>
         </TouchableOpacity>
-      }
-    />
-
-
-      
-      
+      </SafeAreaView> */}
     </View>
   );
 };

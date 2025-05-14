@@ -111,7 +111,24 @@ const BottomTabNavigator = () => {
           tabBarInactiveTintColor: theme.bottomTextColor,
         })}
       >
-        <Tab.Screen name="지도" component={MapScreen} options={{ headerShown: false }} />
+        <Tab.Screen
+          name="지도"
+          component={MapScreen}
+          options={({ route }) => {
+            const hideTabBar = route?.params?.hideTabBar;
+
+            return {
+              headerShown: false,
+              tabBarStyle: hideTabBar
+                ? { display: "none" }
+                : {
+                    height: heightPercentage(60),
+                    backgroundColor: theme.background,
+                  },
+            };
+          }}
+        />
+
         <Tab.Screen name="칵테일 백과" component={CocktailBookScreen} options={{ headerShown: false }} />
 
         {/* 맞춤 추천 버튼 - 로그인 여부 확인 후 처리 */}

@@ -1,6 +1,6 @@
 import React, { useMemo, useState,useRef,useEffect, useCallback } from "react";
 import { useFocusEffect } from "@react-navigation/native";
-import { View, StyleSheet, TouchableOpacity, Text, Alert, Platform} from "react-native";
+import { View, StyleSheet, TouchableOpacity, Text, Alert, Platform, SafeAreaView} from "react-native";
 import BottomSheet from "@gorhom/bottom-sheet";
 import theme from "../assets/styles/theme";
 import SearchSheetContent from "../BottomSheet/SearchSheetContent";
@@ -294,6 +294,7 @@ const headerCheck = async () =>{
         setSelectedBarId(barId);  // ✅ 리스트 저장용
         setSelectedBar(bar);                // ✅ UI 표시용 or Detail 화면용
       }
+      navigation.setParams({ hideTabBar: true });
     }
     
 
@@ -418,7 +419,10 @@ const headerCheck = async () =>{
       <SelectionListSheet
       title="선택한 장소 명"
       listData={myList}
-      onClose={() => setSelectedTab("search")}
+      onClose={() => {
+        navigation.setParams({ hideTabBar: false });  // ✅ 바텀탭 다시 보이게
+        setSelectedTab("search");                     // ✅ 시트 닫기
+      }}
       onSave={async (selectedItem) => {
 
         console.log("🟢 onSave 호출됨 - 선택된 리스트:", selectedItem);
@@ -505,7 +509,7 @@ const headerCheck = async () =>{
           }
         } catch (error) {
           console.error("가게 추가 에러:", error);
-          showToast("네트워크 오류");ㅌ
+          showToast("네트워크 오류");
         }
       }}
 
@@ -583,8 +587,25 @@ const headerCheck = async () =>{
       navigation={navigation}
     />
     </Portal>
+
+      {/* ✅ 항상 화면 하단에 고정되는 저장 버튼 */}
+  {selectedTab === "bookmark" && (
+    <SafeAreaView style={styles.fixedFooter}>
+        <View style={{ height: heightPercentage(12) }} /> {/* 👈 버튼 위 공간 확보 */}
+      <TouchableOpacity
+        style={styles.saveButton}
+        onPress={() => {
+          // selectedListId는 상태로 따로 관리해야 함
+        }}
+      >
+        <Text style={styles.saveText}>저장하기</Text>
+      </TouchableOpacity>
+    </SafeAreaView>
+  )}
   </>
   );
+
+  
 };
 
 const styles = StyleSheet.create({
@@ -623,6 +644,40 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0,0,0,0.4)",
     zIndex: 99,
   },
+  fixedFooter: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: "#FFFCF3",
+    paddingHorizontal: widthPercentage(16),
+    paddingTop: heightPercentage(12),
+    paddingBottom: heightPercentage(16),
+    alignItems: "center",
+    zIndex: 9999,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: -2, // 위쪽 그림자
+    },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    elevation: 6, // Android용 그림자
+  },
+  saveButton: {
+    backgroundColor: "#21103C",
+    borderRadius: widthPercentage(8),
+    alignItems: "center",
+    paddingVertical: heightPercentage(12),
+    width: widthPercentage(343),
+    height: heightPercentage(48),
+  },
+  saveText: {
+    color: "#FFFFFF",
+    fontSize: fontPercentage(16),
+    fontWeight: "bold",
+  },
+  
 });
 
 export default BaseBottomSheet;
