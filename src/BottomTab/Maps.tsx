@@ -188,7 +188,7 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
         icon_tag: 7,
       }));
   
-      setBarList(formatted);
+      setBarData(formatted);
       setMarkerList(markers);
       if (shouldSetTab) setSelectedTab("search");
   
@@ -409,7 +409,7 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
           icon_tag: 7,
         }));
   
-        setBarList(data);
+        setBarData(data);
         setMarkerList(markers);
   
         if (mapRef.current && markers.length > 0) {
@@ -587,7 +587,7 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
                   icon_tag: 5,
                 }));
         
-                setBarList(formatted);       // ✅ search 탭에서 필요한 데이터
+                // setBarList(formatted);       // ✅ search 탭에서 필요한 데이터
                 setMarkerList(markers);      // ✅ 지도에 찍을 마커
                 setBarData(formatted);       // ✅ bottomsheet 내에서도 fallback
               }
