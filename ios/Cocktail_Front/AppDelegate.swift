@@ -7,6 +7,7 @@ import FirebaseCore
 import NaverThirdPartyLogin // ✅ 네이버 SDK import
 import GoogleSignIn 
 import KakaoSDKAuth
+
 @main
 class AppDelegate: RCTAppDelegate {
   override func application(

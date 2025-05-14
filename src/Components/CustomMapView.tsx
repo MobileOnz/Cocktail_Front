@@ -9,9 +9,9 @@ const imageMap = {
   2: require("../assets/newListIcon/Name=Light_Status=Default.png"),
   3: require("../assets/newListIcon/Name=Party_Status=Default.png"),
   4: require("../assets/newListIcon/Name=Play_Status=Default.png"),
-  5: require("../assets/newListIcon/Name=Primary_Status=Default.png"),
-  6: require("../assets/newListIcon/Name=Shine_Status=Default.png"),
-  7: require("../assets/newListIcon/Name=Summer_Status=Default.png"),
+  5: require("../assets/newListIcon/Name=Shine_Status=Default.png"),
+  6: require("../assets/newListIcon/Name=Summer_Status=Default.png"),
+  7: require("../assets/newListIcon/Name=Primary_Status=Default.png")
 };
 
 
@@ -53,7 +53,7 @@ return (
         const lng = Number(marker.coordinate.longitude);
         if (isNaN(lat) || isNaN(lng)) return null;
 
-        const iconSource = imageMap[marker.icon_tag] ?? imageMap[5];
+        const iconSource = imageMap[marker.icon_tag] ?? imageMap[7];
         const isLoaded = iconLoadedMap[marker.id] ?? false;
         const isSelected = marker.id === selectedBarId; // ✅ 선택 여부 확인
 

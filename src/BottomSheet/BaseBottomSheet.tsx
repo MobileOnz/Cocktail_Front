@@ -77,7 +77,7 @@ const BaseBottomSheet = ({
 
     const enriched = markerList.map((marker) => {
       const listId = bookmarkListMap.get(marker.id);
-      const iconTag = myList.find((list) => list.id === listId)?.icon_tag ?? 5;
+      const iconTag = myList.find((list) => list.id === listId)?.icon_tag ?? 7;
       return {
         ...marker,
         icon_tag: iconTag,
