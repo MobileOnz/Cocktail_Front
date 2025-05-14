@@ -8,8 +8,8 @@ interface SelectionListSheetProps {
   title: string;
   listData: ListItem[];
   onClose: () => void;
-  onSave: (selectedItem: ListItem | null) => void;
-
+  selectedListId: number | null;
+  setSelectedListId: (id: number) => void;
 }
 
 // interface ListItem {
@@ -48,8 +48,8 @@ interface ListItem {
 }
 
 
-const SelectionListSheet: React.FC<SelectionListSheetProps> = ({ title, listData, onClose, onSave}) => {
-  const [selectedListId, setSelectedListId] = useState<string | null>(null);
+const SelectionListSheet: React.FC<SelectionListSheetProps> = ({ title, listData, onClose, selectedListId, setSelectedListId}) => {
+
   const navigation = useNavigation();
 
   return (
@@ -109,9 +109,9 @@ const SelectionListSheet: React.FC<SelectionListSheetProps> = ({ title, listData
                   ))}
                 </View>
               </View>
-              <TouchableOpacity style={styles.checkboxContainer} onPress={() => setSelectedListId(item.id.toString())}>
+              <TouchableOpacity style={styles.checkboxContainer} onPress={() => setSelectedListId(item.id)}>
                 <Image
-                  source={selectedListId === item.id.toString()
+                  source={selectedListId === item.id
                     ? require("../assets/drawable/checkbox_checked.png")
                     : require("../assets/drawable/checkbox_unchecked.png")}
                   style={styles.checkbox}

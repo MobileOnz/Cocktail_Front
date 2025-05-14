@@ -49,6 +49,8 @@ const BaseBottomSheet = ({
 
   const [selectedBar, setSelectedBar] = useState<"search" | "myList" | "region" | "bookmark"| "detail"|"myBardetailList">("search");
 
+  const [selectedListId, setSelectedListId] = useState<number | null>(null);
+
   //북마크 체크/해제를 위해 북마크 리스트를 맵으로 저장
   const [bookmarkListMap, setBookmarkListMap] = useState<Map<number, number>>(new Map());
 
@@ -423,96 +425,8 @@ const headerCheck = async () =>{
         navigation.setParams({ hideTabBar: false });  // ✅ 바텀탭 다시 보이게
         setSelectedTab("search");                     // ✅ 시트 닫기
       }}
-      onSave={async (selectedItem) => {
-
-        console.log("🟢 onSave 호출됨 - 선택된 리스트:", selectedItem);
-        console.log("🟢 selectedBarId:", selectedBarId);
-        console.log("🟢 selectedBar(raw or formatted):", selectedBar);
-
-        if (!selectedItem || !selectedBarId || !selectedBar){
-          console.warn("❌ 저장할 값이 부족함 (selectedItem, selectedBarId, selectedBar)");
-          return;
-        } 
-      
-        try {
-          const token = await AsyncStorage.getItem('accessToken');
-          if(!token){
-            Alert.alert("로그인이 필요합니다.");
-            return;
-          }
-          const response = await fetch(`${API_BASE_URL}/api/item`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `${token}`,
-            },
-            body: JSON.stringify({
-              listId: selectedItem.id,
-              barId: selectedBarId,
-            }),
-          });
-      
-          const result = await response.json();
-          console.log("북마크 추가 응답: ", result);
-
-          if (result.code === 1) {
-            showToast("가게를 추가했습니다.");
-            setSelectedTab("search");
-
-            //menuListDetail과의 바 데이터 포맷을 적용시켜주기 위함
-            const formattedBar = formatBarForMyList(selectedBar.raw ?? selectedBar);
-
-            //바로 북마크 Set, Map 업데이트
-            setBookmarkIds((prev) => new Set(prev).add(selectedBarId));
-            setBookmarkListMap((prev) => {
-              const updated = new Map(prev);
-              updated.set(selectedBarId, selectedItem.id);
-              return updated;
-            });
-
-            
-            //바로 myBars에 추가, 이미 있으면 중복 방지까지
-            setMyBars((prevBars) => {
-              const exists = prevBars.some((bar) => bar.id === selectedBarId);
-              return exists ? prevBars : [...prevBars, formattedBar];
-            });
-
-            //sections에 추가 반영
-            setSections((prevSections) => {
-              const updatedSections = prevSections.map((sections) => {
-                if(sections.title === "나의 칵테일 바"){
-                  const exists = sections.data.some((bar) => bar.id === selectedBarId);
-                  return exists
-                    ? sections
-                    : { ...sections, data: [...sections.data, formattedBar]};
-                }
-                return sections;
-              });
-
-              //혹시 "나의 칵테일 바" 섹션이 아예 없을 경우
-              const hasMyBarSection = updatedSections.some(
-                (section) => section.title === "나의 칵테일 바"
-              );
-              if(!hasMyBarSection){
-                updatedSections.unshift({
-                  title: "나의 칵테일 바",
-                  data: [formattedBar],
-                });
-              }
-              return updatedSections;
-            });
-
-            //리프레시 트리거 (의미상 갱신)
-            setRefreshTrigger((prev) => prev + 1);
-          } else {
-            showToast("리스트 추가 실패");
-          }
-        } catch (error) {
-          console.error("가게 추가 에러:", error);
-          showToast("네트워크 오류");
-        }
-      }}
-
+      selectedListId={selectedListId}
+      setSelectedListId={setSelectedListId}
       />
       ): selectedTab ==="myBardetailList" ? (
         <MyBardetailListBottomSheet listId={selectedBarId} />
@@ -589,19 +503,92 @@ const headerCheck = async () =>{
     </Portal>
 
       {/* ✅ 항상 화면 하단에 고정되는 저장 버튼 */}
-  {selectedTab === "bookmark" && (
-    <SafeAreaView style={styles.fixedFooter}>
-        <View style={{ height: heightPercentage(12) }} /> {/* 👈 버튼 위 공간 확보 */}
-      <TouchableOpacity
-        style={styles.saveButton}
-        onPress={() => {
-          // selectedListId는 상태로 따로 관리해야 함
-        }}
-      >
-        <Text style={styles.saveText}>저장하기</Text>
-      </TouchableOpacity>
-    </SafeAreaView>
-  )}
+      {selectedTab === "bookmark" && (
+        <SafeAreaView style={styles.fixedFooter}>
+          <View style={{ height: heightPercentage(12) }} />
+          <TouchableOpacity
+            style={styles.saveButton}
+            onPress={async () => {
+              const selected = myList.find(item => item.id === selectedListId);
+              if (!selected || !selectedBarId || !selectedBar) {
+                Alert.alert("리스트를 선택해 주세요.");
+                return;
+              }
+
+              try {
+                const token = await AsyncStorage.getItem('accessToken');
+                if (!token) {
+                  Alert.alert("로그인이 필요합니다.");
+                  return;
+                }
+
+                const response = await fetch(`${API_BASE_URL}/api/item`, {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                    Authorization: token,
+                  },
+                  body: JSON.stringify({
+                    listId: selected.id,
+                    barId: selectedBarId,
+                  }),
+                });
+
+                const result = await response.json();
+                if (result.code === 1) {
+                  showToast("가게를 추가했습니다.");
+
+                  navigation.setParams({hideTabBar: false});
+                  setSelectedTab("search");
+
+                  const formattedBar = formatBarForMyList(selectedBar.raw ?? selectedBar);
+
+                  setBookmarkIds(prev => new Set(prev).add(selectedBarId));
+                  setBookmarkListMap(prev => {
+                    const updated = new Map(prev);
+                    updated.set(selectedBarId, selected.id);
+                    return updated;
+                  });
+
+                  setMyBars(prevBars => {
+                    const exists = prevBars.some(bar => bar.id === selectedBarId);
+                    return exists ? prevBars : [...prevBars, formattedBar];
+                  });
+
+                  setSections(prevSections => {
+                    const updated = prevSections.map(section => {
+                      if (section.title === "나의 칵테일 바") {
+                        const exists = section.data.some(bar => bar.id === selectedBarId);
+                        return exists
+                          ? section
+                          : { ...section, data: [...section.data, formattedBar] };
+                      }
+                      return section;
+                    });
+
+                    const hasMyBarSection = updated.some(s => s.title === "나의 칵테일 바");
+                    if (!hasMyBarSection) {
+                      updated.unshift({ title: "나의 칵테일 바", data: [formattedBar] });
+                    }
+
+                    return updated;
+                  });
+
+                  setRefreshTrigger(prev => prev + 1);
+                } else {
+                  showToast("리스트 추가 실패");
+                }
+              } catch (error) {
+                console.error("가게 추가 에러:", error);
+                showToast("네트워크 오류");
+              }
+            }}
+          >
+            <Text style={styles.saveText}>저장하기</Text>
+          </TouchableOpacity>
+        </SafeAreaView>
+      )}
+
   </>
   );
 
