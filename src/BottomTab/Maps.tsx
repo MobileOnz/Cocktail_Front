@@ -185,7 +185,7 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
           latitude: Number(bar.y),
           longitude: Number(bar.x),
         },
-        icon_tag: 5,
+        icon_tag: 7,
       }));
   
       setBarList(formatted);
