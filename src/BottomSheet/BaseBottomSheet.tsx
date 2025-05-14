@@ -307,6 +307,7 @@ const headerCheck = async () =>{
     setSelectedTab(tab);
   };
 
+  
   const handleBookmarkToggle = async (barId: number) => {
     const token = await AsyncStorage.getItem("accessToken");
     if (!token) {
@@ -390,7 +391,7 @@ const headerCheck = async () =>{
   //
 >
   
-{selectedTab !== "detail" && selectedTab !== "regionDetail" && (
+{selectedTab !== "detail" && selectedTab !== "regionDetail" && selectedTab !== "bookmark" &&(
   <View style={styles.sheetHeader}>
     <TouchableOpacity
       style={[styles.listButton, selectedTab === "myList" && styles.activeButton]}
