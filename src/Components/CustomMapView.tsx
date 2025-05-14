@@ -16,7 +16,7 @@ const imageMap = {
 
 
  
-const CustomMapView = ({ region, mapRef, markerList, onMarkerPress,onDrag, selectedBarId}) => {
+const CustomMapView = ({ region, mapRef, markerList, onMarkerPress,onDrag, selectedBarId, selectedTab}) => {
   const [iconLoadedMap, setIconLoadedMap] = useState({});
 
   const handleImageLoad = (id) => {
@@ -74,13 +74,13 @@ return (
               <View
                 style={[
                   styles.labelContainer,
-                  isSelected && styles.labelContainerSelected, // ✅ 배경색 다르게
+                  isSelected && (selectedTab === "detail") && styles.labelContainerSelected, // ✅ 배경색 다르게
                 ]}
               >
                 <Text
                   style={[
                     styles.labelText,
-                    isSelected && styles.labelTextSelected, // ✅ 텍스트색 다르게
+                    isSelected && (selectedTab === "detail") &&  styles.labelTextSelected, // ✅ 텍스트색 다르게
                   ]}
                 >
                   {marker.title}

@@ -536,6 +536,7 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
           }}
           onDrag={handleMapDrag}
           selectedBarId={selectedBarId}
+          selectedTab={selectedTab}
         />
       </View>
   

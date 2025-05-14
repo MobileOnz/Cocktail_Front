@@ -2517,7 +2517,7 @@ SPEC CHECKSUMS:
   FirebaseCore: 99fe0c4b44a39f37d99e6404e02009d2db5d718d
   FirebaseCoreInternal: df24ce5af28864660ecbd13596fc8dd3a8c34629
   fmt: a40bb5bd0294ea969aaaba240a927bd33d878cdd
-  glog: eb93e2f488219332457c3c4eafd2738ddc7e80b8
+  glog: 5683914934d5b6e4240e497e0f4a3b42d1854183
   Google-Maps-iOS-Utils: 66d6de12be1ce6d3742a54661e7a79cb317a9321
   GoogleMaps: 8939898920281c649150e0af74aa291c60f2e77d
   GoogleSignIn: d4281ab6cf21542b1cfaff85c191f230b399d2db
