@@ -259,7 +259,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginTop : getResponsiveHeight(10,10,12,35,40,50),
+    marginTop : getResponsiveHeight(10,10,12,35,50,50),
     paddingHorizontal: widthPercentage(15),
     paddingVertical: heightPercentage(10),
   },

@@ -59,7 +59,7 @@ const RegionSelectScreen = () => {
         data={regions}
         keyExtractor={(item) => item}
         contentContainerStyle={{
-          paddingBottom: selectedRegions.length > 0 ? getResponsiveHeight(240,240,240,240,245,255) : getResponsiveHeight(145,145,145,170,145,210), // 태그 영역 존재하면 공간 확보
+          paddingBottom: selectedRegions.length > 0 ? getResponsiveHeight(240,240,240,240,245,255) : getResponsiveHeight(145,145,145,170,180,210), // 태그 영역 존재하면 공간 확보
         }}
         renderItem={({ item }) => (
           <TouchableOpacity style={styles.listItem} onPress={() => toggleRegion(item)}>
@@ -184,7 +184,7 @@ const styles = StyleSheet.create({
   flexDirection: "row",
   alignItems: "center",
   justifyContent: "space-between",
-  paddingTop: getResponsiveHeight(30,30,30,40,30,60), 
+  paddingTop: getResponsiveHeight(30,30,30,40,50,60), 
   paddingHorizontal: widthPercentage(16), 
   paddingBottom: heightPercentage(12), 
   backgroundColor: "#FFFCF3", 

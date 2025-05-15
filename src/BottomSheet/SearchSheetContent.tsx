@@ -50,7 +50,7 @@ const MainBottomSheet = ({ sections, showMyBars, handleTabPress, setSelectedTab,
         <Text style={styles.itemTitle} numberOfLines={1} ellipsizeMode="tail">{item.title}</Text>
         
         {item.hashtagList && item.hashtagList.length >0 &&(
-           <Text style={{ color: "#B9B6AD", fontSize: fontPercentage(12),marginTop : getResponsiveHeight(4,4,4,6,6,10),marginBottom : heightPercentage(4) }}>인기메뉴</Text>
+           <Text style={{ color: "#B9B6AD", fontSize: fontPercentage(12),marginTop : getResponsiveHeight(4,4,4,6,8,10),marginBottom : heightPercentage(4) }}>인기메뉴</Text>
         )}
         
         <View style={styles.hashtagContainer}>
@@ -152,7 +152,7 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     marginTop: heightPercentage(5),
     width: widthPercentage(197),
-    height: getResponsiveHeight(70,70,70,70,80,60),
+    height: getResponsiveHeight(70,70,70,70,65,60),
     maxHeight: heightPercentage(100),
     overflow: "hidden",
   },

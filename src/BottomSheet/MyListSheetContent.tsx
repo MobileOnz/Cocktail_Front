@@ -10,6 +10,7 @@ import {
   widthPercentage,
   heightPercentage,
   fontPercentage,
+  getResponsiveHeight,
 } from "../assets/styles/FigmaScreen";
 
 import instance from "../tokenRequest/axios_interceptor";
@@ -218,6 +219,7 @@ const styles = StyleSheet.create({
     width: 32,
     aspectRatio: 1,
     resizeMode: "contain",
+    marginTop : getResponsiveHeight(2,3,4,3,4,5),
     marginRight: widthPercentage(12),
   },
   newListButton: {

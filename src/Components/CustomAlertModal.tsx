@@ -1,6 +1,10 @@
 import React from "react";
 import { View, Text, Modal, TouchableOpacity, StyleSheet, TouchableWithoutFeedback } from "react-native";
-import { widthPercentage, heightPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
+import { widthPercentage, heightPercentage, fontPercentage, getResponsiveHeight } from "../assets/styles/FigmaScreen";
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from 'react-native-responsive-screen';
 
 const CustomAlertModal = ({ visible, message, onCancel, onConfirm }) => {
   if (!visible) return null; // 직접 제어
@@ -34,8 +38,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   alertBox: {
-    width: widthPercentage(259),
-    height : heightPercentage(140),
+    width: wp(80),
+    height : getResponsiveHeight(300,400,500,170,150,145),
     backgroundColor: "#FFFCF3",
     borderRadius: 12,
    
@@ -55,8 +59,8 @@ const styles = StyleSheet.create({
     width : "100%",
   },
   cancelButton: {
-    width : widthPercentage(129),
-    height : heightPercentage(44),
+ 
+    height : hp(4),
     textAlign : "center",
     textAlignVertical : "center",
     borderRightWidth : 1,
