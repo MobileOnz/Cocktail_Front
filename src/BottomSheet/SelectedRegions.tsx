@@ -6,7 +6,7 @@ import axios from "axios";
 import { ScrollView } from "react-native-gesture-handler";
 import { API_BASE_URL } from "@env";
 
-import { widthPercentage, heightPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
+import { widthPercentage, heightPercentage, fontPercentage, getResponsiveHeight } from "../assets/styles/FigmaScreen";
 
 const Tab = createMaterialTopTabNavigator()
 
@@ -251,13 +251,15 @@ const styles = StyleSheet.create({
   label: {
     fontSize: fontPercentage(12),
     color: "#B9B6AD",
+    marginTop : getResponsiveHeight(10,20,30,20,25,30)
   },
   hashtagContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
     marginTop: heightPercentage(8),
     width: widthPercentage(197),
-    maxHeight: heightPercentage(50),
+    height: getResponsiveHeight(70,70,70,66,80,58),
+    maxHeight: heightPercentage(100),
     overflow: "hidden",
   },
   hashtag: {
@@ -270,7 +272,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginRight: widthPercentage(4),
     marginBottom: heightPercentage(4),
-    height: heightPercentage(24),
   },
   bookmarkIcon: {
     padding: widthPercentage(10),

@@ -5,7 +5,7 @@ const FIGMA_BASE_WIDTH = 375;
 const FIGMA_BASE_HEIGHT = 812;
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
-
+console.log('SCREEN HEIGHT:', SCREEN_HEIGHT);
 // 반응형 width
 export function widthPercentage(width: number): number {
   return (SCREEN_WIDTH / FIGMA_BASE_WIDTH) * width;
@@ -24,27 +24,28 @@ export function fontPercentage(size: number): number {
 }
 
 // 기기 분류
-export const isSmallDevice = SCREEN_HEIGHT < 700;
-export const isMediumDevice = SCREEN_HEIGHT >= 700 && SCREEN_HEIGHT < 800;
-export const isLargeDevice = SCREEN_HEIGHT >= 800;
-export const isTablet = SCREEN_WIDTH >= 600; 
+export const isSmallDevice = SCREEN_HEIGHT < 720;
+export const isMediumDevice = SCREEN_HEIGHT >= 720 && SCREEN_HEIGHT < 820;
+export const isLargeDevice = SCREEN_HEIGHT >= 820;
 // 플랫폼
 export const isAndroid = Platform.OS === 'android';
 export const isIOS = Platform.OS === 'ios';
 
 export function getResponsiveHeight(
   iosSmall: number,
-  iosDefault: number,
+  iosMedium: number,
+  iosLarge: number,
   androidSmall: number,
-  androidDefault: number
+  androidMedium: number,
+  androidLarge: number
 ): number {
   if (isIOS) {
-    return isSmallDevice
-      ? heightPercentage(iosSmall)
-      : heightPercentage(iosDefault);
+    if (isSmallDevice) return heightPercentage(iosSmall);
+    if (isMediumDevice) return heightPercentage(iosMedium);
+    return heightPercentage(iosLarge);
   } else {
-    return isSmallDevice
-      ? heightPercentage(androidSmall)
-      : heightPercentage(androidDefault);
+    if (isSmallDevice) return heightPercentage(androidSmall);
+    if (isMediumDevice) return heightPercentage(androidMedium);
+    return heightPercentage(androidLarge);
   }
 }

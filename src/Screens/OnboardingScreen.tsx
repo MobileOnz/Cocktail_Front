@@ -18,8 +18,6 @@ type RootStackParamList = {
   BottomTabNavigator: { screen: "지도" | "칵테일 백과" | "맞춤 추천" | "마이페이지" };
 };
 const { height: screenHeight } = Dimensions.get("window");
-const isSmallDevice = screenHeight < 700;
-const isLargeDevice = screenHeight >= 800;
 
 type OnboardingScreenProps = StackScreenProps<RootStackParamList, "Onboarding">;
 
@@ -175,8 +173,8 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection : "row",
     alignItems : "center",
-    marginBottom : getResponsiveHeight(20,10,20,30),
-    marginTop : getResponsiveHeight(80,70,40,30)
+    marginBottom : getResponsiveHeight(30,20,10,20,30,35),
+    marginTop : getResponsiveHeight(90,80,70,80,90,100)
   },
   outlineButton: {
     borderWidth: 1,
@@ -215,13 +213,14 @@ const styles = StyleSheet.create({
   },
   image: {
     width: wp(100),
-    height: getResponsiveHeight(500,400,500,300),
+    height: getResponsiveHeight(600,500,400,400,450,450),
+    resizeMode : "contain"
   },
   title: {
     fontSize: fontPercentage(24),
     fontWeight: "700",
     textAlign: "center",
-    marginTop: getResponsiveHeight(34,54,19,24),
+    marginTop: getResponsiveHeight(24,34,54,20,4,0),
   },
   text: {
     fontWeight: '500',

@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../navigation/types";
-import { widthPercentage, heightPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
+import { widthPercentage, heightPercentage, fontPercentage, getResponsiveHeight } from "../assets/styles/FigmaScreen";
 import Icon from "react-native-vector-icons/Ionicons";
 
 import { API_BASE_URL } from "@env";
@@ -22,7 +22,7 @@ const ResultScreen: React.FC = ({route}) => {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+      <TouchableOpacity style={styles.backButton} onPress={() =>   navigation.navigate("BottomTabNavigator", { screen: "맞춤 추천" })}>
         <Image source={require("../assets/drawable/left-chevron.png")} style={styles.icon}/>
       </TouchableOpacity>
 
@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
   },
   mainButton: {
     width: widthPercentage(343),
-    height: heightPercentage(48),
+    height: getResponsiveHeight(48,48,48,50,48,46),
     backgroundColor: "#21103C",
     borderRadius: 8,
     justifyContent: "center",

@@ -7,11 +7,13 @@ import {
   FlatList,
   ScrollView,
   SafeAreaView,
-  TouchableOpacity
+  TouchableOpacity,
+  Platform
 } from "react-native";
 //import { BannerAd, BannerAdSize, TestIds } from "react-native-google-mobile-ads"; 
 import CocktailDetailModal from "../Components/CocktailDetailModal";
-import { widthPercentage, heightPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { widthPercentage, heightPercentage, fontPercentage, getResponsiveHeight } from "../assets/styles/FigmaScreen";
 import { API_BASE_URL } from "@env";
 import { useNavigation } from '@react-navigation/native'; 
 const bannerImages = [
@@ -63,6 +65,7 @@ const categories = [
   }
 ];
 const fetchCocktailById = async (id: number) => {
+ 
   const res = await fetch(`${API_BASE_URL}/api/public/cocktail?cocktailId=${id}`);
   const json = await res.json();
   return json.data;
@@ -99,6 +102,7 @@ type CategoryData = {
 
 
 const CocktailBookScreen: React.FC = () => {
+   const insets = useSafeAreaInsets()
   const navigation = useNavigation();
   const [selectedCategoryIndex, setSelectedCategoryIndex] = useState<number | null>();
   const [categorizedCocktails, setCategorizedCocktails] = useState<CategoryData[]>([]);
@@ -149,11 +153,12 @@ const CocktailBookScreen: React.FC = () => {
   
   
   return (
-    <SafeAreaView style={styles.safeContainer}>
+    <SafeAreaView style={[styles.safeContainer ,{
+          paddingBottom: Platform.OS === "android" ? 24 : insets.bottom || 24,  }]}>
       <ScrollView style={styles.container}>
         {/* 상단 로고 & 아이콘 */}
         <View style={styles.header}>
-          <Image source={require("../assets/drawable/onz_logo.png")} style={styles.logo} />
+          <Image source={require("../assets/drawable/onz_logo.png")} style={[styles.logo, {resizeMode:"contain"}]} />
           <TouchableOpacity onPress={() =>navigation.navigate("BottomTabNavigator", { screen: "지도" })}>
           
           </TouchableOpacity>
@@ -254,7 +259,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginTop : widthPercentage(10),
+    marginTop : getResponsiveHeight(10,10,12,35,40,50),
     paddingHorizontal: widthPercentage(15),
     paddingVertical: heightPercentage(10),
   },

@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../navigation/types";
-import { widthPercentage, heightPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
+import { widthPercentage, heightPercentage, fontPercentage, getResponsiveHeight } from "../assets/styles/FigmaScreen";
 import {API_BASE_URL} from '@env';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 type RecommendationFlowScreenNavigationProp = StackNavigationProp<
@@ -366,7 +366,9 @@ const handleOptionSelect = async (answer: string) => {
 
       {/* "..." 애니메이션 */}
       {(currentStep === -1 || (currentStep >= 0 && currentStep < questions.length)) && (
+        
             <Animated.View
+               pointerEvents="none"
                 style={[
                     styles.questionContainer,
                     { 
@@ -464,6 +466,7 @@ const handleOptionSelect = async (answer: string) => {
             ]}
             onPress={handlePress}
             disabled={!selectedAnswers[currentStep]}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           >
             <Text
               style={[
@@ -525,10 +528,11 @@ const styles = StyleSheet.create({
   },
   questionContainer: {
     position: 'absolute',
-    // alignItems: "center",
     marginBottom: heightPercentage(50),
     alignItems: "flex-start",
     left: widthPercentage(15),
+    zIndex: 0,
+  
   },
   questionWrapper: {
     flexDirection: "row",
@@ -555,19 +559,23 @@ const styles = StyleSheet.create({
     fontSize: fontPercentage(14),
     fontWeight: "500",
     color: "#2D2D2D",
-    lineHeight: fontPercentage(24),
+    lineHeight: fontPercentage(22),
   },
   optionContainer: {
     width: "100%",
     alignItems: "flex-end",
+     zIndex: 1, 
+    
   },
   option: {
+    
     backgroundColor: "#F3EFE6",
-    paddingVertical: heightPercentage(10),
+    paddingVertical: getResponsiveHeight(10,10,10,12,10,9),
     paddingHorizontal: widthPercentage(20),
     borderRadius: 10,
     alignItems: "center",
     marginVertical: heightPercentage(5),
+    
   },
   selectedOption: {
     backgroundColor: "#21103C",
@@ -581,7 +589,7 @@ const styles = StyleSheet.create({
   },
   confirmButton: {
     backgroundColor: "#21103C",
-    paddingVertical: heightPercentage(12),
+    paddingVertical: getResponsiveHeight(12,12,12,10,12,14),
     paddingHorizontal: widthPercentage(50),
     borderRadius: 10,
     position: 'absolute',
@@ -591,7 +599,7 @@ const styles = StyleSheet.create({
     height: heightPercentage(48), // Figma의 버튼 높이 48px 적용
 },
   confirmButtonText: {
-    fontSize: fontPercentage(16),
+    fontSize: fontPercentage(14),
     color: "#FFFFFF",
     fontWeight: "bold",
     textAlign: "center",

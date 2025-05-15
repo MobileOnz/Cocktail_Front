@@ -6,7 +6,7 @@ import CocktailBookScreen from "../BottomTab/CocktailBookScreen";
 import RecommendationsScreen from "../BottomTab/RecommendationIntroScreen";
 import MyPageScreen from "../BottomTab/MyPageScreen";
 import theme from "../assets/styles/theme";
-import { widthPercentage, heightPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
+import { widthPercentage, heightPercentage, fontPercentage, getResponsiveHeight } from "../assets/styles/FigmaScreen";
 import LoginBottomSheet from "../BottomSheet/LoginBottomSheetProps"; // 로그인 바텀시트 추가
 import { useNavigation } from "@react-navigation/native";
 
@@ -95,7 +95,7 @@ const BottomTabNavigator = () => {
             return <Image source={iconSource} style={iconStyle} resizeMode="contain" />;
           },
           tabBarStyle: {
-            height: heightPercentage(60),
+            height: getResponsiveHeight(80,80,80,100,80,60),
             backgroundColor: theme.background,
           },
           tabBarLabelStyle: {
@@ -122,7 +122,7 @@ const BottomTabNavigator = () => {
               tabBarStyle: hideTabBar
                 ? { display: "none" }
                 : {
-                    height: heightPercentage(60),
+                    height: getResponsiveHeight(80,80,80,100,80,80),
                     backgroundColor: theme.background,
                   },
             };

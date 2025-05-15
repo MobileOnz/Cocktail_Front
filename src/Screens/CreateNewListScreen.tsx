@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, FlatList, StyleSheet,Image,ScrollView, SafeAreaView } from "react-native";
-import { widthPercentage, heightPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
+import { widthPercentage, heightPercentage, fontPercentage, getResponsiveHeight } from "../assets/styles/FigmaScreen";
 import { useNavigation } from "@react-navigation/native";
 import { RootStackParamList } from "../Navigation/Navigation";
 import { useEffect } from "react";
@@ -9,7 +9,10 @@ import { API_BASE_URL } from "@env";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import instance from "../tokenRequest/axios_interceptor";
-
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from 'react-native-responsive-screen';
 interface Tag {
   id: number;
   name: string;
@@ -175,7 +178,7 @@ const handleSaveList = async () => {
   {!selectedMain && selectedSub.length === 0 ? (
     <Text style={styles.tagText}>이 리스트의 컨셉을 선택해 주세요</Text>
   ) : (
-    <View style={{ flexDirection: "row" }}>
+    <View style={{ flexDirection: "row", marginTop : getResponsiveHeight(3,3,3,3,8,3) }}>
       {/* 선택된 메인 태그 */}
       {selectedMain && (
         <TouchableOpacity onPress={() => setSelectedMain(null)} style={styles.selectedMainTag}>
@@ -261,8 +264,10 @@ const handleSaveList = async () => {
       <Text style={styles.sectionSubTitle}> 3가지 선택 가능합니다.</Text>
       </View>
       <View style={styles.titleContainer}>
-  <Image source={require("../assets/drawable/feel.png")}
+        <View style={{flexDirection : "row"}}>
+    <Image source={require("../assets/drawable/feel.png")}
     style={{
+      marginTop : getResponsiveHeight(1,2,3,4,4,4),
       width: widthPercentage(13.33),
       height: heightPercentage(13.33),
     }}
@@ -272,6 +277,7 @@ const handleSaveList = async () => {
     fontWeight: "700",
     marginLeft: widthPercentage(4),
   }}>분위기</Text>
+  </View>
 </View>
 
 <View style={{ flexDirection: "row", flexWrap: "wrap", paddingHorizontal: widthPercentage(16) }}>
@@ -298,6 +304,7 @@ const handleSaveList = async () => {
 <View style={styles.titleContainer}>
   <Image source={require("../assets/drawable/site.png")}
     style={{
+      marginTop : getResponsiveHeight(1,2,3,4,3,4),
       width: widthPercentage(18),
       height: heightPercentage(18),
     }}
@@ -350,6 +357,7 @@ const handleSaveList = async () => {
 export default CreateNewListScreen;
 
 const styles = StyleSheet.create({
+ 
 	scrollContent: {
 		paddingBottom: heightPercentage(30), 
 	  },
@@ -362,7 +370,7 @@ const styles = StyleSheet.create({
 	alignItems: "center",
 	justifyContent: "center",
 	position: "relative",
-	marginTop: heightPercentage(24),
+	marginTop: getResponsiveHeight(30,30,30,40,50,60),
 	paddingHorizontal: widthPercentage(20),
 	height: heightPercentage(40),
   },
@@ -466,7 +474,8 @@ const styles = StyleSheet.create({
   },
   selectedMainTag: {
     backgroundColor: "#21103C",
-    padding: 8,
+    paddingVertical : getResponsiveHeight(10,11,12,10,10,9),
+    paddingHorizontal :getResponsiveHeight(10,11,12,10,12,12),
     borderRadius: 20,
     margin: 5,
   },
@@ -485,12 +494,12 @@ const styles = StyleSheet.create({
     fontSize: fontPercentage(14),
   },
   saveButton: {
-    marginTop: heightPercentage(20),
+    marginTop: heightPercentage(10),
     padding: widthPercentage(15),
     borderRadius: widthPercentage(10),
     alignItems: "center",
     backgroundColor: "#DDD",
-    marginBottom: heightPercentage(10),
+    marginBottom: heightPercentage(20),
     marginHorizontal: widthPercentage(10),
   },
   activeSaveButton: {

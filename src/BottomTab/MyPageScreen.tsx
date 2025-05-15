@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, Image, TouchableOpacity, Linking, SafeAreaView } from 'react-native';
-import { widthPercentage, heightPercentage, fontPercentage } from '../assets/styles/FigmaScreen';
+import { widthPercentage, heightPercentage, fontPercentage, getResponsiveHeight } from '../assets/styles/FigmaScreen';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../Navigation/Navigation';
@@ -149,7 +149,7 @@ const MyPageScreen = () => {
             {isLoggedIn ? nickname : "로그인이 필요합니다."}
           </Text>
         </View>
-        <Image source={require('../assets/drawable/right-chevron.png')} style={styles.rightArrow} />
+        <Image source={require('../assets/drawable/right-chevron.png')} style={styles.profilerightArrow} />
       </TouchableOpacity>
 
       <Text style={styles.supportTitle}>고객지원</Text>
@@ -241,8 +241,10 @@ const styles = StyleSheet.create({
   profileInfoContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    marginVertical : getResponsiveHeight(30,30,30,50,50,60),
   },
   profileImage: {
+
     width: widthPercentage(42),
     height: widthPercentage(42),
     borderRadius: widthPercentage(21),
@@ -295,6 +297,13 @@ const styles = StyleSheet.create({
     fontSize: fontPercentage(16),
     color: '#2D2D2D',
     marginLeft: widthPercentage(12),
+  },
+   profilerightArrow: {
+    marginVertical : getResponsiveHeight(30,30,30,60,65,70),
+    width: widthPercentage(24),
+    height: widthPercentage(24),
+    alignSelf: 'flex-end',
+    marginRight: widthPercentage(18),
   },
   rightArrow: {
     width: widthPercentage(24),

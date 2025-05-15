@@ -101,7 +101,7 @@ const RecommendationIntroScreen: React.FC<Props> = ({ navigation }) => {
 
 
       {/* 버튼 */}
-      <Animated.View style = {[styles.animatedButtonWrapper, { transform: [{ scale: buttonScale}] }]}>
+      <Animated.View style = { { transform: [{ scale: buttonScale}] }}>
       <TouchableOpacity
         style={styles.confirmButton}
         onPress={handlePress}

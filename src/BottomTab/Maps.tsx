@@ -7,7 +7,7 @@ import SearchBar from "../Components/SearchBar";
 import CustomMapView from "../Components/CustomMapView";
 import BaseBottomSheet from "../BottomSheet/BaseBottomSheet";
 import theme from "../assets/styles/theme";
-import { heightPercentage, widthPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
+import { heightPercentage, widthPercentage, fontPercentage, getResponsiveHeight } from "../assets/styles/FigmaScreen";
 import SelectedRegionTags from "../Components/SelectedRegionTags";
 import MapView, { Region } from "react-native-maps";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -230,7 +230,7 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
   
   const screenHeight = Dimensions.get("window").height;
   const bottomSheetThreshold = screenHeight * 0.25;
-
+const buttonTranslateMin = getResponsiveHeight(-10, -10, -10, -55, -50, -48);
   const buttonWrapperStyle = useAnimatedStyle(() => {
 
     const isVisible = animatedPosition.value >= bottomSheetThreshold;
@@ -242,7 +242,7 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
           translateY: interpolate(
             animatedPosition.value,
             [0, 800], // 바텀시트 움직이는 범위에 맞춰
-            [-100, 750], // 버튼 위치 (픽셀로!)
+           [buttonTranslateMin, 750],
             "clamp"
           ),
         },

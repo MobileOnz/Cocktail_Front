@@ -60,6 +60,7 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 20,
   },
   title: {
+    marginTop : heightPercentage(20),
     fontSize: fontPercentage(18),
     fontWeight: "bold",
     marginBottom: heightPercentage(16),
@@ -84,6 +85,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     width: "100%",
+    marginBottom : heightPercentage(40)
   },
   cancelButton: {
     width: widthPercentage(166),

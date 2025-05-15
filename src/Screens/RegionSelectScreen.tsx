@@ -59,7 +59,7 @@ const RegionSelectScreen = () => {
         data={regions}
         keyExtractor={(item) => item}
         contentContainerStyle={{
-          paddingBottom: selectedRegions.length > 0 ? heightPercentage(200) : heightPercentage(145), // 태그 영역 존재하면 공간 확보
+          paddingBottom: selectedRegions.length > 0 ? getResponsiveHeight(240,240,240,240,245,255) : getResponsiveHeight(145,145,145,170,145,210), // 태그 영역 존재하면 공간 확보
         }}
         renderItem={({ item }) => (
           <TouchableOpacity style={styles.listItem} onPress={() => toggleRegion(item)}>
@@ -136,10 +136,11 @@ const styles = StyleSheet.create({
   container: { 
     flex: 1, 
     backgroundColor: "#FFFCF3",
+    
   },
   tagWrapper: {
     position: "absolute",
-    bottom: getResponsiveHeight(84,94,75,85),
+    bottom: getResponsiveHeight(84,94,104,80,85,95),
     left: 0,
     right: 0,
     backgroundColor: "#FFFCF3",
@@ -167,8 +168,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   categoryTitle: {
-    paddingHorizontal : widthPercentage(40),
-    paddingVertical : heightPercentage(10),
+    paddingHorizontal : widthPercentage(35),
+    paddingVertical : heightPercentage(9),
     width : widthPercentage(105), 
     height : heightPercentage(40),
     fontSize: fontPercentage(14),
@@ -183,7 +184,7 @@ const styles = StyleSheet.create({
   flexDirection: "row",
   alignItems: "center",
   justifyContent: "space-between",
-  paddingTop: heightPercentage(24), 
+  paddingTop: getResponsiveHeight(30,30,30,40,30,60), 
   paddingHorizontal: widthPercentage(16), 
   paddingBottom: heightPercentage(12), 
   backgroundColor: "#FFFCF3", 
@@ -273,7 +274,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingHorizontal: widthPercentage(16),
     paddingVertical: heightPercentage(12),
-    paddingBottom:  getResponsiveHeight(24,34,14,24),
+    paddingBottom:  getResponsiveHeight(14,24,34,20,24,34),
     backgroundColor: theme.background,
     borderTopWidth: 1,
     borderColor: "#E4DFD8",
@@ -285,7 +286,7 @@ const styles = StyleSheet.create({
     width : wp(30),
     height : hp(6),
     paddingHorizontal : widthPercentage(16),
-    paddingVertical : getResponsiveHeight(13,16,13,16),
+    paddingVertical : getResponsiveHeight(13,16,19,8,11,12),
     alignItems: "center",
     borderRadius: 8,
     backgroundColor: "#E4DFD8",
@@ -294,7 +295,7 @@ const styles = StyleSheet.create({
   applyButton: {
     width : wp(60),
     height : hp(6),
-    paddingVertical : getResponsiveHeight(13,16,13,16),
+    paddingVertical : getResponsiveHeight(13,16,19,8,11,13),
     alignItems: "center",
     borderRadius: 8,
     backgroundColor: "#21103C",

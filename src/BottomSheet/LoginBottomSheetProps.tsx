@@ -3,7 +3,10 @@ import { View, Text, TouchableOpacity, StyleSheet, Image, SafeAreaView } from "r
 import Modal from "react-native-modal"; // ✅ react-native-modal 사용
 import { widthPercentage, heightPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
 import { useNavigation } from "@react-navigation/native";
-
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from 'react-native-responsive-screen';
 interface LoginBottomSheetProps {
   isVisible: boolean;
   onClose: () => void;
@@ -76,15 +79,16 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 20, // ✅ 상단 둥근 처리
     borderTopRightRadius: 20,
     zIndex: 9999,
-    maxHeight : heightPercentage(450)
+    maxHeight : heightPercentage(550)
   },
   title: {
     fontSize: fontPercentage(18),
     fontWeight: "bold",
-    marginBottom: heightPercentage(16),
+    paddingTop : heightPercentage(20),
+    marginBottom: heightPercentage(20),
   },
   imagePlaceholder: {
-    width: widthPercentage(296),
+    width: wp(70),
     height: heightPercentage(161),
     borderRadius: 20,
     marginBottom: heightPercentage(16),
@@ -103,11 +107,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     width: "100%",
-    marginTop : heightPercentage(12)
+    marginTop : heightPercentage(12),
+    marginBottom : heightPercentage(50)
   },
   cancelButton: {
-    width: widthPercentage(166),
-    height: heightPercentage(57),
+    width: wp(45),
+    height: hp(7),
     backgroundColor: "#E4DFD8",
     borderRadius: 8,
     justifyContent: "center",
@@ -119,8 +124,8 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   loginButton: {
-    width: widthPercentage(166),
-    height: heightPercentage(57),
+    width: wp(45),
+    height: hp(7),
     backgroundColor: "#21103C",
     borderRadius: 8,
     justifyContent: "center",

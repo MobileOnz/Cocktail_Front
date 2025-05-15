@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import { View, Text, TouchableOpacity, Image, StyleSheet } from "react-native";
 import { BottomSheetSectionList } from "@gorhom/bottom-sheet";
-import { widthPercentage, heightPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
+import { widthPercentage, heightPercentage, fontPercentage, getResponsiveHeight } from "../assets/styles/FigmaScreen";
 
 import { API_BASE_URL } from "@env";
 
@@ -50,7 +50,7 @@ const MainBottomSheet = ({ sections, showMyBars, handleTabPress, setSelectedTab,
         <Text style={styles.itemTitle} numberOfLines={1} ellipsizeMode="tail">{item.title}</Text>
         
         {item.hashtagList && item.hashtagList.length >0 &&(
-           <Text style={{ color: "#B9B6AD", fontSize: fontPercentage(12) }}>인기메뉴</Text>
+           <Text style={{ color: "#B9B6AD", fontSize: fontPercentage(12),marginTop : getResponsiveHeight(4,4,4,6,6,10),marginBottom : heightPercentage(4) }}>인기메뉴</Text>
         )}
         
         <View style={styles.hashtagContainer}>
@@ -150,23 +150,23 @@ const styles = StyleSheet.create({
   hashtagContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
-    marginTop: heightPercentage(8),
+    marginTop: heightPercentage(5),
     width: widthPercentage(197),
-    height: heightPercentage(55),
-    maxHeight: heightPercentage(50),
+    height: getResponsiveHeight(70,70,70,70,80,60),
+    maxHeight: heightPercentage(100),
     overflow: "hidden",
   },
   hashtag: {
     backgroundColor: "#F3EFE6",
     color: "#7D7A6F",
-    paddingVertical: heightPercentage(4),
-    paddingHorizontal: widthPercentage(8),
+    paddingVertical: heightPercentage(5),
+    paddingHorizontal: widthPercentage(10),
     borderRadius: widthPercentage(20),
     fontSize: fontPercentage(12),
     textAlign: "center",
     marginRight : widthPercentage(4),
-    marginBottom: heightPercentage(4),
-    height: heightPercentage(24),
+    marginBottom: heightPercentage(5),
+    
   },
   itemTitle: {
     fontSize: fontPercentage(18),
