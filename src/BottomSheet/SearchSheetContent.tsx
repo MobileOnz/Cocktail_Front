@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useMemo, useState} from "react";
 import { View, Text, TouchableOpacity, Image, StyleSheet } from "react-native";
 import { BottomSheetSectionList } from "@gorhom/bottom-sheet";
 import { widthPercentage, heightPercentage, fontPercentage, getResponsiveHeight } from "../assets/styles/FigmaScreen";
@@ -18,6 +18,14 @@ type myBarList = {
 
 const MainBottomSheet = ({ sections, showMyBars, handleTabPress, setSelectedTab, setSelectedBarId, bookmarkIds, setBookmarkIds, bookmarkListMap, setBookmarkListMap, handleBookmarkToggle }) => {
   const [isExpanded, setIsExpanded] = useState(true);
+const [originalMyBarsLength, setOriginalMyBarsLength] = useState(0);
+
+useEffect(() => {
+  const myBarSection = sections.find(section => section.title === "나의 칵테일 바");
+  if (myBarSection) {
+    setOriginalMyBarsLength(myBarSection.data.length);
+  }
+}, [sections]);
   const toggleShowMyBars = () => {
     setIsExpanded(!isExpanded);
   };
@@ -27,7 +35,7 @@ const MainBottomSheet = ({ sections, showMyBars, handleTabPress, setSelectedTab,
       if (section.title === "나의 칵테일 바") {
         return {
           ...section, // 기존 데이터 유지
-          data: isExpanded ? section.data : section.data.slice(0, 1), // 참이면 데이터 유지, 아니면 슬라이스스
+          data: isExpanded ? section.data : section.data.slice(0, 2), // 참이면 데이터 유지, 아니면 슬라이스스
         };
       }
       return section;
@@ -35,6 +43,7 @@ const MainBottomSheet = ({ sections, showMyBars, handleTabPress, setSelectedTab,
   };
    /*함수를 통해 아이템 리스트너 꾸미기*/ 
   const renderBarItem = ({ item, index, section }: { item: myBarList; index: number; section: any }) => (
+  
     <>
       <TouchableOpacity
         onPress={() => {
@@ -83,9 +92,16 @@ const MainBottomSheet = ({ sections, showMyBars, handleTabPress, setSelectedTab,
 
     </View>
     </TouchableOpacity>
-      {section.title === "나의 칵테일 바" && index === section.data.length - 1 && (
+      {section.title === "나의 칵테일 바" && index === section.data.length - 1 && originalMyBarsLength >= 2 &&(
         <TouchableOpacity style={styles.toggleButton} onPress={toggleShowMyBars}>
-          <Text style={styles.toggleText}>{isExpanded ? "접기" : "더보기"}</Text>
+          <Image
+            source={
+            isExpanded
+            ? require("../assets/drawable/collapse.png") // 접기 이미지
+            : require("../assets/drawable/expand.png")   // 더보기 이미지
+            }
+            style={styles.toggleImage}
+          />
         </TouchableOpacity>
       )}
     </>
@@ -119,6 +135,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
   },
+  toggleImage: {
+  width: widthPercentage(77),
+  height: heightPercentage(32),
+  resizeMode: "contain",
+},
   text: {
     fontSize: fontPercentage(18),
     fontWeight: "700",
@@ -179,12 +200,6 @@ const styles = StyleSheet.create({
   },
   toggleButton: {
     alignSelf: "center",
-    marginVertical: heightPercentage(16),
-    paddingVertical: heightPercentage(8),
-    paddingHorizontal: widthPercentage(24),
-    borderWidth: 1,
-    borderColor: "#D1C9BA",
-    borderRadius: widthPercentage(8),
   },
   toggleText: {
     fontSize: fontPercentage(14),
