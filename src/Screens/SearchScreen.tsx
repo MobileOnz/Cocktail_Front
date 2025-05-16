@@ -54,13 +54,10 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation, route }) => {
           return;
         }
 
-        const res = await fetch(`${API_BASE_URL}/api/search/searchlog`, {
-          method: "GET",
-          headers: {
-            Authorization: `${accessToken}`,
-          },
-        });
-        const result = await res.json();
+       const res = await instance.get("/api/search/searchlog", {
+              authRequired: true,
+            });
+        const result = res.data;
         console.log("📥 최근 검색어 요청 결과:", result);
         if (result.code === 1) {
           setRecentNameSearches(result.data.name || []);
@@ -95,17 +92,11 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation, route }) => {
 
         const headers: Record<string, string> = {};
 
-        if (accessToken) {
-          headers.Authorization = `Bearer ${accessToken}`;
-        }
-
-        const res = await fetch(`${API_BASE_URL}/api/search/suggestions?query=${encodeURIComponent(searchText)}`, {
-          method: "GET",
-          headers,
+       const res = await instance.get("/api/search/suggestions", {
+          params: { query: searchText },
+          authOptional: true,
         });
-
-
-        const result = await res.json();
+        const result = res.data;
         if (result.code === 1 && Array.isArray(result.data)) {
           setSuggestions(result.data);
         } else {

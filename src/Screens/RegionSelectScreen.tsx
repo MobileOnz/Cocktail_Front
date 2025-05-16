@@ -286,7 +286,7 @@ const styles = StyleSheet.create({
     width : wp(30),
     height : hp(6),
     paddingHorizontal : widthPercentage(16),
-    paddingVertical : getResponsiveHeight(13,16,19,8,11,12),
+    paddingVertical : getResponsiveHeight(13,16,19,10,11,12),
     alignItems: "center",
     borderRadius: 8,
     backgroundColor: "#E4DFD8",
@@ -295,7 +295,7 @@ const styles = StyleSheet.create({
   applyButton: {
     width : wp(60),
     height : hp(6),
-    paddingVertical : getResponsiveHeight(13,16,19,8,11,13),
+    paddingVertical : getResponsiveHeight(13,16,19,10,11,13),
     alignItems: "center",
     borderRadius: 8,
     backgroundColor: "#21103C",

@@ -20,6 +20,7 @@ import { useToast } from "../Components/ToastContext";
 import Clipboard from '@react-native-clipboard/clipboard';
 import { formatBarForMyList } from "../utils/formatBar";
 import { SafeAreaView } from 'react-native-safe-area-context';
+import instance from "../tokenRequest/axios_interceptor";
 const MenuListDetail = ({
   handleTabPress,
   barId,
@@ -111,10 +112,11 @@ const MenuListDetail = ({
     const fetchBarDetail = async () => {
       try {
         const token = await AsyncStorage.getItem("accessToken");
-        const res = await fetch(`${API_BASE_URL}/api/bar/${barId}`, {
-          headers: token ? { Authorization: `${token}` } : {},
+              const res = await instance.get(`/api/bar/${barId}`, {
+          authOptional: true,
         });
-        const result = await res.json();
+
+        const result = res.data;
         if (result && result.id) {
           console.log("📍 barDetail 응답값:", result); // 👉 좌표 포함 여부 확인
           setBarDetail(result);
@@ -168,16 +170,17 @@ const MenuListDetail = ({
       }
   
       try {
-        const response = await fetch(`${API_BASE_URL}/api/item`, {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: token,
-          },
-          body: JSON.stringify({ listId, barId }),
-        });
-  
-        const result = await response.json();
+       const response = await instance.request({
+            url: "/api/item",
+            method: "DELETE",
+            data: {
+              listId,
+              barId,
+            },
+            authRequired: true,
+          });
+
+          const result = response.data;
         if (result.code === 1) {
           const newSet = new Set(bookmarkIds);
           newSet.delete(barId);

@@ -45,7 +45,9 @@ const MyPageScreen = () => {
 
   const handleLogout = async () => {
     try {
-      await instance.post("/api/auth/logout");
+      await instance.post("/api/auth/logout", null, {
+        authRequired: true,
+      });
       showToast("로그아웃 되었습니다.");
       setIsLoggedIn(false);
       setNickname("");
@@ -62,7 +64,7 @@ const MyPageScreen = () => {
   useEffect(() => {
     const fetchProfileImage = async () => {
       try {
-        const res = await instance.get('/api/profile', { responseType: "blob" });
+        const res = await instance.get('/api/profile', { responseType: "blob",authOptional: true, });
 
         const contentType = res.headers['content-type'];
 
@@ -92,7 +94,9 @@ const MyPageScreen = () => {
   useEffect(() => {
     const checkTokenAndProfile = async () => {
       try {
-        const res = await instance.get('/api/get/member');
+        const res = await instance.get('/api/get/member', {
+        authOptional: true,
+        });
         if (res.data.code === 1) {
           setIsLoggedIn(true);
           setNickname(res.data.data.nickname);

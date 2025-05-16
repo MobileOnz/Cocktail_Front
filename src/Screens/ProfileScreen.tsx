@@ -39,7 +39,9 @@ const ProfileScreen: React.FC = () => {
     const fetchProfileData = async () => {
   
       try {
-        const res = await instance.get("/api/get/member");
+       const res = await instance.get("/api/get/member", {
+          authRequired: true,
+        });
   
         const json = res.data;
         console.log("👤 get/member 응답:", json);
@@ -120,7 +122,11 @@ const ProfileScreen: React.FC = () => {
         name: "test",
         addr: "seoul",
         age: 20,
-      });
+      },
+      {
+        authRequired : true,
+      }
+    );
 
       const result = res.data;
       if (result.code === 1) {
@@ -174,6 +180,7 @@ const ProfileScreen: React.FC = () => {
                 "Content-Type": "multipart/form-data", // FormData일 땐 직접 설정
               },
               timeout: 10000,
+              authRequired: true,
             });
   
             const uploadJson = uploadRes.data;

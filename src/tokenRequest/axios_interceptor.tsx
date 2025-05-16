@@ -3,23 +3,35 @@ import { getToken, isTokenExpired, tokenRefresh } from "./Token";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+console.log("✅ API_BASE_URL:", API_BASE_URL);
+
 const instance = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 1000,
+  timeout: 10000,
 });
 
 instance.interceptors.request.use(
+  
   async (config) => {
-    const accessToken = await getToken();
+    const accessToken = await getToken(); 
+    const { authRequired, authOptional} = config as any; // 토큰 선택, 필수 부분 체크하기 
 
+    if (authRequired){
+      if(!accessToken){
+        throw new Error ("로그인이 필요합니다. (authRequired)")
+      }
+      config.headers["Authorization"] = `${accessToken}`
+    }else if( authOptional){
+      if(accessToken){
+        config.headers["Authorization"] = `${accessToken}`
+      }
+    }
 
-    // FormData가 아닐 때만 application/json 설정
     if (!(config.data instanceof FormData)) {
       config.headers["Content-Type"] = "application/json";
+      console.log("header")
     }
-    if (accessToken) {
-      config.headers["Authorization"] = `${accessToken}`;
-    }
+
     return config;
   },
   (error) => {
@@ -45,6 +57,8 @@ instance.interceptors.response.use(
           if (refreshExpired) {
             await AsyncStorage.clear(); // 로그아웃 처리
             return Promise.reject(new Error("리프레시 토큰 만료: 재로그인 필요"));
+
+            //여기에 로그인 네비게이션 및 토스트 띄우기기
           }
 
           // 새 access token을 다시 설정 후 재요청
@@ -52,7 +66,7 @@ instance.interceptors.response.use(
           originalRequest.headers["Content-Type"] = "application/json";
           originalRequest.headers["Authorization"] = `${newToken}`;
 
-          return axios(originalRequest);
+          return instance(originalRequest);
         }
       } catch (refreshError) {
         return Promise.reject(

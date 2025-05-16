@@ -74,11 +74,15 @@ const handleSaveList = async () => {
   try {
     if (editMode && itemId) {
       // 수정 요청 (PATCH)
-      const response = await instance.patch(`/api/list`, patchPayload);
+       const response = await instance.patch("/api/list", patchPayload, {
+        authRequired: true,
+      });
       console.log("리스트 수정 성공:", response.data);
     } else {
       // 생성 요청 (POST)
-      const response = await instance.post(`/api/list`, payload);
+      const response = await instance.post("/api/list", payload, {
+        authRequired: true,
+      });
       console.log("리스트 저장 성공:", response.data);
     }
     navigation.goBack();
@@ -97,8 +101,8 @@ const handleSaveList = async () => {
       console.log("✅ 토큰:", token);
       if (!token) return;
   
-      const tagResponse = await axios.get(`${API_BASE_URL}/api/list`, {
-        headers: { Authorization: `${token}` },
+      const tagResponse = await instance.get("/api/list", {
+        authRequired: true,
       });
          
   
@@ -109,11 +113,11 @@ const handleSaveList = async () => {
   
   
       if (editMode && itemId) {
-        const listResponse = await axios.get(`${API_BASE_URL}/api/list/${itemId}`, {
-          headers: { Authorization: `${token}` },
-        });
-       
-        const listData = listResponse.data.data;
+          const listResponse = await instance.get(`/api/list/${itemId}`, {
+            authRequired: true,
+          });
+
+          const listData = listResponse.data.data;
        
         setSelectedMain(listData.main_tag.name);
         setSelectedSub(

@@ -14,6 +14,7 @@ import Icon from "react-native-vector-icons/Ionicons";
 import { widthPercentage, heightPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
 import {API_BASE_URL} from '@env';
 import { WINDOW_HEIGHT } from "@gorhom/bottom-sheet";
+import instance from "../tokenRequest/axios_interceptor";
 
 const server = API_BASE_URL;
 
@@ -57,11 +58,13 @@ interface CocktailDetailModalProps {
 
   
   // 데이터 
-  const fetchCocktailById = async (id: number) => {
-    const res = await fetch(`${server}/api/public/cocktail?cocktailId=${id}`);
-    const json = await res.json();
-    return json.data;
-  };
+const fetchCocktailById = async (id: number) => {
+  const res = await instance.get("/api/public/cocktail", {
+    params: { cocktailId: id },
+  });
+
+  return res.data.data;
+};
 
 const CocktailDetailModal: React.FC<CocktailDetailModalProps> = ({
   visible,

@@ -95,7 +95,7 @@ const BottomTabNavigator = () => {
             return <Image source={iconSource} style={iconStyle} resizeMode="contain" />;
           },
           tabBarStyle: {
-            height: getResponsiveHeight(60,60,60,100,80,80),
+            height: getResponsiveHeight(60,60,60,90,80,80),
             backgroundColor: theme.background,
           },
           tabBarLabelStyle: {
@@ -122,7 +122,7 @@ const BottomTabNavigator = () => {
               tabBarStyle: hideTabBar
                 ? { display: "none" }
                 : {
-                    height: getResponsiveHeight(60,60,60,100,80,80),
+                    height: getResponsiveHeight(60,60,60,90,80,80),
                     backgroundColor: theme.background,
                   },
             };

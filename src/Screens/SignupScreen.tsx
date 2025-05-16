@@ -19,6 +19,7 @@ import axios from "axios";
 import { API_BASE_URL } from "@env";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { StackScreenProps } from "@react-navigation/stack";
+import instance from "../tokenRequest/axios_interceptor";
 
 const server = API_BASE_URL;
 type SignupScreenRouteProp = RouteProp<RootStackParamList, "SignupScreen">;
@@ -43,12 +44,12 @@ const SignupScreen: React.FC<SignupScreenProps> = ({navigation}) => {
       adTerm :  agreements.ads,
     }
     try{
-      const response = await axios.post(`${server}/api/auth/signup`, payload,{
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      console.log("백엔드 응답",response.data);
+    const response = await instance.post("/api/auth/signup", payload, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        console.log("백엔드 응답", response.data);
         const backendAccessToken = response.data.data.access_token;
         const backendRefreshToken = response.data.data.refresh_token;
         

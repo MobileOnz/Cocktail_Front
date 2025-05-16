@@ -20,6 +20,7 @@ import Animated, {
 import { useSharedValue } from "react-native-reanimated";
 
 import axios from "axios";
+import instance from "../tokenRequest/axios_interceptor";
 
 const REGION_CODE_MAP = {
   "서울 전체": "SEOUL_ALL",
@@ -161,10 +162,11 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
 
 
   const fetchNearbyBars = async (x: number, y: number, shouldSetTab = false) => {
-    try {
-      const response = await axios.get(`${API_BASE_URL}/api/location/nearby`, {
-        params: { x, y },
-      });
+      try {
+        const response = await instance.get("/api/location/nearby", {
+          params: { x, y },
+          authOptional: true, // 토큰이 있으면 붙이고 없어도 요청 가능
+        });
   
       const rawData = response.data.data || [];
   
@@ -221,7 +223,6 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      console.log("📐 animatedPosition:", animatedPosition.value);
     }, 500);
   
     return () => clearInterval(interval);
@@ -308,20 +309,14 @@ const buttonTranslateMin = getResponsiveHeight(-10, -10, -10, -55, -50, -48);
   
       const fetchData = async () => {
         try {
-          const token = await AsyncStorage.getItem('accessToken');
-  
-          const res = await fetch(
-            `${API_BASE_URL}/api/search/keyword?search=${encodeURIComponent(query)}`,
-            {
-              method: "GET",
-              headers: {
-                'Content-Type': 'application/json',
-                ...(token ? { Authorization: `${token}` } : {}),
-              },
-            }
-          );
-  
-          const result = await res.json();
+          const res = await instance.get("/api/search/keyword", {
+            params: {
+              search: query, // encodeURIComponent 필요 없음 → axios가 자동 처리
+            },
+            authOptional: true,
+          });
+
+          const result = res.data;
           console.log("응답 결과:", result);
   
           if (!Array.isArray(result.data)) {
@@ -393,11 +388,12 @@ const buttonTranslateMin = getResponsiveHeight(-10, -10, -10, -55, -50, -48);
   
     const fetchRegionBars = async () => {
       try {
-        const response = await axios.get(`${API_BASE_URL}/api/location/filter`, {
-          params: { areaCodes: regionCode },
-        });
-  
-        const data = response.data?.data?.[regionCode] || [];
+                  const response = await instance.get("/api/location/filter", {
+              params: { areaCodes: regionCode },
+              authOptional: true, 
+            });
+
+            const data = response.data?.data?.[regionCode] || [];
   
         const markers = data.map((bar) => ({
           id: bar.id,
@@ -560,9 +556,10 @@ const buttonTranslateMin = getResponsiveHeight(-10, -10, -10, -55, -50, -48);
         
           const restoreDefault = async () => {
             try {
-              const response = await axios.get(`${API_BASE_URL}/api/location/nearby`, {
-                params: { x: 126.9812675, y: 37.5718599 },
-              });
+                  const response = await instance.get("/api/location/nearby", {
+                  params: { x: 126.9812675, y: 37.5718599 },
+                  authOptional: true, // 있으면 토큰 포함, 없어도 통과
+                });
         
               if (response.data.code === 1) {
                 const data = response.data.data;

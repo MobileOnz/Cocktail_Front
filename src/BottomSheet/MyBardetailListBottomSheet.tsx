@@ -9,6 +9,7 @@ import SelectionListSheet from "./SelectionListSheet";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { API_BASE_URL } from "@env";
+import instance from "../tokenRequest/axios_interceptor";
 // 🔸 더미 데이터 배열
 // const dummyItems = [
 //   {
@@ -50,10 +51,10 @@ const MyBardetailListBottomSheet = ({listId}: {listId: number}) => {
           console.warn("로그인이 필요합니다.");
           return;
         }
-        const response = await fetch(`${API_BASE_URL}/api/item/public/list`, {
-          headers: { Authorization: `${token}` },
+        const response = await instance.get("/api/item/public/list", {
+          authRequired : true
         });
-        const result = await response.json();
+        const result = await response.data;
         if (result.code === 1) setMyList(result.data);
       } catch (e) {
         console.error("리스트 불러오기 실패", e);
@@ -72,14 +73,11 @@ const MyBardetailListBottomSheet = ({listId}: {listId: number}) => {
           console.warn("로그인이 필요합니다.");
           return;
         }
-        const response = await fetch(`${API_BASE_URL}/api/item/${listId}`, {
-          method: "GET",
-          headers: {
-            Authorization: `${token}`,
-          },
+        const response = await instance.get(`/api/item/${listId}`, {
+          authRequired : true
         });
 
-        const result = await response.json();
+        const result = await response.data;
         if (result.code === 1) {
           setBarList(result.data);
         } else {
@@ -101,20 +99,19 @@ const MyBardetailListBottomSheet = ({listId}: {listId: number}) => {
           console.warn("로그인이 필요합니다.");
           return;
         }
-      const response = await fetch(`${API_BASE_URL}/api/item/move`, {
-        method: "POST",
-        headers: {
-          Authorization: `${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          barId,
-          fromListId: listId,
-          toListId,
-        }),
-      });
-  
-      const result = await response.json();
+        const response = await instance.post(
+          "/api/item/move",
+          {
+            barId,
+            fromListId: listId,
+            toListId,
+          },
+          {
+            authRequired: true,
+          }
+        );
+
+        const result = response.data;
       if (result.code === 1) {
         console.log("이동 성공");
         setBarList((prev) => prev.filter((bar) => bar.id !== barId));

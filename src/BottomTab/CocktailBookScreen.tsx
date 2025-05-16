@@ -16,6 +16,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { widthPercentage, heightPercentage, fontPercentage, getResponsiveHeight } from "../assets/styles/FigmaScreen";
 import { API_BASE_URL } from "@env";
 import { useNavigation } from '@react-navigation/native'; 
+import instance from "../tokenRequest/axios_interceptor";
 const bannerImages = [
   require("../assets/drawable/banner1.png"),
   require("../assets/drawable/banner2.png"),
@@ -66,9 +67,12 @@ const categories = [
 ];
 const fetchCocktailById = async (id: number) => {
  
-  const res = await fetch(`${API_BASE_URL}/api/public/cocktail?cocktailId=${id}`);
-  const json = await res.json();
-  return json.data;
+ const res = await instance.get("/api/public/cocktail", {
+  params: {
+    cocktailId: id,
+  },
+});
+return res.data.data;
 };
 
 //4씩 나누기

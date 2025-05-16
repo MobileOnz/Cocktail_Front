@@ -14,7 +14,6 @@ import {
 } from "../assets/styles/FigmaScreen";
 
 import instance from "../tokenRequest/axios_interceptor";
-import LoginBottomSheet from "./LoginBottomSheetProps";
 
 interface MyListItem {
   id: string;
@@ -43,7 +42,9 @@ const MyListSheetContent = ({ handleTabPress, bookmarkedBars }) => {
 const fetchMyList = async () => {
   
   try {
-    const response = await instance.get('/api/list/all');
+    const response = await instance.get('/api/list/all', {
+    authRequired: true,
+    });
     const transformed = response.data.data.map((item) => ({
       id: item.id.toString(),
       name: item.main_tag.name,
@@ -80,20 +81,18 @@ const fetchMyList = async () => {
     } as never);
   };
 
-  const handleDelete = async (itemId: number) => {
-    try {
+const handleDelete = async (itemId: number) => {
+  try {
+    await instance.delete(`/api/list/${itemId}`, {
+      authRequired: true,
+    });
 
-      await instance.delete(`/api/list/${itemId}`);
-      console.log(`리스트 ${itemId} 삭제 완료`);
-      fetchMyList(); 
-    } catch (error) {
-      console.error("리스트 삭제 실패:", error);
-      if (error.message === '리프레시 토큰 만료') {
-        navigation.navigate("Login" as never);
-       }
-
-    }
-  };
+    console.log(`리스트 ${itemId} 삭제 완료`);
+    fetchMyList(); 
+  } catch (error: any) {
+    console.error("리스트 삭제 실패:", error);
+  }
+};
   return (
     <>
       <BottomSheetScrollView

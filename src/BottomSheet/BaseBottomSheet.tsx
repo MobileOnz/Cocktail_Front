@@ -19,6 +19,7 @@ import axios from "axios";
 import { useToast } from "../Components/ToastContext";
 import { formatBarForMyList } from "../utils/formatBar";
 import { Portal } from "react-native-paper";
+import instance from "../tokenRequest/axios_interceptor";
 
 
 const BaseBottomSheet = ({ 
@@ -97,14 +98,11 @@ const BaseBottomSheet = ({
       console.warn("로그인이 필요합니다.");
       return;
     }
-    const response = await fetch(`${API_BASE_URL}/api/item/public/list`, {
-      method: "GET",
-      headers: {
-        Authorization: `${token}`,
-      },
+      const response = await instance.get("/api/item/public/list", {
+      authRequired: true,
     });
 
-    const result = await response.json();
+    const result = response.data;
     if (result.code === 1) {
       setMyList(result.data);
     } else {
@@ -131,12 +129,11 @@ useFocusEffect(
           const token = await AsyncStorage.getItem("accessToken");
           if (!token) return;
     
-          const response = await fetch(`${API_BASE_URL}/api/item/public/all`, {
-            method: "GET",
-            headers: { Authorization: `${token}` },
+          const response = await instance.get("/api/item/public/all", {
+            authRequired: true,
           });
-    
-          const result = await response.json();
+
+          const result = response.data;
           console.log("✅ 북마크 응답:", result);
     
           if (result.code === 1) {
@@ -183,11 +180,19 @@ useFocusEffect(
   const [sheetReady, setSheetReady] = useState(false);
   // const [markerList, setMarkerList] = useState([]);
 
+
+
   //지역 선택시 조회
   useEffect(() => {
     const fetchNearbyBars = async () => {
       try {
-        const response = await axios.get(`${API_BASE_URL}/api/location/nearby?x=126.9812675&y=37.5718599`);
+        const response = await instance.get("/api/location/nearby", {
+        params: {
+          x: 126.9812675,
+          y: 37.5718599,
+        },
+        authOptional: true, // 로그인 여부 상관없이 요청 가능
+        });
         if (response.data.code === 1) {
           const rawData = response.data.data;
   
@@ -238,14 +243,19 @@ useFocusEffect(
   }, [selectedRegions]);
 
   
-const headerCheck = async () =>{
+const headerCheck = async () => {
   const token = await AsyncStorage.getItem("accessToken");
-  if(token){
-    handleTabPress("myList")
-  }else{
+  if (!token) {
     setLoginSheetVisible(true);
+    return;
   }
-}
+
+  if (selectedTab === "myList") {
+    setSelectedTab("search");
+  } else {
+    handleTabPress("myList");
+  }
+};
 
   useEffect(() => {
     if (selectedTab === "detail" && selectedBarId) {
@@ -326,16 +336,17 @@ const headerCheck = async () =>{
     }
   
     try {
-      const response = await fetch(`${API_BASE_URL}/api/item`, {
+       const response = await instance.request({
+        url: "/api/item",
         method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: token,
+        data: {
+          listId,
+          barId,
         },
-        body: JSON.stringify({ listId, barId }),
+        authRequired: true,
       });
-  
-      const result = await response.json();
+
+      const result = response.data;
       if (result.code === 1) {
         const newSet = new Set(bookmarkIds);
         newSet.delete(barId);

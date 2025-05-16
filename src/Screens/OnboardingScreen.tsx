@@ -220,7 +220,7 @@ const styles = StyleSheet.create({
     fontSize: fontPercentage(24),
     fontWeight: "700",
     textAlign: "center",
-    marginTop: getResponsiveHeight(24,34,54,20,4,0),
+    marginTop: getResponsiveHeight(24,34,54,30,4,0),
   },
   text: {
     fontWeight: '500',

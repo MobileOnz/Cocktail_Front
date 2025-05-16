@@ -7,6 +7,7 @@ import { widthPercentage, heightPercentage, fontPercentage } from "../assets/sty
 import { API_BASE_URL } from "@env";
 
 import LottieView from "lottie-react-native";
+import instance from "../tokenRequest/axios_interceptor";
 
 type LoadingScreenNavigationProp = StackNavigationProp<
   RootStackParamList,
@@ -35,8 +36,15 @@ const LoadingScreen: React.FC<Props> = ({ navigation, route }) => {
   useEffect(() => {
     const fetchAndNavigate = async () => {
       try {
-        const res = await fetch(`${API_BASE_URL}/api/public/cocktail/personalize?tasteCategoryId=${tasteCategoryId}&tasteDetailid=${tasteDetailId}&alcholType=${alcholType}`);
-        const result = await res.json();
+        const res = await instance.get("/api/public/cocktail/personalize", {
+            params: {
+              tasteCategoryId,
+              tasteDetailid: tasteDetailId, 
+              alcholType,                   
+            },
+          });
+
+          const result = res.data;
   
         if (result.code === 1 && result.data?.cocktail) {
           const cocktailId = result.data.cocktail.id;

@@ -13,6 +13,7 @@ import { RootStackParamList } from "../navigation/types";
 import { widthPercentage, heightPercentage, fontPercentage, getResponsiveHeight } from "../assets/styles/FigmaScreen";
 import {API_BASE_URL} from '@env';
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import instance from "../tokenRequest/axios_interceptor";
 type RecommendationFlowScreenNavigationProp = StackNavigationProp<
   RootStackParamList,
   "RecommendationFlow"
@@ -31,27 +32,23 @@ const RecommendationFlowScreen: React.FC<Props> = ({ navigation }) => {
 
   const [nickname, setNickname] = useState("");
 
-  useEffect(() => {
-    const fetchNickname = async () => {
-      try {
-        const token = await AsyncStorage.getItem("accessToken");
-        const response = await fetch(`${API_BASE_URL}/api/get/member`, {
-          headers: {
-            'Content-Type': 'application/json',
-            ...(token ? { Authorization: `${token}` } : {})
-          }
-        });
-        const result = await response.json();
-        if (result.code === 1) {
-          setNickname(result.data.nickname || "고객");
-        }
-      } catch (err) {
-        console.error("닉네임 가져오기 실패:", err);
+useEffect(() => {
+  const fetchNickname = async () => {
+    try {
+      const response = await instance.get("/api/get/member", {
+        authOptional: true,
+      });
+      const result = response.data;
+      if (result.code === 1) {
+        setNickname(result.data.nickname || "고객");
       }
-    };
-  
-    fetchNickname();
-  }, []);
+    } catch (err) {
+      console.error("닉네임 가져오기 실패:", err);
+    }
+  };
+
+  fetchNickname();
+}, []);
   useEffect(() => {
     if (nickname) {
       setQuestions((prev) => {
@@ -109,8 +106,8 @@ const RecommendationFlowScreen: React.FC<Props> = ({ navigation }) => {
   //첫 번째 질문 옵션 API 호출 → 맵 저장
 const fetchTasteCategories = async () => {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/public/cocktail/taste/category`);
-    const result = await response.json();
+      const response = await instance.get("/api/public/cocktail/taste/category");
+      const result = response.data;
 
     if (result.code === 1 && result.data) {
       const categories = result.data.map((item: any) => item.tasteCategory);
@@ -132,9 +129,13 @@ const fetchTasteCategories = async () => {
 // (3) 세부 맛 호출 함수
 const fetchTasteDetails = async (categoryId: number) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/public/cocktail/taste/detail?tasteCategoryId=${categoryId}`);
-    const result = await response.json();
+        const response = await instance.get("/api/public/cocktail/taste/detail", {
+        params: {
+          tasteCategoryId: categoryId,
+        },
+      });
 
+      const result = response.data;
     if (result.code === 1 && result.data) {
       const detailMap: { [key: string]: number } = {};
       result.data.forEach((item: any) => {
