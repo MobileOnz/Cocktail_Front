@@ -147,7 +147,11 @@ const SelectedRegions = ({
       {/* 바 리스트 */}
       <View style={styles.listContainer}>
         {barList.map((item) => (
-          <TouchableOpacity key={item.id} style={styles.itemContainer}>
+          <TouchableOpacity 
+            key={item.id} 
+            style={styles.itemContainer}
+            onPress={() => handleTabPress("detail", item)}
+            >
             <Image
               source={{ uri: item.thumbnail }}
               style={styles.itemImage}
@@ -258,7 +262,7 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     marginTop: heightPercentage(8),
     width: widthPercentage(197),
-    height: getResponsiveHeight(70,75,80,66,60,58),
+    height: getResponsiveHeight(70,75,75,66,60,58),
     maxHeight: heightPercentage(100),
     overflow: "hidden",
   },
