@@ -147,7 +147,11 @@ const SelectedRegions = ({
       {/* 바 리스트 */}
       <View style={styles.listContainer}>
         {barList.map((item) => (
-          <TouchableOpacity key={item.id} style={styles.itemContainer}>
+          <TouchableOpacity 
+            key={item.id} 
+            style={styles.itemContainer}
+            onPress={() => handleTabPress("detail", item)}
+            >
             <Image
               source={{ uri: item.thumbnail }}
               style={styles.itemImage}
@@ -251,15 +255,16 @@ const styles = StyleSheet.create({
   label: {
     fontSize: fontPercentage(12),
     color: "#B9B6AD",
-    marginTop : getResponsiveHeight(10,20,30,22,25,30)
+    marginTop : getResponsiveHeight(4,4,4,22,25,30)
   },
+
   hashtagContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
     marginTop: heightPercentage(8),
     width: widthPercentage(197),
-    height: getResponsiveHeight(70,70,70,62,60,58),
-    maxHeight: heightPercentage(100),
+    height: getResponsiveHeight(70,75,75,62,60,58),
+   maxHeight: heightPercentage(100),
     overflow: "hidden",
   },
   hashtag: {
@@ -280,7 +285,7 @@ const styles = StyleSheet.create({
     width: widthPercentage(24),
     height: heightPercentage(24),
     resizeMode: "contain",
-    marginLeft: widthPercentage(12),
+    marginLeft: widthPercentage(6),
   },
 });
 

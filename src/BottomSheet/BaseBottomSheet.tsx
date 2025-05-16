@@ -442,7 +442,10 @@ const headerCheck = async () => {
       setSelectedListId={setSelectedListId}
       />
       ): selectedTab ==="myBardetailList" ? (
-        <MyBardetailListBottomSheet listId={selectedBarId} />
+        <MyBardetailListBottomSheet 
+          listId={selectedBarId} 
+          handleTabPress={handleTabPress}
+          />
       ) : selectedTab === "myList" ? (
         <>
           <MyListSheetContent 

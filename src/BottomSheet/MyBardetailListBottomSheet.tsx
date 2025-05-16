@@ -1,7 +1,7 @@
 import React, {useState, useEffect}from "react";
 import { View, Text, TouchableOpacity, Image, StyleSheet, ScrollView } from "react-native";
 import Feather from "react-native-vector-icons/Feather";
-import { widthPercentage, heightPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
+import { widthPercentage, heightPercentage, fontPercentage, getResponsiveHeight } from "../assets/styles/FigmaScreen";
 import MoreOptionMenu from "../Components/MoreOptionMenu";
 import { PaperProvider } from "react-native-paper";
 import SelectionListSheet from "./SelectionListSheet";
@@ -35,7 +35,7 @@ import instance from "../tokenRequest/axios_interceptor";
 //   },
 // ];
 
-const MyBardetailListBottomSheet = ({listId}: {listId: number}) => {
+const MyBardetailListBottomSheet = ({listId, handleTabPress}: {listId: number; handleTabPress: (tab: string, bar: any) => void;}) => {
   const [barList, setBarList] = useState([]);
 
   //수정하기 눌렀을 때 동작을 정의하기 위한 변수
@@ -168,7 +168,11 @@ const MyBardetailListBottomSheet = ({listId}: {listId: number}) => {
     <PaperProvider>
       <ScrollView>
         {barList.map((item) => (
-          <View key={item.id} style={styles.itemContainer}>
+          <TouchableOpacity 
+            key={item.id} 
+            style={styles.itemContainer}
+            onPress={() => handleTabPress("detail", item)}
+            >
             <Image style={styles.itemImage} source={{ uri: item.thumbnail }} />
             <View style={styles.textContainer}>
               <Text style={styles.itemTitle}>{item.bar_name}</Text>
@@ -191,7 +195,7 @@ const MyBardetailListBottomSheet = ({listId}: {listId: number}) => {
                 onDelete={() => handleDelete(item.id)}
               />
             </View>
-          </View>
+          </TouchableOpacity>
         ))}
       </ScrollView>
 
@@ -212,30 +216,31 @@ const MyBardetailListBottomSheet = ({listId}: {listId: number}) => {
 };
 
 const styles = StyleSheet.create({
-    menuContainer: {
-        position: "absolute",
-        top: heightPercentage(8),
-        right: widthPercentage(40),
-        zIndex: 100, // 혹시 다른 요소에 가려질 경우를 대비
-      },
+  menuContainer: {
+    position: "absolute",
+    top: heightPercentage(8),
+    right: widthPercentage(18),
+    zIndex: 100,
+  },
   itemContainer: {
-    width: widthPercentage(375),
-    height: heightPercentage(156),
-    marginTop: heightPercentage(16),
-    marginLeft: widthPercentage(16),
-    backgroundColor: "#FFFCF3",
     flexDirection: "row",
-    alignItems: "center",
+    backgroundColor: "#FFFCF3",
+    paddingBottom: heightPercentage(12),
+    marginTop: heightPercentage(12),
     paddingRight: widthPercentage(8),
+    paddingLeft: widthPercentage(16),
   },
   itemImage: {
     width: widthPercentage(126),
     height: heightPercentage(156),
+    borderRadius: widthPercentage(8),
     resizeMode: "cover",
+    backgroundColor: "#eee",
   },
   textContainer: {
-    flex: 1,
     marginLeft: widthPercentage(12),
+    width: widthPercentage(168),
+    height: heightPercentage(48),
   },
   itemTitle: {
     fontSize: fontPercentage(18),
@@ -243,38 +248,41 @@ const styles = StyleSheet.create({
     color: "#2D2D2D",
     marginBottom: heightPercentage(4),
   },
-  addressRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: heightPercentage(4),
-  },
-  itemAddress: {
-    fontSize: fontPercentage(14),
-    color: "#7D7A6F",
-    marginLeft: heightPercentage(4),
-    marginTop: heightPercentage(4),
-  },
   menuText: {
     fontSize: fontPercentage(12),
     color: "#B9B6AD",
-    marginBottom: heightPercentage(4),
+    marginTop: getResponsiveHeight(4, 4, 4, 6, 8, 10),
   },
   hashtagContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
     marginTop: heightPercentage(8),
+    width: widthPercentage(197),
+    height: getResponsiveHeight(70, 75, 75, 66, 60, 58),
+    maxHeight: heightPercentage(100),
+    overflow: "hidden",
   },
   hashtag: {
     backgroundColor: "#F3EFE6",
     color: "#7D7A6F",
     paddingVertical: heightPercentage(4),
     paddingHorizontal: widthPercentage(8),
-    borderRadius: widthPercentage(4),
+    borderRadius: widthPercentage(20),
     fontSize: fontPercentage(12),
     textAlign: "center",
     marginRight: widthPercentage(4),
     marginBottom: heightPercentage(4),
   },
+  bookmarkIcon: {
+    padding: widthPercentage(10),
+  },
+  bookmarkImage: {
+    width: widthPercentage(24),
+    height: heightPercentage(24),
+    resizeMode: "contain",
+    marginLeft: widthPercentage(6),
+  },
 });
 
 export default MyBardetailListBottomSheet;
+

@@ -173,7 +173,7 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     marginTop: heightPercentage(5),
     width: widthPercentage(197),
-    height: getResponsiveHeight(70,70,70,68,65,60),
+    height: getResponsiveHeight(70,85,85,70,65,60),
     maxHeight: heightPercentage(100),
     overflow: "hidden",
   },

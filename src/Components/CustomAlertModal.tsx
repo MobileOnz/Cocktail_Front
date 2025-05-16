@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, Modal, TouchableOpacity, StyleSheet, TouchableWithoutFeedback } from "react-native";
+import { View, Text, Modal, TouchableOpacity, StyleSheet, TouchableWithoutFeedback, Platform } from "react-native";
 import { widthPercentage, heightPercentage, fontPercentage, getResponsiveHeight } from "../assets/styles/FigmaScreen";
 import {
   widthPercentageToDP as wp,
@@ -13,7 +13,7 @@ const CustomAlertModal = ({ visible, message, onCancel, onConfirm }) => {
     <TouchableWithoutFeedback onPress={onCancel}>
       <View style={styles.overlay}>
         <TouchableWithoutFeedback>
-          <View style={styles.alertBox}>
+          <View style={[styles.alertBox, {width: Platform.OS === "ios" ? wp(70) : wp(80)}]}>
             <Text style={styles.message}>{message}</Text>
             <View style={styles.buttonContainer}>
               <TouchableOpacity style={[styles.button]} onPress={onConfirm}>
@@ -38,8 +38,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   alertBox: {
-    width: wp(80),
-    height : getResponsiveHeight(300,400,500,170,150,145),
+    height : getResponsiveHeight(300,400,135,170,150,145),
     backgroundColor: "#FFFCF3",
     borderRadius: 12,
    

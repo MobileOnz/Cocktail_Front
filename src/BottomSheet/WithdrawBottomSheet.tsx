@@ -40,7 +40,7 @@ const WithdrawBottomSheet: React.FC<WithdrawBottomSheetProps> = ({ isVisible, on
           </TouchableOpacity>
         </View>
       </View>
-      <SafeAreaView style={{backgroundColor: "#FFFCF3"}}/>
+      {/* <SafeAreaView style={{backgroundColor: "#FFFCF3"}}/> */}
     </Modal>
   );
 };
