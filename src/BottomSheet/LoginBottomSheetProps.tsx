@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { View, Text, TouchableOpacity, StyleSheet, Image, SafeAreaView } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, Image, SafeAreaView, Platform} from "react-native";
 import Modal from "react-native-modal"; // ✅ react-native-modal 사용
 import { widthPercentage, heightPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
 import { useNavigation } from "@react-navigation/native";
@@ -58,7 +58,9 @@ const LoginBottomSheet: React.FC<LoginBottomSheetProps> = ({ isVisible, onClose,
           </TouchableOpacity>
         </View>
       </View>
-      <SafeAreaView style={{backgroundColor: "#FFFCF3"}}/>
+      
+      
+      {/* <SafeAreaView style={{backgroundColor: "#FFFCF3"}}/> */}
     </Modal>
 
   );

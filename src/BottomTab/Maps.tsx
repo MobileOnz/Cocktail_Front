@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef } from "react";
 
 import { StackScreenProps } from "@react-navigation/stack";
-import { View, StyleSheet, StatusBar, Text, TouchableOpacity, TextInput,Image, Dimensions } from "react-native";
+import { View, StyleSheet, StatusBar, Text, TouchableOpacity, TextInput,Image, Dimensions, Platform } from "react-native";
 import SearchBar from "../Components/SearchBar";
 import CustomMapView from "../Components/CustomMapView";
 import BaseBottomSheet from "../BottomSheet/BaseBottomSheet";
@@ -230,10 +230,10 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
   
   const screenHeight = Dimensions.get("window").height;
   const bottomSheetThreshold = screenHeight * 0.25;
-const buttonTranslateMin = getResponsiveHeight(-10, -10, -10, -55, -50, -48);
+  const buttonTranslateMin = getResponsiveHeight(-10, -10, -70, -55, -50, -48);
   const buttonWrapperStyle = useAnimatedStyle(() => {
 
-    const isVisible = animatedPosition.value >= bottomSheetThreshold;
+  const isVisible = animatedPosition.value >= bottomSheetThreshold;
 
     return {
       position: "absolute",
@@ -584,7 +584,7 @@ const buttonTranslateMin = getResponsiveHeight(-10, -10, -10, -55, -50, -48);
                     latitude: Number(bar.y),
                     longitude: Number(bar.x),
                   },
-                  icon_tag: 5,
+                  icon_tag: 7,
                 }));
         
                 // setBarList(formatted);       // ✅ search 탭에서 필요한 데이터
