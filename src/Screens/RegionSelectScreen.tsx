@@ -274,7 +274,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingHorizontal: widthPercentage(16),
     paddingVertical: heightPercentage(12),
-    paddingBottom:  getResponsiveHeight(14,24,44,20,24,34),
+    paddingBottom:  getResponsiveHeight(14,44,44,20,24,34),
     backgroundColor: theme.background,
     borderTopWidth: 1,
     borderColor: "#E4DFD8",

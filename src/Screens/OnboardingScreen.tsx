@@ -213,7 +213,7 @@ const styles = StyleSheet.create({
   },
   image: {
     width: wp(100),
-    height: getResponsiveHeight(600,500,400,400,450,450),
+    height: getResponsiveHeight(600,400,400,400,450,450),
     resizeMode : "contain"
   },
   title: {

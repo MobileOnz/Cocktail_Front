@@ -230,7 +230,7 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
   
   const screenHeight = Dimensions.get("window").height;
   const bottomSheetThreshold = screenHeight * 0.25;
-  const buttonTranslateMin = getResponsiveHeight(-10, -10, -70, -55, -50, -48);
+  const buttonTranslateMin = getResponsiveHeight(-10, -70, -70, -55, -50, -48);
   const buttonWrapperStyle = useAnimatedStyle(() => {
 
   const isVisible = animatedPosition.value >= bottomSheetThreshold;
