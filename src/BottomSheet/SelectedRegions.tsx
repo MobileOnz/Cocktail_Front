@@ -251,14 +251,14 @@ const styles = StyleSheet.create({
   label: {
     fontSize: fontPercentage(12),
     color: "#B9B6AD",
-    marginTop : getResponsiveHeight(10,20,30,20,25,30)
+    marginTop : getResponsiveHeight(4,4,4,6,8,10)
   },
   hashtagContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
     marginTop: heightPercentage(8),
     width: widthPercentage(197),
-    height: getResponsiveHeight(70,70,70,66,60,58),
+    height: getResponsiveHeight(70,70,80,66,60,58),
     maxHeight: heightPercentage(100),
     overflow: "hidden",
   },
@@ -280,7 +280,7 @@ const styles = StyleSheet.create({
     width: widthPercentage(24),
     height: heightPercentage(24),
     resizeMode: "contain",
-    marginLeft: widthPercentage(12),
+    marginLeft: widthPercentage(6),
   },
 });
 
