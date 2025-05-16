@@ -383,6 +383,8 @@ const headerCheck = async () =>{
   index={0}
   snapPoints={snapPoints}
   animatedPosition={animatedPosition}
+  enableHandlePanningGesture={true}
+  enableDynamicSizing={false}
   onLayout={() => {
     setSheetReady(true);
   }}
