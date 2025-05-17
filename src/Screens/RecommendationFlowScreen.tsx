@@ -396,10 +396,14 @@ const handleOptionSelect = async (answer: string) => {
         {questions.map((item, index) => (
           <Animated.View
             key={index}
+            pointerEvents={currentStep === index ? 'auto' : 'none'}
             style={[
               styles.questionContainer,
               {
                 opacity: fadeInValues[index],
+                 zIndex: index,
+                  elevation: index,
+                  height: heightPercentage(406),
                 transform: [
                   {
                     translateY: slideUpValues[index].interpolate({
