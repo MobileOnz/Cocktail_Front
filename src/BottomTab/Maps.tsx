@@ -212,13 +212,15 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
   
 
   useEffect(() => {
-    
-    // 앱 첫 진입 시 서울 고정 좌표로 바 조회
-    // 검색을 통해 진입한 경우는 fetchNearbyBars를 호출하지 않음
-    if (!route.params?.searchCompleted) {
-    fetchNearbyBars(126.9812675, 37.5718599)
+    //앱의 초기실행이거나, 지역검색 중에는 실행되지 않도록 처리
+    const shouldSkipInitialFetch = Array.isArray(route.params?.selectedRegions) && route.params.selectedRegions.length > 0;
+
+    if (!route.params?.searchCompleted && !shouldSkipInitialFetch) {
+      fetchNearbyBars(126.9812675, 37.5718599);
     }
+
   }, []);
+
   const animatedPosition = useSharedValue(0)
 
   useEffect(() => {
@@ -405,8 +407,15 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
           icon_tag: 7,
         }));
   
-        setBarData(data);
-        setMarkerList(markers);
+        // ✅ 기존 마커 초기화 (근처 바 등의 잔존 마커 제거)
+        setMarkerList([]);
+        setBarData([]); // 바텀시트 목록도 초기화
+
+        // ✅ 다음 이벤트 루프에서 실제 데이터 반영
+        setTimeout(() => {
+          setMarkerList(markers);
+          setBarData(data);
+        }, 0);
   
         if (mapRef.current && markers.length > 0) {
           mapRef.current.animateToRegion(
