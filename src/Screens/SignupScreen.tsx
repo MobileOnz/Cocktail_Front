@@ -21,11 +21,13 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { StackScreenProps } from "@react-navigation/stack";
 import instance from "../tokenRequest/axios_interceptor";
 
+
 const server = API_BASE_URL;
 type SignupScreenRouteProp = RouteProp<RootStackParamList, "SignupScreen">;
 type SignupScreenProps = StackScreenProps<RootStackParamList,"SignupScreen">;
 
 const SignupScreen: React.FC<SignupScreenProps> = ({navigation}) => {
+
   const route = useRoute<SignupScreenRouteProp>();
   const signUpCode = route.params?.code;
   
@@ -224,9 +226,12 @@ const SignupScreen: React.FC<SignupScreenProps> = ({navigation}) => {
             {/* 약관 상세 내용 */}
             {detailsVisible[key as keyof typeof detailsVisible] && (
               <View style={styles.detailBox}>
-                <Text style={styles.detailText}>
+                <TouchableOpacity onPress={()=>navigation.navigate("TermsAndConditionsScreen")}>
+                  <Text style={styles.detailText}>
                   {text}에 대한 자세한 내용입니다. 여기에 약관 내용을 넣으세요.
                 </Text>
+                </TouchableOpacity>
+                
               </View>
             )}
           </View>

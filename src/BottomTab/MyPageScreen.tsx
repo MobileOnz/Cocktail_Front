@@ -28,20 +28,23 @@ const MyPageScreen = () => {
   const [nickname, setNickname] = useState("");
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
 
-  const handleWithdraw = async () => {
-    try {
-      await instance.delete('/api/delete/member');
-      showToast("탈퇴가 완료되었습니다.");
+const handleWithdraw = async () => {
+  try {
+    await instance.delete('/api/delete/member', {
+      authRequired: true,
+    });
+    showToast("탈퇴가 완료되었습니다.");
 
-      setIsLoggedIn(false);
-      setNickname("");
-      setProfileImageUri(null);
-    } catch (err) {
-      console.log("🚨 탈퇴 오류:", err);
-    } finally {
-      setShowWithdrawModal(false);
-    }
-  };
+    setIsLoggedIn(false);
+    setNickname("");
+    setProfileImageUri(null);
+  } catch (err: any) {
+    console.log("🚨 탈퇴 오류:", err.response?.data || err.message);
+  } finally {
+    setShowWithdrawModal(false);
+  }
+};
+
 
   const handleLogout = async () => {
     try {

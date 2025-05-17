@@ -11,6 +11,7 @@ import {
 import { RootStackParamList } from "../Navigation/Navigation";
 import { API_BASE_URL } from "@env";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import instance from "../tokenRequest/axios_interceptor";
 
 type SearchScreenProps = StackScreenProps<RootStackParamList, "SearchScreen">;
 
