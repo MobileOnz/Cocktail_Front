@@ -296,7 +296,12 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
         if (backendRefreshToken) {
           await AsyncStorage.setItem('refreshToken', backendRefreshToken);
         }
-        navigation.navigate("BottomTabNavigator");
+       setTimeout(() => {
+            navigation.navigate("BottomTabNavigator", {
+              screen: "지도", // <- MyPage 탭의 이름으로 정확히 수정
+              params: { shouldRefresh: true },
+            });
+          }, 100);
       }
     } catch (error) {
       console.error('❌ Google Sign-In Error:', JSON.stringify(error, null, 2));

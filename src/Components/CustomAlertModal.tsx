@@ -49,6 +49,7 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     paddingTop : heightPercentage(24),
     paddingBottom : 24,
+    
     borderBottomWidth : 1,
     borderBottomColor : "#E4DFD8",
     textAlign: "center",
