@@ -7,6 +7,7 @@ import FirebaseCore
 import NaverThirdPartyLogin // ✅ 네이버 SDK import
 import GoogleSignIn 
 import KakaoSDKAuth
+import RNBootSplash
 
 @main
 class AppDelegate: RCTAppDelegate {
@@ -61,5 +62,9 @@ override func application(
     #else
     return  Bundle.main.url(forResource: "main", withExtension: "jsbundle")
     #endif
+  }
+  override func customize(_ rootView: RCTRootView!) {
+    super.customize(rootView)
+    RNBootSplash.initWithStoryboard("BootSplash", rootView: rootView) // ⬅️ initialize the splash screen
   }
 }

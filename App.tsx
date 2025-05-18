@@ -1,17 +1,18 @@
 // App.tsx
 import React, { useEffect, useState } from "react";
-import { StyleSheet, View, ActivityIndicator, useColorScheme } from "react-native";
+import { StyleSheet, View, ActivityIndicator, useColorScheme, Platform } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import SplashScreen from "react-native-splash-screen";
 import Navigation from "./src/Navigation/Navigation";
 import {Provider as PaperProvider} from "react-native-paper"
 import { useSafeAreaInsets, SafeAreaProvider } from "react-native-safe-area-context";
 import { setGlobalInsets } from "./src/assets/contexts/globalInsets"; 
-
 // import MobileAds from "react-native-google-mobile-ads";
 // import { firebase } from "@react-native-firebase/app";
 
 import { ToastProvider } from "./src/Components/ToastContext";
+
+import RNBootSplash from "react-native-bootsplash";
 
 function AppContent() {
   const insets = useSafeAreaInsets();
@@ -58,7 +59,11 @@ function App(): React.JSX.Element {
 
     // SplashScreen 숨기기
     setTimeout(() => {
-      SplashScreen.hide();
+      if (Platform.OS === 'ios') {
+        RNBootSplash.hide();  // iOS에서는 bootsplash 사용
+      } else {
+        SplashScreen.hide();  // Android에서는 splash-screen 사용
+      }
     }, 3000);
   }, []);
 

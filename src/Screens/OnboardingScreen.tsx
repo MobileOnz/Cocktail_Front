@@ -203,7 +203,7 @@ const styles = StyleSheet.create({
   },
   filledButtonText: {
     color: '#FFFFFF',
-    fontSize: 16,
+    fontSize: fontPercentage(16),
     fontWeight: '700',
   },
   slide: {
