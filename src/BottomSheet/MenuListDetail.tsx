@@ -252,7 +252,12 @@ const MenuListDetail = ({
         </TouchableOpacity>
       </View>
 
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.scrollContainer}>
+      <GestureScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContainer}
+        style={{ width: '100%' }}
+      >
       {barDetail.photos
         .filter((url) => !!url && url !== "")
         .slice(0, 2)
@@ -263,7 +268,7 @@ const MenuListDetail = ({
             style={[styles.imgSize, index === 0 && { marginRight: widthPercentage(12) }]}
           />
       ))}
-      </ScrollView>
+      </GestureScrollView>
 
       <View style={styles.infoContainer}>
         <View style={styles.infoItem}>
