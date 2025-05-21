@@ -1,25 +1,50 @@
+// App.tsx
 import React, { useEffect, useState } from "react";
-import { NavigationContainer } from "@react-navigation/native";
-import { createStackNavigator, StackScreenProps } from "@react-navigation/stack";
-import SplashScreen from "react-native-splash-screen";
+import { StyleSheet, View, ActivityIndicator, useColorScheme, Platform } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { SafeAreaView, StatusBar, StyleSheet, View, ActivityIndicator, useColorScheme } from "react-native";
-import OnboardingScreen from "./screens/OnboardingScreen";
-import LoginScreen from "./screens/Login";
-import MapsScreen from"./screens/Maps";
+import SplashScreen from "react-native-splash-screen";
+import Navigation from "./src/Navigation/Navigation";
+import {Provider as PaperProvider} from "react-native-paper"
+import { useSafeAreaInsets, SafeAreaProvider } from "react-native-safe-area-context";
+import { setGlobalInsets } from "./src/assets/contexts/globalInsets"; 
+// import MobileAds from "react-native-google-mobile-ads";
+// import { firebase } from "@react-native-firebase/app";
 
-type RootStackParamList = {
-  Onboarding: undefined;
-  Login: undefined;
-  Maps : undefined;
-};
+import { ToastProvider } from "./src/Components/ToastContext";
 
-const Stack = createStackNavigator<RootStackParamList>();
+import RNBootSplash from "react-native-bootsplash";
+
+function AppContent() {
+  const insets = useSafeAreaInsets();
+
+  useEffect(() => {
+    setGlobalInsets(insets);
+  }, [insets]);
+
+  return (
+    <ToastProvider>
+      <Navigation />
+    </ToastProvider>
+  );
+}
 
 function App(): React.JSX.Element {
+  
   const isDarkMode = useColorScheme() === "dark";
   const [isFirstLaunch, setIsFirstLaunch] = useState<null | boolean>(null);
 
+  // useEffect(() => {
+    
+  //   if (!firebase.apps.length) {
+  //     console.log("🔥 Firebase 자동 초기화 완료");
+  //   }
+
+  //   MobileAds()
+  //     .initialize()
+  //     .then(() => {
+  //       console.log("AdMob 초기화 완료");
+  //     });
+  // }, []);
   useEffect(() => {
     const checkOnboarding = async () => {
       try {
@@ -32,9 +57,14 @@ function App(): React.JSX.Element {
 
     checkOnboarding();
 
+    // SplashScreen 숨기기
     setTimeout(() => {
-      SplashScreen.hide();
-    }, 2000);
+      if (Platform.OS === 'ios') {
+        RNBootSplash.hide();  // iOS에서는 bootsplash 사용
+      } else {
+        SplashScreen.hide();  // Android에서는 splash-screen 사용
+      }
+    }, 3000);
   }, []);
 
   if (isFirstLaunch === null) {
@@ -46,14 +76,14 @@ function App(): React.JSX.Element {
   }
 
   return (
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName="Onboarding" screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="Onboarding" component={OnboardingScreen} />
-        <Stack.Screen name="Login" component={LoginScreen} />
-        <Stack.Screen name="Maps" component={MapsScreen}/>
-      </Stack.Navigator>
-    </NavigationContainer>
-  );
+    
+    <PaperProvider>
+    <SafeAreaProvider>
+      <AppContent />
+    </SafeAreaProvider>
+  </PaperProvider>
+
+    );
 }
 
 const styles = StyleSheet.create({

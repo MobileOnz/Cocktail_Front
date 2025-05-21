@@ -1,23 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<RelativeLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" 
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFCF3">
 
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+     <ImageView
+        android:id="@+id/centerImage"
+        android:layout_width="210dp"
+        android:layout_height="180dp"
+        android:layout_centerInParent="true"
+        android:src="@drawable/launch_screen"
         android:scaleType="fitCenter"
-    android:background="#B55D66"
-        />
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="당신만의 작은 바텐더, Onz"
-        android:textColor="#FFFFFF"
-        android:textSize="20dp"
-        android:textStyle="bold"
-        android:textAlignment="center"
-        android:gravity="center"
-        />
+        android:adjustViewBounds="true" />
 </RelativeLayout>

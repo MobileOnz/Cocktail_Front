@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Cocktail_Front</string>
+    <string name="kakao_app_key">7798f0108bf85f0f9a3149d4bedae99c</string>
 </resources>
