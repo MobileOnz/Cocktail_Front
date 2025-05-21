@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -13,7 +13,7 @@ import {
   widthPercentage,
   fontPercentage,
 } from "../assets/styles/FigmaScreen";
-import {RouteProp, useNavigation, useRoute} from "@react-navigation/native";
+import {RouteProp, useRoute} from "@react-navigation/native";
 import { RootStackParamList } from "../Navigation/Navigation";
 import axios from "axios";
 import { API_BASE_URL } from "@env";

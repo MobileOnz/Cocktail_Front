@@ -10,10 +10,8 @@ import {
   FlatList,
   TouchableWithoutFeedback,
 } from "react-native";
-import Icon from "react-native-vector-icons/Ionicons";
 import { widthPercentage, heightPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
 import {API_BASE_URL} from '@env';
-import { WINDOW_HEIGHT } from "@gorhom/bottom-sheet";
 import instance from "../tokenRequest/axios_interceptor";
 
 const server = API_BASE_URL;

@@ -1,8 +1,7 @@
 import React, { useEffect } from "react";
-import { View, Text, TouchableOpacity, StyleSheet, Image, SafeAreaView, Platform} from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, Image} from "react-native";
 import Modal from "react-native-modal"; // ✅ react-native-modal 사용
 import { widthPercentage, heightPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
-import { useNavigation } from "@react-navigation/native";
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,

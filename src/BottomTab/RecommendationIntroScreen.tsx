@@ -10,7 +10,7 @@ import {
   Platform,
 } from "react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { RootStackParamList } from "../navigation/types";
+import { RootStackParamList } from "../Navigation/Navigation";
 import {
   widthPercentage,
   heightPercentage,

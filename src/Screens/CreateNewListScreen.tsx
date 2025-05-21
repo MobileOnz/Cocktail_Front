@@ -1,18 +1,13 @@
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity, FlatList, StyleSheet,Image,ScrollView, SafeAreaView } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet,Image,ScrollView, SafeAreaView } from "react-native";
 import { widthPercentage, heightPercentage, fontPercentage, getResponsiveHeight } from "../assets/styles/FigmaScreen";
 import { useNavigation } from "@react-navigation/native";
 import { RootStackParamList } from "../Navigation/Navigation";
 import { useEffect } from "react";
-import axios from "axios";
-import { API_BASE_URL } from "@env";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import instance from "../tokenRequest/axios_interceptor";
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
+
 interface Tag {
   id: number;
   name: string;

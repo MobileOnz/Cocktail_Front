@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text, ScrollView, Button, StyleSheet, Alert, SafeAreaView } from 'react-native';
+import React from 'react';
+import { Text, ScrollView, StyleSheet, SafeAreaView } from 'react-native';
 
 const TermsAndConditionsScreen = () => {
   

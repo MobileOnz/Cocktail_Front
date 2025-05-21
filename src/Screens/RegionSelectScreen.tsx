@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, ScrollView, SafeAreaView, Platform, Image} from "react-native";
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, ScrollView, SafeAreaView, Image} from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../Navigation/Navigation";

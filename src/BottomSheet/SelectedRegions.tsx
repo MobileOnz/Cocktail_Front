@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import {Text,View,TouchableOpacity,StyleSheet,Animated,Image,Alert,} from "react-native";
+import {Text,View,TouchableOpacity,StyleSheet,Animated,Image} from "react-native";
 import { BottomSheetScrollView } from "@gorhom/bottom-sheet";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs"
 import axios from "axios";

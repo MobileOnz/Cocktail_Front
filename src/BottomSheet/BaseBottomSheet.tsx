@@ -1,6 +1,6 @@
 import React, { useMemo, useState,useRef,useEffect, useCallback } from "react";
 import { useFocusEffect } from "@react-navigation/native";
-import { View, StyleSheet, TouchableOpacity, Text, Alert, Platform, SafeAreaView} from "react-native";
+import { View, StyleSheet, TouchableOpacity, Text, Alert, SafeAreaView} from "react-native";
 import BottomSheet from "@gorhom/bottom-sheet";
 import theme from "../assets/styles/theme";
 import SearchSheetContent from "../BottomSheet/SearchSheetContent";
@@ -15,7 +15,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import LoginBottomSheet from "./LoginBottomSheetProps";
 import SelectedRegions from "./SelectedRegions";
 import MapView from "react-native-maps";
-import axios from "axios";
 import { useToast } from "../Components/ToastContext";
 import { formatBarForMyList } from "../utils/formatBar";
 import { Portal } from "react-native-paper";

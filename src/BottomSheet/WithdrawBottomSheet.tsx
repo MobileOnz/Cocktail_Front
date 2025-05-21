@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, TouchableOpacity, StyleSheet, Image, SafeAreaView } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, Image} from "react-native";
 import Modal from "react-native-modal";
 import { widthPercentage, heightPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
 

@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect} from "react";
 import { View, Text, Image, StyleSheet, Platform } from "react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { RootStackParamList } from "../navigation/types";
+import { RootStackParamList } from "../Navigation/Navigation";
 import { widthPercentage, heightPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
 
 import { API_BASE_URL } from "@env";

@@ -4,7 +4,6 @@ import {
   Text,
   TouchableOpacity,
   Image,
-  ScrollView,
   StyleSheet,
   Alert,
   Linking,
@@ -13,13 +12,11 @@ import {
 import { ScrollView as GestureScrollView } from 'react-native-gesture-handler';
 import { BottomSheetScrollView } from "@gorhom/bottom-sheet";
 import { widthPercentage, heightPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
-import { API_BASE_URL } from "@env";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useToast } from "../Components/ToastContext";
 
 import Clipboard from '@react-native-clipboard/clipboard';
 import { formatBarForMyList } from "../utils/formatBar";
-import { SafeAreaView } from 'react-native-safe-area-context';
 import instance from "../tokenRequest/axios_interceptor";
 const MenuListDetail = ({
   handleTabPress,

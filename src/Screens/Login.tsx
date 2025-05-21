@@ -5,7 +5,6 @@ import * as KakaoLogin from "@react-native-seoul/kakao-login";
 import { heightPercentage, widthPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
 import NaverLogin from "@react-native-seoul/naver-login";
 import type {
-  GetProfileResponse,
   NaverLoginResponse,
 } from "@react-native-seoul/naver-login";
 

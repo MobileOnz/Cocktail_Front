@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, TouchableOpacity, FlatList, Image, StyleSheet, SafeAreaView } from "react-native";
+import React from "react";
+import { View, Text, TouchableOpacity, FlatList, Image, StyleSheet} from "react-native";
 import { widthPercentage, heightPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
 import { useNavigation } from "@react-navigation/native";
 

@@ -2,24 +2,21 @@
 import React, { useState, useEffect, useRef } from "react";
 
 import { StackScreenProps } from "@react-navigation/stack";
-import { View, StyleSheet, StatusBar, Text, TouchableOpacity, TextInput,Image, Dimensions, Platform } from "react-native";
+import { View, StyleSheet, StatusBar, TouchableOpacity, TextInput,Image, Dimensions} from "react-native";
 import SearchBar from "../Components/SearchBar";
 import CustomMapView from "../Components/CustomMapView";
 import BaseBottomSheet from "../BottomSheet/BaseBottomSheet";
 import theme from "../assets/styles/theme";
 import { heightPercentage, widthPercentage, fontPercentage, getResponsiveHeight } from "../assets/styles/FigmaScreen";
 import SelectedRegionTags from "../Components/SelectedRegionTags";
-import MapView, { Region } from "react-native-maps";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { API_BASE_URL } from "@env";
-import { getCurrentLocation,requestLocationPermission } from "../utils/requestLocationPermission";
+import MapView from "react-native-maps";
+import { getCurrentLocation} from "../utils/requestLocationPermission";
 import Animated, {
   useAnimatedStyle,
   interpolate,
 } from "react-native-reanimated";
 import { useSharedValue } from "react-native-reanimated";
 
-import axios from "axios";
 import instance from "../tokenRequest/axios_interceptor";
 
 const REGION_CODE_MAP = {

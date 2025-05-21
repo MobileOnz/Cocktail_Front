@@ -1,9 +1,7 @@
-import React, {useEffect, useMemo, useState} from "react";
+import React, {useEffect, useState} from "react";
 import { View, Text, TouchableOpacity, Image, StyleSheet } from "react-native";
 import { BottomSheetSectionList } from "@gorhom/bottom-sheet";
 import { widthPercentage, heightPercentage, fontPercentage, getResponsiveHeight } from "../assets/styles/FigmaScreen";
-
-import { API_BASE_URL } from "@env";
 
 type myBarList = {
   id: number;

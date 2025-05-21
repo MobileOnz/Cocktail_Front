@@ -9,10 +9,8 @@ import {
   Easing
 } from "react-native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { RootStackParamList } from "../navigation/types";
+import { RootStackParamList } from "../Navigation/Navigation";
 import { widthPercentage, heightPercentage, fontPercentage, getResponsiveHeight } from "../assets/styles/FigmaScreen";
-import {API_BASE_URL} from '@env';
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import instance from "../tokenRequest/axios_interceptor";
 type RecommendationFlowScreenNavigationProp = StackNavigationProp<
   RootStackParamList,

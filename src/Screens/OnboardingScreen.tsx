@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from "react";
-import { View, Text, Image, StyleSheet, Animated, Dimensions, StatusBar, TouchableOpacity, SafeAreaView, Platform} from "react-native";
+import React, { useRef, useState } from "react";
+import { View, Text, Image, StyleSheet, Animated, Dimensions, StatusBar, TouchableOpacity, Platform} from "react-native";
 import AppIntroSlider from "react-native-app-intro-slider";
 import { StackScreenProps } from "@react-navigation/stack";
 import { widthPercentage, heightPercentage, fontPercentage, getResponsiveHeight } from "../assets/styles/FigmaScreen";

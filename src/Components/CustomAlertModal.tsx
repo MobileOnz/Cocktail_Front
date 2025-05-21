@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, Modal, TouchableOpacity, StyleSheet, TouchableWithoutFeedback, Platform } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, TouchableWithoutFeedback, Platform } from "react-native";
 import { widthPercentage, heightPercentage, fontPercentage, getResponsiveHeight } from "../assets/styles/FigmaScreen";
 import {
   widthPercentageToDP as wp,

@@ -14,7 +14,6 @@ import {
 import CocktailDetailModal from "../Components/CocktailDetailModal";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { widthPercentage, heightPercentage, fontPercentage, getResponsiveHeight } from "../assets/styles/FigmaScreen";
-import { API_BASE_URL } from "@env";
 import { useNavigation } from '@react-navigation/native'; 
 import instance from "../tokenRequest/axios_interceptor";
 const bannerImages = [

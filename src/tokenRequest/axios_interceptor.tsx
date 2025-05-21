@@ -1,5 +1,5 @@
 import { API_BASE_URL } from "@env";
-import { getToken, isTokenExpired, tokenRefresh } from "./Token";
+import { getToken, tokenRefresh } from "./Token";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 

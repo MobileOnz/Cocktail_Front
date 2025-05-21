@@ -1,6 +1,6 @@
 // src/contexts/ToastContext.tsx
 import React, { createContext, useContext, useState, ReactNode } from 'react';
-import { View, Text, StyleSheet, Animated } from 'react-native';
+import {Text, StyleSheet, Animated } from 'react-native';
 
 type ToastContextType = {
   showToast: (message: string) => void;

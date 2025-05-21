@@ -3,7 +3,6 @@ import React, { useState, useCallback } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import {BottomSheetScrollView } from "@gorhom/bottom-sheet";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
-import { API_BASE_URL } from "@env";
 import MoreOptionMenu from "../Components/MoreOptionMenu";
 
 import {

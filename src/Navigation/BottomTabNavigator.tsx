@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { Image, TouchableOpacity, View, Text, SafeAreaView } from "react-native";
+import React, { useState} from "react";
+import { Image, TouchableOpacity, View, SafeAreaView } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import MapScreen from "../BottomTab/Maps";
 import CocktailBookScreen from "../BottomTab/CocktailBookScreen";

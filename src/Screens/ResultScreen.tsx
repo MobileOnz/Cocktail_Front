@@ -1,12 +1,10 @@
-import React, {useEffect, useState} from "react";
+import React, {useState} from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { RootStackParamList } from "../navigation/types";
+import { RootStackParamList } from "../Navigation/Navigation";
 import { widthPercentage, heightPercentage, fontPercentage, getResponsiveHeight } from "../assets/styles/FigmaScreen";
-import Icon from "react-native-vector-icons/Ionicons";
 
-import { API_BASE_URL } from "@env";
 type NavigationProps = StackNavigationProp<RootStackParamList, "ResultScreen">;
 
 const ResultScreen: React.FC = ({route}) => {

@@ -1,6 +1,5 @@
 import React, {useState, useEffect}from "react";
 import { View, Text, TouchableOpacity, Image, StyleSheet, ScrollView } from "react-native";
-import Feather from "react-native-vector-icons/Feather";
 import { widthPercentage, heightPercentage, fontPercentage, getResponsiveHeight } from "../assets/styles/FigmaScreen";
 import MoreOptionMenu from "../Components/MoreOptionMenu";
 import { PaperProvider } from "react-native-paper";
