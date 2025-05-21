@@ -478,7 +478,7 @@ const styles = StyleSheet.create({
   },
   selectedMainTag: {
     backgroundColor: "#21103C",
-    paddingVertical : getResponsiveHeight(10,11,12,10,10,9),
+    paddingVertical : getResponsiveHeight(10,11,8,10,10,9),
     paddingHorizontal :getResponsiveHeight(10,11,12,10,12,12),
     borderRadius: 20,
     margin: 5,

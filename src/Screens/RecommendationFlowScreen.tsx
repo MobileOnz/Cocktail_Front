@@ -594,7 +594,7 @@ const styles = StyleSheet.create({
   },
   confirmButton: {
     backgroundColor: "#21103C",
-    paddingVertical: getResponsiveHeight(12,12,12,10,12,14),
+    paddingVertical: getResponsiveHeight(12,12,14,10,12,14),
     paddingHorizontal: widthPercentage(50),
     borderRadius: 10,
     position: 'absolute',
