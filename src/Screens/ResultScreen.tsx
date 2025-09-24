@@ -40,7 +40,7 @@ const ResultScreen: React.FC = ({route}) => {
 
       <TouchableOpacity 
         style={styles.mainButton}
-        onPress={() => navigation.navigate("SearchScreen", {initialKeyword: cocktailName})}
+        onPress={() => navigation.navigate("Maps")}
         >
         <Text 
           style={styles.mainButtonText}>해당 메뉴가 있는 가게 찾기
