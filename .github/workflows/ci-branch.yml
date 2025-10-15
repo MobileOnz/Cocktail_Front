@@ -35,7 +35,7 @@ on :
                 - 'ios/**'
                 - 'ios/Podfile'
                 - 'ios/Podfile.lock'
-
+    jobs : 
         ci : 
           needs : detect
           runs-on : ubuntu-latest
