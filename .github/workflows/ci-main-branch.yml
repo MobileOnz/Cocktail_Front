@@ -1,63 +1,62 @@
-name : CI(develop/main)
+name: CI (develop/main)
 
-on : 
-  push : 
-    branches : [develop, main]
-  pull_request : 
-    branches : [develop, main]
+on:
+  push:
+    branches: [develop, main]
+  pull_request:
+    branches: [develop, main]
 
-concurrency : 
-  group : ${{ github.workflow}}- ${{github.ref}}
-  cancel-in-progress : true
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
-permissions :
-  contents : read
+permissions:
+  contents: read
 
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
 
-jobs : 
-    ci :
-      runs-on : ubuntu-latest
-      steps :
-        - uses : actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
 
-        - uses : actions/setup-node@v4
-          with : 
-              node-version : 20
+      - name: Install deps
+        run: yarn install --frozen-lockfile
 
-        - name : Install deps 
-          run : yarn install --frozen-lockfile 
+      - name: Lint
+        run: yarn lint
 
-        - name : Lint 
-          run : yarn lint
+      - name: Type Check
+        run: yarn tsc --noEmit
 
-        - name : Type Check 
-          run : yarn tsc --noEmit
+      - name: Unit Test
+        run: yarn test --ci --coverage
 
-        - name : Unit Test
-          run : yarn test --ci --coverage
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
 
-        - name : Setup Java 
-          uses : actions/setup-java@v4
-          with :
-            distribution : 'temurin'
-            java-version : '17'
+      - name: Gradle cache
+        uses: gradle/gradle-build-action@v3
 
-        - name : Gradle cache 
-          uses : gradle/gradle-build-action@v3
+      - name: Build Android
+        run: |
+          cd android
+          if [ "${{ github.ref_name }}" = "main" ]; then
+            ./gradlew assembleRelease
+          else
+            ./gradlew assembleDebug
+          fi
 
-        - name : Build Android
-          run : | 
-            cd android
-            if [ "${{github.ref_name }}" = "main" ]; then 
-              ./gradlew assembleRelease
-            else 
-              ./gradlew assembleDebug
-              fi
-
-        - name : Upload APK/AAB 
-          uses : actions/upload-artifact@v4
-          with : 
-            name : android-${{ github.ref_name }}
-            path : |
-                android/app/build/outputs/apk/debug/app-debug.apk
-                android/app/build/outputs/apk/debug/app-release.apk
+      - name: Upload APK/AAB
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-${{ github.ref_name }}
+          path: |
+            android/app/build/outputs/apk/debug/app-debug.apk
+            android/app/build/outputs/apk/release/app-release.apk
