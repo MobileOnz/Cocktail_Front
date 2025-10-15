@@ -6,25 +6,25 @@ on :
       - 'feat/**'
       - 'fix/**'
       - 'refactor/**' 
-    pull_request : 
+  pull_request : 
       branches : 
         - 'develop'
 
-  concurrency: #동시에 처리 
+concurrency: #동시에 처리 
     group : ${{ github.workflow }} - ${{ github.ref }}
     cancel-in-progress : true
 
-  permissions:
+permissions:
     contents : read
 
-  jobs : 
+jobs : 
     detect:
       runs-on : ubuntu-latest 
       outputs : 
         android_changed : ${{ steps.paths.outputs.android }}
         ios_changed : ${{ steps.paths.outputs.ios }}
       steps : 
-        - uses : actions/checkout&v4
+        - uses : actions/checkout@v4
         - id : paths
           uses : dorny/paths-filter@v3
           with : 
@@ -35,8 +35,8 @@ on :
                 - 'ios/**'
                 - 'ios/Podfile'
                 - 'ios/Podfile.lock'
-    jobs : 
-        ci : 
+
+    ci : 
           needs : detect
           runs-on : ubuntu-latest
           steps : 
@@ -48,10 +48,11 @@ on :
             - name : Cache Yarn 
               uses : actions/caches@v4
               with : 
-                path : ~/.yarn/cache
-                key : yarn-${{ hashFiles('**/yarn.lock') }}
-                  restore-keys : yarn-
-
+                path: ~/.yarn/cache
+                key: yarn-${{ hashFiles('yarn.lock') }}
+                restore-keys: |
+                      yarn-
+                      
             - name : Install deps 
               run : yarn install --frozen-lockfile
 
@@ -71,7 +72,7 @@ on :
                 ./gradlew assembleDebug
 
             - name : Upload APK
-              if : nees.detect.outputs.android_changed == 'true'
+              if : needs.detect.outputs.android_changed == 'true'
               uses : actions/upload-artifact@v4
               with : 
                 name : app-debug
