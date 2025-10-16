@@ -1,4 +1,4 @@
-import React, {useState, useRef,useEffect } from "react";
+import React, {useState, useRef,useEffect } from 'react';
 import {
   View,
   Text,
@@ -8,65 +8,65 @@ import {
   ScrollView,
   SafeAreaView,
   TouchableOpacity,
-  Platform
-} from "react-native";
-//import { BannerAd, BannerAdSize, TestIds } from "react-native-google-mobile-ads"; 
-import CocktailDetailModal from "../Components/CocktailDetailModal";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { widthPercentage, heightPercentage, fontPercentage, getResponsiveHeight } from "../assets/styles/FigmaScreen";
-import { useNavigation } from '@react-navigation/native'; 
-import instance from "../tokenRequest/axios_interceptor";
+  Platform,
+} from 'react-native';
+//import { BannerAd, BannerAdSize, TestIds } from "react-native-google-mobile-ads";
+import CocktailDetailModal from '../Components/CocktailDetailModal';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { widthPercentage, heightPercentage, fontPercentage, getResponsiveHeight } from '../assets/styles/FigmaScreen';
+import { useNavigation } from '@react-navigation/native';
+import instance from '../tokenRequest/axios_interceptor';
 const bannerImages = [
-  require("../assets/drawable/banner1.png"),
-  require("../assets/drawable/banner2.png"),
+  require('../assets/drawable/banner1.png'),
+  require('../assets/drawable/banner2.png'),
 ];
 const categories = [
   {
-    title: "우아한 클래식", 
-    description: "격식을 갖춘 품격있는 칵테일", 
-    icon: require("../assets/drawable/classic.png"), 
-    textColor: "#5D8A78",
-    backgroundColor: "#E4F0E9"
+    title: '우아한 클래식',
+    description: '격식을 갖춘 품격있는 칵테일',
+    icon: require('../assets/drawable/classic.png'),
+    textColor: '#5D8A78',
+    backgroundColor: '#E4F0E9',
   },
   {
-    title: "달콤한 파티", 
-    description: "분위기를 띄워 줄 화려한 칵테일", 
-    icon: require("../assets/drawable/party.png"), 
-    textColor: "#D38456",
-    backgroundColor: "#FBE5D6"
-  },
-  { 
-    title: "은은한 무드", 
-    description: "조용한 밤을 위한 부드러운 칵테일", 
-    icon: require("../assets/drawable/mood.png"), 
-    textColor: "#B47B6C",
-    backgroundColor: "#F3DED7"
-  },
-  { 
-    title: "청량한 여름", 
-    description: "태양 아래 시원하게 즐기는 칵테일", 
-    icon: require("../assets/drawable/summer.png"), 
-    textColor: "#5478C1",
-    backgroundColor: "#DCE7F9"
+    title: '달콤한 파티',
+    description: '분위기를 띄워 줄 화려한 칵테일',
+    icon: require('../assets/drawable/party.png'),
+    textColor: '#D38456',
+    backgroundColor: '#FBE5D6',
   },
   {
-    title: "강렬한 한 잔", 
-    description: "깊고 묵직한 분위기를 가진 칵테일", 
-    icon: require("../assets/drawable/one_shot.png"), 
-    textColor: "#C14C4C",
-    backgroundColor: "#F4D6D6"
+    title: '은은한 무드',
+    description: '조용한 밤을 위한 부드러운 칵테일',
+    icon: require('../assets/drawable/mood.png'),
+    textColor: '#B47B6C',
+    backgroundColor: '#F3DED7',
   },
   {
-    title: "부담 없는 시작", 
-    description: "칵테일 입문자를 위한 가벼운 선택", 
-    icon: require("../assets/drawable/start.png"), 
-    textColor: "#A78A64",
-    backgroundColor: "#F1E6D5"
-  }
+    title: '청량한 여름',
+    description: '태양 아래 시원하게 즐기는 칵테일',
+    icon: require('../assets/drawable/summer.png'),
+    textColor: '#5478C1',
+    backgroundColor: '#DCE7F9',
+  },
+  {
+    title: '강렬한 한 잔',
+    description: '깊고 묵직한 분위기를 가진 칵테일',
+    icon: require('../assets/drawable/one_shot.png'),
+    textColor: '#C14C4C',
+    backgroundColor: '#F4D6D6',
+  },
+  {
+    title: '부담 없는 시작',
+    description: '칵테일 입문자를 위한 가벼운 선택',
+    icon: require('../assets/drawable/start.png'),
+    textColor: '#A78A64',
+    backgroundColor: '#F1E6D5',
+  },
 ];
 const fetchCocktailById = async (id: number) => {
- 
- const res = await instance.get("/api/public/cocktail", {
+
+ const res = await instance.get('/api/public/cocktail', {
   params: {
     cocktailId: id,
   },
@@ -105,22 +105,22 @@ type CategoryData = {
 
 
 const CocktailBookScreen: React.FC = () => {
-   const insets = useSafeAreaInsets()
+   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
   const [selectedCategoryIndex, setSelectedCategoryIndex] = useState<number | null>();
   const [categorizedCocktails, setCategorizedCocktails] = useState<CategoryData[]>([]);
   useEffect(() => {
     const fetchData = async () => {
       const grouped = await fetchAllCocktails();
-  
+
       const categorized = categories.map((category, index) => ({
         ...category,
         items: grouped[index] || [],
       }));
-  
+
       setCategorizedCocktails(categorized);
     };
-  
+
     fetchData();
   }, []);
   const [selectedCocktail, setSelectedCocktail] = useState<any>(null);
@@ -129,42 +129,40 @@ const CocktailBookScreen: React.FC = () => {
   const bannerRef = useRef<FlatList<any>>(null);
   const [selectedCocktailIndex, setSelectedCocktailIndex] = useState<number | null>(null);
   const openModal = (cocktail: any, cocktailList: any[],  categoryIndex: number) => {
-    console.log("🔥 클릭한 칵테일 데이터:", cocktail);
+    console.log('🔥 클릭한 칵테일 데이터:', cocktail);
     const index = cocktailList.findIndex((c) => c.cocktail.id === cocktail.cocktail.id);
     setSelectedCocktailIndex(index);
     setSelectedCocktail(cocktail);
     setModalCocktailList(cocktailList);
     setSelectedCategoryIndex(categoryIndex);
   };
-  
+
 
   const closeModal = () => {
     setSelectedCocktail(null);
   };
 
   const onViewableItemsChanged = useRef(({ viewableItems }: any) => {
-    console.log("onViewableItemsChanged 호출됨");
-    console.log("viewableItems:", viewableItems);
-  
+    console.log('onViewableItemsChanged 호출됨');
+    console.log('viewableItems:', viewableItems);
+
     if (!viewableItems || !Array.isArray(viewableItems) || viewableItems.length === 0) {
       return;
     }
-    
+
     setCurrentPage(viewableItems[0]?.index + 1 || 1);
   }).current;
-  
-  
-  
+
+
+
   return (
     <SafeAreaView style={[styles.safeContainer ,{
-          paddingBottom: Platform.OS === "android" ? 24 : insets.bottom || 24,  }]}>
+          paddingBottom: Platform.OS === 'android' ? 24 : insets.bottom || 24  }]}>
       <ScrollView style={styles.container}>
         {/* 상단 로고 & 아이콘 */}
         <View style={styles.header}>
-          <Image source={require("../assets/drawable/onz_logo.png")} style={[styles.logo, {resizeMode:"contain"}]} />
-          <TouchableOpacity onPress={() =>navigation.navigate("BottomTabNavigator", { screen: "지도" })}>
-          
-          </TouchableOpacity>
+          <Image source={require('../assets/drawable/onz_logo.png')} style={[styles.logo, {resizeMode:'contain'}]} />
+          <TouchableOpacity onPress={() =>navigation.navigate('BottomTabNavigator', { screen: '지도' })} />
         </View>
 
         {/* 배너 슬라이더 */}
@@ -221,7 +219,7 @@ const CocktailBookScreen: React.FC = () => {
                 <TouchableOpacity onPress={() => openModal(item, category.items, index)} style={styles.cocktailCard}>
                   <Image source={item.cocktail.image_url
                               ? { uri: item.cocktail.image_url }
-                              : require("../assets/drawable/cocktail.jpg") 
+                              : require('../assets/drawable/cocktail.jpg')
                               }style={styles.cocktailImage} />
                   <Text style={styles.cocktailName}>{item.cocktail.cocktail_name}</Text>
                 </TouchableOpacity>
@@ -240,7 +238,7 @@ const CocktailBookScreen: React.FC = () => {
           cocktailIndex={selectedCocktailIndex}
           cocktails={modalCocktailList}
           selectedCocktailId={selectedCocktail?.cocktail.id}
-  
+
         />
       )}
     </SafeAreaView>
@@ -252,44 +250,44 @@ export default CocktailBookScreen;
 const styles = StyleSheet.create({
   safeContainer: {
     flex: 1,
-    backgroundColor: "#FFFCF3",
+    backgroundColor: '#FFFCF3',
   },
   container: {
     flex: 1,
-    backgroundColor: "#FFFCF3",
+    backgroundColor: '#FFFCF3',
   },
   header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     marginTop : getResponsiveHeight(10,10,12,35,50,50),
     paddingHorizontal: widthPercentage(15),
     paddingVertical: heightPercentage(10),
   },
   recommendationSection: {
-    width: "100%",
-    alignItems: "center",
+    width: '100%',
+    alignItems: 'center',
     paddingBottom: heightPercentage(20),
   },
   recommendationText: {
     fontSize: fontPercentage(18),
-    fontWeight: "bold",
-    textAlign: "center",
-    color: "#333",
+    fontWeight: 'bold',
+    textAlign: 'center',
+    color: '#333',
   },
   categorySection: {
     paddingHorizontal: widthPercentage(15),
     marginBottom: heightPercentage(20),
   },
   categoryHeader: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     marginBottom: heightPercentage(10),
   },
   categoryTitle: {
     fontSize: fontPercentage(16),
-    fontWeight: "bold",
-    color: "#444",
+    fontWeight: 'bold',
+    color: '#444',
   },
   categoryIcon: {
     width: widthPercentage(30),
@@ -298,7 +296,7 @@ const styles = StyleSheet.create({
   },
   cocktailCard: {
     width: widthPercentage(152),
-    alignItems: "center",
+    alignItems: 'center',
     marginRight: widthPercentage(15),
   },
   cocktailImage: {
@@ -308,8 +306,8 @@ const styles = StyleSheet.create({
   },
   cocktailName: {
     fontSize: fontPercentage(14),
-    fontWeight: "bold",
-    color: "#333",
+    fontWeight: 'bold',
+    color: '#333',
     marginTop: heightPercentage(5),
   },
   icon: {
@@ -321,7 +319,7 @@ const styles = StyleSheet.create({
     height: heightPercentage(285),
   },
   categoryDescriptionContainer: {
-    backgroundColor: "#F5F6EE",
+    backgroundColor: '#F5F6EE',
     borderRadius: widthPercentage(8),
     paddingHorizontal: widthPercentage(10),
     paddingVertical: heightPercentage(4),
@@ -329,15 +327,15 @@ const styles = StyleSheet.create({
   },
   categoryDescription: {
     fontSize: fontPercentage(11),
-    color: "#7DACA4",
+    color: '#7DACA4',
   },
   logo: {
     width: widthPercentage(110),
     height: heightPercentage(45),
-    resizeMode: "contain",
+    resizeMode: 'contain',
   },
   bannerContainer: {
-    position: "relative",
+    position: 'relative',
     width: widthPercentage(375), // 피그마 기준
     height: heightPercentage(285),
     borderRadius: widthPercentage(10),
@@ -346,24 +344,24 @@ const styles = StyleSheet.create({
   bannerImage: {
     width: widthPercentage(375),
     height: heightPercentage(285),
-    resizeMode: "cover",
+    resizeMode: 'cover',
   },
   pageIndicator: {
-    position: "absolute",
+    position: 'absolute',
     bottom: heightPercentage(10),
     right: widthPercentage(15),
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
     paddingHorizontal: widthPercentage(8),
     paddingVertical: heightPercentage(4),
     borderRadius: widthPercentage(10),
   },
   pageText: {
-    color: "#FFF",
+    color: '#FFF',
     fontSize: fontPercentage(14),
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
   adContainer: {
-    alignItems: "center",
+    alignItems: 'center',
     marginVertical: heightPercentage(15),
   },
 

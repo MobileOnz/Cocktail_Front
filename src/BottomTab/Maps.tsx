@@ -1,49 +1,49 @@
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from 'react';
 
-import { StackScreenProps } from "@react-navigation/stack";
-import { View, StyleSheet, StatusBar, TouchableOpacity, TextInput,Image, Dimensions} from "react-native";
-import SearchBar from "../Components/SearchBar";
-import CustomMapView from "../Components/CustomMapView";
-import BaseBottomSheet from "../BottomSheet/BaseBottomSheet";
-import theme from "../assets/styles/theme";
-import { heightPercentage, widthPercentage, fontPercentage, getResponsiveHeight } from "../assets/styles/FigmaScreen";
-import SelectedRegionTags from "../Components/SelectedRegionTags";
-import MapView from "react-native-maps";
-import { getCurrentLocation} from "../utils/requestLocationPermission";
+import { StackScreenProps } from '@react-navigation/stack';
+import { View, StyleSheet, StatusBar, TouchableOpacity, TextInput,Image, Dimensions} from 'react-native';
+import SearchBar from '../Components/SearchBar';
+import CustomMapView from '../Components/CustomMapView';
+import BaseBottomSheet from '../BottomSheet/BaseBottomSheet';
+import theme from '../assets/styles/theme';
+import { heightPercentage, widthPercentage, fontPercentage, getResponsiveHeight } from '../assets/styles/FigmaScreen';
+import SelectedRegionTags from '../Components/SelectedRegionTags';
+import MapView from 'react-native-maps';
+import { getCurrentLocation} from '../utils/requestLocationPermission';
 import Animated, {
   useAnimatedStyle,
   interpolate,
-} from "react-native-reanimated";
-import { useSharedValue } from "react-native-reanimated";
+} from 'react-native-reanimated';
+import { useSharedValue } from 'react-native-reanimated';
 
-import instance from "../tokenRequest/axios_interceptor";
+import instance from '../tokenRequest/axios_interceptor';
 
 const REGION_CODE_MAP = {
-  "서울 전체": "SEOUL_ALL",
-  "강남/신논현/양재": "GANGNAM",
-  "청담/압구정/신사": "CHEONGDAM",
-  "선릉/삼성": "SEONREUNG",
-  "논현/반포/학동": "NONHYEON",
-  "서초/교대/방배": "SEOCHO",
-  "대치/도곡/한티": "DAECHI",
-  "홍대/합정/신촌": "HONGDAE",
-  "서울역/명동/회현": "SEOULSTATION",
-  "잠실/석촌/천호": "JAMSIL",
-  "신당/왕십리": "SINDANG",
-  "뚝섬/성수/서울숲/건대입구": "SEONGSU",
-  "종로/을지로/충정로": "JONGRO",
-  "마곡/화곡/목동": "MAGOK",
-  "영등포/여의도/노량진": "YEOUIDO",
-  "미아/도봉/노원": "NOWON",
-  "이태원/용산/삼각지": "ITAEWON",
-  "서울대/사당/동작": "DONGJAK",
-  "은평/상암": "EUNPYEONG",
-  "신도림/구로": "GURO",
-  "마포/공덕": "MAPO",
-  "금천/가산": "GASAN",
-  "수서/복정/장지": "SUSEO",
-}
+  '서울 전체': 'SEOUL_ALL',
+  '강남/신논현/양재': 'GANGNAM',
+  '청담/압구정/신사': 'CHEONGDAM',
+  '선릉/삼성': 'SEONREUNG',
+  '논현/반포/학동': 'NONHYEON',
+  '서초/교대/방배': 'SEOCHO',
+  '대치/도곡/한티': 'DAECHI',
+  '홍대/합정/신촌': 'HONGDAE',
+  '서울역/명동/회현': 'SEOULSTATION',
+  '잠실/석촌/천호': 'JAMSIL',
+  '신당/왕십리': 'SINDANG',
+  '뚝섬/성수/서울숲/건대입구': 'SEONGSU',
+  '종로/을지로/충정로': 'JONGRO',
+  '마곡/화곡/목동': 'MAGOK',
+  '영등포/여의도/노량진': 'YEOUIDO',
+  '미아/도봉/노원': 'NOWON',
+  '이태원/용산/삼각지': 'ITAEWON',
+  '서울대/사당/동작': 'DONGJAK',
+  '은평/상암': 'EUNPYEONG',
+  '신도림/구로': 'GURO',
+  '마포/공덕': 'MAPO',
+  '금천/가산': 'GASAN',
+  '수서/복정/장지': 'SUSEO',
+};
 
 type RootStackParamList = {
   SearchScreen: undefined;
@@ -51,24 +51,24 @@ type RootStackParamList = {
      resetRequested? : boolean };
 };
 
-type MapsProps = StackScreenProps<RootStackParamList, "Maps">; 
+type MapsProps = StackScreenProps<RootStackParamList, 'Maps'>;
 const CurrentLocationButton = ({ handleCurrentLocationPress, onreSearch,searchQuery,isUsingCurrentLocation,buttonsEnabled }) => {
   return (
     <View pointerEvents="box-none" style={styles.buttonRowContainer}>
-      
+
       {buttonsEnabled && (
   <TouchableOpacity
     style={styles.researchButtonContainer}
     onPress={onreSearch}
   >
     <Image
-      source={require("../assets/drawable/researchButton.png")}
+      source={require('../assets/drawable/researchButton.png')}
       style={styles.researchButton}
       resizeMode="contain"
     />
   </TouchableOpacity>
 )}
-      
+
 
       <TouchableOpacity
         style={styles.currentLocationButton}
@@ -76,9 +76,9 @@ const CurrentLocationButton = ({ handleCurrentLocationPress, onreSearch,searchQu
       >
         <Image
           source={
-            buttonsEnabled&&isUsingCurrentLocation
-              ? require("../assets/drawable/currentlocation_active.png") // 현재 위치 사용 중인 아이콘
-              : require("../assets/drawable/currentlocation.png") // 비활성화 아이콘
+            buttonsEnabled && isUsingCurrentLocation
+              ? require('../assets/drawable/currentlocation_active.png') // 현재 위치 사용 중인 아이콘
+              : require('../assets/drawable/currentlocation.png') // 비활성화 아이콘
           }
           style={styles.locationIcon}
           resizeMode="contain"
@@ -91,43 +91,43 @@ const CurrentLocationButton = ({ handleCurrentLocationPress, onreSearch,searchQu
 
 const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
 
-  
 
-  
-  const [buttonsEnabled, setButtonsEnabled] = useState(false)
-  const [isUsingCurrentLocation, setIsUsingCurrentLocation] = useState(false)
 
-  
-  //드래그 확인 
+
+  const [buttonsEnabled, setButtonsEnabled] = useState(false);
+  const [isUsingCurrentLocation, setIsUsingCurrentLocation] = useState(false);
+
+
+  //드래그 확인
   const handleMapDrag = () => {
-    setButtonsEnabled(true); 
+    setButtonsEnabled(true);
     if(isUsingCurrentLocation){
-      setIsUsingCurrentLocation(false)
-      
+      setIsUsingCurrentLocation(false);
+
     }
-    
+
   };
 
   const handleSearchInCurrentMapRegion = async () => {
-   
+
     try {
       const camera = await mapRef.current?.getCamera();
-      if (!camera) return;
-  
+      if (!camera) {return;}
+
       const { latitude, longitude } = camera.center;
-      console.log("지도 중심 좌표:", latitude, longitude);
-  
+      console.log('지도 중심 좌표:', latitude, longitude);
+
       fetchNearbyBars(longitude, latitude);
       setButtonsEnabled(false);
     } catch (e) {
-      console.error("다시 검색 중 에러:", e);
+      console.error('다시 검색 중 에러:', e);
     }
   };
-  
+
   const handleCurrentLocationPress = async () => {
     const coords = await getCurrentLocation();
     if (coords) {
-      console.log("현재 위치 좌표:", coords);
+      console.log('현재 위치 좌표:', coords);
 
       if (mapRef.current) {
         mapRef.current.animateToRegion({
@@ -144,39 +144,39 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
         longitudeDelta: 0.01,
       });
 
-      
-      
-      setIsUsingCurrentLocation(true); 
+
+
+      setIsUsingCurrentLocation(true);
 
       setTimeout(() => {
       fetchNearbyBars(coords.longitude, coords.latitude);
       }, 600);
     } else {
-      console.log("위치 가져오기 실패 또는 권한 없음");
+      console.log('위치 가져오기 실패 또는 권한 없음');
     }
-  }
+  };
   const mapRef = useRef<MapView>(null);
 
 
   const fetchNearbyBars = async (x: number, y: number, shouldSetTab = false) => {
       try {
-        const response = await instance.get("/api/location/nearby", {
+        const response = await instance.get('/api/location/nearby', {
           params: { x, y },
           authOptional: true, // 토큰이 있으면 붙이고 없어도 요청 가능
         });
-  
+
       const rawData = response.data.data || [];
-  
+
       const formatted = rawData.map((bar) => ({
         id: bar.id,
         title: bar.bar_name,
         barAdress: bar.address,
         thumbNail: bar.thumbnail
           ? { uri: bar.thumbnail }
-          : require("../assets/drawable/barExample.png"),
+          : require('../assets/drawable/barExample.png'),
         hashtagList: bar.menus.map((m) => `#${m.name}`),
       }));
-  
+
       const markers = rawData.map((bar) => ({
         id: bar.id,
         title: bar.bar_name,
@@ -186,11 +186,11 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
         },
         icon_tag: 7,
       }));
-  
+
       setBarData(formatted);
       setMarkerList(markers);
-      if (shouldSetTab) setSelectedTab("search");
-  
+      if (shouldSetTab) {setSelectedTab('search');}
+
       setTimeout(() => {
         if (mapRef.current && markers.length > 0) {
           mapRef.current.fitToCoordinates(
@@ -203,10 +203,10 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
         }
       }, 600);
     } catch (error) {
-      console.error("❌ 서버 호출 실패:", error);
+      console.error('❌ 서버 호출 실패:', error);
     }
   };
-  
+
 
   useEffect(() => {
     //앱의 초기실행이거나, 지역검색 중에는 실행되지 않도록 처리
@@ -218,17 +218,17 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
 
   }, []);
 
-  const animatedPosition = useSharedValue(0)
+  const animatedPosition = useSharedValue(0);
 
   useEffect(() => {
     const interval = setInterval(() => {
     }, 500);
-  
+
     return () => clearInterval(interval);
   }, []);
 
-  
-  const screenHeight = Dimensions.get("window").height;
+
+  const screenHeight = Dimensions.get('window').height;
   const bottomSheetThreshold = screenHeight * 0.25;
   const buttonTranslateMin = getResponsiveHeight(-10, -70, -70, -55, -50, -48);
   const buttonWrapperStyle = useAnimatedStyle(() => {
@@ -236,33 +236,33 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
   const isVisible = animatedPosition.value >= bottomSheetThreshold;
 
     return {
-      position: "absolute",
+      position: 'absolute',
       transform: [
         {
           translateY: interpolate(
             animatedPosition.value,
             [0, 800], // 바텀시트 움직이는 범위에 맞춰
            [buttonTranslateMin, 750],
-            "clamp"
+            'clamp'
           ),
         },
       ],
       right: 20, // 그냥 고정값으로
       zIndex: 1000,
-      opacity: isVisible ? 1:0,
-      display: isVisible ? "flex" : "none",
+      opacity: isVisible ? 1 : 0,
+      display: isVisible ? 'flex' : 'none',
     };
   });
 
   const [barData, setBarData] = useState([]);
-  const [selectedTab, setSelectedTab] = useState("search")
+  const [selectedTab, setSelectedTab] = useState('search');
   const [isSearchCompleted, setIsSearchCompleted] = useState(false);
   const [selectedRegions, setSelectedRegions] = useState<string[]>([]);
   const [activeRegion, setActiveRegion] = useState<string|null>(null);
   const [markerList, setMarkerList] = useState([]);
-  const {searchQuery} = route.params|| "";
+  const {searchQuery} = route.params || '';
 
-  
+
   const [region, setRegion] = useState({
     latitude: 37.5665, // 기본값: 서울
     longitude: 126.978,
@@ -273,8 +273,8 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
   const [selectedBarId, setSelectedBarId] = useState<number | null>(null);
   const centerMapOnBar = (x: number, y: number) => {
 
-    console.log("🗺️ centerMapOnBar 내부 실행됨. 좌표값:", x, y);
-    console.log("📌 mapRef.current 존재 여부:", !!mapRef.current);
+    console.log('🗺️ centerMapOnBar 내부 실행됨. 좌표값:', x, y);
+    console.log('📌 mapRef.current 존재 여부:', !!mapRef.current);
 
     if(mapRef.current && !isNaN(x) && !isNaN(y)){
       mapRef.current.animateToRegion(
@@ -285,18 +285,18 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
           longitudeDelta: 0.02,
         },
         500
-      )
+      );
 
     }else{
-      console.log("❌ mapRef 또는 좌표값 문제 있음");
+      console.log('❌ mapRef 또는 좌표값 문제 있음');
     }
   };
 
 
-  
+
 
   const [barList, setBarList] = useState([]);
-  
+
 
   //어떤 이벤트가 발생하든 ui를 리렌더링하기 위한 트리거
   const [refreshTrigger, setRefreshTrigger] = useState(0);
@@ -305,10 +305,10 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
   useEffect(() => {
     if (route.params?.searchCompleted && route.params.searchQuery) {
       const query = route.params.searchQuery;
-  
+
       const fetchData = async () => {
         try {
-          const res = await instance.get("/api/search/keyword", {
+          const res = await instance.get('/api/search/keyword', {
             params: {
               search: query, // encodeURIComponent 필요 없음 → axios가 자동 처리
             },
@@ -316,22 +316,22 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
           });
 
           const result = res.data;
-          console.log("응답 결과:", result);
-  
+          console.log('응답 결과:', result);
+
           if (!Array.isArray(result.data)) {
-            throw new Error("검색 결과가 배열이 아닙니다.");
+            throw new Error('검색 결과가 배열이 아닙니다.');
           }
-  
+
           const formatted = result.data.map((bar) => ({
             id: bar.id,
             title: bar.bar_name,
-            barAdress: bar.address || "주소 없음",
-            thumbNail: bar.thumbnail 
-              ? { uri: bar.thumbnail } 
-              : require("../assets/drawable/barExample.png"),
+            barAdress: bar.address || '주소 없음',
+            thumbNail: bar.thumbnail
+              ? { uri: bar.thumbnail }
+              : require('../assets/drawable/barExample.png'),
             hashtagList: bar.menus.slice(0, 4).map(menu => `#${menu.name}`),
           }));
-  
+
           //마커용 데이터 저장
           const markers = result.data.map((bar) => ({
             id: bar.id,
@@ -341,11 +341,11 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
               longitude: Number(bar.x),
             },
           }));
-  
-          
+
+
           setBarList(formatted);
           setMarkerList(markers);
-          setSelectedTab("search");
+          setSelectedTab('search');
           //모든 마커가 보이도록 지도 이동
           setTimeout(() => {
             if (mapRef.current && markers.length > 0) {
@@ -359,41 +359,41 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
             }
           }, 1000);
         } catch (err) {
-          console.error("검색 실패:", err);
+          console.error('검색 실패:', err);
         }
       };
-  
+
       fetchData();
     }
   }, [route.params?.searchCompleted]);
-  
+
 
   useEffect(() => {
-    console.log("✅ Maps에서 보내는 markerList:", markerList);
+    console.log('✅ Maps에서 보내는 markerList:', markerList);
   }, [markerList]);
   useEffect(() => {
     if (selectedRegions.length > 0 && !activeRegion) {
       setActiveRegion(selectedRegions[0]);
     }
   }, [selectedRegions]);
-  
+
   useEffect(() => {
-    console.log("✅ activeRegion 값 변경됨:", activeRegion);
-  
-    if (!activeRegion) return;
-  
+    console.log('✅ activeRegion 값 변경됨:', activeRegion);
+
+    if (!activeRegion) {return;}
+
     const regionCode = REGION_CODE_MAP[activeRegion];
-    if (!regionCode) return;
-  
+    if (!regionCode) {return;}
+
     const fetchRegionBars = async () => {
       try {
-                  const response = await instance.get("/api/location/filter", {
+                  const response = await instance.get('/api/location/filter', {
               params: { areaCodes: regionCode },
-              authOptional: true, 
+              authOptional: true,
             });
 
             const data = response.data?.data?.[regionCode] || [];
-  
+
         const markers = data.map((bar) => ({
           id: bar.id,
           title: bar.bar_name,
@@ -403,7 +403,7 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
           },
           icon_tag: 7,
         }));
-  
+
         // ✅ 기존 마커 초기화 (근처 바 등의 잔존 마커 제거)
         setMarkerList([]);
         setBarData([]); // 바텀시트 목록도 초기화
@@ -413,7 +413,7 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
           setMarkerList(markers);
           setBarData(data);
         }, 0);
-  
+
         if (mapRef.current && markers.length > 0) {
           mapRef.current.animateToRegion(
             {
@@ -424,7 +424,7 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
             },
             500
           );
-  
+
           setTimeout(() => {
             mapRef.current?.fitToCoordinates(
               markers.map((m) => m.coordinate),
@@ -436,10 +436,10 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
           }, 600);
         }
       } catch (err) {
-        console.error("❌ 지역 바 불러오기 실패:", err);
+        console.error('❌ 지역 바 불러오기 실패:', err);
       }
     };
-  
+
     fetchRegionBars();
   }, [activeRegion]);
 
@@ -448,12 +448,12 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
 
   useEffect(() => {
     const { searchCompleted, selectedRegions, resetRequested, shouldRefresh } = route.params || {};
-  
-    if (searchCompleted) setIsSearchCompleted(true);
-    if (selectedRegions) setSelectedRegions(selectedRegions);
-    if (resetRequested) navigation.setParams({ resetRequested: false });
+
+    if (searchCompleted) {setIsSearchCompleted(true);}
+    if (selectedRegions) {setSelectedRegions(selectedRegions);}
+    if (resetRequested) {navigation.setParams({ resetRequested: false });}
     if (shouldRefresh) {
-      console.log("🔁 로그인 후 리프레시 감지됨");
+      console.log('🔁 로그인 후 리프레시 감지됨');
       setRefreshTrigger(prev => prev + 1);
       navigation.setParams({ shouldRefresh: false });
     }
@@ -464,10 +464,10 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
   };
 
   return (
-    
+
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" translucent backgroundColor="transparent" />
-  
+
       {isSearchCompleted && (
         <>
         <View
@@ -483,7 +483,7 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
         <View style={styles.resultHeader}>
           {/* 뒤로가기 버튼 */}
           <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-          <Image source={require("../assets/search/backspace.png")}
+          <Image source={require('../assets/search/backspace.png')}
                           style={styles.buttonText}
                     />
           </TouchableOpacity>
@@ -491,15 +491,15 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
           {/* 검색 결과 화면 */}
           <TextInput
             style={[styles.searchButton, {
-              backgroundColor: "white",
+              backgroundColor: 'white',
               fontSize: fontPercentage(14),
-              lineHeight: fontPercentage(14 * 1.429), 
-              letterSpacing: fontPercentage(14 * 0.0145), 
-              fontWeight: "700",
-              paddingVertical: heightPercentage(12), 
+              lineHeight: fontPercentage(14 * 1.429),
+              letterSpacing: fontPercentage(14 * 0.0145),
+              fontWeight: '700',
+              paddingVertical: heightPercentage(12),
               borderRadius: widthPercentage(8),
               borderWidth: widthPercentage(1),
-              borderColor: "#E4DFD8",
+              borderColor: '#E4DFD8',
               marginBottom: heightPercentage(12),
             },
             ]}
@@ -507,19 +507,19 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
             placeholderTextColor="black"
             returnKeyType="done"
             onSubmitEditing={() => {
-              navigation.navigate("Maps", { searchCompleted: true });
+              navigation.navigate('Maps', { searchCompleted: true });
             }}
           />
 
 
           {/* 검색 초기화 버튼 */}
-          <TouchableOpacity 
-            style={styles.clearButton} 
+          <TouchableOpacity
+            style={styles.clearButton}
             onPress={() => navigation.pop(2)}
-            
+
             >
-            <Image source={require("../assets/search/mapsdelete.png")}
-            style={[{width : widthPercentage(16),height: heightPercentage(16)}]}></Image>
+            <Image source={require('../assets/search/mapsdelete.png')}
+            style={[{width : widthPercentage(16),height: heightPercentage(16)}]} />
           </TouchableOpacity>
         </View>
         </>
@@ -533,7 +533,7 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
           mapRef={mapRef}
           markerList={markerList}
           onMarkerPress={(barId) => {
-            setSelectedTab("detail");
+            setSelectedTab('detail');
             setSelectedBarId(barId);
           }}
           onDrag={handleMapDrag}
@@ -541,45 +541,45 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
           selectedTab={selectedTab}
         />
       </View>
-  
+
       <View style={styles.searchContainer}>
-  
-{!isSearchCompleted &&(
+
+{!isSearchCompleted && (
   <SearchBar />
 )}
-  
+
 
     {/*지역 검색 시 태그 띄우기*/}
     {selectedRegions.length > 0 && (
     <View style={styles.tagsContainer}>
-      <SelectedRegionTags 
-        selectedRegions={selectedRegions} 
-        onRemoveRegion={handleRemoveRegion} 
+      <SelectedRegionTags
+        selectedRegions={selectedRegions}
+        onRemoveRegion={handleRemoveRegion}
         onRemoveAllRegions={() => {
           setSelectedRegions([]);
           setActiveRegion(null);
-          setSelectedTab("region")
-        
+          setSelectedTab('region');
+
           const restoreDefault = async () => {
             try {
-                  const response = await instance.get("/api/location/nearby", {
+                  const response = await instance.get('/api/location/nearby', {
                   params: { x: 126.9812675, y: 37.5718599 },
                   authOptional: true, // 있으면 토큰 포함, 없어도 통과
                 });
-        
+
               if (response.data.code === 1) {
                 const data = response.data.data;
-        
+
                 const formatted = data.map((bar) => ({
                   id: bar.id,
                   title: bar.bar_name,
                   barAdress: bar.address,
                   thumbNail: bar.thumbnail
                     ? { uri: bar.thumbnail }
-                    : require("../assets/drawable/barExample.png"),
+                    : require('../assets/drawable/barExample.png'),
                   hashtagList: bar.menus.map((m) => `#${m.name}`),
                 }));
-        
+
                 const markers = data.map((bar) => ({
                   id: bar.id,
                   title: bar.bar_name,
@@ -589,30 +589,30 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
                   },
                   icon_tag: 7,
                 }));
-        
+
                 // setBarList(formatted);       // ✅ search 탭에서 필요한 데이터
                 setMarkerList(markers);      // ✅ 지도에 찍을 마커
                 setBarData(formatted);       // ✅ bottomsheet 내에서도 fallback
               }
             } catch (error) {
-              console.error("기본 바 리스트 불러오기 실패:", error);
+              console.error('기본 바 리스트 불러오기 실패:', error);
             }
           };
-        
+
           restoreDefault();
         }}
-        
-        activeRegion={activeRegion} 
+
+        activeRegion={activeRegion}
       />
     </View>
   )}
 
 </View>
-   
+
       <BaseBottomSheet
         key={`base-${refreshTrigger}`}
         selectedRegions={selectedRegions}
-        onRegionSelect={setActiveRegion} 
+        onRegionSelect={setActiveRegion}
         barData={barData}
         setBarData={setBarData}
         refreshTrigger={refreshTrigger}
@@ -626,22 +626,22 @@ const Maps: React.FC<MapsProps> = ({ navigation, route }) => {
         setSelectedBarId={setSelectedBarId}
         centerMapOnBar={centerMapOnBar}
         onBarMarkerPress={(barId: number) => {
-          console.log("마커 클릭됨 -> barId:", barId);
-          setSelectedTab("detail");
+          console.log('마커 클릭됨 -> barId:', barId);
+          setSelectedTab('detail');
           setSelectedBarId(barId);
         }}
         markerList={markerList}
         setMarkerList={setMarkerList}
       />
       <Animated.View style={buttonWrapperStyle}>
-        
+
   <CurrentLocationButton
     handleCurrentLocationPress={handleCurrentLocationPress}
     onreSearch={handleSearchInCurrentMapRegion}
     searchQuery={searchQuery}
     isUsingCurrentLocation={isUsingCurrentLocation}
-    buttonsEnabled={buttonsEnabled} 
-    
+    buttonsEnabled={buttonsEnabled}
+
   />
 </Animated.View>
 
@@ -662,39 +662,39 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   buttonRowContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     zIndex: 1,
   },
-  
+
   researchButtonContainer: {
     marginRight: 40, // 위치 버튼과 간격
     width: widthPercentage(147),
     height: heightPercentage(36),
-    justifyContent: "center",
-    alignItems: "center",
-    zIndex : 1
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex : 1,
   },
   researchButton : {
     width : widthPercentage(147),
     height : heightPercentage(36),
-    resizeMode : "contain",
-    zIndex : 1
+    resizeMode : 'contain',
+    zIndex : 1,
   },
   locationIcon: {
     width: widthPercentage(54),
     height: heightPercentage(54),
   },
   searchContainer: {
-    position: "absolute",
-    flexDirection: "column",
-    top: heightPercentage(50), 
+    position: 'absolute',
+    flexDirection: 'column',
+    top: heightPercentage(50),
     left: widthPercentage(16),
     right: widthPercentage(16),
-    zIndex: 10, 
+    zIndex: 10,
   },
   tagsContainer: {
-    flexDirection: "row", // 태그를 가로 정렬
+    flexDirection: 'row', // 태그를 가로 정렬
     marginTop: heightPercentage(55),
   },
   mapContainer: {
@@ -703,32 +703,32 @@ const styles = StyleSheet.create({
   resultHeader: {
     marginTop: heightPercentage(58),
     backgroundColor: theme.background,
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingHorizontal: 10,
     height: 50,
-    zIndex: 9999,                 
-    elevation: 9999,  
+    zIndex: 9999,
+    elevation: 9999,
   },
   searchButton: {
     width: widthPercentage(275),
     height: heightPercentage(48),
     borderRadius: widthPercentage(8),
-    backgroundColor: "white",
+    backgroundColor: 'white',
     paddingHorizontal: widthPercentage(10),
     zIndex: 10,
     marginBottom: heightPercentage(12),
     borderWidth: widthPercentage(1),
-    borderColor: "#E4DFD8",
-    justifyContent: "center",
-    alignItems: "center",
+    borderColor: '#E4DFD8',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   searchButtonText: {
     fontSize: fontPercentage(14),
-    fontWeight: "700", // Pretendard Bold
+    fontWeight: '700', // Pretendard Bold
     lineHeight: fontPercentage(14 * 1.429), // 142.9%
     letterSpacing: fontPercentage(14 * 0.0145), // 1.45%
-    color: "#000000",
+    color: '#000000',
   },
   backButton: {
     marginBottom: heightPercentage(10),
@@ -750,8 +750,8 @@ const styles = StyleSheet.create({
   textButton : {
     marginLeft: widthPercentage(5),
     marginBottom: heightPercentage(10),
-    fontSize: fontPercentage(24)
-  }
+    fontSize: fontPercentage(24),
+  },
 });
 
 export default Maps;

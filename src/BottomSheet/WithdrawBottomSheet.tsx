@@ -1,7 +1,7 @@
-import React from "react";
-import { View, Text, TouchableOpacity, StyleSheet, Image} from "react-native";
-import Modal from "react-native-modal";
-import { widthPercentage, heightPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
+import React from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Image} from 'react-native';
+import Modal from 'react-native-modal';
+import { widthPercentage, heightPercentage, fontPercentage } from '../assets/styles/FigmaScreen';
 
 interface WithdrawBottomSheetProps {
   isVisible: boolean;
@@ -25,7 +25,7 @@ const WithdrawBottomSheet: React.FC<WithdrawBottomSheetProps> = ({ isVisible, on
         <View style={{ height: heightPercentage(12) }} />
         <Text style={styles.title}>회원 탈퇴</Text>
         <Image
-          source={require("../assets/drawable/delete_account.png")}
+          source={require('../assets/drawable/delete_account.png')}
           style={styles.imagePlaceholder}
           resizeMode="contain"
         />
@@ -49,12 +49,12 @@ export default WithdrawBottomSheet;
 
 const styles = StyleSheet.create({
   modal: {
-    justifyContent: "flex-end",
+    justifyContent: 'flex-end',
     margin: 0,
   },
   container: {
-    backgroundColor: "#FFFCF3",
-    alignItems: "center",
+    backgroundColor: '#FFFCF3',
+    alignItems: 'center',
     padding: widthPercentage(16),
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
   title: {
     marginTop : heightPercentage(20),
     fontSize: fontPercentage(18),
-    fontWeight: "bold",
+    fontWeight: 'bold',
     marginBottom: heightPercentage(16),
   },
   imagePlaceholder: {
@@ -73,44 +73,44 @@ const styles = StyleSheet.create({
   },
   subTitle: {
     fontSize: fontPercentage(18),
-    fontWeight: "bold",
+    fontWeight: 'bold',
     marginBottom: heightPercentage(8),
   },
   description: {
     fontSize: fontPercentage(14),
-    color: "#7D7A6F",
+    color: '#7D7A6F',
     marginBottom: heightPercentage(24),
   },
   buttonContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    width: "100%",
-    marginBottom : heightPercentage(40)
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    marginBottom : heightPercentage(40),
   },
   cancelButton: {
     width: widthPercentage(166),
     height: heightPercentage(57),
-    backgroundColor: "#E4DFD8",
+    backgroundColor: '#E4DFD8',
     borderRadius: 8,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   cancelText: {
     fontSize: fontPercentage(16),
-    color: "#7D7A6F",
-    fontWeight: "bold",
+    color: '#7D7A6F',
+    fontWeight: 'bold',
   },
   withdrawButton: {
     width: widthPercentage(166),
     height: heightPercentage(57),
-    backgroundColor: "#F05656",
+    backgroundColor: '#F05656',
     borderRadius: 8,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   withdrawText: {
     fontSize: fontPercentage(16),
-    color: "#fff",
-    fontWeight: "bold",
+    color: '#fff',
+    fontWeight: 'bold',
   },
 });

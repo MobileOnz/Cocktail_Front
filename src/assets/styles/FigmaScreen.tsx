@@ -40,12 +40,12 @@ export function getResponsiveHeight(
   androidLarge: number
 ): number {
   if (isIOS) {
-    if (isSmallDevice) return heightPercentage(iosSmall);
-    if (isMediumDevice) return heightPercentage(iosMedium);
+    if (isSmallDevice) {return heightPercentage(iosSmall);}
+    if (isMediumDevice) {return heightPercentage(iosMedium);}
     return heightPercentage(iosLarge);
   } else {
-    if (isSmallDevice) return heightPercentage(androidSmall);
-    if (isMediumDevice) return heightPercentage(androidMedium);
+    if (isSmallDevice) {return heightPercentage(androidSmall);}
+    if (isMediumDevice) {return heightPercentage(androidMedium);}
     return heightPercentage(androidLarge);
   }
 }
