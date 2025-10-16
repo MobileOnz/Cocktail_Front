@@ -107,7 +107,7 @@ type CategoryData = {
 const CocktailBookScreen: React.FC = () => {
    const insets = useSafeAreaInsets();
   const navigation = useNavigation();
-  const [selectedCategoryIndex, setSelectedCategoryIndex] = useState<number | null>();
+  const [_selectedCategoryIndex, setSelectedCategoryIndex] = useState<number | null>();
   const [categorizedCocktails, setCategorizedCocktails] = useState<CategoryData[]>([]);
   useEffect(() => {
     const fetchData = async () => {

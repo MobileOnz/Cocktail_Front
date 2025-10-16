@@ -74,7 +74,7 @@ const LoadingScreen: React.FC<Props> = ({ navigation, route }) => {
     };
 
     fetchAndNavigate();
-  }, []);
+  }, [alcholType,navigation,nickname,tasteCategoryId,tasteDetailId]);
 
 
   return (

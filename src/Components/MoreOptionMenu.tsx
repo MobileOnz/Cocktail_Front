@@ -5,7 +5,7 @@ import { widthPercentage, heightPercentage, fontPercentage } from '../assets/sty
 import Popover from 'react-native-popover-view';
 import { Portal } from 'react-native-paper';
 
-const MoreOptionMenu = ({ itemId, onEdit, onDelete, message }) => {
+const MoreOptionMenu = ({ itemId, onEdit, onDelete}) => {
   const [visible, setVisible] = useState(false);
   const [alertVisible, setAlertVisible] = useState(false);
 

@@ -13,7 +13,7 @@ const ResultScreen: React.FC = ({route}) => {
   const { cocktailImage, cocktailName, cocktailDescription, nickname } = route.params;
 
 
-  const [notFound, setNotFound] = useState(false);
+  const [notFound] = useState(false);
 
 
 

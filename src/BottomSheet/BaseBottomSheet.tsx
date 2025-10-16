@@ -28,7 +28,6 @@ const BaseBottomSheet = ({
   setBarData,
   barList,
   onRegionSelect,
-  setBarList,
   selectedTab,
   setSelectedTab,
   selectedBarId,
@@ -36,7 +35,6 @@ const BaseBottomSheet = ({
   refreshTrigger,
   setRefreshTrigger,
   centerMapOnBar,
-  onBarMarkerPress,
   setMarkerList,
   markerList,
   }) => {
@@ -87,7 +85,7 @@ const BaseBottomSheet = ({
     console.log('✅ enriched markerList:', enriched);
     setMarkerList(enriched);
     hasMappedRef.current = true;
-  }, [isReady]); // 핵심은 단 하나의 트리거로
+  }, [isReady, markerList, bookmarkListMap, myList, setMarkerList]);
 
 
   const fetchMyList = useCallback(async () => {
@@ -176,7 +174,7 @@ useFocusEffect(
   );
 
   const [isLoginSheetVisible, setLoginSheetVisible] = useState(false);
-  const [sheetReady, setSheetReady] = useState(false);
+  const [_sheetReady, setSheetReady] = useState(false);
   // const [markerList, setMarkerList] = useState([]);
 
 
@@ -239,7 +237,7 @@ useFocusEffect(
     } else {
       setSelectedTab('search');
     }
-  }, [selectedRegions]);
+  }, [selectedRegions, setBarData, setMarkerList, setSelectedTab]);
 
 
 const headerCheck = async () => {

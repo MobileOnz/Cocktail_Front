@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { View, Text, Image, StyleSheet, Animated, Dimensions, StatusBar, TouchableOpacity, Platform} from 'react-native';
+import { View, Text, Image, StyleSheet, Animated, StatusBar, TouchableOpacity, Platform} from 'react-native';
 import AppIntroSlider from 'react-native-app-intro-slider';
 import { StackScreenProps } from '@react-navigation/stack';
 import { widthPercentage, heightPercentage, fontPercentage, getResponsiveHeight } from '../assets/styles/FigmaScreen';
@@ -17,8 +17,6 @@ type RootStackParamList = {
   Login: undefined;
   BottomTabNavigator: { screen: '지도' | '칵테일 백과' | '맞춤 추천' | '마이페이지' };
 };
-const { height: screenHeight } = Dimensions.get('window');
-
 type OnboardingScreenProps = StackScreenProps<RootStackParamList, 'Onboarding'>;
 
 interface SlideItem {

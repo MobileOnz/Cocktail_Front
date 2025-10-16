@@ -18,7 +18,7 @@ const Tab = createBottomTabNavigator();
 const BottomTabNavigator = () => {
   const navigation = useNavigation();
   const [isLoginSheetVisible, setLoginSheetVisible] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [_isLoggedIn, setIsLoggedIn] = useState(false);
 
 
   // 맞춤 추천 탭을 눌렀을 때 실행
@@ -73,7 +73,7 @@ const BottomTabNavigator = () => {
       <Tab.Navigator
         initialRouteName="지도"
         screenOptions={({ route }) => ({
-          tabBarIcon: ({ color, size }) => {
+          tabBarIcon: ({ color}) => {
             let iconSource;
             let iconStyle = {
               width: widthPercentage(18),

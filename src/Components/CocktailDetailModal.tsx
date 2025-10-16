@@ -11,10 +11,8 @@ import {
   TouchableWithoutFeedback,
 } from 'react-native';
 import { widthPercentage, heightPercentage, fontPercentage } from '../assets/styles/FigmaScreen';
-import {API_BASE_URL} from '@env';
 import instance from '../tokenRequest/axios_interceptor';
 
-const server = API_BASE_URL;
 
 interface CocktailDetailModalProps {
   visible: boolean;
@@ -69,12 +67,11 @@ const CocktailDetailModal: React.FC<CocktailDetailModalProps> = ({
   onClose,
   cocktailIndex,
   cocktails,
-  selectedCocktailId,
 }) => {
   const flatListRef = useRef<FlatList>(null);
   const scrollX = useRef(new Animated.Value(0)).current;
-  const [currentIndex, setCurrentIndex] = useState(cocktailIndex);
-  const [fetchedData, setFetchedData] = useState<any | null>(null);
+  const [_currentIndex, setCurrentIndex] = useState(cocktailIndex);
+  const [_fetchedData, setFetchedData] = useState<any | null>(null);
 
   const [localCocktailData, setLocalCocktailData] = useState<any[]>([]);
 
@@ -92,30 +89,39 @@ const CocktailDetailModal: React.FC<CocktailDetailModalProps> = ({
   //   }
   // }, [visible, selectedCocktailId]);
 
-  useEffect(() => {
-    if (visible) {
-      const fetchAll = async () => {
-        const allData = await Promise.all(
-          cocktails.map((c) => fetchCocktailById(c.cocktail.id))
-        );
-        setLocalCocktailData(allData); // 한 번에 다 저장
-      };
-      fetchAll();
-    }
-  }, [visible]);
+useEffect(() => {
+  if (!visible) return;
+
+  let cancelled = false;
+
+  const fetchAll = async () => {
+    const allData = await Promise.all(
+      cocktails.map(c => fetchCocktailById(c.cocktail.id))
+    );
+    if (!cancelled) setLocalCocktailData(allData);
+  };
+
+  fetchAll();
+
+  return () => { cancelled = true; };
+}, [visible, cocktails]);
 
 
-  useEffect(() => {
-    if (visible) {
-      setTimeout(() => {
-        flatListRef.current?.scrollToOffset({
-          offset: cocktailIndex * (ITEM_WIDTH + ITEM_SPACING),
-          animated: false,
-        });
-        setCurrentIndex(cocktailIndex);
-      }, 100);
-    }
-  }, [visible, cocktailIndex]);
+
+ useEffect(() => {
+  if (!visible) return;
+
+  const id = setTimeout(() => {
+    flatListRef.current?.scrollToOffset({
+      offset: cocktailIndex * (ITEM_WIDTH + ITEM_SPACING),
+      animated: false,
+    });
+    setCurrentIndex(cocktailIndex);
+  }, 100);
+
+  return () => clearTimeout(id);
+}, [visible, cocktailIndex]);
+
 
   let isScrolling = false;
 
@@ -173,7 +179,7 @@ return (
             alignItems: 'center',
           }}
           style={{ height: heightPercentage(550) }}
-          renderItem={({ item, index }) => {
+          renderItem={({ index }) => {
             const inputRange = [
               (index - 1) * ITEM_WIDTH,
               index * ITEM_WIDTH,

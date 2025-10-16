@@ -41,7 +41,7 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation, route }) => {
         },
       });
     }
-  }, [initialKeyword]);
+  }, [initialKeyword,navigation]);
 
   // 🔹 최근 검색어 불러오기
   useEffect(() => {
@@ -82,7 +82,7 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation, route }) => {
       }
 
       try {
-        const accessToken = await AsyncStorage.getItem('accessToken');
+        // const accessToken = await AsyncStorage.getItem('accessToken');
         // const res = await fetch(`${API_BASE_URL}/api/search/suggestions?query=${encodeURIComponent(searchText)}`, {
         //   method: "GET",
         //   headers: {
@@ -90,7 +90,7 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation, route }) => {
         //   },
         // });
 
-        const headers: Record<string, string> = {};
+        // const headers: Record<string, string> = {};
 
        const res = await instance.get('/api/search/suggestions', {
           params: { query: searchText },
