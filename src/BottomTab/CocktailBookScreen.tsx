@@ -14,7 +14,7 @@ import {
 import CocktailDetailModal from '../Components/CocktailDetailModal';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { widthPercentage, heightPercentage, fontPercentage, getResponsiveHeight } from '../assets/styles/FigmaScreen';
-import { useNavigation } from '@react-navigation/native';
+
 import instance from '../tokenRequest/axios_interceptor';
 const bannerImages = [
   require('../assets/drawable/banner1.png'),
@@ -106,7 +106,6 @@ type CategoryData = {
 
 const CocktailBookScreen: React.FC = () => {
    const insets = useSafeAreaInsets();
-  const navigation = useNavigation();
   const [_selectedCategoryIndex, setSelectedCategoryIndex] = useState<number | null>();
   const [categorizedCocktails, setCategorizedCocktails] = useState<CategoryData[]>([]);
   useEffect(() => {
