@@ -315,7 +315,9 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
       {/* X 버튼 (닫기) */}
       <TouchableOpacity
         style={styles.closeButton}
-        onPress={() => navigation.navigate('BottomTabNavigator')}
+        onPress={() => navigation.navigate('BottomTabNavigator', { screen: '지도' })
+
+        }
       >
         <Image
           source={require('../assets/drawable/close.png')}

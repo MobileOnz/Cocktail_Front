@@ -1,14 +1,15 @@
 import React, {useState} from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
+import {StackScreenProps } from '@react-navigation/stack';
 import { RootStackParamList } from '../Navigation/Navigation';
 import { widthPercentage, heightPercentage, fontPercentage, getResponsiveHeight } from '../assets/styles/FigmaScreen';
 
-type NavigationProps = StackNavigationProp<RootStackParamList, 'ResultScreen'>;
+type ResultScreenProps = StackScreenProps<RootStackParamList, 'ResultScreen'>;
 
-const ResultScreen: React.FC = ({route}) => {
-  const navigation = useNavigation<NavigationProps>();
+const ResultScreen: React.FC<ResultScreenProps> = ({ route }) => {
+
+  const navigation = useNavigation();
 
   const { cocktailImage, cocktailName, cocktailDescription, nickname } = route.params;
 
@@ -20,9 +21,9 @@ const ResultScreen: React.FC = ({route}) => {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.backButton} onPress={() =>   navigation.navigate('BottomTabNavigator', { screen: '맞춤 추천' })}>
+      {/* <TouchableOpacity style={styles.backButton} onPress={() =>   navigation.navigate('BottomTabNavigator', { screen: '맞춤 추천' })}>
         <Image source={require('../assets/drawable/left-chevron.png')} style={styles.icon}/>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
 
       <Text style={styles.resultText}>{nickname}님,{'\n'}당신을 위한 칵테일이 준비되었어요.</Text>
 
@@ -40,7 +41,7 @@ const ResultScreen: React.FC = ({route}) => {
 
       <TouchableOpacity
         style={styles.mainButton}
-        onPress={() => navigation.navigate("Maps")}
+        onPress={() => navigation.navigate("Maps" as never)}
         >
         <Text
           style={styles.mainButtonText}>해당 메뉴가 있는 가게 찾기
@@ -50,12 +51,12 @@ const ResultScreen: React.FC = ({route}) => {
       <View style={styles.buttonContainer}>
         <TouchableOpacity
           style={styles.smallButton}
-          onPress={() => navigation.navigate('RecommendationFlow')}
+          onPress={() => navigation.navigate('RecommendationFlow'as never)}
         >
           <Text style={styles.smallButtonText}>다시 찾기</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.smallButton} onPress={() => navigation.navigate('BottomTabNavigator')}
+        <TouchableOpacity style={styles.smallButton} onPress={() => navigation.navigate('BottomTabNavigator' as never)}
         >
           <Text style={styles.smallButtonText}>홈으로</Text>
         </TouchableOpacity>

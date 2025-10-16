@@ -1,5 +1,6 @@
 import React, { useState} from 'react';
-import { Image, TouchableOpacity, View, SafeAreaView } from 'react-native';
+import { Image, TouchableOpacity, View, } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import MapScreen from '../BottomTab/Maps';
 import CocktailBookScreen from '../BottomTab/CocktailBookScreen';
@@ -13,7 +14,8 @@ import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { isTokenExpired } from '../tokenRequest/Token';
-const Tab = createBottomTabNavigator();
+import { BottomTabParamList } from './Navigation';
+const Tab = createBottomTabNavigator<BottomTabParamList>();
 
 const BottomTabNavigator = () => {
   const navigation = useNavigation();
@@ -43,7 +45,6 @@ const BottomTabNavigator = () => {
 
       // 유효한 토큰
       setIsLoggedIn(true);
-      navigation.navigate('BottomTabNavigator', { screen: '맞춤 추천' });
 
     } catch (error) {
       console.error('🔒 토큰 확인 중 오류 발생:', error);
@@ -53,7 +54,7 @@ const BottomTabNavigator = () => {
 
 
   // 커스텀 탭 버튼
-  const CustomTabBarButton = (props) => {
+  const CustomTabBarButton = (props : any) => {
     return (
       <TouchableOpacity
         {...props}
@@ -115,7 +116,7 @@ const BottomTabNavigator = () => {
           name="지도"
           component={MapScreen}
           options={({ route }) => {
-            const hideTabBar = route?.params?.hideTabBar;
+           const hideTabBar = (route?.params as any)?.hideTabBar;
 
             return {
               headerShown: false,

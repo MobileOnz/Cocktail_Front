@@ -162,7 +162,7 @@ const CocktailBookScreen: React.FC = () => {
         {/* 상단 로고 & 아이콘 */}
         <View style={styles.header}>
           <Image source={require('../assets/drawable/onz_logo.png')} style={[styles.logo, {resizeMode:'contain'}]} />
-          <TouchableOpacity onPress={() =>navigation.navigate('BottomTabNavigator', { screen: '지도' })} />
+          {/* <TouchableOpacity onPress={} /> */}
         </View>
 
         {/* 배너 슬라이더 */}

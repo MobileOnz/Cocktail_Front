@@ -62,7 +62,7 @@ const SignupScreen: React.FC<SignupScreenProps> = ({navigation}) => {
           console.log(backendRefreshToken);
           await AsyncStorage.setItem('refreshToken', backendRefreshToken);
         }
-        navigation.navigate('BottomTabNavigator');
+        navigation.navigate('BottomTabNavigator'as never);
     }catch(error){
       if(axios.isAxiosError(error)){
         console.error('서버 에러 응답',error.response?.data);

@@ -14,6 +14,12 @@ import SignupScreen from '../Screens/SignupScreen';
 import ProfileScreen from '../Screens/ProfileScreen';
 import TermsAndConditionsScreen from '../Screens/TermsAndConditionsScreen';
 
+export type BottomTabParamList = {
+  지도: undefined;
+  '칵테일 백과': undefined;
+  '맞춤 추천': undefined;
+  마이페이지: undefined;
+};
 export type RootStackParamList = {
   Onboarding: undefined;
   Login: undefined;
@@ -26,9 +32,20 @@ export type RootStackParamList = {
     };
   };
   RecommendationFlow: undefined;
-  LoadingScreen: undefined;
-  ResultScreen: undefined;
+  LoadingScreen: {
+  alcholType: number;
+  tasteCategoryId: number;
+  tasteDetailId: number;
+  nickname: string;
+};
+  ResultScreen: {
+  cocktailImage: any;
+  nickname: string;
+  cocktailName: string;
+  cocktailDescription: string;
+};
   ProfileScreen: undefined;
+  RecommendationIntro: undefined;
   SignupScreen: {code? : string};
   TermsAndConditionsScreen : undefined
 };

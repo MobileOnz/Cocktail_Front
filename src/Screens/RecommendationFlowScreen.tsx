@@ -35,7 +35,7 @@ useEffect(() => {
     try {
       const response = await instance.get('/api/get/member', {
         authOptional: true,
-      });
+      }as any);
       const result = response.data;
       if (result.code === 1) {
         setNickname(result.data.nickname || '고객');
@@ -350,7 +350,7 @@ const handleOptionSelect = async (answer: string) => {
             style={styles.icon}
           />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate('BottomTabNavigator')}>
+        <TouchableOpacity onPress={() => navigation.navigate('BottomTabNavigator', {screen : '지도'})}>
             <Image source={require('../assets/drawable/home_recommend.png')}
             style={styles.home_icon} />
         </TouchableOpacity>

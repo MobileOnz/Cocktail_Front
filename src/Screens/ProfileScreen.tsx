@@ -41,7 +41,7 @@ const ProfileScreen: React.FC = () => {
       try {
        const res = await instance.get('/api/get/member', {
           authRequired: true,
-        });
+        }as any);
 
         const json = res.data;
         console.log('👤 get/member 응답:', json);
@@ -125,7 +125,7 @@ const ProfileScreen: React.FC = () => {
       },
       {
         authRequired : true,
-      }
+      }as any
     );
 
       const result = res.data;
@@ -181,7 +181,7 @@ const ProfileScreen: React.FC = () => {
               },
               timeout: 10000,
               authRequired: true,
-            });
+            }as any);
 
             const uploadJson = uploadRes.data;
             if (uploadJson?.code === 1) {
