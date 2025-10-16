@@ -21,10 +21,6 @@ const ResultScreen: React.FC<ResultScreenProps> = ({ route }) => {
 
   return (
     <View style={styles.container}>
-      {/* <TouchableOpacity style={styles.backButton} onPress={() =>   navigation.navigate('BottomTabNavigator', { screen: '맞춤 추천' })}>
-        <Image source={require('../assets/drawable/left-chevron.png')} style={styles.icon}/>
-      </TouchableOpacity> */}
-
       <Text style={styles.resultText}>{nickname}님,{'\n'}당신을 위한 칵테일이 준비되었어요.</Text>
 
       <Image
