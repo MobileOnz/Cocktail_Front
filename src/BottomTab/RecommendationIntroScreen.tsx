@@ -59,7 +59,7 @@ const RecommendationIntroScreen: React.FC<Props> = ({ navigation }) => {
       duration: 1000,
       useNativeDriver: true,
     }).start();
-  }, []);
+  }, [fadeAnim]);
 
   return (
     <View style={styles.container}>

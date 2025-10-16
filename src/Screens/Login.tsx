@@ -21,16 +21,16 @@ const server = API_BASE_URL;
 
 
 //구글로그인  설정
-const config = {
-  issuer: 'https://accounts.google.com',
-  clientId: process.env.GOOGLE_CLIENT_ID as string,
-  redirectUrl: process.env.GOOGLE_REDIRECT_URI as string,
-  scopes: ['openid', 'profile', 'email'],
-  serviceConfiguration: {
-    authorizationEndpoint: 'https://accounts.google.com/o/oauth2/auth',
-    tokenEndpoint: 'https://oauth2.googleapis.com/token',
-  },
-};
+// const config = {
+//   issuer: 'https://accounts.google.com',
+//   clientId: process.env.GOOGLE_CLIENT_ID as string,
+//   redirectUrl: process.env.GOOGLE_REDIRECT_URI as string,
+//   scopes: ['openid', 'profile', 'email'],
+//   serviceConfiguration: {
+//     authorizationEndpoint: 'https://accounts.google.com/o/oauth2/auth',
+//     tokenEndpoint: 'https://oauth2.googleapis.com/token',
+//   },
+// };
 
 const consumerKey = 'Oc17d0i2lHxKxHhTqL1C';
 const consumerSecret = 'PgG9qhIBZP';
@@ -65,9 +65,9 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
     NaverLogin.deleteToken;
   }, []);
 
-  const [success, setSuccessResponse] = useState<NaverLoginResponse['successResponse']>();
+  const [_success, setSuccessResponse] = useState<NaverLoginResponse['successResponse']>();
 
-  const [failure, setFailureResponse] = useState<NaverLoginResponse['failureResponse']>();
+  const [_failure, setFailureResponse] = useState<NaverLoginResponse['failureResponse']>();
 
 
   //네이버 로그인
@@ -185,34 +185,34 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
   };
 
 
-  const debugDelete = async () => {
-    try{
-      const accessToken = await AsyncStorage.getItem('accessToken');
-      console.log('현재 accessToken:', accessToken);
-      try{
-        const tagResponse = await axios.delete(`${API_BASE_URL}/api/delete/member`, {
-          headers: { Authorization: `${accessToken}` },
-        });
-        await AsyncStorage.multiRemove(['accessToken', 'refreshToken']);
+  // const debugDelete = async () => {
+  //   try{
+  //     const accessToken = await AsyncStorage.getItem('accessToken');
+  //     console.log('현재 accessToken:', accessToken);
+  //     try{
+  //       const tagResponse = await axios.delete(`${API_BASE_URL}/api/delete/member`, {
+  //         headers: { Authorization: `${accessToken}` },
+  //       });
+  //       await AsyncStorage.multiRemove(['accessToken', 'refreshToken']);
 
-      }catch(error) {
-        if (accessToken) {
-          if (axios.isAxiosError(error)) {
-            console.error({accessToken});
-            console.error('서버 응답:', error.response?.data);
-          } else {
-            console.error('저장 중 에러:', error);
-          }
+  //     }catch(error) {
+  //       if (accessToken) {
+  //         if (axios.isAxiosError(error)) {
+  //           console.error({accessToken});
+  //           console.error('서버 응답:', error.response?.data);
+  //         } else {
+  //           console.error('저장 중 에러:', error);
+  //         }
 
-        } else {
-          console.log('정상적으로 탈퇴 되었습니다.');
-        }
-      }
+  //       } else {
+  //         console.log('정상적으로 탈퇴 되었습니다.');
+  //       }
+  //     }
 
-    }catch(Exception){
-      console.log('AccessToken이 없습니다');
-    }
-  };
+  //   }catch(Exception){
+  //     console.log('AccessToken이 없습니다');
+  //   }
+  // };
 
 
 
@@ -261,7 +261,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
       await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
 
       // 2. 로그인 UI 띄우기
-      const userInfo = await GoogleSignin.signIn();
+      // const userInfo = await GoogleSignin.signIn();
 
       // 3. 로그인 성공했으면 토큰 가져오기
       const { accessToken } = await GoogleSignin.getTokens();

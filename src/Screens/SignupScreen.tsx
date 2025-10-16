@@ -16,13 +16,12 @@ import {
 import {RouteProp, useRoute} from '@react-navigation/native';
 import { RootStackParamList } from '../Navigation/Navigation';
 import axios from 'axios';
-import { API_BASE_URL } from '@env';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StackScreenProps } from '@react-navigation/stack';
 import instance from '../tokenRequest/axios_interceptor';
 
 
-const server = API_BASE_URL;
+// const server = API_BASE_URL;
 type SignupScreenRouteProp = RouteProp<RootStackParamList, 'SignupScreen'>;
 type SignupScreenProps = StackScreenProps<RootStackParamList,'SignupScreen'>;
 

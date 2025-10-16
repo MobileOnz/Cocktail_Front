@@ -26,7 +26,7 @@ interface Props {
 const RecommendationFlowScreen: React.FC<Props> = ({ navigation }) => {
   const [currentStep, setCurrentStep] = useState(-1);
   const [selectedAnswers, setSelectedAnswers] = useState<{ [key: number]: string }>({});
-  const [allAnswered, setAllAnswered] = useState(false);
+  const [_allAnswered, setAllAnswered] = useState(false);
 
   const [nickname, setNickname] = useState('');
 
@@ -189,7 +189,7 @@ const fetchTasteDetails = async (categoryId: number) => {
 
   useEffect(() => {
     setAllAnswered(Object.keys(selectedAnswers).length === questions.length);
-  }, [selectedAnswers]);
+  }, [selectedAnswers,setAllAnswered,questions.length]);
 
 //   const fadeInStatusRef = useRef<boolean[]>(questions.map(() => false));
 //   const fadeInCompletedRef = useRef<boolean[]>(questions.map(() => false));
@@ -240,7 +240,7 @@ const typingBubbleHeights = [
             });
         });
     }
-}, []);
+}, [currentStep, fadeInValues,typingBubbleOpacity]);
 
 
 
@@ -282,7 +282,7 @@ useEffect(() => {
         });
 
     }
-}, [currentStep, isTyping]);
+}, [currentStep, isTyping,fadeInValues, questions.length, typingBubbleOpacity]);
 
 
 
@@ -336,11 +336,6 @@ const handleOptionSelect = async (answer: string) => {
 
 
 
-  const handleGoBack = () => {
-    if (currentStep > 0) {
-      setCurrentStep(currentStep - 1);
-    }
-  };
 
   return (
     <View style={styles.container}>
