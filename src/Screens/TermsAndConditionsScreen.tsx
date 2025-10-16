@@ -2,7 +2,7 @@ import React from 'react';
 import { Text, ScrollView, StyleSheet, SafeAreaView } from 'react-native';
 
 const TermsAndConditionsScreen = () => {
-  
+
 
   return (
     <SafeAreaView style={{flex: 1}}>
@@ -80,11 +80,11 @@ const TermsAndConditionsScreen = () => {
           본 약관은 대한민국 법령에 따라 해석되며, 서비스 이용과 관련하여 분쟁이 발생할 경우 서울중앙지방법원을 1심 전속관할 법원으로 합니다.
         </Text>
 
-      
-     
+
+
       </ScrollView>
     </SafeAreaView>
-    
+
   );
 };
 
