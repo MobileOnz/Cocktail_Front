@@ -5,7 +5,14 @@ import { widthPercentage, heightPercentage, fontPercentage } from '../assets/sty
 import Popover from 'react-native-popover-view';
 import { Portal } from 'react-native-paper';
 
-const MoreOptionMenu = ({ itemId, onEdit, onDelete}) => {
+
+interface MoreOptionMenuProps {
+  itemId: number;                 
+  onEdit: (itemId: number) => void;
+  onDelete: (itemId: number) => void;
+}
+
+const MoreOptionMenu  : React.FC<MoreOptionMenuProps>= ({ itemId, onEdit, onDelete}) => {
   const [visible, setVisible] = useState(false);
   const [alertVisible, setAlertVisible] = useState(false);
 
@@ -25,8 +32,7 @@ const MoreOptionMenu = ({ itemId, onEdit, onDelete}) => {
             />
           </TouchableOpacity>
         }
-        placement="bottom"
-        arrowStyle={{ backgroundColor: '#FFFCF3' }}
+        placement={"bottom" as any}
         backgroundStyle={{ backgroundColor: 'transparent' }}
         popoverStyle={styles.popoverShadow} //그림자 효과 적용
       >

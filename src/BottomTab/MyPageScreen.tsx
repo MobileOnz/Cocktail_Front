@@ -32,7 +32,7 @@ const handleWithdraw = async () => {
   try {
     await instance.delete('/api/delete/member', {
       authRequired: true,
-    });
+    }as any);
     showToast('탈퇴가 완료되었습니다.');
 
     setIsLoggedIn(false);
@@ -50,7 +50,7 @@ const handleWithdraw = async () => {
     try {
       await instance.post('/api/auth/logout', null, {
         authRequired: true,
-      });
+      }as any);
       showToast('로그아웃 되었습니다.');
       setIsLoggedIn(false);
       setNickname('');
@@ -67,7 +67,7 @@ const handleWithdraw = async () => {
   useEffect(() => {
     const fetchProfileImage = async () => {
       try {
-        const res = await instance.get('/api/profile', { responseType: 'blob',authOptional: true });
+        const res = await instance.get('/api/profile', { responseType: 'blob',authOptional: true } as any);
 
         const contentType = res.headers['content-type'];
 
@@ -99,7 +99,7 @@ const handleWithdraw = async () => {
       try {
         const res = await instance.get('/api/get/member', {
         authOptional: true,
-        });
+        }as any);
         if (res.data.code === 1) {
           setIsLoggedIn(true);
           setNickname(res.data.data.nickname);

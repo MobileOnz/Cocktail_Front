@@ -264,7 +264,7 @@ return (
                             <Text style={styles.infoLabel}>재료</Text>
                             <Text style={styles.infoText}>
                               {currentData.ingredients
-                                .map((i) => `${i.ingredient} ${i.quantity}${i.unit}`)
+                                .map((i: { ingredient: any; quantity: any; unit: any; }) => `${i.ingredient} ${i.quantity}${i.unit}`)
                                 .join(', ')}
                             </Text>
                           </View>

@@ -16,6 +16,7 @@ type LoadingScreenNavigationProp = StackNavigationProp<
 
 interface Props {
   navigation: LoadingScreenNavigationProp;
+  route : any
 }
 
 const LoadingScreen: React.FC<Props> = ({ navigation, route }) => {
@@ -69,7 +70,7 @@ const LoadingScreen: React.FC<Props> = ({ navigation, route }) => {
         }
       } catch (e) {
         console.error('에러:', e);
-        navigation.navigate('ResultScreen', { notFound: true, nickname });
+        navigation.navigate('ResultScreen', { notFound: true , nickname }as any);
       }
     };
 

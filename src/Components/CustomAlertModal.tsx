@@ -6,7 +6,15 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 
-const CustomAlertModal = ({ visible, message, onCancel, onConfirm }) => {
+interface CustomAlertModalProps {
+  visible: boolean;
+  message: string;
+  onCancel: () => void;
+  onConfirm: () => void;
+}
+
+
+const CustomAlertModal : React.FC<CustomAlertModalProps> = ({ visible, message, onCancel, onConfirm }) => {
   if (!visible) {return null;} // 직접 제어
 
   return (

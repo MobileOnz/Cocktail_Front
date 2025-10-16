@@ -38,7 +38,7 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation, route }) => {
         params: {
           searchCompleted: true,
           searchQuery: initialKeyword,
-        },
+        }as any,
       });
     }
   }, [initialKeyword,navigation]);
@@ -56,7 +56,7 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation, route }) => {
 
        const res = await instance.get('/api/search/searchlog', {
               authRequired: true,
-            });
+            }as any);
         const result = res.data;
         console.log('📥 최근 검색어 요청 결과:', result);
         if (result.code === 1) {
@@ -95,7 +95,7 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation, route }) => {
        const res = await instance.get('/api/search/suggestions', {
           params: { query: searchText },
           authOptional: true,
-        });
+        } as any);
         const result = res.data;
         if (result.code === 1 && Array.isArray(result.data)) {
           setSuggestions(result.data);
@@ -142,7 +142,7 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation, route }) => {
                 params: {
                   searchCompleted: true,
                   searchQuery: searchText,
-                },
+                }as any,
               });
             }
           }}
@@ -176,7 +176,7 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation, route }) => {
                   params: {
                     searchCompleted: true,
                     searchQuery: keyword,
-                  },
+                  }as any,
                 })
               }
               >
@@ -206,7 +206,7 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation, route }) => {
                           params: {
                             searchCompleted: true,
                             searchQuery: item.keyword,
-                          },
+                          }as any,
                         });
                       }
                     }}
