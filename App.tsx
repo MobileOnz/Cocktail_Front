@@ -1,6 +1,6 @@
 // App.tsx
 import React, { useEffect, useState } from "react";
-import { StyleSheet, View, ActivityIndicator, useColorScheme, Platform } from "react-native";
+import { StyleSheet, View, ActivityIndicator, Platform } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import SplashScreen from "react-native-splash-screen";
 import Navigation from "./src/Navigation/Navigation";
@@ -30,7 +30,6 @@ function AppContent() {
 
 function App(): React.JSX.Element {
   
-  const isDarkMode = useColorScheme() === "dark";
   const [isFirstLaunch, setIsFirstLaunch] = useState<null | boolean>(null);
 
   // useEffect(() => {
