@@ -1,10 +1,11 @@
-name : CI(develop/main)
+name : CI(Onz_Android/Onz_IOS/main) # 배포 전 aab, apk 파일을 생성 해 디자이너에게 전달용
+# 추후 IOS 연동을 통해 즉각 피드백 요청 할 예정
 
 on : 
   push : 
-    branches : [develop, main]
+    branches : [Onz_Android,Onz_IOS ,main]
   pull_request : 
-    branches : [develop, main]
+    branches : [Onz_Android, Onz_IOS ,main]
 
 concurrency : 
   group : ${{ github.workflow}}- ${{github.ref}}
