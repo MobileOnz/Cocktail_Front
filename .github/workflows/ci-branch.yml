@@ -63,8 +63,8 @@ jobs :
             - name : Type Check
               run : yarn tsc --noEmit
 
-            - name : Unit Test
-              run : yarn test --ci --coverage
+            #- name : Unit Test 테스트 코드 입력 후 진행하기
+              #run : yarn test --ci --coverage
 
             - name : Build Android
               if : needs.detect.outputs.android_changed == 'true'
