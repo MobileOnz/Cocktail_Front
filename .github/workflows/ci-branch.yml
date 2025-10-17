@@ -8,7 +8,8 @@ on :
       - 'refactor/**' 
   pull_request : 
       branches : 
-        - 'develop'
+        - 'Onz_Android'
+        - 'Onz_IOS'
 
 concurrency: #동시에 처리 
     group : ${{ github.workflow }} - ${{ github.ref }}
