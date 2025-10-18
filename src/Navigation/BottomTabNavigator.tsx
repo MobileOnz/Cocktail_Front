@@ -2,7 +2,7 @@ import React, { useState} from 'react';
 import { Image, TouchableOpacity, View, } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import MapScreen from '../BottomTab/Maps';
+import MapScreen from '../BottomTab/Maps/Maps';
 import CocktailBookScreen from '../BottomTab/CocktailBookScreen';
 import RecommendationsScreen from '../BottomTab/RecommendationIntroScreen';
 import MyPageScreen from '../BottomTab/MyPageScreen';
