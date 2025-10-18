@@ -1,67 +1,68 @@
-import React, { useState} from "react";
-import { Image, TouchableOpacity, View, SafeAreaView } from "react-native";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import MapScreen from "../BottomTab/Maps";
-import CocktailBookScreen from "../BottomTab/CocktailBookScreen";
-import RecommendationsScreen from "../BottomTab/RecommendationIntroScreen";
-import MyPageScreen from "../BottomTab/MyPageScreen";
-import theme from "../assets/styles/theme";
-import { widthPercentage, heightPercentage, fontPercentage, getResponsiveHeight } from "../assets/styles/FigmaScreen";
-import LoginBottomSheet from "../BottomSheet/LoginBottomSheetProps"; // 로그인 바텀시트 추가
-import { useNavigation } from "@react-navigation/native";
+import React, { useState} from 'react';
+import { Image, TouchableOpacity, View, } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import MapScreen from '../BottomTab/Maps/Maps';
+import CocktailBookScreen from '../BottomTab/CocktailBookScreen';
+import RecommendationsScreen from '../BottomTab/RecommendationIntroScreen';
+import MyPageScreen from '../BottomTab/MyPageScreen';
+import theme from '../assets/styles/theme';
+import { widthPercentage, heightPercentage, fontPercentage, getResponsiveHeight } from '../assets/styles/FigmaScreen';
+import LoginBottomSheet from '../BottomSheet/LoginBottomSheetProps'; // 로그인 바텀시트 추가
+import { useNavigation } from '@react-navigation/native';
 
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { isTokenExpired } from "../tokenRequest/Token";
-const Tab = createBottomTabNavigator();
+import { isTokenExpired } from '../tokenRequest/Token';
+import { BottomTabParamList } from './Navigation';
+const Tab = createBottomTabNavigator<BottomTabParamList>();
 
 const BottomTabNavigator = () => {
   const navigation = useNavigation();
   const [isLoginSheetVisible, setLoginSheetVisible] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false); 
+  const [_isLoggedIn, setIsLoggedIn] = useState(false);
 
 
   // 맞춤 추천 탭을 눌렀을 때 실행
   const handleRecommendationPress = async () => {
     try {
       const token = await AsyncStorage.getItem('accessToken');
-  
+
       if (!token) {
         setIsLoggedIn(false);
         setLoginSheetVisible(true); // 로그인 바텀시트 표시
         return;
       }
-  
+
       const expired = await isTokenExpired();
-  
+
       if (expired) {
         setIsLoggedIn(false);
         setLoginSheetVisible(true); // 만료된 경우 로그인 바텀시트 표시
         return;
       }
-  
-      
+
+
       // 유효한 토큰
       setIsLoggedIn(true);
-      navigation.navigate("BottomTabNavigator", { screen: "맞춤 추천" });
-  
+
     } catch (error) {
-      console.error("🔒 토큰 확인 중 오류 발생:", error);
+      console.error('🔒 토큰 확인 중 오류 발생:', error);
       setLoginSheetVisible(true); // 오류 시에도 로그인 바텀시트 표시
     }
   };
-  
+
 
   // 커스텀 탭 버튼
-  const CustomTabBarButton = (props) => {
+  const CustomTabBarButton = (props : any) => {
     return (
-      <TouchableOpacity 
-        {...props} 
+      <TouchableOpacity
+        {...props}
         onPress={() => {
-          console.log("🖲 CustomTabBarButton 클릭됨!");
+          console.log('🖲 CustomTabBarButton 클릭됨!');
           handleRecommendationPress();
-        }} 
-        activeOpacity={1} 
+        }}
+        activeOpacity={1}
       />
     );
   };
@@ -73,7 +74,7 @@ const BottomTabNavigator = () => {
       <Tab.Navigator
         initialRouteName="지도"
         screenOptions={({ route }) => ({
-          tabBarIcon: ({ color, size }) => {
+          tabBarIcon: ({ color}) => {
             let iconSource;
             let iconStyle = {
               width: widthPercentage(18),
@@ -82,14 +83,14 @@ const BottomTabNavigator = () => {
               marginTop: heightPercentage(4),
             };
 
-            if (route.name === "지도") {
-              iconSource = require("../assets/drawable/maps.png");
-            } else if (route.name === "칵테일 백과") {
-              iconSource = require("../assets/drawable/dictionary.png");
-            } else if (route.name === "맞춤 추천") {
-              iconSource = require("../assets/drawable/recommend.png");
-            } else if (route.name === "마이페이지") {
-              iconSource = require("../assets/drawable/mypage.png");
+            if (route.name === '지도') {
+              iconSource = require('../assets/drawable/maps.png');
+            } else if (route.name === '칵테일 백과') {
+              iconSource = require('../assets/drawable/dictionary.png');
+            } else if (route.name === '맞춤 추천') {
+              iconSource = require('../assets/drawable/recommend.png');
+            } else if (route.name === '마이페이지') {
+              iconSource = require('../assets/drawable/mypage.png');
             }
 
             return <Image source={iconSource} style={iconStyle} resizeMode="contain" />;
@@ -103,11 +104,11 @@ const BottomTabNavigator = () => {
             paddingBottom: 5,
           },
           tabBarItemStyle: {
-            justifyContent: "center",
-            alignItems: "center",
+            justifyContent: 'center',
+            alignItems: 'center',
             marginBottom: 5,
           },
-          tabBarActiveTintColor: "black",
+          tabBarActiveTintColor: 'black',
           tabBarInactiveTintColor: theme.bottomTextColor,
         })}
       >
@@ -115,12 +116,12 @@ const BottomTabNavigator = () => {
           name="지도"
           component={MapScreen}
           options={({ route }) => {
-            const hideTabBar = route?.params?.hideTabBar;
+           const hideTabBar = (route?.params as any)?.hideTabBar;
 
             return {
               headerShown: false,
               tabBarStyle: hideTabBar
-                ? { display: "none" }
+                ? { display: 'none' }
                 : {
                     height: getResponsiveHeight(60,60,60,90,80,80),
                     backgroundColor: theme.background,
@@ -139,7 +140,7 @@ const BottomTabNavigator = () => {
             headerShown: false,
             tabBarIcon: ({ color }) => (
               <Image
-                source={require("../assets/drawable/recommend.png")}
+                source={require('../assets/drawable/recommend.png')}
                 style={{
                   width: widthPercentage(18),
                   height: heightPercentage(18),
@@ -152,7 +153,7 @@ const BottomTabNavigator = () => {
             tabBarButton: CustomTabBarButton,
           }}
         />
-      
+
 
         <Tab.Screen name="마이페이지" component={MyPageScreen} options={{ headerShown: false }} />
       </Tab.Navigator>
@@ -163,16 +164,16 @@ const BottomTabNavigator = () => {
       onLogin={() => {
         setIsLoggedIn(true);
         setLoginSheetVisible(false);
-        navigation.navigate("맞춤 추천" as never);
+        navigation.navigate('맞춤 추천' as never);
       }}
       navigation={navigation}
     />
 
-  <SafeAreaView 
+  <SafeAreaView
     edges={['bottom']}
     style={{backgroundColor: theme.background}}
   />
-    
+
     </View>
   );
 };
