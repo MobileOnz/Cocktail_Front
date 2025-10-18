@@ -2,9 +2,8 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import OnboardingScreen from '../Screens/OnboardingScreen';
 import LoginScreen from '../Screens/Login';
-import Maps from '../BottomTab/Maps';
+import Maps from '../BottomTab/Maps/Maps';
 import SearchScreen from '../Screens/SearchScreen';
 import BottomTabNavigator from './BottomTabNavigator';
 import RecommendationFlowScreen from '../Screens/RecommendationFlowScreen';
@@ -56,11 +55,10 @@ const Navigation: React.FC = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="Onboarding"
+        initialRouteName="BottomTabNavigator"
         screenOptions={{ headerShown: false }}
       >
         <Stack.Screen name="TermsAndConditionsScreen" component={TermsAndConditionsScreen}/>
-        <Stack.Screen name="Onboarding" component={OnboardingScreen} />
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="SearchScreen" component={SearchScreen} />
         <Stack.Screen name="Maps" component={Maps} />
