@@ -3,7 +3,7 @@ import { View, StyleSheet, Image, ScrollView } from 'react-native';
 import { Appbar, Button, overlay, Text } from 'react-native-paper';
 import theme from '../../assets/styles/theme';
 import { heightPercentage, widthPercentage } from '../../assets/styles/FigmaScreen';
-import CurvedImage from '../../configs/CurvedImage';
+import PuzzlePiece from '../../configs/CurvedImage';
 
 const Maps = () => {
   return (
@@ -63,23 +63,15 @@ const Maps = () => {
 
         {/* Best 입문자용 칵테일 */}
         <View style={{ alignItems: 'flex-start' }}>
-          <Text variant='bodyLarge' style={{ fontWeight: '700' }}>Best 입문자용 칵테일</Text>
+          <Text variant="bodyLarge" style={{ fontWeight: '700' }}>Best 입문자용 칵테일</Text>
           <ScrollView
             horizontal>
             <View style={styles.card}>
-              <CurvedImage
-                source={require('../../assets/textImage/main_test.png')}
-                width={widthPercentage(160)}
-                height={heightPercentage(120)}
-                radius={20}         // 카드 전체 모서리 둥글기
-                biteR={16}          // 파먹는 정도
-                biteCx={28}         // 파먹는 위치 X (좌상단 기준)
-                biteCy={28}         // 파먹는 위치 Y
+              <PuzzlePiece
+                source={{ uri: 'https://picsum.photos/400/400' }}
+                size={210}
+                toothR={100}
               />
-              <View style={styles.overlay}>
-                <Text style={{ backgroundColor: theme.background }}>1</Text>
-                <Text>피나 콜라다</Text>
-              </View>
 
             </View>
           </ScrollView>
@@ -139,10 +131,11 @@ const styles = StyleSheet.create({
     color: '#222',
   },
   card: {
-    width: widthPercentage(140),
+    width: widthPercentage(160),
     borderRadius: 20,
     overflow: 'hidden',
     marginRight: widthPercentage(10),
+    marginBottom: 100,
   },
   bestImage: {
     width: 'auto',
@@ -157,7 +150,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
 
-  }
+  },
 });
 
 export default Maps;
