@@ -1,0 +1,81 @@
+name : CI (feat/fix/refactor)
+
+on : 
+  push : 
+    branches : 
+      - 'feat/**'
+      - 'fix/**'
+      - 'refactor/**' 
+  pull_request : 
+      branches : 
+        - 'develop'
+
+concurrency: #동시에 처리 
+    group : ${{ github.workflow }} - ${{ github.ref }}
+    cancel-in-progress : true
+
+permissions:
+    contents : read
+
+jobs : 
+    detect:
+      runs-on : ubuntu-latest 
+      outputs : 
+        android_changed : ${{ steps.paths.outputs.android }}
+        ios_changed : ${{ steps.paths.outputs.ios }}
+      steps : 
+        - uses : actions/checkout@v4
+        - id : paths
+          uses : dorny/paths-filter@v3
+          with : 
+            filters : |
+              android : 
+                - 'android/**'
+              ios : 
+                - 'ios/**'
+                - 'ios/Podfile'
+                - 'ios/Podfile.lock'
+
+    ci : 
+          needs : detect
+          runs-on : ubuntu-latest
+          steps : 
+            - uses : actions/checkout@v4
+
+            - uses : actions/setup-node@v4
+              with : 
+                node-version : 20
+            - name : Cache Yarn 
+              uses : actions/caches@v4
+              with : 
+                path: ~/.yarn/cache
+                key: yarn-${{ hashFiles('yarn.lock') }}
+                restore-keys: |
+                      yarn-
+                      
+            - name : Install deps 
+              run : yarn install --frozen-lockfile
+
+            - name : Lint
+              run : yarn lint
+
+            - name : Type Check
+              run : yarn tsc --noEmit
+
+            - name : Unit Test
+              run : yarn test --ci --coverage
+
+            - name : Build Android
+              if : needs.detect.outputs.android_changed == 'true'
+              run : | 
+                cd android
+                ./gradlew assembleDebug
+
+            - name : Upload APK
+              if : needs.detect.outputs.android_changed == 'true'
+              uses : actions/upload-artifact@v4
+              with : 
+                name : app-debug
+                path : android/app/build/outputs/apk/debug/app-debug.apk
+              
+  
