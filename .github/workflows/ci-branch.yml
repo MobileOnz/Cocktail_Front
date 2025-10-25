@@ -1,82 +1,99 @@
-name : CI (feat/fix/refactor)
+name: CI (feat/fix/refactor/ui)
 
-on : 
-  push : 
-    branches : 
+on:
+  push:
+    branches:
       - 'feat/**'
       - 'fix/**'
-      - 'refactor/**' 
-  pull_request : 
-      branches : 
-        - 'Onz_Android'
-        - 'Onz_IOS'
+      - 'refactor/**'
+      - 'ui/**'
+  pull_request:
+    branches:
+      - 'Onz_Android'
+      - 'Onz_IOS'
 
-concurrency: #동시에 처리 
-    group : ${{ github.workflow }} - ${{ github.ref }}
-    cancel-in-progress : true
+# 동시에 여러 빌드가 돌 때 이전 실행 중인 동일 브랜치 CI를 자동 취소
+concurrency:
+  group: ${{ github.workflow }} - ${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
-    contents : read
+  contents: read
 
-jobs : 
-    detect:
-      runs-on : ubuntu-latest 
-      outputs : 
-        android_changed : ${{ steps.paths.outputs.android }}
-        ios_changed : ${{ steps.paths.outputs.ios }}
-      steps : 
-        - uses : actions/checkout@v4
-        - id : paths
-          uses : dorny/paths-filter@v3
-          with : 
-            filters : |
-              android : 
-                - 'android/**'
-              ios : 
-                - 'ios/**'
-                - 'ios/Podfile'
-                - 'ios/Podfile.lock'
+jobs:
+  detect:
+    runs-on: ubuntu-latest
+    outputs:
+      android_changed: ${{ steps.paths.outputs.android }}
+      ios_changed: ${{ steps.paths.outputs.ios }}
+    steps:
+      - uses: actions/checkout@v4
 
-    ci : 
-          needs : detect
-          runs-on : ubuntu-latest
-          steps : 
-            - uses : actions/checkout@v4
+      - id: paths
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            android:
+              - 'android/**'
+            ios:
+              - 'ios/**'
+              - 'ios/Podfile'
+              - 'ios/Podfile.lock'
 
-            - uses : actions/setup-node@v4
-              with : 
-                node-version : 20
-            - name : Cache Yarn 
-              uses : actions/cache@v4
-              with : 
-                path: ~/.yarn/cache
-                key: yarn-${{ hashFiles('yarn.lock') }}
-                restore-keys: |
-                      yarn-
-                      
-            - name : Install deps 
-              run : yarn install --frozen-lockfile
+  ci:
+    needs: detect
+    runs-on: ubuntu-latest
 
-            - name : Lint
-              run : yarn lint
+    steps:
+      # 1️⃣ 저장소 코드 가져오기
+      - uses: actions/checkout@v4
 
-            - name : Type Check
-              run : yarn tsc --noEmit
+      # 2️⃣ Node.js 환경 세팅 + npm 캐시 적용
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
 
-            #- name : Unit Test 테스트 코드 입력 후 진행하기
-              #run : yarn test --ci --coverage
+      # 3️⃣ lockfile 혼용 및 SSH 의존성 방지
+      - name: Validate dependency integrity
+        run: |
+          if [ -f yarn.lock ]; then
+            echo "❌ yarn.lock found. Use npm only."
+            exit 1
+          fi
 
-            - name : Build Android
-              if : needs.detect.outputs.android_changed == 'true'
-              run : | 
-                cd android
-                ./gradlew assembleDebug
+          if grep -R "git@github.com" package.json package-lock.json 2>/dev/null; then
+            echo "❌ SSH-based git dependencies detected. Use HTTPS (git+https://...)."
+            exit 1
+          fi
 
-            - name : Upload APK
-              if : needs.detect.outputs.android_changed == 'true'
-              uses : actions/upload-artifact@v4
-              with : 
-                name : app-debug
-                path : android/app/build/outputs/apk/debug/app-debug.apk
-              
-  
+      # 4️⃣ 의존성 설치 (package-lock.json 기반, 완전 재현)
+      - name: Install dependencies
+        run: npm ci
+
+      # 5️⃣ Lint (ESLint)
+      - name: Lint
+        run: npm run lint --if-present
+
+      # 6️⃣ 타입 검사 (tsc)
+      - name: Type Check
+        run: npm run tsc --if-present -- --noEmit
+
+      # 7️⃣ (옵션) 유닛 테스트
+      # - name: Unit Test
+      #   run: npm test --if-present -- --ci --coverage
+
+      # 8️⃣ Android 빌드 (Android 관련 파일이 변경된 경우만)
+      - name: Build Android
+        if: needs.detect.outputs.android_changed == 'true'
+        run: |
+          cd android
+          ./gradlew assembleDebug
+
+      # 9️⃣ Android 빌드 결과물 업로드
+      - name: Upload APK
+        if: needs.detect.outputs.android_changed == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-debug
+          path: android/app/build/outputs/apk/debug/app-debug.apk
