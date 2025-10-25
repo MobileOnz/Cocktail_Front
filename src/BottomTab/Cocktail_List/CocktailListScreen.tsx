@@ -4,7 +4,7 @@ import { Appbar, Button, Divider, Icon, IconButton, overlay, Text } from 'react-
 import theme from '../../assets/styles/theme';
 import { fontPercentage, heightPercentage, widthPercentage } from '../../assets/styles/FigmaScreen';
 import PuzzlePiece from '../../configs/CurvedImage';
-import truncate from 'lodash.truncate';
+import { truncate } from 'lodash';
 import { useBestCocktail, useCocktailLIst, useNewCocktail } from './CocktailListViewModel';
 import PillStyleStatus from '../../Components/PillStyleStatus';
 import PagerView from 'react-native-pager-view';
