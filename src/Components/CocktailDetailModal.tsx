@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -9,12 +9,10 @@ import {
   Animated,
   FlatList,
   TouchableWithoutFeedback,
-} from "react-native";
-import { widthPercentage, heightPercentage, fontPercentage } from "../assets/styles/FigmaScreen";
-import {API_BASE_URL} from '@env';
-import instance from "../tokenRequest/axios_interceptor";
+} from 'react-native';
+import { widthPercentage, heightPercentage, fontPercentage } from '../assets/styles/FigmaScreen';
+import instance from '../tokenRequest/axios_interceptor';
 
-const server = API_BASE_URL;
 
 interface CocktailDetailModalProps {
   visible: boolean;
@@ -54,10 +52,10 @@ interface CocktailDetailModalProps {
   const SIDE_SPACING = (widthPercentage(375) - ITEM_WIDTH) / 2;
 
 
-  
-  // 데이터 
+
+  // 데이터
 const fetchCocktailById = async (id: number) => {
-  const res = await instance.get("/api/public/cocktail", {
+  const res = await instance.get('/api/public/cocktail', {
     params: { cocktailId: id },
   });
 
@@ -69,15 +67,14 @@ const CocktailDetailModal: React.FC<CocktailDetailModalProps> = ({
   onClose,
   cocktailIndex,
   cocktails,
-  selectedCocktailId,
 }) => {
   const flatListRef = useRef<FlatList>(null);
   const scrollX = useRef(new Animated.Value(0)).current;
-  const [currentIndex, setCurrentIndex] = useState(cocktailIndex);
-  const [fetchedData, setFetchedData] = useState<any | null>(null);
+  const [_currentIndex, setCurrentIndex] = useState(cocktailIndex);
+  const [_fetchedData, setFetchedData] = useState<any | null>(null);
 
   const [localCocktailData, setLocalCocktailData] = useState<any[]>([]);
-  
+
 
   // useEffect(() => {
   //   if (visible && selectedCocktailId) {
@@ -92,35 +89,44 @@ const CocktailDetailModal: React.FC<CocktailDetailModalProps> = ({
   //   }
   // }, [visible, selectedCocktailId]);
 
-  useEffect(() => {
-    if (visible) {
-      const fetchAll = async () => {
-        const allData = await Promise.all(
-          cocktails.map((c) => fetchCocktailById(c.cocktail.id))
-        );
-        setLocalCocktailData(allData); // 한 번에 다 저장
-      };
-      fetchAll();
-    }
-  }, [visible]);
+useEffect(() => {
+  if (!visible) {return;}
 
-  
-  useEffect(() => {
-    if (visible) {
-      setTimeout(() => {
-        flatListRef.current?.scrollToOffset({
-          offset: cocktailIndex * (ITEM_WIDTH + ITEM_SPACING),
-          animated: false,
-        });
-        setCurrentIndex(cocktailIndex);
-      }, 100);
-    }
-  }, [visible, cocktailIndex]);
+  let cancelled = false;
+
+  const fetchAll = async () => {
+    const allData = await Promise.all(
+      cocktails.map(c => fetchCocktailById(c.cocktail.id))
+    );
+    if (!cancelled) {setLocalCocktailData(allData);}
+  };
+
+  fetchAll();
+
+  return () => { cancelled = true; };
+}, [visible, cocktails]);
+
+
+
+ useEffect(() => {
+  if (!visible) {return;}
+
+  const id = setTimeout(() => {
+    flatListRef.current?.scrollToOffset({
+      offset: cocktailIndex * (ITEM_WIDTH + ITEM_SPACING),
+      animated: false,
+    });
+    setCurrentIndex(cocktailIndex);
+  }, 100);
+
+  return () => clearTimeout(id);
+}, [visible, cocktailIndex]);
+
 
   let isScrolling = false;
 
   const handleScrollEnd = async (event: any) => {
-    if (isScrolling) return;
+    if (isScrolling) {return;}
     isScrolling = true;
 
     const contentOffsetX = event.nativeEvent.contentOffset.x;
@@ -139,7 +145,7 @@ const CocktailDetailModal: React.FC<CocktailDetailModalProps> = ({
       const data = await fetchCocktailById(selected);
       setFetchedData(data); // -> 해당 칵테일 정보 갱신
     } catch (err) {
-      console.error("스와이프 중 데이터 불러오기 실패:", err);
+      console.error('스와이프 중 데이터 불러오기 실패:', err);
     }
   }
     setTimeout(() => {
@@ -148,7 +154,7 @@ const CocktailDetailModal: React.FC<CocktailDetailModalProps> = ({
   };
 
 
-  
+
 return (
   <Modal visible={visible} animationType="fade" transparent>
     <TouchableWithoutFeedback onPress={onClose}>
@@ -168,12 +174,12 @@ return (
             [{ nativeEvent: { contentOffset: { x: scrollX } } }],
             { useNativeDriver: false }
           )}
-          contentContainerStyle={{ 
-            paddingHorizontal: SIDE_SPACING - widthPercentage(10), 
-            alignItems: "center" 
+          contentContainerStyle={{
+            paddingHorizontal: SIDE_SPACING - widthPercentage(10),
+            alignItems: 'center',
           }}
           style={{ height: heightPercentage(550) }}
-          renderItem={({ item, index }) => {
+          renderItem={({ index }) => {
             const inputRange = [
               (index - 1) * ITEM_WIDTH,
               index * ITEM_WIDTH,
@@ -183,13 +189,13 @@ return (
             const scale = scrollX.interpolate({
               inputRange,
               outputRange: [0.85, 1, 0.85],
-              extrapolate: "clamp",
+              extrapolate: 'clamp',
             });
 
             const translateY = scrollX.interpolate({
               inputRange,
               outputRange: [10, 0, 10],
-              extrapolate: "clamp",
+              extrapolate: 'clamp',
             });
             const currentData = localCocktailData[index];
 
@@ -202,18 +208,18 @@ return (
                   ]}
                 >
                   <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-                    <Image source={require("../assets/drawable/cancel.png")} style={styles.closeButton} />
+                    <Image source={require('../assets/drawable/cancel.png')} style={styles.closeButton} />
                   </TouchableOpacity>
 
-                  
-                  
+
+
                   {currentData && (
                       <>
                         <Image
                           source={
                             currentData.cocktail.image_url
                               ? { uri: currentData.cocktail.image_url }
-                              : require("../assets/drawable/cocktail.jpg")
+                              : require('../assets/drawable/cocktail.jpg')
                           }
                           style={styles.cocktailImage}
                         />
@@ -237,14 +243,14 @@ return (
                           <View style={styles.infoRow}>
                             <Text style={styles.infoLabel}>기본 맛</Text>
                             <Text style={styles.infoText}>
-                              {currentData.tastes?.[0]?.tasteDetail},{" "}
+                              {currentData.tastes?.[0]?.tasteDetail},{' '}
                               {currentData.tastes?.[0]?.category}
                             </Text>
                           </View>
                           <View style={styles.infoRow}>
                             <Text style={styles.infoLabel}>도수</Text>
                             <Text style={styles.infoText}>
-                              {currentData.cocktail.min_alchol} ~{" "}
+                              {currentData.cocktail.min_alchol} ~{' '}
                               {currentData.cocktail.max_alchol}
                             </Text>
                           </View>
@@ -258,8 +264,8 @@ return (
                             <Text style={styles.infoLabel}>재료</Text>
                             <Text style={styles.infoText}>
                               {currentData.ingredients
-                                .map((i) => `${i.ingredient} ${i.quantity}${i.unit}`)
-                                .join(", ")}
+                                .map((i: { ingredient: any; quantity: any; unit: any; }) => `${i.ingredient} ${i.quantity}${i.unit}`)
+                                .join(', ')}
                             </Text>
                           </View>
                         </View>
@@ -275,25 +281,25 @@ return (
     </TouchableWithoutFeedback>
   </Modal>
 );
-}
+};
 
 
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.7)",
-    justifyContent: "center",
-    alignItems: "center",
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   animatedContainer: {
     width: widthPercentage(311),
-    backgroundColor: "#FFFCF3",
+    backgroundColor: '#FFFCF3',
     borderRadius: widthPercentage(15),
-    overflow: "hidden",
+    overflow: 'hidden',
     marginHorizontal: ITEM_SPACING / 2,
   },
   closeButton: {
-    position: "absolute",
+    position: 'absolute',
     top: heightPercentage(10),
     right: widthPercentage(10),
     width: widthPercentage(18),
@@ -301,53 +307,53 @@ const styles = StyleSheet.create({
     zIndex: 10,
   },
   cocktailImage: {
-    width: "100%",
+    width: '100%',
     height: heightPercentage(260),
-    resizeMode: "cover",
+    resizeMode: 'cover',
   },
   content: {
     padding: widthPercentage(20),
   },
   cocktailName: {
     fontSize: fontPercentage(18),
-    fontWeight: "bold",
-    color: "#2d2d2d",
+    fontWeight: 'bold',
+    color: '#2d2d2d',
     marginBottom: heightPercentage(4),
   },
   cocktailDescription: {
     fontSize: fontPercentage(14),
-    color: "#7d7a6f",
+    color: '#7d7a6f',
     marginBottom: heightPercentage(16),
   },
   infoContainer: {
     borderTopWidth: 1,
-    borderTopColor: "#E0E0E0",
+    borderTopColor: '#E0E0E0',
     paddingTop: heightPercentage(12),
   },
   infoTitle: {
     fontSize: fontPercentage(14),
-    fontWeight: "bold",
-    color: "#2d2d2d",
+    fontWeight: 'bold',
+    color: '#2d2d2d',
     marginBottom: heightPercentage(6),
   },
   infoRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
     marginBottom: heightPercentage(8),
   },
   infoLabel: {
     fontSize: fontPercentage(14),
-    fontWeight: "bold",
-    color: "#2D2D2D",
+    fontWeight: 'bold',
+    color: '#2D2D2D',
     width: widthPercentage(80),
   },
   infoText: {
     fontSize: fontPercentage(14),
-    color: "#7d7a6f",
+    color: '#7d7a6f',
     flex: 1,
-    textAlign: "left",
-    flexWrap: "wrap",
+    textAlign: 'left',
+    flexWrap: 'wrap',
   },
 });
 

@@ -15,7 +15,7 @@ export async function getToken(): Promise<string | null> {
  */
 export async function isTokenExpired(): Promise<boolean> {
   const token = await getToken();
-  if (!token) return true;
+  if (!token) {return true;}
 
   try {
     const decoded: any = jwtDecode(token);
@@ -26,7 +26,7 @@ export async function isTokenExpired(): Promise<boolean> {
   }
 }
 
-let isRefreshing = false; //중복확인 
+let isRefreshing = false; //중복확인
 let refreshPromise: Promise<string | null> | null = null;
 
 export async function tokenRefresh(): Promise<string | null> {
@@ -38,10 +38,10 @@ export async function tokenRefresh(): Promise<string | null> {
   refreshPromise = (async () => {
     try {
       const refreshToken = await AsyncStorage.getItem('refreshToken');
-      console.log("보내는 refresh token:", refreshToken);
+      console.log('보내는 refresh token:', refreshToken);
 
       if (!refreshToken) {
-        console.log("리프레시 토큰이 없습니다.");
+        console.log('리프레시 토큰이 없습니다.');
         return null;
       }
 
@@ -54,18 +54,18 @@ export async function tokenRefresh(): Promise<string | null> {
       const newAccessToken = response.data.data.access_token;
       const newRefreshToken = response.data.data.refresh_token;
 
-      console.log("response.data.data :", response.data.data);
-      console.log("newAccessToken :", newAccessToken);
-      console.log("newRefreshToken :", newRefreshToken);
+      console.log('response.data.data :', response.data.data);
+      console.log('newAccessToken :', newAccessToken);
+      console.log('newRefreshToken :', newRefreshToken);
 
       if (!newAccessToken || !newRefreshToken) {
-        console.error("access 또는 refresh 토큰이 응답에 없습니다.");
+        console.error('access 또는 refresh 토큰이 응답에 없습니다.');
         return null;
       }
 
       await AsyncStorage.setItem('accessToken', newAccessToken);
       await AsyncStorage.setItem('refreshToken', newRefreshToken);
-    
+
       return newAccessToken;
     } catch (error: any) {
       try {
@@ -74,18 +74,18 @@ export async function tokenRefresh(): Promise<string | null> {
         if (token && refresh) {
           await AsyncStorage.setItem('accessToken', token);
           await AsyncStorage.setItem('refreshToken', refresh);
-          console.log("🛠 catch 내에서 토큰 복구됨");
+          console.log('🛠 catch 내에서 토큰 복구됨');
           return token;
         }
       } catch (e) {
-        console.log("❌ catch 내 복구 로직 실패", e);
+        console.log('❌ catch 내 복구 로직 실패', e);
       }
 
       const status = error.response?.status;
       if (status === 401 || status === 403) {
-        console.warn("⚠️ 리프레시 토큰 만료됨 (로그아웃 필요)");
+        console.warn('⚠️ 리프레시 토큰 만료됨 (로그아웃 필요)');
       } else {
-        console.error("❌ 토큰 갱신 중 예외:", error);
+        console.error('❌ 토큰 갱신 중 예외:', error);
       }
       return null;
     } finally {

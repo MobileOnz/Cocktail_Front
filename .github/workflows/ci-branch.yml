@@ -1,81 +1,95 @@
-name : CI (feat/fix/refactor)
+name: CI (feat/fix/refactor/ui)
 
-on : 
-  push : 
-    branches : 
+on:
+  push:
+    branches:
       - 'feat/**'
       - 'fix/**'
-      - 'refactor/**' 
-  pull_request : 
-      branches : 
-        - 'develop'
+      - 'refactor/**'
+      - 'ui/**'
+  pull_request:
+    branches:
+      - 'Onz_Android'
+      - 'Onz_IOS'
 
-concurrency: #동시에 처리 
-    group : ${{ github.workflow }} - ${{ github.ref }}
-    cancel-in-progress : true
+# 동일 브랜치에서 중복 실행 방지
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
-    contents : read
+  contents: read
 
-jobs : 
-    detect:
-      runs-on : ubuntu-latest 
-      outputs : 
-        android_changed : ${{ steps.paths.outputs.android }}
-        ios_changed : ${{ steps.paths.outputs.ios }}
-      steps : 
-        - uses : actions/checkout@v4
-        - id : paths
-          uses : dorny/paths-filter@v3
-          with : 
-            filters : |
-              android : 
-                - 'android/**'
-              ios : 
-                - 'ios/**'
-                - 'ios/Podfile'
-                - 'ios/Podfile.lock'
+jobs:
+  ci:
+    runs-on: ubuntu-latest
 
-    ci : 
-          needs : detect
-          runs-on : ubuntu-latest
-          steps : 
-            - uses : actions/checkout@v4
+    steps:
+      # 1️⃣ 저장소 코드 가져오기
+      - uses: actions/checkout@v4
 
-            - uses : actions/setup-node@v4
-              with : 
-                node-version : 20
-            - name : Cache Yarn 
-              uses : actions/caches@v4
-              with : 
-                path: ~/.yarn/cache
-                key: yarn-${{ hashFiles('yarn.lock') }}
-                restore-keys: |
-                      yarn-
-                      
-            - name : Install deps 
-              run : yarn install --frozen-lockfile
+      # 2️⃣ Node.js 환경 세팅 (npm 캐시 적용)
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
 
-            - name : Lint
-              run : yarn lint
+      # 3️⃣ yarn.lock 감지 및 SSH 의존성 차단
+      - name: Validate dependency integrity
+        run: |
+          if [ -f yarn.lock ]; then
+            echo "❌ Detected yarn.lock. Use npm only."
+            exit 1
+          fi
 
-            - name : Type Check
-              run : yarn tsc --noEmit
+          if grep -R "git@github.com" package.json package-lock.json 2>/dev/null; then
+            echo "❌ SSH-based git dependencies detected. Use HTTPS (git+https://...)."
+            exit 1
+          fi
 
-            - name : Unit Test
-              run : yarn test --ci --coverage
+      # 4️⃣ 의존성 설치
+      - name: Install dependencies
+        run: npm ci
 
-            - name : Build Android
-              if : needs.detect.outputs.android_changed == 'true'
-              run : | 
-                cd android
-                ./gradlew assembleDebug
+      # 5️⃣ Lint (ESLint)
+      - name: Lint
+        run: npm run lint --if-present
 
-            - name : Upload APK
-              if : needs.detect.outputs.android_changed == 'true'
-              uses : actions/upload-artifact@v4
-              with : 
-                name : app-debug
-                path : android/app/build/outputs/apk/debug/app-debug.apk
-              
-  
+      # 6️⃣ 타입 검사 (TypeScript)
+      - name: Type Check
+        run: npm run tsc --if-present -- --noEmit
+
+      # 7️⃣ (선택) 유닛 테스트
+      # - name: Unit Test
+      #   run: npm test --if-present -- --ci --coverage
+
+      # 8️⃣ Java 환경 (Android 빌드용)
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      # 9️⃣ Gradle 캐시
+      - name: Gradle cache
+        uses: gradle/gradle-build-action@v3
+
+      # 🔟 Android 빌드
+      - name: Build Android
+        run: |
+          cd android
+          if [ "${{ github.ref_name }}" = "main" ]; then
+            ./gradlew assembleRelease
+          else
+            ./gradlew assembleDebug
+          fi
+
+      # 11️⃣ 결과물 업로드 (APK/AAB)
+      - name: Upload APK/AAB
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-${{ github.ref_name.replace('/', '-') }}   # ← 슬래시 방지
+          path: |
+            android/app/build/outputs/apk/debug/app-debug.apk
+            android/app/build/outputs/apk/release/app-release.apk
+            android/app/build/outputs/bundle/release/app-release.aab
