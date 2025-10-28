@@ -66,7 +66,7 @@ const Navigation: React.FC = () => {
         <Stack.Screen name="RecommendationFlow" component={RecommendationFlowScreen} />
         <Stack.Screen name="LoadingScreen" component={LoadingScreen} />
         <Stack.Screen name="ResultScreen" component={ResultScreen} />
-       
+
         <Stack.Screen name="SignupScreen" component={SignupScreen}/>
         <Stack.Screen name="ProfileScreen" component={ProfileScreen}/>
       </Stack.Navigator>

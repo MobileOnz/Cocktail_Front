@@ -90,7 +90,7 @@ const CocktailDetailModal: React.FC<CocktailDetailModalProps> = ({
   // }, [visible, selectedCocktailId]);
 
 useEffect(() => {
-  if (!visible) return;
+  if (!visible) {return;}
 
   let cancelled = false;
 
@@ -98,7 +98,7 @@ useEffect(() => {
     const allData = await Promise.all(
       cocktails.map(c => fetchCocktailById(c.cocktail.id))
     );
-    if (!cancelled) setLocalCocktailData(allData);
+    if (!cancelled) {setLocalCocktailData(allData);}
   };
 
   fetchAll();
@@ -109,7 +109,7 @@ useEffect(() => {
 
 
  useEffect(() => {
-  if (!visible) return;
+  if (!visible) {return;}
 
   const id = setTimeout(() => {
     flatListRef.current?.scrollToOffset({

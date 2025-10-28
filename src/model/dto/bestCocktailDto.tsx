@@ -7,4 +7,4 @@ export const BestCocktailSchema = z.object({
   name: z.string(),
 });
 
-export type BestCocktailDto = z.infer<typeof BestCocktailSchema>; //타입 추론을 위해 
+export type BestCocktailDto = z.infer<typeof BestCocktailSchema>; //타입 추론을 위해
