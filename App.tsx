@@ -1,18 +1,18 @@
 // App.tsx
-import React, { useEffect, useState } from "react";
-import { StyleSheet, View, ActivityIndicator, Platform } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import SplashScreen from "react-native-splash-screen";
-import Navigation from "./src/Navigation/Navigation";
-import {Provider as PaperProvider} from "react-native-paper"
-import { useSafeAreaInsets, SafeAreaProvider } from "react-native-safe-area-context";
-import { setGlobalInsets } from "./src/assets/contexts/globalInsets"; 
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, View, ActivityIndicator, Platform } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import SplashScreen from 'react-native-splash-screen';
+import Navigation from './src/Navigation/Navigation';
+import {Provider as PaperProvider} from 'react-native-paper';
+import { useSafeAreaInsets, SafeAreaProvider } from 'react-native-safe-area-context';
+import { setGlobalInsets } from './src/assets/contexts/globalInsets';
 // import MobileAds from "react-native-google-mobile-ads";
 // import { firebase } from "@react-native-firebase/app";
 
-import { ToastProvider } from "./src/Components/ToastContext";
+import { ToastProvider } from './src/Components/ToastContext';
 
-import RNBootSplash from "react-native-bootsplash";
+import RNBootSplash from 'react-native-bootsplash';
 
 function AppContent() {
   const insets = useSafeAreaInsets();
@@ -29,7 +29,7 @@ function AppContent() {
 }
 
 function App(): React.JSX.Element {
-  
+
   const [isFirstLaunch, setIsFirstLaunch] = useState<null | boolean>(null);
 
   // useEffect(() => {
@@ -43,10 +43,10 @@ function App(): React.JSX.Element {
   useEffect(() => {
     const checkOnboarding = async () => {
       try {
-        const value = await AsyncStorage.getItem("onboardingDone");
+        const value = await AsyncStorage.getItem('onboardingDone');
         setIsFirstLaunch(value === null);
       } catch (error) {
-        console.error("AsyncStorage error: ", error);
+        console.error('AsyncStorage error: ', error);
       }
     };
 
@@ -71,7 +71,7 @@ function App(): React.JSX.Element {
   }
 
   return (
-    
+
     <PaperProvider>
     <SafeAreaProvider>
       <AppContent />
@@ -84,8 +84,8 @@ function App(): React.JSX.Element {
 const styles = StyleSheet.create({
   loadingContainer: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 

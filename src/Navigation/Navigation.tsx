@@ -3,7 +3,7 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import LoginScreen from '../Screens/Login';
-import Maps from '../BottomTab/Maps/Maps';
+import Maps from '../BottomTab/Cocktail_List/CocktailListScreen';
 import SearchScreen from '../Screens/SearchScreen';
 import BottomTabNavigator from './BottomTabNavigator';
 import RecommendationFlowScreen from '../Screens/RecommendationFlowScreen';
@@ -66,7 +66,7 @@ const Navigation: React.FC = () => {
         <Stack.Screen name="RecommendationFlow" component={RecommendationFlowScreen} />
         <Stack.Screen name="LoadingScreen" component={LoadingScreen} />
         <Stack.Screen name="ResultScreen" component={ResultScreen} />
-       
+
         <Stack.Screen name="SignupScreen" component={SignupScreen}/>
         <Stack.Screen name="ProfileScreen" component={ProfileScreen}/>
       </Stack.Navigator>
