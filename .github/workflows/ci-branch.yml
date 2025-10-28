@@ -88,7 +88,8 @@ jobs:
       - name: Upload APK/AAB
         uses: actions/upload-artifact@v4
         with:
-          name: android-${{ github.ref_name }}
+          name: android-${{ github.ref_name.replace('/', '-') }}   # ← 슬래시 방지
           path: |
             android/app/build/outputs/apk/debug/app-debug.apk
             android/app/build/outputs/apk/release/app-release.apk
+            android/app/build/outputs/bundle/release/app-release.aab
