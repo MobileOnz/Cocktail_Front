@@ -16,7 +16,6 @@ import {
   widthPercentage,
   heightPercentage,
   fontPercentage,
-  getResponsiveHeight,
 } from '../assets/styles/FigmaScreen';
 import { isTokenExpired } from '../tokenRequest/Token';
 import { BottomTabParamList } from './Navigation';
