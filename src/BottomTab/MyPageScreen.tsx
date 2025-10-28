@@ -22,24 +22,24 @@ const MyPageScreen = () => {
   const [showSignOutModal, setShowSignOutModal] = useState(false);
 
   const link = () => {
-    Linking.openURL("https://sites.google.com/view/onz-info/")
-}
+    Linking.openURL('https://sites.google.com/view/onz-info/');
+};
   const [profileImageUri, setProfileImageUri] = useState<string | null>(null);
-  const [nickname, setNickname] = useState("");
+  const [nickname, setNickname] = useState('');
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
 
 const handleWithdraw = async () => {
   try {
     await instance.delete('/api/delete/member', {
       authRequired: true,
-    });
-    showToast("탈퇴가 완료되었습니다.");
+    }as any);
+    showToast('탈퇴가 완료되었습니다.');
 
     setIsLoggedIn(false);
-    setNickname("");
+    setNickname('');
     setProfileImageUri(null);
   } catch (err: any) {
-    console.log("🚨 탈퇴 오류:", err.response?.data || err.message);
+    console.log('🚨 탈퇴 오류:', err.response?.data || err.message);
   } finally {
     setShowWithdrawModal(false);
   }
@@ -48,16 +48,16 @@ const handleWithdraw = async () => {
 
   const handleLogout = async () => {
     try {
-      await instance.post("/api/auth/logout", null, {
+      await instance.post('/api/auth/logout', null, {
         authRequired: true,
-      });
-      showToast("로그아웃 되었습니다.");
+      }as any);
+      showToast('로그아웃 되었습니다.');
       setIsLoggedIn(false);
-      setNickname("");
+      setNickname('');
       setProfileImageUri(null);
     } catch (err) {
-      console.error("🚨 로그아웃 실패:", err);
-      showToast("로그아웃 실패");
+      console.error('🚨 로그아웃 실패:', err);
+      showToast('로그아웃 실패');
     } finally {
       setShowSignOutModal(false);
     }
@@ -67,17 +67,17 @@ const handleWithdraw = async () => {
   useEffect(() => {
     const fetchProfileImage = async () => {
       try {
-        const res = await instance.get('/api/profile', { responseType: "blob",authOptional: true, });
+        const res = await instance.get('/api/profile', { responseType: 'blob',authOptional: true } as any);
 
         const contentType = res.headers['content-type'];
 
-        if (contentType?.includes("application/json")) {
+        if (contentType?.includes('application/json')) {
           const { data } = res.data;
           if (data) {
-            const fullUri = data.startsWith("http") ? data : `${res.config.baseURL}${data.startsWith("/") ? "" : "/"}${data}`;
+            const fullUri = data.startsWith('http') ? data : `${res.config.baseURL}${data.startsWith('/') ? '' : '/'}${data}`;
             setProfileImageUri(fullUri);
           }
-        } else if (contentType?.startsWith("image/")) {
+        } else if (contentType?.startsWith('image/')) {
           const reader = new FileReader();
           reader.onloadend = () => {
             const base64data = reader.result as string;
@@ -86,7 +86,7 @@ const handleWithdraw = async () => {
           reader.readAsDataURL(res.data);
         }
       } catch (e) {
-        console.warn("프로필 이미지 오류:", e);
+        console.warn('프로필 이미지 오류:', e);
       }
     };
 
@@ -99,31 +99,31 @@ const handleWithdraw = async () => {
       try {
         const res = await instance.get('/api/get/member', {
         authOptional: true,
-        });
+        }as any);
         if (res.data.code === 1) {
           setIsLoggedIn(true);
           setNickname(res.data.data.nickname);
         } else {
           setIsLoggedIn(false);
-          setNickname("");
+          setNickname('');
           setProfileImageUri(null); // <- 프로필 초기화는 유지
         }
       } catch (err) {
-        console.log("🚨 로그인 체크 실패:", err);
+        console.log('🚨 로그인 체크 실패:', err);
         setIsLoggedIn(false);
-        setNickname("");
+        setNickname('');
         setProfileImageUri(null);
       }
     };
-  
+
     const unsubscribe = navigation.addListener('focus', checkTokenAndProfile);
     return unsubscribe;
   }, [navigation]);
-  
-  
+
+
 
   const handleLoginPress = () => {
-    navigation.navigate(isLoggedIn ? "ProfileScreen" : "Login");
+    navigation.navigate(isLoggedIn ? 'ProfileScreen' : 'Login');
   };
 
   return (
@@ -153,7 +153,7 @@ const handleWithdraw = async () => {
         )}
 
           <Text style={styles.loginText}>
-            {isLoggedIn ? nickname : "로그인이 필요합니다."}
+            {isLoggedIn ? nickname : '로그인이 필요합니다.'}
           </Text>
         </View>
         <Image source={require('../assets/drawable/right-chevron.png')} style={styles.profilerightArrow} />
@@ -165,7 +165,7 @@ const handleWithdraw = async () => {
         <View style={styles.divider} />
         {renderSupportItem('smile_face.png', '서비스 리뷰 남기기')}
         <View style={styles.divider} />
-        <TouchableOpacity onPress={()=>navigation.navigate("TermsAndConditionsScreen")}>
+        <TouchableOpacity onPress={()=>navigation.navigate('TermsAndConditionsScreen')}>
         {renderSupportItem('book_closed.png', '이용약관')}
         </TouchableOpacity>
         <View style={styles.divider} />
@@ -177,7 +177,7 @@ const handleWithdraw = async () => {
 
       {/* 개인정보처리방침 아래 divider */}
       {isLoggedIn && <View style={styles.bottomDivider} />}
-      
+
 
       {isLoggedIn && (
         <View>
@@ -206,7 +206,7 @@ const handleWithdraw = async () => {
 
     </SafeAreaView>
 
-    
+
   );
 };
 
@@ -256,14 +256,14 @@ const styles = StyleSheet.create({
     height: widthPercentage(42),
     borderRadius: widthPercentage(21),
     marginRight: widthPercentage(12),
-    backgroundColor: "#DDD",
+    backgroundColor: '#DDD',
   },
   withdrawText: {
     marginTop: heightPercentage(27),
-    color: "#7D7A6F",
-    textDecorationLine: "underline",
+    color: '#7D7A6F',
+    textDecorationLine: 'underline',
     fontSize: fontPercentage(14),
-    alignSelf: "flex-start",
+    alignSelf: 'flex-start',
     marginLeft: widthPercentage(24),
   },
   loginContainer: {
