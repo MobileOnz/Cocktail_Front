@@ -7,12 +7,12 @@ import { Portal } from 'react-native-paper';
 
 
 interface MoreOptionMenuProps {
-  itemId: number;                 
+  itemId: number;
   onEdit: (itemId: number) => void;
   onDelete: (itemId: number) => void;
 }
 
-const MoreOptionMenu  : React.FC<MoreOptionMenuProps>= ({ itemId, onEdit, onDelete}) => {
+const MoreOptionMenu  : React.FC<MoreOptionMenuProps> = ({ itemId, onEdit, onDelete}) => {
   const [visible, setVisible] = useState(false);
   const [alertVisible, setAlertVisible] = useState(false);
 
@@ -32,7 +32,7 @@ const MoreOptionMenu  : React.FC<MoreOptionMenuProps>= ({ itemId, onEdit, onDele
             />
           </TouchableOpacity>
         }
-        placement={"bottom" as any}
+        placement={'bottom' as any}
         backgroundStyle={{ backgroundColor: 'transparent' }}
         popoverStyle={styles.popoverShadow} //그림자 효과 적용
       >

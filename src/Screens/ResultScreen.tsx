@@ -37,7 +37,7 @@ const ResultScreen: React.FC<ResultScreenProps> = ({ route }) => {
 
       <TouchableOpacity
         style={styles.mainButton}
-        onPress={() => navigation.navigate("Maps" as never)}
+        onPress={() => navigation.navigate('Maps' as never)}
         >
         <Text
           style={styles.mainButtonText}>해당 메뉴가 있는 가게 찾기

@@ -161,7 +161,7 @@ const CocktailBookScreen: React.FC = () => {
         {/* 상단 로고 & 아이콘 */}
         <View style={styles.header}>
           <Image source={require('../assets/drawable/onz_logo.png')} style={[styles.logo, {resizeMode:'contain'}]} />
-      
+
         </View>
 
         {/* 배너 슬라이더 */}
