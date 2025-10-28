@@ -12,7 +12,6 @@ on:
       - 'Onz_Android'
       - 'Onz_IOS'
 
-# 동일 브랜치에서 중복 실행 방지
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -25,16 +24,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ 저장소 코드 가져오기
+      # 1️⃣ 저장소 체크아웃
       - uses: actions/checkout@v4
 
-      # 2️⃣ Node.js 환경 세팅 (npm 캐시 적용)
+      # 2️⃣ Node.js 환경 세팅 (npm 캐시)
       - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'npm'
 
-      # 3️⃣ yarn.lock 감지 및 SSH 의존성 차단
+      # 3️⃣ 의존성 검증 (yarn, SSH, reanimated mismatch 차단)
       - name: Validate dependency integrity
         run: |
           if [ -f yarn.lock ]; then
@@ -47,34 +46,36 @@ jobs:
             exit 1
           fi
 
+          RN_REANIMATED_VER=$(npm list react-native-reanimated | grep react-native-reanimated | awk '{print $2}' | sed 's/@//')
+          if [[ "$RN_REANIMATED_VER" != *"3.16.0"* ]]; then
+            echo "❌ Detected reanimated version mismatch ($RN_REANIMATED_VER). Expected 3.16.0"
+            exit 1
+          fi
+
       # 4️⃣ 의존성 설치
       - name: Install dependencies
         run: npm ci
 
-      # 5️⃣ Lint (ESLint)
+      # 5️⃣ Lint
       - name: Lint
         run: npm run lint --if-present
 
-      # 6️⃣ 타입 검사 (TypeScript)
+      # 6️⃣ 타입 체크
       - name: Type Check
         run: npm run tsc --if-present -- --noEmit
 
-      # 7️⃣ (선택) 유닛 테스트
-      # - name: Unit Test
-      #   run: npm test --if-present -- --ci --coverage
-
-      # 8️⃣ Java 환경 (Android 빌드용)
+      # 7️⃣ Java 세팅 (Android 빌드용)
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
 
-      # 9️⃣ Gradle 캐시
+      # 8️⃣ Gradle 캐시
       - name: Gradle cache
         uses: gradle/gradle-build-action@v3
 
-      # 🔟 Android 빌드
+      # 9️⃣ Android 빌드
       - name: Build Android
         run: |
           cd android
@@ -84,12 +85,18 @@ jobs:
             ./gradlew assembleDebug
           fi
 
-      # 11️⃣ 결과물 업로드 (APK/AAB)
+      # 🔟 APK/AAB 업로드 (슬래시 제거)
       - name: Upload APK/AAB
         uses: actions/upload-artifact@v4
         with:
-          name: android-${{ github.ref_name.replace('/', '-') }}   # ← 슬래시 방지
+          # 슬래시(`/`)나 역슬래시(`\`) 모두 `-`로 치환
+          name: android-${{ github.ref_name }}
+          if-no-files-found: ignore
           path: |
             android/app/build/outputs/apk/debug/app-debug.apk
             android/app/build/outputs/apk/release/app-release.apk
             android/app/build/outputs/bundle/release/app-release.aab
+        env:
+          # 환경변수로 정제된 이름 생성 (bash safe)
+          ARTIFACT_NAME: ${{ github.ref_name }}
+        shell: bash
