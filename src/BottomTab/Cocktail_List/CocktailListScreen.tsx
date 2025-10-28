@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, Image, ScrollView, FlatList, SafeAreaView, Dimensions } from 'react-native';
-import { Appbar, Button, Divider, Icon, IconButton, overlay, Text } from 'react-native-paper';
+import { Appbar, Button, Divider, IconButton, Text } from 'react-native-paper';
 import theme from '../../assets/styles/theme';
 import { fontPercentage, heightPercentage, widthPercentage } from '../../assets/styles/FigmaScreen';
 import PuzzlePiece from '../../configs/CurvedImage';
@@ -11,14 +11,14 @@ import PagerView from 'react-native-pager-view';
 import CocktailCard from '../../Components/CocktailCard';
 const Maps = () => {
   const { width } = Dimensions.get('window');
-  const { cocktails } = useBestCocktail()
-  const { newCocktails } = useNewCocktail()
-  const { allCocktails } = useCocktailLIst()
-  const [pageIndex, setPageIndex] = useState(0)
+  const { cocktails } = useBestCocktail();
+  const { newCocktails } = useNewCocktail();
+  const { allCocktails } = useCocktailLIst();
+  const [pageIndex, setPageIndex] = useState(0);
   const page = [];
 
   for (let i = 0; i < newCocktails.length; i += 3) {
-    page.push(newCocktails.slice(i, i + 3))
+    page.push(newCocktails.slice(i, i + 3));
   }
   console.log('newCocktails:', newCocktails);
   console.log('page:', page);
@@ -110,7 +110,7 @@ const Maps = () => {
                     bottom: 20,
                     left: 30,
                     right: 0,
-                    alignItems: 'center'
+                    alignItems: 'center',
                   }}
                 >
                   <Text style={{ fontSize: fontPercentage(16), fontWeight: 'bold', color: '#FFF' }}>
@@ -137,7 +137,7 @@ const Maps = () => {
 
         {/* 새로 업데이트 된 칵테일 리스트 */}
         <View>
-          <Text variant='bodyLarge' style={styles.mainText}>새로 업데이트 된 칵테일</Text>
+          <Text variant="bodyLarge" style={styles.mainText}>새로 업데이트 된 칵테일</Text>
           <PagerView
             style={{ width: width, height: 3 * 78 }}
             initialPage={0}
@@ -200,7 +200,7 @@ const Maps = () => {
 
         <Divider style={{ marginVertical: heightPercentage(15), height: 12, backgroundColor: '#F5F5F5' }} />
 
-        <Text variant='bodyLarge' style={styles.mainText}>기분 전환이 필요할 땐 상큼한 한 잔 🍋</Text>
+        <Text variant="bodyLarge" style={styles.mainText}>기분 전환이 필요할 땐 상큼한 한 잔 🍋</Text>
         <FlatList
           data={allCocktails}
           horizontal
@@ -213,7 +213,7 @@ const Maps = () => {
               tone={item.type}
               bookmarked={true}
               onPress={() => { }}
-              onToggleBookmark={(next) => { }}
+              onToggleBookmark={(_next) => { }}
             />
           )}
         />
@@ -221,7 +221,7 @@ const Maps = () => {
 
 
 
-        <Text variant='bodyLarge' style={styles.mainText}>부담 없이 편하게 시도할 수 있는 맛 🧃</Text>
+        <Text variant="bodyLarge" style={styles.mainText}>부담 없이 편하게 시도할 수 있는 맛 🧃</Text>
 
         <FlatList
           data={allCocktails}
@@ -235,13 +235,13 @@ const Maps = () => {
               tone={item.type}
               bookmarked={true}
               onPress={() => { }}
-              onToggleBookmark={(next) => { }}
+              onToggleBookmark={(_next) => { }}
             />
           )}
         />
 
 
-        <Text variant='bodyLarge' style={styles.mainText}>중급자로 거듭나보고 싶다면? 🥃 </Text>
+        <Text variant="bodyLarge" style={styles.mainText}>중급자로 거듭나보고 싶다면? 🥃 </Text>
 
         <FlatList
           data={allCocktails}
@@ -255,7 +255,7 @@ const Maps = () => {
               tone={item.type}
               bookmarked={true}
               onPress={() => { }}
-              onToggleBookmark={(next) => { }}
+              onToggleBookmark={(_next) => { }}
             />
           )}
         />
@@ -283,7 +283,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     paddingVertical: 10,
     alignContent: 'flex-start',
-    paddingLeft: 10
+    paddingLeft: 10,
   },
   filterView: {
     flexDirection: 'row',

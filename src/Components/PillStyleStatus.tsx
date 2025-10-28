@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, ViewStyle } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { fontPercentage, heightPercentage, widthPercentage } from '../assets/styles/FigmaScreen';
 
 export type PillStyleProps = {
@@ -24,7 +24,7 @@ const TONE_BG: Record<string, string> = {
 
 export default function PillStyleStatus({
   tone = 'standard',
-  
+
 }: PillStyleProps) {
   return (
     <View style={[styles.base, { backgroundColor: TONE_BG[tone] }]}>
