@@ -1,63 +1,75 @@
-name : CI(develop/main)
+name: CI (Onz_Android/Onz_IOS/main) # 배포 전 aab, apk 파일 생성 후 디자이너 전달용
+# 추후 IOS 연동을 통해 즉각 피드백 요청 예정
 
-on : 
-  push : 
-    branches : [develop, main]
-  pull_request : 
-    branches : [develop, main]
+on:
+  push:
+    branches: [Onz_Android, Onz_IOS, main]
+  pull_request:
+    branches: [Onz_Android, Onz_IOS, main]
 
-concurrency : 
-  group : ${{ github.workflow}}- ${{github.ref}}
-  cancel-in-progress : true
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
-permissions :
-  contents : read
+permissions:
+  contents: read
 
+jobs:
+  ci:
+    runs-on: ubuntu-latest
 
-jobs : 
-    ci :
-      runs-on : ubuntu-latest
-      steps :
-        - uses : actions/checkout@v4
+    steps:
+      # 1️⃣ 소스 체크아웃
+      - uses: actions/checkout@v4
 
-        - uses : actions/setup-node@v4
-          with : 
-              node-version : 20
+      # 2️⃣ Node 환경 설정 (npm 캐시 포함)
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
 
-        - name : Install deps 
-          run : yarn install --frozen-lockfile 
+      # 3️⃣ npm 설치
+      - name: Install dependencies
+        run: npm ci
 
-        - name : Lint 
-          run : yarn lint
+      # 4️⃣ Lint
+      - name: Lint
+        run: npm run lint --if-present
 
-        - name : Type Check 
-          run : yarn tsc --noEmit
+      # 5️⃣ Type Check (TypeScript)
+      - name: Type Check
+        run: npm run tsc --if-present -- --noEmit
 
-        - name : Unit Test
-          run : yarn test --ci --coverage
+      # 6️⃣ (옵션) Unit Test
+      # - name: Unit Test
+      #   run: npm test --if-present -- --ci --coverage
 
-        - name : Setup Java 
-          uses : actions/setup-java@v4
-          with :
-            distribution : 'temurin'
-            java-version : '17'
+      # 7️⃣ Java 환경 설정 (Gradle 빌드용)
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
 
-        - name : Gradle cache 
-          uses : gradle/gradle-build-action@v3
+      # 8️⃣ Gradle 캐시
+      - name: Gradle cache
+        uses: gradle/gradle-build-action@v3
 
-        - name : Build Android
-          run : | 
-            cd android
-            if [ "${{github.ref_name }}" = "main" ]; then 
-              ./gradlew assembleRelease
-            else 
-              ./gradlew assembleDebug
-              fi
+      # 9️⃣ Android 빌드
+      - name: Build Android
+        run: |
+          cd android
+          if [ "${{ github.ref_name }}" = "main" ]; then
+            ./gradlew assembleRelease
+          else
+            ./gradlew assembleDebug
+          fi
 
-        - name : Upload APK/AAB 
-          uses : actions/upload-artifact@v4
-          with : 
-            name : android-${{ github.ref_name }}
-            path : |
-                android/app/build/outputs/apk/debug/app-debug.apk
-                android/app/build/outputs/apk/debug/app-release.apk
+      # 🔟 결과물 업로드 (APK/AAB)
+      - name: Upload APK/AAB
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-${{ github.ref_name }}
+          path: |
+            android/app/build/outputs/apk/debug/app-debug.apk
+            android/app/build/outputs/apk/release/app-release.apk

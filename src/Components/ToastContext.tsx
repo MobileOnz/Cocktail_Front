@@ -11,14 +11,14 @@ const ToastContext = createContext<ToastContextType | undefined>(undefined);
 export const useToast = () => {
   const context = useContext(ToastContext);
   if (!context) {
-    throw new Error("useToast는 ToastProvider 안에서 사용해야 합니다.");
+    throw new Error('useToast는 ToastProvider 안에서 사용해야 합니다.');
   }
   return context;
 };
 
 export const ToastProvider = ({ children }: { children: ReactNode }) => {
   const [visible, setVisible] = useState(false);
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState('');
   const [fadeAnim] = useState(new Animated.Value(0));
 
   const showToast = (msg: string) => {
