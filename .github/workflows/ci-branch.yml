@@ -12,53 +12,33 @@ on:
       - 'Onz_Android'
       - 'Onz_IOS'
 
-# 동시에 여러 빌드가 돌 때 이전 실행 중인 동일 브랜치 CI를 자동 취소
+# 동일 브랜치에서 중복 실행 방지
 concurrency:
-  group: ${{ github.workflow }} - ${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
   contents: read
 
 jobs:
-  detect:
-    runs-on: ubuntu-latest
-    outputs:
-      android_changed: ${{ steps.paths.outputs.android }}
-      ios_changed: ${{ steps.paths.outputs.ios }}
-    steps:
-      - uses: actions/checkout@v4
-
-      - id: paths
-        uses: dorny/paths-filter@v3
-        with:
-          filters: |
-            android:
-              - 'android/**'
-            ios:
-              - 'ios/**'
-              - 'ios/Podfile'
-              - 'ios/Podfile.lock'
-
   ci:
-    needs: detect
     runs-on: ubuntu-latest
 
     steps:
       # 1️⃣ 저장소 코드 가져오기
       - uses: actions/checkout@v4
 
-      # 2️⃣ Node.js 환경 세팅 + npm 캐시 적용
+      # 2️⃣ Node.js 환경 세팅 (npm 캐시 적용)
       - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'npm'
 
-      # 3️⃣ lockfile 혼용 및 SSH 의존성 방지
+      # 3️⃣ yarn.lock 감지 및 SSH 의존성 차단
       - name: Validate dependency integrity
         run: |
           if [ -f yarn.lock ]; then
-            echo "❌ yarn.lock found. Use npm only."
+            echo "❌ Detected yarn.lock. Use npm only."
             exit 1
           fi
 
@@ -67,7 +47,7 @@ jobs:
             exit 1
           fi
 
-      # 4️⃣ 의존성 설치 (package-lock.json 기반, 완전 재현)
+      # 4️⃣ 의존성 설치
       - name: Install dependencies
         run: npm ci
 
@@ -75,25 +55,40 @@ jobs:
       - name: Lint
         run: npm run lint --if-present
 
-      # 6️⃣ 타입 검사 (tsc)
+      # 6️⃣ 타입 검사 (TypeScript)
       - name: Type Check
         run: npm run tsc --if-present -- --noEmit
 
-      # 7️⃣ (옵션) 유닛 테스트
+      # 7️⃣ (선택) 유닛 테스트
       # - name: Unit Test
       #   run: npm test --if-present -- --ci --coverage
 
-      # 8️⃣ Android 빌드 (Android 관련 파일이 변경된 경우만)
+      # 8️⃣ Java 환경 (Android 빌드용)
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      # 9️⃣ Gradle 캐시
+      - name: Gradle cache
+        uses: gradle/gradle-build-action@v3
+
+      # 🔟 Android 빌드
       - name: Build Android
-        if: needs.detect.outputs.android_changed == 'true'
         run: |
           cd android
-          ./gradlew assembleDebug
+          if [ "${{ github.ref_name }}" = "main" ]; then
+            ./gradlew assembleRelease
+          else
+            ./gradlew assembleDebug
+          fi
 
-      # 9️⃣ Android 빌드 결과물 업로드
-      - name: Upload APK
-        if: needs.detect.outputs.android_changed == 'true'
+      # 11️⃣ 결과물 업로드 (APK/AAB)
+      - name: Upload APK/AAB
         uses: actions/upload-artifact@v4
         with:
-          name: app-debug
-          path: android/app/build/outputs/apk/debug/app-debug.apk
+          name: android-${{ github.ref_name }}
+          path: |
+            android/app/build/outputs/apk/debug/app-debug.apk
+            android/app/build/outputs/apk/release/app-release.apk
