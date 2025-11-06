@@ -1,4 +1,4 @@
-name: CI (feat-fix-refactor-ui) # 여기서도 괄호와 슬래시 제거 권장
+name: CI (feat-fix-refactor-ui)
 
 on:
   push:
@@ -24,13 +24,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 1️⃣ 저장소 체크아웃
       - uses: actions/checkout@v4
 
+      # 2️⃣ Node.js 환경 세팅 (npm 캐시)
       - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'npm'
 
+      # 3️⃣ 의존성 검증 (yarn, SSH, reanimated mismatch 차단)
       - name: Validate dependency integrity
         run: |
           if [ -f yarn.lock ]; then
@@ -49,24 +52,30 @@ jobs:
             exit 1
           fi
 
+      # 4️⃣ 의존성 설치
       - name: Install dependencies
         run: npm ci
 
+      # 5️⃣ Lint
       - name: Lint
         run: npm run lint --if-present
 
+      # 6️⃣ 타입 체크
       - name: Type Check
         run: npm run tsc --if-present -- --noEmit
 
+      # 7️⃣ Java 세팅 (Android 빌드용)
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
 
+      # 8️⃣ Gradle 캐시
       - name: Gradle cache
         uses: gradle/gradle-build-action@v3
 
+      # 9️⃣ Android 빌드
       - name: Build Android
         run: |
           cd android
@@ -76,7 +85,6 @@ jobs:
             ./gradlew assembleDebug
           fi
 
-      # ✅ 안전한 artifact 이름 생성
       - name: Set safe artifact name
         id: set_artifact_name
         run: |
