@@ -1,4 +1,4 @@
-name: CI (feat-fix-refactor-ui)
+name: CI (feat/fix/refactor/ui)
 
 on:
   push:
@@ -85,6 +85,7 @@ jobs:
             ./gradlew assembleDebug
           fi
 
+      # ✅ 추가된 부분: 슬래시(/) → 하이픈(-) 변환
       - name: Set safe artifact name
         id: set_artifact_name
         run: |
