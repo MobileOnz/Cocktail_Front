@@ -85,14 +85,14 @@ jobs:
             ./gradlew assembleDebug
           fi
 
-      # ✅ 추가된 부분: 슬래시(/) → 하이픈(-) 변환
+      # ✅ 추가: 슬래시(/) → 하이픈(-) 변환
       - name: Set safe artifact name
         id: set_artifact_name
         run: |
           SAFE_REF_NAME=$(echo "${GITHUB_REF_NAME}" | tr '/' '-')
           echo "ARTIFACT_NAME=android-${SAFE_REF_NAME}" >> $GITHUB_ENV
 
-      # 🔟 APK/AAB 업로드
+      # 🔟 APK/AAB 업로드 (슬래시 제거)
       - name: Upload APK/AAB
         uses: actions/upload-artifact@v4
         with:
