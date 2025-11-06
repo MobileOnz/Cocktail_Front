@@ -90,7 +90,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           # 슬래시(`/`)나 역슬래시(`\`) 모두 `-`로 치환
-          name: android-${{ github.ref_name }}
+          name: android-${{ github.ref_name.replace('/', '-') }}
           if-no-files-found: ignore
           path: |
             android/app/build/outputs/apk/debug/app-debug.apk
