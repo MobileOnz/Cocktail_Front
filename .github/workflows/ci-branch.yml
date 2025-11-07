@@ -84,11 +84,15 @@ jobs:
             ./gradlew assembleDebug
           fi
 
-      # 11️⃣ 결과물 업로드 (APK/AAB)
+      - name: Prepare Artifact Name
+        run: |
+          SAFE_NAME="${GITHUB_REF_NAME//\//-}"   # 슬래시를 -로 교체
+          echo "SAFE_NAME=$SAFE_NAME" >> $GITHUB_ENV
+
       - name: Upload APK/AAB
         uses: actions/upload-artifact@v4
         with:
-          name: android-${{ github.ref_name.replace('/', '-') }}   # ← 슬래시 방지
+          name: android-${{ env.SAFE_NAME }}
           path: |
             android/app/build/outputs/apk/debug/app-debug.apk
             android/app/build/outputs/apk/release/app-release.apk
