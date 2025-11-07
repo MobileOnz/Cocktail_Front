@@ -15,6 +15,7 @@
     "@gorhom/bottom-sheet": "^5.2.6",
     "@react-native-async-storage/async-storage": "^2.1.1",
     "@react-native-clipboard/clipboard": "1.16.2",
+    "@react-native-community/blur": "^4.4.1",
     "@react-native-firebase/app": "21.12.0",
     "@react-native-google-signin/google-signin": "^13.2.0",
     "@react-native-seoul/kakao-login": "5.4.1",
