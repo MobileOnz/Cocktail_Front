@@ -77,7 +77,7 @@ jobs:
       - name: Upload APK/AAB
         uses: actions/upload-artifact@v4
         with:
-          name: android-${{ github.ref_name }}
+          name: android-${{ env.SAFE_NAME }} 
           path: |
             android/app/build/outputs/apk/debug/app-debug.apk
             android/app/build/outputs/apk/release/app-release.apk
