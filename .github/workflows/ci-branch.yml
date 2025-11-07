@@ -84,13 +84,11 @@ jobs:
             ./gradlew assembleDebug
           fi
 
-
-      # 11️⃣ Artifact 이름 준비
-      - name: Prepare Artifact Name
-        id: artifact-name
+      - name: Prepare Safe Artifact Name
         run: |
-          SAFE_NAME="${GITHUB_REF_NAME//\//-}"   # 슬래시 → 하이픈
-          echo "safe_name=$SAFE_NAME" >> $GITHUB_OUTPUT
+          SAFE_NAME="${GITHUB_REF_NAME//\//-}"
+          echo "SAFE_NAME=$SAFE_NAME" >> $GITHUB_ENV
+          echo " Using artifact name: android-$SAFE_NAME"
 
       # 12️⃣ 결과물 업로드 (APK/AAB)
       - name: Upload APK/AAB
