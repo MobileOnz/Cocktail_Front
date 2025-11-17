@@ -4,7 +4,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import LoginScreen from '../Screens/Login';
 import Maps from '../BottomTab/Cocktail_List/CocktailListScreen';
-import SearchScreen from '../Screens/SearchScreen';
+import SearchScreen from '../Screens/Search/SearchScreen';
 import BottomTabNavigator from './BottomTabNavigator';
 import RecommendationFlowScreen from '../Screens/RecommendationFlowScreen';
 import LoadingScreen from '../Screens/LoadingScreen';
@@ -23,7 +23,7 @@ export type RootStackParamList = {
   Onboarding: undefined;
   Login: undefined;
   Maps: undefined;
-  SearchScreen: {initialKeyword?: string};
+  SearchScreen: { initialKeyword?: string };
   BottomTabNavigator: {
     screen?: string;
     params?: {
@@ -32,21 +32,22 @@ export type RootStackParamList = {
   };
   RecommendationFlow: undefined;
   LoadingScreen: {
-  alcholType: number;
-  tasteCategoryId: number;
-  tasteDetailId: number;
-  nickname: string;
-};
+    alcholType: number;
+    tasteCategoryId: number;
+    tasteDetailId: number;
+    nickname: string;
+  };
   ResultScreen: {
-  cocktailImage: any;
-  nickname: string;
-  cocktailName: string;
-  cocktailDescription: string;
-};
+    cocktailImage: any;
+    nickname: string;
+    cocktailName: string;
+    cocktailDescription: string;
+  };
   ProfileScreen: undefined;
   RecommendationIntro: undefined;
-  SignupScreen: {code? : string};
-  TermsAndConditionsScreen : undefined
+  SignupScreen: { code?: string };
+  TermsAndConditionsScreen: undefined;
+
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -58,7 +59,7 @@ const Navigation: React.FC = () => {
         initialRouteName="BottomTabNavigator"
         screenOptions={{ headerShown: false }}
       >
-        <Stack.Screen name="TermsAndConditionsScreen" component={TermsAndConditionsScreen}/>
+        <Stack.Screen name="TermsAndConditionsScreen" component={TermsAndConditionsScreen} />
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="SearchScreen" component={SearchScreen} />
         <Stack.Screen name="Maps" component={Maps} />
@@ -67,8 +68,8 @@ const Navigation: React.FC = () => {
         <Stack.Screen name="LoadingScreen" component={LoadingScreen} />
         <Stack.Screen name="ResultScreen" component={ResultScreen} />
 
-        <Stack.Screen name="SignupScreen" component={SignupScreen}/>
-        <Stack.Screen name="ProfileScreen" component={ProfileScreen}/>
+        <Stack.Screen name="SignupScreen" component={SignupScreen} />
+        <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -9,6 +9,7 @@ import { useBestCocktail, useCocktailLIst, useNewCocktail } from './CocktailList
 import PillStyleStatus from '../../Components/PillStyleStatus';
 import PagerView from 'react-native-pager-view';
 import CocktailCard from '../../Components/CocktailCard';
+import { useNavigation } from '@react-navigation/native';
 const Maps = () => {
   const { width } = Dimensions.get('window');
   const { cocktails } = useBestCocktail();
@@ -16,6 +17,7 @@ const Maps = () => {
   const { allCocktails } = useCocktailLIst();
   const [pageIndex, setPageIndex] = useState(0);
   const page = [];
+  const navigation = useNavigation();
 
   for (let i = 0; i < newCocktails.length; i += 3) {
     page.push(newCocktails.slice(i, i + 3));
@@ -38,7 +40,7 @@ const Maps = () => {
         <Appbar.Content title="" />
 
         {/* 오른쪽 아이콘 */}
-        <Appbar.Action icon="magnify" onPress={() => { }} />
+        <Appbar.Action icon="magnify" onPress={() => { navigation.navigate('SearchScreen' as never); }} />
         <Appbar.Action icon="bookmark-outline" onPress={() => { }} />
       </Appbar.Header>
 
