@@ -82,6 +82,8 @@ android {
 
     namespace "com.cocktail_front"
     defaultConfig {
+        renderscriptTargetApi 31
+        renderscriptSupportModeEnabled true
         applicationId "com.cocktail_front"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
