@@ -30,21 +30,21 @@ const BottomTabNavigator = () => {
   // 맞춤 추천 탭 클릭 시 로그인 체크
   const handleRecommendationPress = async () => {
     try {
-      const token = await AsyncStorage.getItem('accessToken');
+      // const token = await AsyncStorage.getItem('accessToken');
 
-      if (!token) {
-        setIsLoggedIn(false);
-        setLoginSheetVisible(true);
-        return;
-      }
+      // if (!token) {
+      //   setIsLoggedIn(false);
+      //   setLoginSheetVisible(true);
+      //   return;
+      // }
 
-      const expired = await isTokenExpired();
+      // const expired = await isTokenExpired();
 
-      if (expired) {
-        setIsLoggedIn(false);
-        setLoginSheetVisible(true);
-        return;
-      }
+      // if (expired) {
+      //   setIsLoggedIn(false);
+      //   setLoginSheetVisible(true);
+      //   return;
+      // }
 
       // 유효한 토큰
       setIsLoggedIn(true);
@@ -132,7 +132,7 @@ const BottomTabNavigator = () => {
           component={RecommendationsScreen}
           options={{
             headerShown: false,
-            tabBarButton: CustomTabBarButton,
+            // tabBarButton: CustomTabBarButton,
           }}
         />
         <Tab.Screen name="마이페이지" component={MyPageScreen} options={{ headerShown: false }} />
