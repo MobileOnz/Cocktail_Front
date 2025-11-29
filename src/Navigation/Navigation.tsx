@@ -4,7 +4,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import LoginScreen from '../Screens/Login';
 import Maps from '../BottomTab/Cocktail_List/CocktailListScreen';
-import SearchScreen from '../Screens/SearchScreen';
+import SearchScreen from '../Screens/Search/SearchScreen';
 import BottomTabNavigator from './BottomTabNavigator';
 import RecommendationFlowScreen from '../Screens/RecommendationFlowScreen';
 import LoadingScreen from '../Screens/LoadingScreen';
