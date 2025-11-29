@@ -12,6 +12,7 @@ import ResultScreen from '../Screens/ResultScreen';
 import SignupScreen from '../Screens/SignupScreen';
 import ProfileScreen from '../Screens/ProfileScreen';
 import TermsAndConditionsScreen from '../Screens/TermsAndConditionsScreen';
+import RecommendationScreen from '../Screens/Recommend/RecommendationScreen'
 
 export type BottomTabParamList = {
   지도: undefined;
@@ -64,7 +65,7 @@ const Navigation: React.FC = () => {
         <Stack.Screen name="SearchScreen" component={SearchScreen} />
         <Stack.Screen name="Maps" component={Maps} />
         <Stack.Screen name="BottomTabNavigator" component={BottomTabNavigator} />
-        <Stack.Screen name="RecommendationFlow" component={RecommendationFlowScreen} />
+        <Stack.Screen name="RecommendationHome" component={RecommendationScreen} />
         <Stack.Screen name="LoadingScreen" component={LoadingScreen} />
         <Stack.Screen name="ResultScreen" component={ResultScreen} />
 
