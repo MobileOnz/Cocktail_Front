@@ -42,7 +42,8 @@ const RecommendationIntroScreen: React.FC<Props> = ({ navigation }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const opacity = useRef(new Animated.Value(0)).current;
 
-  const animate = useCallback(() => {
+  useEffect(() => {
+    const animate = () => {
     Animated.timing(opacity, {
       toValue: 1,
       duration: 400,
@@ -59,11 +60,9 @@ const RecommendationIntroScreen: React.FC<Props> = ({ navigation }) => {
         });
       }, 800);
     });
-  }, []);
-
-  useEffect(() => {
+  };
     animate();
-  }, [animate]);
+  }, [opacity]);
 
 
   const IconComponent = icons[currentIndex];
