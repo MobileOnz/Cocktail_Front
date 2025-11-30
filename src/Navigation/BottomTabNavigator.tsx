@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Image, TouchableOpacity, View } from 'react-native';
+import { Image, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { BlurView } from '@react-native-community/blur';
@@ -29,31 +29,31 @@ const BottomTabNavigator = () => {
   const [_isLoggedIn, setIsLoggedIn] = useState(false);
 
   // 맞춤 추천 탭 클릭 시 로그인 체크
-  const handleRecommendationPress = async () => {
-    try {
-      // const token = await AsyncStorage.getItem('accessToken');
+  // const handleRecommendationPress = async () => {
+  //   try {
+  //     const token = await AsyncStorage.getItem('accessToken');
 
-      // if (!token) {
-      //   setIsLoggedIn(false);
-      //   setLoginSheetVisible(true);
-      //   return;
-      // }
+  //     if (!token) {
+  //       setIsLoggedIn(false);
+  //       setLoginSheetVisible(true);
+  //       return;
+  //     }
 
-      // const expired = await isTokenExpired();
+  //     const expired = await isTokenExpired();
 
-      // if (expired) {
-      //   setIsLoggedIn(false);
-      //   setLoginSheetVisible(true);
-      //   return;
-      // }
+  //     if (expired) {
+  //       setIsLoggedIn(false);
+  //       setLoginSheetVisible(true);
+  //       return;
+  //     }
 
-      // 유효한 토큰
-      setIsLoggedIn(true);
-    } catch (error) {
-      console.error('🔒 토큰 확인 중 오류 발생:', error);
-      setLoginSheetVisible(true);
-    }
-  };
+  //     // 유효한 토큰
+  //     setIsLoggedIn(true);
+  //   } catch (error) {
+  //     console.error('🔒 토큰 확인 중 오류 발생:', error);
+  //     setLoginSheetVisible(true);
+  //   }
+  // };
 
   // 커스텀 탭 버튼
   // const CustomTabBarButton = (props: any) => (
