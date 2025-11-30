@@ -6,13 +6,12 @@ import {
   Animated,
   StyleSheet,
   Image,
-  Easing,
   ScrollView,
 } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../../Navigation/Navigation';
-import { widthPercentage, heightPercentage, fontPercentage, getResponsiveHeight } from '../../assets/styles/FigmaScreen';
-import instance from '../../tokenRequest/axios_interceptor';
+import { widthPercentage, heightPercentage, fontPercentage } from '../../assets/styles/FigmaScreen';
+// import instance from '../../tokenRequest/axios_interceptor';
 
 type RecommendationSreenNavigationProp = StackNavigationProp<
   RootStackParamList,
@@ -85,7 +84,7 @@ const RecommendationScreen: React.FC<Props> = ({ navigation }) => {
         {currentStep === 2 && (<Question3 currentStep={currentStep} selectedAnswers={selectedAnswers} onSelectQuestion={(answerId)=> handleAnswerSelect(answerId)}  />) }
         {currentStep === 3 && (<Question4 currentStep={currentStep} selectedAnswers={selectedAnswers} onSelectQuestion={(answerId)=> handleAnswerSelect(answerId)}  />) }
         {currentStep === 4 && (<Question5 currentStep={currentStep} selectedAnswers={selectedAnswers} onSelectQuestion={(answerId)=> handleAnswerSelect(answerId)}  />) }
-        {currentStep === 5 && (<ResultScreen currentStep={currentStep} selectedAnswers={selectedAnswers} onSelectQuestion={(answerId)=> handleAnswerSelect(answerId)}  />) }      
+        {currentStep === 5 && (<ResultScreen/>) }      
       </View>
 
     
@@ -440,7 +439,7 @@ const Question5 = ({ currentStep, selectedAnswers, onSelectQuestion}) => {
 }
 
 // 결과 화면
-const ResultScreen = ({ currentStep, selectedAnswers, onSelectQuestion}) => {
+const ResultScreen = () => {
   const [isFlipped, setIsFlipped] = useState(false)
   const flipAnim = useRef(new Animated.Value(0)).current
 
@@ -578,8 +577,6 @@ const QuestionBox = ({id, currentId, icon, title, subTitle, step, onPress }) => 
 };
 
 const ProgressBar = ({ currentStep, totalSteps }) => {
-  const progressWidth = (currentStep / totalSteps) * 100;
-
   const progressAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
