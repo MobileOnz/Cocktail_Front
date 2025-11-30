@@ -42,30 +42,30 @@ const RecommendationIntroScreen: React.FC<Props> = ({ navigation }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const opacity = useRef(new Animated.Value(0)).current;
 
-  useEffect(() => {
-    const animate = () => {
-      // 1. Fade in (0 → 1)
-      Animated.timing(opacity, {
-        toValue: 1,
-        duration: 400,
-        useNativeDriver: true,
-      }).start(() => {
-        // 2. 유지 (800ms)
-        setTimeout(() => {
-          // 3. Fade out (1 → 0)
-          Animated.timing(opacity, {
-            toValue: 0,
-            duration: 400,
-            useNativeDriver: true,
-          }).start(() => {
-            // 4. 다음 아이콘으로 변경
-            setCurrentIndex((prev) => (prev + 1) % icons.length);
-            animate(); // 반복
-          });
-        }, 800);
-      });
-    };
+  const animate = () => {
+    // 1. Fade in (0 → 1)
+    Animated.timing(opacity, {
+      toValue: 1,
+      duration: 400,
+      useNativeDriver: true,
+    }).start(() => {
+      // 2. 유지 (800ms)
+      setTimeout(() => {
+        // 3. Fade out (1 → 0)
+        Animated.timing(opacity, {
+          toValue: 0,
+          duration: 400,
+          useNativeDriver: true,
+        }).start(() => {
+          // 4. 다음 아이콘으로 변경
+          setCurrentIndex((prev) => (prev + 1) % icons.length);
+          animate(); // 반복
+        });
+      }, 800);
+    });
+  };
 
+  useEffect(() => {
     animate();
   }, []);
 
