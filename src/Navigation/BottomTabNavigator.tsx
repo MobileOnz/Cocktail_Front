@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { BlurView } from '@react-native-community/blur';
 import { useNavigation } from '@react-navigation/native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+// import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import MapScreen from '../BottomTab/Cocktail_List/CocktailListScreen';
 import CocktailBookScreen from '../BottomTab/CocktailBookScreen';
@@ -17,8 +17,9 @@ import {
   heightPercentage,
   fontPercentage,
 } from '../assets/styles/FigmaScreen';
-import { isTokenExpired } from '../tokenRequest/Token';
+// import { isTokenExpired } from '../tokenRequest/Token';
 import { BottomTabParamList } from './Navigation';
+import GuideScreen from '../Screens/Guide/GuideScreen';
 
 const Tab = createBottomTabNavigator<BottomTabParamList>();
 
@@ -55,16 +56,16 @@ const BottomTabNavigator = () => {
   };
 
   // 커스텀 탭 버튼
-  const CustomTabBarButton = (props: any) => (
-    <TouchableOpacity
-      {...props}
-      onPress={() => {
-        console.log('🖲 CustomTabBarButton 클릭됨!');
-        handleRecommendationPress();
-      }}
-      activeOpacity={1}
-    />
-  );
+  // const CustomTabBarButton = (props: any) => (
+  //   <TouchableOpacity
+  //     {...props}
+  //     onPress={() => {
+  //       console.log('🖲 CustomTabBarButton 클릭됨!');
+  //       handleRecommendationPress();
+  //     }}
+  //     activeOpacity={1}
+  //   />
+  // );
 
   return (
     <View style={{ flex: 1 }}>
@@ -94,6 +95,8 @@ const BottomTabNavigator = () => {
             } else if (route.name === '칵테일 백과') {
               iconSource = require('../assets/drawable/dictionary.png');
             } else if (route.name === '맞춤 추천') {
+              iconSource = require('../assets/drawable/recommend.png');
+            } else if (route.name === '가이드') {
               iconSource = require('../assets/drawable/recommend.png');
             } else if (route.name === '마이페이지') {
               iconSource = require('../assets/drawable/mypage.png');
@@ -135,6 +138,16 @@ const BottomTabNavigator = () => {
             // tabBarButton: CustomTabBarButton,
           }}
         />
+
+        <Tab.Screen
+          name="가이드"
+          component={GuideScreen}
+          options={{
+            headerShown: false,
+            // tabBarButton: CustomTabBarButton,
+          }}
+        />
+
         <Tab.Screen name="마이페이지" component={MyPageScreen} options={{ headerShown: false }} />
       </Tab.Navigator>
 
