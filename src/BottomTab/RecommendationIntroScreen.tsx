@@ -7,7 +7,6 @@ import {
   StyleSheet,
   Image,
   Easing,
-  Platform,
 } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../Navigation/Navigation';
@@ -16,7 +15,7 @@ import {
   heightPercentage,
   fontPercentage,
 } from '../assets/styles/FigmaScreen';
-import LottieView from 'lottie-react-native';
+// import LottieView from 'lottie-react-native';
 import { Martini, Wine, GlassWater, BottleWine } from 'lucide-react-native';
 
 // 4가지 칵테일 잔 아이콘
