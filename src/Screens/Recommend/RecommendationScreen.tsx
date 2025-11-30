@@ -585,7 +585,7 @@ const ProgressBar = ({ currentStep, totalSteps }) => {
       duration: 300,
       useNativeDriver: false
     }).start();
-  }, [currentStep]);
+  }, [currentStep, progressAnim]);
 
   return (
     <View style={styles.progressContainer}>
