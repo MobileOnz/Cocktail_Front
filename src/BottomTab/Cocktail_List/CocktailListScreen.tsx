@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { View, StyleSheet, Image, ScrollView, FlatList, SafeAreaView, Dimensions } from 'react-native';
 import { Appbar, Button, Divider, IconButton, Text } from 'react-native-paper';
 import theme from '../../assets/styles/theme';
@@ -10,7 +10,9 @@ import PillStyleStatus from '../../Components/PillStyleStatus';
 import PagerView from 'react-native-pager-view';
 import CocktailCard from '../../Components/CocktailCard';
 import { useNavigation } from '@react-navigation/native';
-const Maps = () => {
+import OpenBottomSheet, { OpenBottomSheetHandle } from '../../Components/BottomSheet/OpenBottomSheet';
+import FilterBottomSheet from '../../Components/BottomSheet/FilterBottomSheet';
+const Maps = ({ sheetRef }: { sheetRef: React.RefObject<OpenBottomSheetHandle> }) => {
   const { width } = Dimensions.get('window');
   const { cocktails } = useBestCocktail();
   const { newCocktails } = useNewCocktail();
@@ -18,6 +20,10 @@ const Maps = () => {
   const [pageIndex, setPageIndex] = useState(0);
   const page = [];
   const navigation = useNavigation();
+  const bottomSheet = () => {
+
+    sheetRef.current?.open()
+  }
 
   for (let i = 0; i < newCocktails.length; i += 3) {
     page.push(newCocktails.slice(i, i + 3));
@@ -45,11 +51,13 @@ const Maps = () => {
       </Appbar.Header>
 
 
+
       {/* 필터 영역 */}
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.filterView}
+
       >
         {['최신순', '도수', '스타일', '맛', '베이스'].map((label, idx) => (
           <Button
@@ -67,6 +75,7 @@ const Maps = () => {
             }}
             style={[styles.chip, styles.chipUnselected]}
             labelStyle={[styles.chipLabel]}
+            onPress={() => bottomSheet()}
           >
             {label}
           </Button>
@@ -263,6 +272,14 @@ const Maps = () => {
         />
 
       </ScrollView>
+
+      {/* 필터 바텀시트 영역 */}
+
+      <OpenBottomSheet ref={sheetRef}>
+        <FilterBottomSheet />
+
+      </OpenBottomSheet>
+
 
 
       {/* 추후 구글 Add 추가하기 */}
