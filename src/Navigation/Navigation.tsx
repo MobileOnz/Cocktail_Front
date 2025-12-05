@@ -13,6 +13,7 @@ import SignupScreen from '../Screens/SignupScreen';
 import ProfileScreen from '../Screens/ProfileScreen';
 import TermsAndConditionsScreen from '../Screens/TermsAndConditionsScreen';
 import { CocktailDetailScreen } from '../Components/CocktailDetail/CocktailDetailScreen';
+import CocktailBoxScreen from '../Screens/CocktailBox/CocktailBoxScreen';
 
 export type BottomTabParamList = {
   지도: undefined;
@@ -49,6 +50,10 @@ export type RootStackParamList = {
   SignupScreen: { code?: string };
   TermsAndConditionsScreen: undefined
   CocktailDetailScreen: { cocktailId: number }
+  TermsAndConditionsScreen: undefined;
+
+  CocktailBoxScreen: undefined
+
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -71,6 +76,7 @@ const Navigation: React.FC = () => {
         <Stack.Screen name="CocktailDetailScreen" component={CocktailDetailScreen} />
         <Stack.Screen name="SignupScreen" component={SignupScreen} />
         <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
+        <Stack.Screen name='CocktailBoxScreen' component={CocktailBoxScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

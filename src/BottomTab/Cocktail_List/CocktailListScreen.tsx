@@ -48,7 +48,7 @@ const Maps = () => {
 
         {/* 오른쪽 아이콘 */}
         <Appbar.Action icon="magnify" onPress={() => { navigation.navigate('SearchScreen' as never); }} />
-        <Appbar.Action icon="bookmark-outline" onPress={() => { }} />
+        <Appbar.Action icon="bookmark-outline" onPress={() => { navigation.navigate('CocktailBoxScreen' as never) }} />
       </Appbar.Header>
 
       {/* 필터 영역 */}
