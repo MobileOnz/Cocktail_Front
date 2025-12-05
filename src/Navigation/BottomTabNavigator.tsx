@@ -25,8 +25,8 @@ const Tab = createBottomTabNavigator<BottomTabParamList>();
 
 const BottomTabNavigator = () => {
   const sheetRef = useRef<OpenBottomSheetHandle>(null);
-  const navigation = useNavigation();
-  const [isLoginSheetVisible, setLoginSheetVisible] = useState(false);
+
+  const [_isLoginSheetVisible, setLoginSheetVisible] = useState(false);
   const [_isLoggedIn, setIsLoggedIn] = useState(false);
 
   // 맞춤 추천 탭 클릭 시 로그인 체크
