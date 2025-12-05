@@ -7,7 +7,6 @@ import React, {
 import BottomSheet, {
     BottomSheetBackdrop,
     BottomSheetBackdropProps,
-    BottomSheetScrollView,
 } from '@gorhom/bottom-sheet';
 import theme from '../../assets/styles/theme';
 import { View } from 'react-native';

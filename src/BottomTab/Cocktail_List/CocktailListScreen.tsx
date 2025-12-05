@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { View, StyleSheet, Image, ScrollView, FlatList, SafeAreaView, Dimensions } from 'react-native';
 import { Appbar, Button, Divider, IconButton, Text } from 'react-native-paper';
 import theme from '../../assets/styles/theme';

@@ -5,12 +5,9 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { BlurView } from '@react-native-community/blur';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-import MapScreen from '../BottomTab/Cocktail_List/CocktailListScreen';
 import CocktailBookScreen from '../BottomTab/CocktailBookScreen';
 import RecommendationsScreen from '../BottomTab/RecommendationIntroScreen';
 import MyPageScreen from '../BottomTab/MyPageScreen';
-import LoginBottomSheet from '../BottomSheet/LoginBottomSheetProps';
 import theme from '../assets/styles/theme';
 import {
   widthPercentage,
