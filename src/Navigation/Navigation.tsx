@@ -12,6 +12,8 @@ import SignupScreen from '../Screens/SignupScreen';
 import ProfileScreen from '../Screens/ProfileScreen';
 import TermsAndConditionsScreen from '../Screens/TermsAndConditionsScreen';
 import RecommendationScreen from '../Screens/Recommend/RecommendationScreen'
+import GuideScreen from '../Screens/Guide/GuideScreen'
+import GuideDetailScreen from '../Screens/Guide/GuideDetail';
 
 export type BottomTabParamList = {
   지도: undefined;
@@ -45,6 +47,12 @@ export type RootStackParamList = {
   };
   ProfileScreen: undefined;
   RecommendationIntro: undefined;
+  GuideScreen: undefined;
+  GuideDetailScreen: {
+    id: number,
+    src: any,
+    title: string
+  };
   SignupScreen: { code?: string };
   TermsAndConditionsScreen: undefined;
 
@@ -67,7 +75,8 @@ const Navigation: React.FC = () => {
         <Stack.Screen name="RecommendationHome" component={RecommendationScreen} />
         <Stack.Screen name="LoadingScreen" component={LoadingScreen} />
         <Stack.Screen name="ResultScreen" component={ResultScreen} />
-
+        <Stack.Screen name="GuideScreen" component={GuideScreen} />
+        <Stack.Screen name="GuideDetailScreen" component={GuideDetailScreen} />
         <Stack.Screen name="SignupScreen" component={SignupScreen} />
         <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
       </Stack.Navigator>
