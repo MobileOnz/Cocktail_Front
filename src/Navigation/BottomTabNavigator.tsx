@@ -20,7 +20,6 @@ import {
 // import { isTokenExpired } from '../tokenRequest/Token';
 import { BottomTabParamList } from './Navigation';
 import GuideScreen from '../Screens/Guide/GuideScreen';
-import GuideDetailScreen from '../Screens/Guide/GuideDetail';
 
 const Tab = createBottomTabNavigator<BottomTabParamList>();
 
