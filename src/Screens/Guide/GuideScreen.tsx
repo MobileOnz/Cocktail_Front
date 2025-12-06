@@ -1,9 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
   TouchableOpacity,
-  Animated,
   StyleSheet,
   Image,
   ScrollView,
@@ -11,7 +10,7 @@ import {
 } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../../Navigation/Navigation';
-import { widthPercentage, heightPercentage, fontPercentage, getResponsiveHeight } from '../../assets/styles/FigmaScreen';
+import { widthPercentage, heightPercentage, fontPercentage } from '../../assets/styles/FigmaScreen';
 
 type GuideSreenNavigationProp = StackNavigationProp<
   RootStackParamList,
@@ -24,8 +23,8 @@ interface Props {
 
 const GuideScreen: React.FC<Props> = ({ navigation }) => {
   const [viewType, setviewType] = useState(0)  
-  const [images, setImages] = useState([]);     // 서버에서 받아온 이미지
-  const [loading, setLoading] = useState(false); // 로딩 상태
+  // const [images, setImages] = useState([]);     // 서버에서 받아온 이미지
+  // const [loading, setLoading] = useState(false); // 로딩 상태
 
   // 테스트 이미지
   const testImages = [
