@@ -1,17 +1,14 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
   TouchableOpacity,
-  Animated,
   StyleSheet,
   Image,
-  ScrollView,
-  FlatList
 } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../../Navigation/Navigation';
-import { widthPercentage, heightPercentage, fontPercentage, getResponsiveHeight } from '../../assets/styles/FigmaScreen';
+import { widthPercentage, heightPercentage, fontPercentage } from '../../assets/styles/FigmaScreen';
 import PagerView from 'react-native-pager-view';
 
 type GuideDetailSreenNavigationProp = StackNavigationProp<
@@ -27,8 +24,8 @@ interface Props {
 
 const GuideDetailScreen: React.FC<Props> = ({ navigation, route}) => {
     // 넘겨받을 파라미터값 (이미지ID, 이미지URL)
-    const { id, src, title } = route.params
-    const [guides, setGuides] = useState([]);     // 서버에서 받아온 가이드
+    const {title } = route.params
+    // const [guides, setGuides] = useState([]);     // 서버에서 받아온 가이드
     const [ currentPage, setCurrentPage] = useState(0)
 
     // 공유
@@ -66,7 +63,7 @@ const GuideDetailScreen: React.FC<Props> = ({ navigation, route}) => {
             id: 5,
             image: require('../../assets/drawable/testGuide.jpg'),
             text: '시대별 발전',
-            subText: '초기에는 단순히 술과 과즙을 섞는 방식이었고, 19세기 후반 인공 제빙기의 출현으로 얼음 사용이 일반화되며 오늘날의 칵테일 문화가 형성되었습니다.'
+            subText: '초기에는 단순히 술과 과즙을 섞는 방식이었, 19세기 후반 인공 제빙기의 출현으로 얼음 사용이 일반화되며 오늘날의 칵테일 문화가 형성되었습니다.'
         },
         {
             id: 6,
