@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -7,7 +7,6 @@ import {
   StyleSheet,
   Image,
   Easing,
-  Platform,
 } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../Navigation/Navigation';
@@ -16,8 +15,16 @@ import {
   heightPercentage,
   fontPercentage,
 } from '../assets/styles/FigmaScreen';
+// import LottieView from 'lottie-react-native';
+import { Martini, Wine, GlassWater, BottleWine } from 'lucide-react-native';
 
-import LottieView from 'lottie-react-native';
+// 4가지 칵테일 잔 아이콘
+const icons = [
+  Martini,      // 마티니 - V자형 잔
+  BottleWine,        // 쿠페 - 낮고 둥근 잔 (와인 글래스 변형)
+  Wine,         // 와인 - 볼이 넓은 와인 잔
+  GlassWater,   // 하이볼 - 세로로 긴 잔
+];
 
 type RecommendationIntroScreenNavigationProp = StackNavigationProp<
   RootStackParamList,
@@ -30,9 +37,35 @@ interface Props {
 
 const RecommendationIntroScreen: React.FC<Props> = ({ navigation }) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
-
   const buttonScale = useRef(new Animated.Value(1)).current;
 
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const opacity = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    const animate = () => {
+    Animated.timing(opacity, {
+      toValue: 1,
+      duration: 400,
+      useNativeDriver: true,
+    }).start(() => {
+      setTimeout(() => {
+        Animated.timing(opacity, {
+          toValue: 0,
+          duration: 400,
+          useNativeDriver: true,
+        }).start(() => {
+          setCurrentIndex((prev) => (prev + 1) % icons.length);
+          animate();
+        });
+      }, 800);
+    });
+  };
+    animate();
+  }, [opacity]);
+
+
+  const IconComponent = icons[currentIndex];
 
   const handlePress = () => { //버튼 애니메이션 (누르면 움츠려들었다가 펴지는거)
       Animated.sequence([
@@ -49,7 +82,7 @@ const RecommendationIntroScreen: React.FC<Props> = ({ navigation }) => {
           useNativeDriver: true,
         }),
       ]).start(() => {
-        navigation.navigate('RecommendationFlow');
+        navigation.navigate('RecommendationHome');
       });
     };
 
@@ -61,6 +94,7 @@ const RecommendationIntroScreen: React.FC<Props> = ({ navigation }) => {
     }).start();
   }, [fadeAnim]);
 
+  // Gradient 바탕색 적용하기
   return (
     <View style={styles.container}>
       {/* 뒤로가기 버튼 */}
@@ -74,40 +108,56 @@ const RecommendationIntroScreen: React.FC<Props> = ({ navigation }) => {
         />
       </TouchableOpacity>
 
-      {/* 설명 텍스트 (페이드인 애니메이션) */}
-      <Animated.View style={{ opacity: fadeAnim }}>
-        <Text style={styles.description}>
-          오늘, 당신의 기분과 취향을 알려주세요.{'\n'}
-          완벽한 한 잔을 준비할게요.
-        </Text>
-      </Animated.View>
+      <Animated.View style={{opacity}}>
+        <IconComponent size={350} color="#FF9E8B" strokeWidth={1} fill="#FF9E8B" />
+      </Animated.View>      
 
       {/* 칵테일 이미지 */}
-      {
+      {/* {
         Platform.OS === 'ios' ? (
           <Image
-            source={require('../assets/drawable/cocktail_recommend.gif')}
+            source={require('../assets/drawable/Union.png')}
             style={styles.cocktailImage}
           />
         ) : (
-          <LottieView
-            source={require('../assets/drawable/cocktail_recommend.json')}
-            autoPlay
-            loop
+
+          <Image
+            source={require('../assets/drawable/Union.png')}
             style={styles.cocktailImage}
           />
+
+          // <LottieView
+          //   source={require('../assets/drawable/cocktail_recommend.json')}
+          //   autoPlay
+          //   loop
+          //   style={styles.cocktailImage}
+          // />
         )
-      }
+      } */}
+
+      {/* 설명 텍스트 (페이드인 애니메이션) */}
+      <Animated.View style={{ opacity: fadeAnim }}>
+        <Text style={styles.descriptionFirst}>
+          당신의 취향, 한 잔으로 알아볼까요?
+        </Text>
+        <Text style={styles.descriptionSecond}>
+          오늘은 달콤하게, 내일은 상큼하게.{'\n'}지금, 당신만의 칵테일을 찾아보세요.
+        </Text>
+      </Animated.View>
 
 
       {/* 버튼 */}
-      <Animated.View style = { { transform: [{ scale: buttonScale}] }}>
-      <TouchableOpacity
-        style={styles.confirmButton}
-        onPress={handlePress}
-      >
-        <Text style={styles.confirmButtonText}>나를 위한 칵테일 찾아보기</Text>
-      </TouchableOpacity>
+      <Animated.View style={[
+        { transform: [{ scale: buttonScale }] },
+        styles.confirmButtonContainer
+      ]}>
+
+        <TouchableOpacity
+          style={styles.confirmButton}
+          onPress={handlePress}
+        >
+          <Text style={styles.confirmButtonText}>시작하기</Text>
+        </TouchableOpacity>
       </Animated.View>
     </View>
   );
@@ -115,6 +165,8 @@ const RecommendationIntroScreen: React.FC<Props> = ({ navigation }) => {
 
 export default RecommendationIntroScreen;
 
+
+// TODO: 그라데이션 배경식 및 아이콘 적용 [npm install react-native-linear-gradient]
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -133,30 +185,36 @@ const styles = StyleSheet.create({
 
   },
   icon: {
-    width: widthPercentage(28),
-    height: widthPercentage(28),
+    width: widthPercentage(24),
+    height: widthPercentage(24),
 
   },
-  description: {
+  descriptionFirst: {
     width: widthPercentage(375),
-    fontSize: fontPercentage(18),
-    lineHeight: fontPercentage(26),
-    fontWeight: '500',
+    fontSize: fontPercentage(20),
+    marginTop: heightPercentage(20),
+    color: '#1B1B1B',
+    fontWeight: '600',
     textAlign: 'center',
-    paddingVertical: heightPercentage(12),
-    paddingHorizontal: widthPercentage(16),
-    marginTop: heightPercentage(150),
+  },
+  descriptionSecond: {
+    width: widthPercentage(375),
+    fontSize: fontPercentage(14),
+    lineHeight: fontPercentage(20),
+    fontWeight: 'medium',
+    textAlign: 'center',
+    color: '#BDBDBD',
+    marginTop: heightPercentage(8),
   },
   cocktailImage: {
-    width: widthPercentage(260),
-    height: heightPercentage(260),
-    borderRadius: 8,
-    marginVertical: heightPercentage(20),
+    width: widthPercentage(179),
+    height: heightPercentage(335),
+    resizeMode: 'contain'
   },
   confirmButton: {
-    width: widthPercentage(344),
-    height: heightPercentage(48),
-    backgroundColor: '#21103C',
+    width: widthPercentage(343),
+    height: heightPercentage(52),
+    backgroundColor: '#313131',
     borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
@@ -167,6 +225,11 @@ const styles = StyleSheet.create({
   confirmButtonText: {
     fontSize: fontPercentage(16),
     color: '#FFFFFF',
-    fontWeight: 'bold',
+    fontWeight: '500'
   },
+  confirmButtonContainer: {
+    position: 'absolute',
+    bottom: 120,
+    alignItems: 'center',
+  }
 });
