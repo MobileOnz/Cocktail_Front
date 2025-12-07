@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { Image, TouchableOpacity, View } from 'react-native';
+import { Image, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { BlurView } from '@react-native-community/blur';
 import { useNavigation } from '@react-navigation/native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+// import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import MapScreen from '../BottomTab/Cocktail_List/CocktailListScreen';
 import CocktailBookScreen from '../BottomTab/CocktailBookScreen';
@@ -17,8 +17,9 @@ import {
   heightPercentage,
   fontPercentage,
 } from '../assets/styles/FigmaScreen';
-import { isTokenExpired } from '../tokenRequest/Token';
+// import { isTokenExpired } from '../tokenRequest/Token';
 import { BottomTabParamList } from './Navigation';
+import GuideScreen from '../Screens/Guide/GuideScreen';
 
 const Tab = createBottomTabNavigator<BottomTabParamList>();
 
@@ -28,43 +29,43 @@ const BottomTabNavigator = () => {
   const [_isLoggedIn, setIsLoggedIn] = useState(false);
 
   // 맞춤 추천 탭 클릭 시 로그인 체크
-  const handleRecommendationPress = async () => {
-    try {
-      const token = await AsyncStorage.getItem('accessToken');
+  // const handleRecommendationPress = async () => {
+  //   try {
+  //     const token = await AsyncStorage.getItem('accessToken');
 
-      if (!token) {
-        setIsLoggedIn(false);
-        setLoginSheetVisible(true);
-        return;
-      }
+  //     if (!token) {
+  //       setIsLoggedIn(false);
+  //       setLoginSheetVisible(true);
+  //       return;
+  //     }
 
-      const expired = await isTokenExpired();
+  //     const expired = await isTokenExpired();
 
-      if (expired) {
-        setIsLoggedIn(false);
-        setLoginSheetVisible(true);
-        return;
-      }
+  //     if (expired) {
+  //       setIsLoggedIn(false);
+  //       setLoginSheetVisible(true);
+  //       return;
+  //     }
 
-      // 유효한 토큰
-      setIsLoggedIn(true);
-    } catch (error) {
-      console.error('🔒 토큰 확인 중 오류 발생:', error);
-      setLoginSheetVisible(true);
-    }
-  };
+  //     // 유효한 토큰
+  //     setIsLoggedIn(true);
+  //   } catch (error) {
+  //     console.error('🔒 토큰 확인 중 오류 발생:', error);
+  //     setLoginSheetVisible(true);
+  //   }
+  // };
 
   // 커스텀 탭 버튼
-  const CustomTabBarButton = (props: any) => (
-    <TouchableOpacity
-      {...props}
-      onPress={() => {
-        console.log('🖲 CustomTabBarButton 클릭됨!');
-        handleRecommendationPress();
-      }}
-      activeOpacity={1}
-    />
-  );
+  // const CustomTabBarButton = (props: any) => (
+  //   <TouchableOpacity
+  //     {...props}
+  //     onPress={() => {
+  //       console.log('🖲 CustomTabBarButton 클릭됨!');
+  //       handleRecommendationPress();
+  //     }}
+  //     activeOpacity={1}
+  //   />
+  // );
 
   return (
     <View style={{ flex: 1 }}>
@@ -94,6 +95,8 @@ const BottomTabNavigator = () => {
             } else if (route.name === '칵테일 백과') {
               iconSource = require('../assets/drawable/dictionary.png');
             } else if (route.name === '맞춤 추천') {
+              iconSource = require('../assets/drawable/recommend.png');
+            } else if (route.name === '가이드') {
               iconSource = require('../assets/drawable/recommend.png');
             } else if (route.name === '마이페이지') {
               iconSource = require('../assets/drawable/mypage.png');
@@ -132,9 +135,19 @@ const BottomTabNavigator = () => {
           component={RecommendationsScreen}
           options={{
             headerShown: false,
-            tabBarButton: CustomTabBarButton,
+            // tabBarButton: CustomTabBarButton,
           }}
         />
+
+        <Tab.Screen
+          name="가이드"
+          component={GuideScreen}
+          options={{
+            headerShown: false,
+            // tabBarButton: CustomTabBarButton,
+          }}
+        />
+
         <Tab.Screen name="마이페이지" component={MyPageScreen} options={{ headerShown: false }} />
       </Tab.Navigator>
 
