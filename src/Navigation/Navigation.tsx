@@ -11,6 +11,7 @@ import ResultScreen from '../Screens/ResultScreen';
 import SignupScreen from '../Screens/SignupScreen';
 import ProfileScreen from '../Screens/ProfileScreen';
 import TermsAndConditionsScreen from '../Screens/TermsAndConditionsScreen';
+import { CocktailDetailScreen } from '../Components/CocktailDetail/CocktailDetailScreen';
 import RecommendationScreen from '../Screens/Recommend/RecommendationScreen'
 import GuideScreen from '../Screens/Guide/GuideScreen'
 import GuideDetailScreen from '../Screens/Guide/GuideDetail';
@@ -55,6 +56,8 @@ export type RootStackParamList = {
     title: string
   };
   SignupScreen: { code?: string };
+  TermsAndConditionsScreen: undefined
+  CocktailDetailScreen: { cocktailId: number }
   TermsAndConditionsScreen: undefined;
 
   CocktailBoxScreen: undefined
@@ -78,6 +81,7 @@ const Navigation: React.FC = () => {
         <Stack.Screen name="RecommendationHome" component={RecommendationScreen} />
         <Stack.Screen name="LoadingScreen" component={LoadingScreen} />
         <Stack.Screen name="ResultScreen" component={ResultScreen} />
+        <Stack.Screen name="CocktailDetailScreen" component={CocktailDetailScreen} />
         <Stack.Screen name="GuideScreen" component={GuideScreen} />
         <Stack.Screen name="GuideDetailScreen" component={GuideDetailScreen} />
         <Stack.Screen name="SignupScreen" component={SignupScreen} />
