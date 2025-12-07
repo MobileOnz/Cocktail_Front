@@ -3,7 +3,6 @@ import { Image, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { BlurView } from '@react-native-community/blur';
-import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CocktailBookScreen from '../BottomTab/CocktailBookScreen';
 import RecommendationsScreen from '../BottomTab/RecommendationIntroScreen';
