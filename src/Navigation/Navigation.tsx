@@ -3,10 +3,9 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import LoginScreen from '../Screens/Login';
-import Maps from '../BottomTab/Cocktail_List/CocktailListScreen';
+import Home from '../BottomTab/Cocktail_List/CocktailListScreen';
 import SearchScreen from '../Screens/Search/SearchScreen';
 import BottomTabNavigator from './BottomTabNavigator';
-import RecommendationFlowScreen from '../Screens/RecommendationFlowScreen';
 import LoadingScreen from '../Screens/LoadingScreen';
 import ResultScreen from '../Screens/ResultScreen';
 import SignupScreen from '../Screens/SignupScreen';
@@ -15,6 +14,14 @@ import TermsAndConditionsScreen from '../Screens/MyPage/TermsAndConditionsScreen
 import CocktailBoxScreen from '../Screens/CocktailBox/CocktailBoxScreen';
 import QuitScreen from '../Screens/MyPage/QuitScreen'
 import PrivacyPolicyScreen from '../Screens/MyPage/PrivacyPolicyScreen'
+import ProfileScreen from '../Screens/ProfileScreen';
+import TermsAndConditionsScreen from '../Screens/TermsAndConditionsScreen';
+import { CocktailDetailScreen } from '../Components/CocktailDetail/CocktailDetailScreen';
+import RecommendationScreen from '../Screens/Recommend/RecommendationScreen'
+import GuideScreen from '../Screens/Guide/GuideScreen'
+import GuideDetailScreen from '../Screens/Guide/GuideDetail';
+import CocktailBoxScreen from '../Screens/CocktailBox/CocktailBoxScreen';
+import SearchResultScreen from '../Screens/SearchResult/SearchResultScreen';
 
 export type BottomTabParamList = {
   지도: undefined;
@@ -25,7 +32,7 @@ export type BottomTabParamList = {
 export type RootStackParamList = {
   Onboarding: undefined;
   Login: undefined;
-  Maps: undefined;
+  Home: undefined;
   SearchScreen: { initialKeyword?: string };
   BottomTabNavigator: {
     screen?: string;
@@ -49,9 +56,18 @@ export type RootStackParamList = {
   ProfileScreen: undefined;
   QuitScreen: undefined;
   RecommendationIntro: undefined;
+  GuideScreen: undefined;
+  GuideDetailScreen: {
+    id: number,
+    src: any,
+    title: string
+  };
   SignupScreen: { code?: string };
   TermsAndConditionsScreen: undefined;
   PrivacyPolicyScreen: undefined;
+  TermsAndConditionsScreen: undefined
+  CocktailDetailScreen: { cocktailId: number }
+  SearchResultScreen: { keyword: string }
   CocktailBoxScreen: undefined
 
 };
@@ -69,16 +85,19 @@ const Navigation: React.FC = () => {
         <Stack.Screen name="PrivacyPolicyScreen" component={PrivacyPolicyScreen} />
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="SearchScreen" component={SearchScreen} />
-        <Stack.Screen name="Maps" component={Maps} />
+        <Stack.Screen name="Home" component={Home} />
         <Stack.Screen name="BottomTabNavigator" component={BottomTabNavigator} />
-        <Stack.Screen name="RecommendationFlow" component={RecommendationFlowScreen} />
+        <Stack.Screen name="RecommendationHome" component={RecommendationScreen} />
         <Stack.Screen name="LoadingScreen" component={LoadingScreen} />
         <Stack.Screen name="ResultScreen" component={ResultScreen} />
-
+        <Stack.Screen name="CocktailDetailScreen" component={CocktailDetailScreen} />
+        <Stack.Screen name="GuideScreen" component={GuideScreen} />
+        <Stack.Screen name="GuideDetailScreen" component={GuideDetailScreen} />
         <Stack.Screen name="SignupScreen" component={SignupScreen} />
         <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
         <Stack.Screen name="QuitScreen" component={QuitScreen} />
         <Stack.Screen name='CocktailBoxScreen' component={CocktailBoxScreen} />
+        <Stack.Screen name='SearchResultScreen' component={SearchResultScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
