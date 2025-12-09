@@ -1,8 +1,6 @@
 import { API_BASE_URL } from '@env';
-import { getToken, tokenRefresh } from './Token';
+import { getToken, } from './Token';
 import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
 
 const instance = axios.create({
   baseURL: API_BASE_URL,
@@ -13,7 +11,7 @@ instance.interceptors.request.use(
 
   async (config) => {
     const accessToken = await getToken();
-    const { authRequired, authOptional } = config as any; // 토큰 선택, 필수 부분 체크하기
+    // const { authRequired, authOptional } = config as any; // 토큰 선택, 필수 부분 체크하기
 
     // if (authRequired){
     //   if(!accessToken){

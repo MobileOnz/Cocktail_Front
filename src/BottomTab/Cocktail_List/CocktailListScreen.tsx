@@ -20,7 +20,6 @@ import PagerView from 'react-native-pager-view';
 import CocktailCard from '../../Components/CocktailCard';
 import { useNavigation } from '@react-navigation/native';
 const Home = () => {
-  const { width } = Dimensions.get('window');
   const { cocktails } = useBestCocktail();
   const { newCocktails } = useNewCocktail();
   const { allCocktails } = useCocktailLIst();
