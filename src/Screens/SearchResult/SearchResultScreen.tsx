@@ -34,7 +34,9 @@ const SearchResultScreen = ({ navigation, route }: Props) => {
               <IconButton
                 icon="chevron-left"
                 size={30}
-                onPress={() => navigation.navigate("Home")}
+                onPress={() => navigation.navigate("BottomTabNavigator", {
+                  screen: "홈"
+                })}
               />
               <View style={styles.search}>
                 <Icon source="magnify" size={24} color='#BDBDBD' />
