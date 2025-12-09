@@ -1,5 +1,5 @@
-import { CocktailDetailDto } from '../DTO/CocktailDetailDto';
+import { CocktailDto } from "../dto/CocktailDto";
 
 export interface CocktailRepository {
-  getDetail(id: number): Promise<CocktailDetailDto>;
+  getDetail(id: number): Promise<CocktailDto>;
 }
