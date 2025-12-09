@@ -25,7 +25,7 @@ const MyPageScreen = () => {
     Linking.openURL('https://sites.google.com/view/onz-info/');
 };
   const [profileImageUri, setProfileImageUri] = useState<string | null>(null);
-  const [nickname, setNickname] = useState('');
+  const [nickname, setNickname] = useState('aa');
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
 
 const handleWithdraw = async () => {
@@ -94,31 +94,31 @@ const handleWithdraw = async () => {
     return unsubscribe;
   }, [navigation]);
 
-  useEffect(() => {
-    const checkTokenAndProfile = async () => {
-      try {
-        const res = await instance.get('/api/get/member', {
-        authOptional: true,
-        }as any);
-        if (res.data.code === 1) {
-          setIsLoggedIn(true);
-          setNickname(res.data.data.nickname);
-        } else {
-          setIsLoggedIn(false);
-          setNickname('');
-          setProfileImageUri(null); // <- 프로필 초기화는 유지
-        }
-      } catch (err) {
-        console.log('🚨 로그인 체크 실패:', err);
-        setIsLoggedIn(false);
-        setNickname('');
-        setProfileImageUri(null);
-      }
-    };
+  // useEffect(() => {
+  //   const checkTokenAndProfile = async () => {
+  //     try {
+  //       const res = await instance.get('/api/get/member', {
+  //       authOptional: true,
+  //       }as any);
+  //       if (res.data.code === 1) {
+  //         setIsLoggedIn(true);
+  //         setNickname(res.data.data.nickname);
+  //       } else {
+  //         setIsLoggedIn(false);
+  //         setNickname('');
+  //         setProfileImageUri(null); // <- 프로필 초기화는 유지
+  //       }
+  //     } catch (err) {
+  //       console.log('🚨 로그인 체크 실패:', err);
+  //       setIsLoggedIn(false);
+  //       setNickname('');
+  //       setProfileImageUri(null);
+  //     }
+  //   };
 
-    const unsubscribe = navigation.addListener('focus', checkTokenAndProfile);
-    return unsubscribe;
-  }, [navigation]);
+  //   const unsubscribe = navigation.addListener('focus', checkTokenAndProfile);
+  //   return unsubscribe;
+  // }, [navigation]);
 
 
 
@@ -143,41 +143,62 @@ const handleWithdraw = async () => {
             }}
           />
       </View> */}
-      <TouchableOpacity style={styles.loginContainer} onPress={handleLoginPress}>
-        <View style={styles.profileInfoContainer}>
-        {isLoggedIn && (
-          <Image
-            source={{ uri: profileImageUri ?? '' }}
-            style={styles.profileImage}
-          />
-        )}
+      
+      <View style={styles.topBar}>
+        <Text style={styles.topTitleText}>마이페이지</Text>
+      </View>
 
+      {/* 광고 이미지 넣기*/}
+      {isLoggedIn && <View style={styles.bannerAd}></View>}
+
+      {/* 로그인 O */}
+      {isLoggedIn ? (
+        <>
+          <TouchableOpacity style={styles.profileInfoContainer} onPress={handleLoginPress}>
+            <Image
+              source={require('../assets/drawable/profile.png')}
+              style={styles.profileImage}
+            />
+            <Text style={styles.userNickNmText}>사용자 닉네임</Text>
+            <Image source={require('../assets/drawable/right-chevron.png')} style={styles.profilerightArrow} />
+          </TouchableOpacity>
+        
+          <TouchableOpacity style={styles.cocktailBox}>
+            <Text style={styles.cocktailBoxText}>나의 칵테일 보관함</Text>
+            <Image source={require('../assets/drawable/bookmark.png')} style={styles.cockTailBookmark} />
+          </TouchableOpacity>
+        </>
+      ) : (
+        <TouchableOpacity style={styles.loginContainer} onPress={handleLoginPress}>
           <Text style={styles.loginText}>
-            {isLoggedIn ? nickname : '로그인이 필요합니다.'}
-          </Text>
-        </View>
-        <Image source={require('../assets/drawable/right-chevron.png')} style={styles.profilerightArrow} />
-      </TouchableOpacity>
+            {isLoggedIn ? nickname : '로그인・회원가입'}
+          </Text> 
+        </TouchableOpacity>
+      )}
+
+      {/* 광고 이미지 넣기*/}
+      {!isLoggedIn && <View style={styles.bannerAd}></View>}
+
+
 
       <Text style={styles.supportTitle}>고객지원</Text>
       <View style={styles.supportSection}>
-        {renderSupportItem('question_mark.png', '1:1 문의하기')}
-        <View style={styles.divider} />
-        {renderSupportItem('smile_face.png', '서비스 리뷰 남기기')}
-        <View style={styles.divider} />
-        <TouchableOpacity onPress={()=>navigation.navigate('TermsAndConditionsScreen')}>
-        {renderSupportItem('book_closed.png', '이용약관')}
+        {renderSupportItem('버전 정보')}
+        <TouchableOpacity>
+          {renderSupportItem('1:1 문의하기')}
         </TouchableOpacity>
-        <View style={styles.divider} />
-        <TouchableOpacity onPress={link}>
-        {renderSupportItem('lock.png', '개인정보처리방침')}
+        <TouchableOpacity>
+          {renderSupportItem('서비스 리뷰 남기기')}
         </TouchableOpacity>
       </View>
 
-
-      {/* 개인정보처리방침 아래 divider */}
-      {isLoggedIn && <View style={styles.bottomDivider} />}
-
+      <Text style={styles.supportSecondTitle}>서비스 약관</Text>
+      <TouchableOpacity onPress={()=>navigation.navigate('TermsAndConditionsScreen')}>
+        {renderSupportItem('이용약관')}
+      </TouchableOpacity>
+      <TouchableOpacity onPress={()=>navigation.navigate('PrivacyPolicyScreen')}>
+        {renderSupportItem('개인정보 처리방침')}
+      </TouchableOpacity>
 
       {isLoggedIn && (
         <View>
@@ -185,10 +206,9 @@ const handleWithdraw = async () => {
             {renderSupportItemWithoutIcon('로그아웃')}
           </TouchableOpacity>
 
-          <View style={styles.divider} />
-          <TouchableOpacity onPress={() => setShowWithdrawModal(true)}>
+          {/* <TouchableOpacity onPress={() => setShowWithdrawModal(true)}>
             {renderSupportItemWithoutIcon('회원탈퇴')}
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
       )}
 
@@ -218,22 +238,17 @@ const iconMap: { [key: string]: any } = {
   'right-chevron.png': require('../assets/drawable/right-chevron.png'),
 };
 
-const renderSupportItem = (icon: string, text: string) => {
+const renderSupportItem = (text: string) => {
   return (
     <View style={styles.supportItem}>
-      <View style={styles.leftContent}>
-        <Image source={iconMap[icon]} style={styles.supportIcon} />
-        <Text style={styles.supportText}>{text}</Text>
-      </View>
-      <Image source={iconMap['right-chevron.png']} style={styles.rightArrow} />
+      <Text style={styles.supportText}>{text}</Text>
     </View>
   );
 };
 
 const renderSupportItemWithoutIcon = (text: string) => (
-  <View style={styles.supportItem}>
-    <Text style={[styles.supportText, { marginLeft: 0 }]}>{text}</Text>
-    <Image source={iconMap['right-chevron.png']} style={styles.rightArrow} />
+  <View style={[styles.supportItem, {marginTop: heightPercentage(8)}]}>
+    <Text style={[styles.supportText, { color: '#BDBDBD' }]}>{text}</Text>
   </View>
 );
 
@@ -245,18 +260,39 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fffcf3',
   },
+  topBar : {
+    width: '100%',
+    height: 52,
+    paddingHorizontal: widthPercentage(16),
+    paddingTop: heightPercentage(14),
+    paddingBottom: heightPercentage(10)
+  },
+  topTitleText: {
+    fontSize: fontPercentage(20),
+    fontWeight: '600',
+    color: '#1B1B1B',
+  },
   profileInfoContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginVertical : getResponsiveHeight(30,30,30,50,50,60),
+    marginHorizontal: widthPercentage(16),
+    paddingHorizontal: widthPercentage(8),
+    paddingVertical: heightPercentage(14),
+    height: heightPercentage(60),
+    marginTop: heightPercentage(24),
   },
   profileImage: {
-
-    width: widthPercentage(42),
-    height: widthPercentage(42),
+    width: widthPercentage(32),
+    height: widthPercentage(32),
     borderRadius: widthPercentage(21),
     marginRight: widthPercentage(12),
     backgroundColor: '#DDD',
+  },
+  userNickNmText: {
+    fontSize: fontPercentage(16),
+    color: '#1B1B1B',
+    fontWeight: '600',
+    flex: 1
   },
   withdrawText: {
     marginTop: heightPercentage(27),
@@ -266,35 +302,64 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
     marginLeft: widthPercentage(24),
   },
-  loginContainer: {
+  cocktailBox: {
     flexDirection: 'row',
+    alignContent: 'center',
+    height: heightPercentage(52),
+    marginHorizontal: widthPercentage(16),
+    paddingVertical: heightPercentage(14),
+    paddingHorizontal: widthPercentage(16),
+    marginTop: heightPercentage(24),
+    backgroundColor: '#313131',
+    borderRadius: 8
+  },
+  cocktailBoxText: {
+    flex: 1,
+    fontSize: fontPercentage(16),
+    color: '#FFFFFF',
+    fontWeight: '600',
+  },
+  loginContainer: {
+    justifyContent: 'center',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingLeft: widthPercentage(24),
-    paddingVertical: heightPercentage(12),
-    marginTop: heightPercentage(30),
+    marginHorizontal: heightPercentage(16),
+    height: heightPercentage(52),
+    paddingHorizontal: heightPercentage(14),
+    backgroundColor: '#313131',
+    borderRadius: 8,
+    marginTop: heightPercentage(16)
   },
   loginText: {
-    fontSize: fontPercentage(18),
-    fontWeight: 'bold',
-    color: '#2D2D2D',
+    fontSize: fontPercentage(16),
+    fontWeight: '600',
+    color: '#FFFFFF',
   },
   supportTitle: {
     fontSize: fontPercentage(14),
-    color: '#7D7A6F',
-    paddingLeft: widthPercentage(24),
-    paddingTop: heightPercentage(15),
+    color: '#BDBDBD',
+    fontWeight: '500',
+    paddingHorizontal: widthPercentage(16),
+    paddingVertical: heightPercentage(8),
+    marginTop: heightPercentage(24),
+    height: heightPercentage(36)
+  },
+  supportSecondTitle: {
+    fontSize: fontPercentage(14),
+    color: '#BDBDBD',
+    fontWeight: '500',
+    paddingHorizontal: widthPercentage(16),
+    paddingVertical: heightPercentage(8),
+    marginTop: heightPercentage(16),
+    height: heightPercentage(36)
   },
   supportSection: {
-    backgroundColor: '#fffcf3',
-    paddingTop: heightPercentage(27),
+    
   },
   supportItem: {
     flexDirection: 'row',
-    alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: heightPercentage(12),
-    paddingLeft: widthPercentage(24),
+    paddingVertical: heightPercentage(8),
+    paddingHorizontal: widthPercentage(20),
   },
   supportIcon: {
     width: widthPercentage(24),
@@ -302,15 +367,17 @@ const styles = StyleSheet.create({
   },
   supportText: {
     fontSize: fontPercentage(16),
-    color: '#2D2D2D',
-    marginLeft: widthPercentage(12),
+    color: '#1B1B1B',
+    fontWeight: '500'
   },
-   profilerightArrow: {
-    marginVertical : getResponsiveHeight(30,30,30,60,65,70),
+  profilerightArrow: {
     width: widthPercentage(24),
     height: widthPercentage(24),
-    alignSelf: 'flex-end',
-    marginRight: widthPercentage(18),
+  },
+  cockTailBookmark: {
+    width: widthPercentage(24),
+    height: widthPercentage(24),
+    tintColor: '#FFFFFF'
   },
   rightArrow: {
     width: widthPercentage(24),
@@ -318,21 +385,10 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-end',
     marginRight: widthPercentage(18),
   },
-  divider: {
-    width: widthPercentage(343),
-    height: 1,
-    backgroundColor: '#E0E0E0',
-    alignSelf: 'center',
-  },
-  leftContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
   bannerAd: {
-    width: widthPercentage(343),
     height: heightPercentage(56),
     alignItems: 'center',
-    marginTop: heightPercentage(72),
+    marginTop: heightPercentage(16),
   },
   bottomDivider: {
     height: heightPercentage(8),
