@@ -1,9 +1,7 @@
-import { StyleSheet } from 'react-native'
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { CocktailCard } from '../../model/domain/CocktailCard'
 import { CocktailSearchRepository } from '../../model/repository/SearchRepository';
 import axios from 'axios';
-import { useNavigation } from '@react-navigation/native';
 
 const useSearchResultViewModel = (keyword: string) => {
     const [results, setResults] = useState<CocktailCard[]>([]);
@@ -14,8 +12,10 @@ const useSearchResultViewModel = (keyword: string) => {
     const repository = useMemo(() => new CocktailSearchRepository(), [])
 
 
-    const fetchResult = async () => {
-        if (!keyword.trim) return;
+    const fetchResult = useCallback(async () => {
+        const trimmed = keyword.trim();
+        if (!trimmed)
+            return;
         setLoading(true)
         setError(null)
 
@@ -38,7 +38,7 @@ const useSearchResultViewModel = (keyword: string) => {
             setLoading(false)
         }
 
-    }
+    }, [keyword, repository])
 
     useEffect(() => {
         fetchResult()
