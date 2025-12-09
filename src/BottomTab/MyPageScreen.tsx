@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, Image, TouchableOpacity, Linking, SafeAreaView } from 'react-native';
-import { widthPercentage, heightPercentage, fontPercentage, getResponsiveHeight } from '../assets/styles/FigmaScreen';
+import React, { useState } from 'react';
+import { StyleSheet, Text, View, Image, TouchableOpacity, SafeAreaView } from 'react-native';
+import { widthPercentage, heightPercentage, fontPercentage } from '../assets/styles/FigmaScreen';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../Navigation/Navigation';
-import WithdrawBottomSheet from '../BottomSheet/WithdrawBottomSheet';
-import { useToast } from '../Components/ToastContext';
-import instance from '../tokenRequest/axios_interceptor';
-import SignOutModal from '../Components/SignOutModal';
+// import WithdrawBottomSheet from '../BottomSheet/WithdrawBottomSheet';
+// import { useToast } from '../Components/ToastContext';
+// import instance from '../tokenRequest/axios_interceptor';
+// import SignOutModal from '../Components/SignOutModal';
 
 //import { BannerAd, BannerAdSize, TestIds } from 'react-native-google-mobile-ads';
 
@@ -17,82 +17,82 @@ type NavigationProp = StackNavigationProp<RootStackParamList>;
 const MyPageScreen = () => {
   const navigation = useNavigation<NavigationProp>();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const { showToast } = useToast();
+  // const { showToast } = useToast();
 
-  const [showSignOutModal, setShowSignOutModal] = useState(false);
+  // const [showSignOutModal, setShowSignOutModal] = useState(false);
 
-  const link = () => {
-    Linking.openURL('https://sites.google.com/view/onz-info/');
-};
-  const [profileImageUri, setProfileImageUri] = useState<string | null>(null);
+//   const link = () => {
+//     Linking.openURL('https://sites.google.com/view/onz-info/');
+// };
+  // const [profileImageUri, setProfileImageUri] = useState<string | null>(null);
   const [nickname, setNickname] = useState('aa');
-  const [showWithdrawModal, setShowWithdrawModal] = useState(false);
+  // const [showWithdrawModal, setShowWithdrawModal] = useState(false);
 
-const handleWithdraw = async () => {
-  try {
-    await instance.delete('/api/delete/member', {
-      authRequired: true,
-    }as any);
-    showToast('탈퇴가 완료되었습니다.');
+// const handleWithdraw = async () => {
+//   try {
+//     await instance.delete('/api/delete/member', {
+//       authRequired: true,
+//     }as any);
+//     showToast('탈퇴가 완료되었습니다.');
 
-    setIsLoggedIn(false);
-    setNickname('');
-    setProfileImageUri(null);
-  } catch (err: any) {
-    console.log('🚨 탈퇴 오류:', err.response?.data || err.message);
-  } finally {
-    setShowWithdrawModal(false);
-  }
-};
-
-
-  const handleLogout = async () => {
-    try {
-      await instance.post('/api/auth/logout', null, {
-        authRequired: true,
-      }as any);
-      showToast('로그아웃 되었습니다.');
-      setIsLoggedIn(false);
-      setNickname('');
-      setProfileImageUri(null);
-    } catch (err) {
-      console.error('🚨 로그아웃 실패:', err);
-      showToast('로그아웃 실패');
-    } finally {
-      setShowSignOutModal(false);
-    }
-  };
+//     setIsLoggedIn(false);
+//     setNickname('');
+//     setProfileImageUri(null);
+//   } catch (err: any) {
+//     console.log('🚨 탈퇴 오류:', err.response?.data || err.message);
+//   } finally {
+//     setShowWithdrawModal(false);
+//   }
+// };
 
 
-  useEffect(() => {
-    const fetchProfileImage = async () => {
-      try {
-        const res = await instance.get('/api/profile', { responseType: 'blob',authOptional: true } as any);
+  // const handleLogout = async () => {
+  //   try {
+  //     await instance.post('/api/auth/logout', null, {
+  //       authRequired: true,
+  //     }as any);
+  //     showToast('로그아웃 되었습니다.');
+  //     setIsLoggedIn(false);
+  //     setNickname('');
+  //     setProfileImageUri(null);
+  //   } catch (err) {
+  //     console.error('🚨 로그아웃 실패:', err);
+  //     showToast('로그아웃 실패');
+  //   } finally {
+  //     setShowSignOutModal(false);
+  //   }
+  // };
 
-        const contentType = res.headers['content-type'];
 
-        if (contentType?.includes('application/json')) {
-          const { data } = res.data;
-          if (data) {
-            const fullUri = data.startsWith('http') ? data : `${res.config.baseURL}${data.startsWith('/') ? '' : '/'}${data}`;
-            setProfileImageUri(fullUri);
-          }
-        } else if (contentType?.startsWith('image/')) {
-          const reader = new FileReader();
-          reader.onloadend = () => {
-            const base64data = reader.result as string;
-            setProfileImageUri(base64data);
-          };
-          reader.readAsDataURL(res.data);
-        }
-      } catch (e) {
-        console.warn('프로필 이미지 오류:', e);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchProfileImage = async () => {
+  //     try {
+  //       const res = await instance.get('/api/profile', { responseType: 'blob',authOptional: true } as any);
 
-    const unsubscribe = navigation.addListener('focus', fetchProfileImage);
-    return unsubscribe;
-  }, [navigation]);
+  //       const contentType = res.headers['content-type'];
+
+  //       if (contentType?.includes('application/json')) {
+  //         const { data } = res.data;
+  //         if (data) {
+  //           const fullUri = data.startsWith('http') ? data : `${res.config.baseURL}${data.startsWith('/') ? '' : '/'}${data}`;
+  //           setProfileImageUri(fullUri);
+  //         }
+  //       } else if (contentType?.startsWith('image/')) {
+  //         const reader = new FileReader();
+  //         reader.onloadend = () => {
+  //           const base64data = reader.result as string;
+  //           setProfileImageUri(base64data);
+  //         };
+  //         reader.readAsDataURL(res.data);
+  //       }
+  //     } catch (e) {
+  //       console.warn('프로필 이미지 오류:', e);
+  //     }
+  //   };
+
+  //   const unsubscribe = navigation.addListener('focus', fetchProfileImage);
+  //   return unsubscribe;
+  // }, [navigation]);
 
   // useEffect(() => {
   //   const checkTokenAndProfile = async () => {
@@ -212,7 +212,7 @@ const handleWithdraw = async () => {
         </View>
       )}
 
-      <WithdrawBottomSheet
+      {/* <WithdrawBottomSheet
         isVisible={showWithdrawModal}
         onClose={() => setShowWithdrawModal(false)}
         onWithdraw={handleWithdraw}
@@ -222,20 +222,12 @@ const handleWithdraw = async () => {
       visible={showSignOutModal}
       onClose={() => setShowSignOutModal(false)}
       onSignOut={handleLogout}
-    />
+    /> */}
 
     </SafeAreaView>
 
 
   );
-};
-
-const iconMap: { [key: string]: any } = {
-  'question_mark.png': require('../assets/drawable/question_mark.png'),
-  'smile_face.png': require('../assets/drawable/smile_face.png'),
-  'book_closed.png': require('../assets/drawable/book_closed.png'),
-  'lock.png': require('../assets/drawable/lock.png'),
-  'right-chevron.png': require('../assets/drawable/right-chevron.png'),
 };
 
 const renderSupportItem = (text: string) => {
