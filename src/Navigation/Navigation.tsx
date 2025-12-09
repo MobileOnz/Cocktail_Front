@@ -11,11 +11,8 @@ import ResultScreen from '../Screens/ResultScreen';
 import SignupScreen from '../Screens/SignupScreen';
 import ProfileScreen from '../Screens/MyPage/ProfileScreen';
 import TermsAndConditionsScreen from '../Screens/MyPage/TermsAndConditionsScreen';
-import CocktailBoxScreen from '../Screens/CocktailBox/CocktailBoxScreen';
 import QuitScreen from '../Screens/MyPage/QuitScreen'
 import PrivacyPolicyScreen from '../Screens/MyPage/PrivacyPolicyScreen'
-import ProfileScreen from '../Screens/ProfileScreen';
-import TermsAndConditionsScreen from '../Screens/TermsAndConditionsScreen';
 import { CocktailDetailScreen } from '../Components/CocktailDetail/CocktailDetailScreen';
 import RecommendationScreen from '../Screens/Recommend/RecommendationScreen'
 import GuideScreen from '../Screens/Guide/GuideScreen'
@@ -65,7 +62,6 @@ export type RootStackParamList = {
   SignupScreen: { code?: string };
   TermsAndConditionsScreen: undefined;
   PrivacyPolicyScreen: undefined;
-  TermsAndConditionsScreen: undefined
   CocktailDetailScreen: { cocktailId: number }
   SearchResultScreen: { keyword: string }
   CocktailBoxScreen: undefined
