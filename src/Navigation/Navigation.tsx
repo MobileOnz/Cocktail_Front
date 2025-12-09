@@ -10,9 +10,11 @@ import RecommendationFlowScreen from '../Screens/RecommendationFlowScreen';
 import LoadingScreen from '../Screens/LoadingScreen';
 import ResultScreen from '../Screens/ResultScreen';
 import SignupScreen from '../Screens/SignupScreen';
-import ProfileScreen from '../Screens/ProfileScreen';
-import TermsAndConditionsScreen from '../Screens/TermsAndConditionsScreen';
+import ProfileScreen from '../Screens/MyPage/ProfileScreen';
+import TermsAndConditionsScreen from '../Screens/MyPage/TermsAndConditionsScreen';
 import CocktailBoxScreen from '../Screens/CocktailBox/CocktailBoxScreen';
+import QuitScreen from '../Screens/MyPage/QuitScreen'
+import PrivacyPolicyScreen from '../Screens/MyPage/PrivacyPolicyScreen'
 
 export type BottomTabParamList = {
   지도: undefined;
@@ -45,10 +47,11 @@ export type RootStackParamList = {
     cocktailDescription: string;
   };
   ProfileScreen: undefined;
+  QuitScreen: undefined;
   RecommendationIntro: undefined;
   SignupScreen: { code?: string };
   TermsAndConditionsScreen: undefined;
-
+  PrivacyPolicyScreen: undefined;
   CocktailBoxScreen: undefined
 
 };
@@ -63,6 +66,7 @@ const Navigation: React.FC = () => {
         screenOptions={{ headerShown: false }}
       >
         <Stack.Screen name="TermsAndConditionsScreen" component={TermsAndConditionsScreen} />
+        <Stack.Screen name="PrivacyPolicyScreen" component={PrivacyPolicyScreen} />
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="SearchScreen" component={SearchScreen} />
         <Stack.Screen name="Maps" component={Maps} />
@@ -73,6 +77,7 @@ const Navigation: React.FC = () => {
 
         <Stack.Screen name="SignupScreen" component={SignupScreen} />
         <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
+        <Stack.Screen name="QuitScreen" component={QuitScreen} />
         <Stack.Screen name='CocktailBoxScreen' component={CocktailBoxScreen} />
       </Stack.Navigator>
     </NavigationContainer>
