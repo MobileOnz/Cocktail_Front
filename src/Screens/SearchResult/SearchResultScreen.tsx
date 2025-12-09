@@ -37,7 +37,7 @@ const SearchResultScreen = ({ navigation, route }: Props) => {
                 onPress={() => navigation.navigate("Home")}
               />
               <View style={styles.search}>
-                <Icon source="magnify" size={24} />
+                <Icon source="magnify" size={24} color='#BDBDBD' />
                 <Text style={styles.searchText}>{keyword}</Text>
               </View>
               <IconButton icon="close" size={30}
@@ -122,7 +122,7 @@ const styles = StyleSheet.create({
   search: {
     padding: 10,
     borderRadius: 8,
-    backgroundColor: '#F5F5F5',
+    backgroundColor: '#F3EFE6',
     width: '70%',
     justifyContent: 'flex-start',
     alignItems: 'center',
