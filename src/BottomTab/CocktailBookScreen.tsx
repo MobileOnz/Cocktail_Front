@@ -1,4 +1,4 @@
-import React, {useState, useRef,useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   View,
   Text,
@@ -11,7 +11,7 @@ import {
   Platform,
 } from 'react-native';
 //import { BannerAd, BannerAdSize, TestIds } from "react-native-google-mobile-ads";
-import CocktailDetailModal from '../Components/CocktailDetailModal';
+import CocktailDetailModal from '../Components/CocktailDetail/CocktailDetailScreen';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { widthPercentage, heightPercentage, fontPercentage, getResponsiveHeight } from '../assets/styles/FigmaScreen';
 
@@ -66,12 +66,12 @@ const categories = [
 ];
 const fetchCocktailById = async (id: number) => {
 
- const res = await instance.get('/api/public/cocktail', {
-  params: {
-    cocktailId: id,
-  },
-});
-return res.data.data;
+  const res = await instance.get('/api/public/cocktail', {
+    params: {
+      cocktailId: id,
+    },
+  });
+  return res.data.data;
 };
 
 //4씩 나누기
@@ -90,7 +90,7 @@ type CocktailData = {
   cocktail: {
     id: number;
     cocktail_name: string;
-    image_url : string;
+    image_url: string;
   };
 };
 type CategoryData = {
@@ -105,7 +105,7 @@ type CategoryData = {
 
 
 const CocktailBookScreen: React.FC = () => {
-   const insets = useSafeAreaInsets();
+  const insets = useSafeAreaInsets();
   const [_selectedCategoryIndex, setSelectedCategoryIndex] = useState<number | null>();
   const [categorizedCocktails, setCategorizedCocktails] = useState<CategoryData[]>([]);
   useEffect(() => {
@@ -127,7 +127,7 @@ const CocktailBookScreen: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const bannerRef = useRef<FlatList<any>>(null);
   const [selectedCocktailIndex, setSelectedCocktailIndex] = useState<number | null>(null);
-  const openModal = (cocktail: any, cocktailList: any[],  categoryIndex: number) => {
+  const openModal = (cocktail: any, cocktailList: any[], categoryIndex: number) => {
     console.log('🔥 클릭한 칵테일 데이터:', cocktail);
     const index = cocktailList.findIndex((c) => c.cocktail.id === cocktail.cocktail.id);
     setSelectedCocktailIndex(index);
@@ -155,12 +155,13 @@ const CocktailBookScreen: React.FC = () => {
 
 
   return (
-    <SafeAreaView style={[styles.safeContainer ,{
-          paddingBottom: Platform.OS === 'android' ? 24 : insets.bottom || 24  }]}>
+    <SafeAreaView style={[styles.safeContainer, {
+      paddingBottom: Platform.OS === 'android' ? 24 : insets.bottom || 24
+    }]}>
       <ScrollView style={styles.container}>
         {/* 상단 로고 & 아이콘 */}
         <View style={styles.header}>
-          <Image source={require('../assets/drawable/onz_logo.png')} style={[styles.logo, {resizeMode:'contain'}]} />
+          <Image source={require('../assets/drawable/onz_logo.png')} style={[styles.logo, { resizeMode: 'contain' }]} />
 
         </View>
 
@@ -204,8 +205,8 @@ const CocktailBookScreen: React.FC = () => {
             <View style={styles.categoryHeader}>
               <Image source={category.icon} style={styles.categoryIcon} />
               <Text style={styles.categoryTitle}>{category.title}</Text>
-              <View style={[styles.categoryDescriptionContainer, { backgroundColor: category.backgroundColor}]}>
-                <Text style={[styles.categoryDescription, {color: category.textColor}]}>{category.description}</Text>
+              <View style={[styles.categoryDescriptionContainer, { backgroundColor: category.backgroundColor }]}>
+                <Text style={[styles.categoryDescription, { color: category.textColor }]}>{category.description}</Text>
               </View>
             </View>
 
@@ -217,9 +218,9 @@ const CocktailBookScreen: React.FC = () => {
               renderItem={({ item }) => (
                 <TouchableOpacity onPress={() => openModal(item, category.items, index)} style={styles.cocktailCard}>
                   <Image source={item.cocktail.image_url
-                              ? { uri: item.cocktail.image_url }
-                              : require('../assets/drawable/cocktail.jpg')
-                              }style={styles.cocktailImage} />
+                    ? { uri: item.cocktail.image_url }
+                    : require('../assets/drawable/cocktail.jpg')
+                  } style={styles.cocktailImage} />
                   <Text style={styles.cocktailName}>{item.cocktail.cocktail_name}</Text>
                 </TouchableOpacity>
               )}
@@ -259,7 +260,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop : getResponsiveHeight(10,10,12,35,50,50),
+    marginTop: getResponsiveHeight(10, 10, 12, 35, 50, 50),
     paddingHorizontal: widthPercentage(15),
     paddingVertical: heightPercentage(10),
   },
