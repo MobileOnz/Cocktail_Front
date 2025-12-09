@@ -1,4 +1,4 @@
-import { CocktailDetailDto } from '../../model/DTO/CocktailDetailDto';
+import { CocktailDetailDto } from "../../model/dto/CocktailDetailDto";
 
 export const cocktailDetailTestData: CocktailDetailDto[] = [
     {
