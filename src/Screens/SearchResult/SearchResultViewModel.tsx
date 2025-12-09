@@ -1,5 +1,5 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React, { useEffect, useMemo, useState } from 'react'
+import { StyleSheet } from 'react-native'
+import { useEffect, useMemo, useState } from 'react'
 import { CocktailCard } from '../../model/domain/CocktailCard'
 import { CocktailSearchRepository } from '../../model/repository/SearchRepository';
 import axios from 'axios';
@@ -9,14 +9,9 @@ const useSearchResultViewModel = (keyword: string) => {
     const [results, setResults] = useState<CocktailCard[]>([]);
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
-    const navigation = useNavigation()
+    // const navigation = useNavigation()
 
     const repository = useMemo(() => new CocktailSearchRepository(), [])
-
-    const goBackHome = () => {
-
-
-    }
 
 
     const fetchResult = async () => {
@@ -59,5 +54,3 @@ const useSearchResultViewModel = (keyword: string) => {
 }
 
 export default useSearchResultViewModel
-
-const styles = StyleSheet.create({})

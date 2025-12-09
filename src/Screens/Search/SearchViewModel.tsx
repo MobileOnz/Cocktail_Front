@@ -1,7 +1,5 @@
 // src/viewmodels/SearchViewModel.ts
 import { useCallback, useEffect, useState } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import instance from '../../tokenRequest/axios_interceptor';
 import { RootStackParamList } from '../../Navigation/Navigation';
 import { StackNavigationProp } from '@react-navigation/stack';
 
@@ -23,8 +21,8 @@ export const useSearchViewModel = ({
 }: UseSearchViewModelParams) => {
     const [searchText, setSearchText] = useState('');
     const [suggestions, setSuggestions] = useState<string[]>([]);
-    const [recentNameSearches, setRecentNameSearches] = useState<SearchLog[]>([]);
-    const [recentMenuSearches, setRecentMenuSearches] = useState<SearchLog[]>([]);
+    const [recentNameSearches, _setRecentNameSearches] = useState<SearchLog[]>([]);
+    const [recentMenuSearches, _setRecentMenuSearches] = useState<SearchLog[]>([]);
 
     /** 검색 화면으로 이동 */
     const navigateToMap = useCallback((keyword: string) => {
