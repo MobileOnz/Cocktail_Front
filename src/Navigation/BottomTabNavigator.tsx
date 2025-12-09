@@ -6,7 +6,7 @@ import { BlurView } from '@react-native-community/blur';
 import { useNavigation } from '@react-navigation/native';
 // import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import MapScreen from '../BottomTab/Cocktail_List/CocktailListScreen';
+import Home from '../BottomTab/Cocktail_List/CocktailListScreen';
 import CocktailBookScreen from '../BottomTab/CocktailBookScreen';
 import RecommendationsScreen from '../BottomTab/RecommendationIntroScreen';
 import MyPageScreen from '../BottomTab/MyPageScreen';
@@ -128,7 +128,7 @@ const BottomTabNavigator = () => {
           tabBarInactiveTintColor: theme.bottomTextColor,
         })}
       >
-        <Tab.Screen name="지도" component={MapScreen} options={{ headerShown: false }} />
+        <Tab.Screen name="지도" component={Home} options={{ headerShown: false }} />
         <Tab.Screen name="칵테일 백과" component={CocktailBookScreen} options={{ headerShown: false }} />
         <Tab.Screen
           name="맞춤 추천"

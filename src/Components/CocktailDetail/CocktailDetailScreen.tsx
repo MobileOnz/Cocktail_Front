@@ -8,7 +8,7 @@ import PillStyleStatus from '../PillStyleStatus';
 import { RootStackParamList } from '../../Navigation/Navigation';
 import { CocktailDataSource } from '../../model/DataSource/CocktailDataSource';
 import { CocktailDetailViewModel } from './CocktailDetailViewModel';
-import { CocktailDetailDto } from '../../model/DTO/CocktailDetailDto';
+import { CocktailDetailDto } from '../../model/dto/CocktailDto';
 import { useNavigation } from '@react-navigation/native';
 import { fontPercentage, heightPercentage, widthPercentage } from '../../assets/styles/FigmaScreen';
 
