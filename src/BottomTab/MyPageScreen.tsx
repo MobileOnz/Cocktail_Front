@@ -16,7 +16,8 @@ type NavigationProp = StackNavigationProp<RootStackParamList>;
 
 const MyPageScreen = () => {
   const navigation = useNavigation<NavigationProp>();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn] = useState(false);
+  // const [isLoggedIn, setIsLoggedIn] = useState(false);
   // const { showToast } = useToast();
 
   // const [showSignOutModal, setShowSignOutModal] = useState(false);
@@ -25,7 +26,8 @@ const MyPageScreen = () => {
 //     Linking.openURL('https://sites.google.com/view/onz-info/');
 // };
   // const [profileImageUri, setProfileImageUri] = useState<string | null>(null);
-  const [nickname, setNickname] = useState('aa');
+  const [nickname] = useState('aa');
+  // const [nickname, setNickname] = useState('aa');
   // const [showWithdrawModal, setShowWithdrawModal] = useState(false);
 
 // const handleWithdraw = async () => {
