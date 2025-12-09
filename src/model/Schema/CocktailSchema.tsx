@@ -1,31 +1,21 @@
-import { z } from 'zod';
-
-// 상세 칵테일 스키마
-export const CocktailIngredientSchema = z.object({
-  name: z.string(),
-  amount: z.string(),
-});
+import { z } from "zod";
 
 export const CocktailSchema = z.object({
   id: z.number(),
-  nameKo: z.string(),
-  nameEn: z.string(),
-  image: z.string().url(),
-  styleTag: z.string(),
-
-  summary: z.string(),
-  story: z.string(),
-
-  abv: z.string(),
+  korName: z.string(),
+  engName: z.string(),
+  abvBand: z.string(),
+  maxAlcohol: z.number(),
+  minAlcohol: z.number(),
+  originText: z.string(),
+  season: z.string(),
+  ingredientsText: z.string(),
+  style: z.string(),
+  glassType: z.string(),
   base: z.string(),
-  category: z.string(),
-  taste: z.string(),
-  body: z.string(),
-
-  ingredients: z.array(CocktailIngredientSchema),
-
-  garnish: z.string(),
-  glass: z.string(),
+  imageUrl: z.string().url(),
+  flavors: z.array(z.string()),
+  moods: z.array(z.string())
 });
 
-export type CocktailSchema = z.infer<typeof CocktailSchema>;
+export type CocktailListItem = z.infer<typeof CocktailSchema>;

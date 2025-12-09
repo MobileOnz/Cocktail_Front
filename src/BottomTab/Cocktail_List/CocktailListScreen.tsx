@@ -19,8 +19,8 @@ import PillStyleStatus from '../../Components/PillStyleStatus';
 import PagerView from 'react-native-pager-view';
 import CocktailCard from '../../Components/CocktailCard';
 import { useNavigation } from '@react-navigation/native';
-
-const Maps = () => {
+const Home = () => {
+  const { width } = Dimensions.get('window');
   const { cocktails } = useBestCocktail();
   const { newCocktails } = useNewCocktail();
   const { allCocktails } = useCocktailLIst();
@@ -421,4 +421,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Maps;
+export default Home;

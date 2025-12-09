@@ -35,6 +35,7 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation, route }) => {
     handleRecentSearchPress,
     handleClearText,
     handleGoBack,
+    navigateToMap
   } = useSearchViewModel({
     navigation,
     initialKeyword,
@@ -59,6 +60,7 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation, route }) => {
           placeholder="칵테일을 검색해보세요."
           value={searchText}
           onChangeText={setSearchText}
+          onSubmitEditing={() => navigateToMap(searchText)}
           left={<TextInput.Icon icon="magnify" />}
           right={
             searchText.length > 0 ? (
