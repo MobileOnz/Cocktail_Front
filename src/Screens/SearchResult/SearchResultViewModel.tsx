@@ -42,7 +42,7 @@ const useSearchResultViewModel = (keyword: string) => {
 
     useEffect(() => {
         fetchResult()
-    }, [keyword])
+    }, [fetchResult])
 
     return {
         results,
