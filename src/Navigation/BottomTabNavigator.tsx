@@ -70,7 +70,7 @@ const BottomTabNavigator = () => {
   return (
     <View style={{ flex: 1 }}>
       <Tab.Navigator
-        initialRouteName="지도"
+        initialRouteName="홈"
         screenOptions={({ route }) => ({
           tabBarBackground: () => (
             <BlurView
@@ -90,7 +90,7 @@ const BottomTabNavigator = () => {
               marginTop: heightPercentage(4),
             };
 
-            if (route.name === '지도') {
+            if (route.name === '홈') {
               iconSource = require('../assets/drawable/maps.png');
             } else if (route.name === '칵테일 백과') {
               iconSource = require('../assets/drawable/dictionary.png');
@@ -128,7 +128,7 @@ const BottomTabNavigator = () => {
           tabBarInactiveTintColor: theme.bottomTextColor,
         })}
       >
-        <Tab.Screen name="지도" component={Home} options={{ headerShown: false }} />
+        <Tab.Screen name="홈" component={Home} options={{ headerShown: false }} />
         <Tab.Screen name="칵테일 백과" component={CocktailBookScreen} options={{ headerShown: false }} />
         <Tab.Screen
           name="맞춤 추천"
