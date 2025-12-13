@@ -27,6 +27,7 @@
     "@react-navigation/stack": "^7.1.1",
     "axios": "^1.8.4",
     "expo-font": "^13.0.4",
+    "expo-modules-core": "^3.0.24",
     "geolocation": "^0.2.0",
     "jwt-decode": "^4.0.0",
     "lodash.truncate": "^4.4.2",

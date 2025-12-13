@@ -9,13 +9,21 @@ import { useBestCocktail, useCocktailLIst, useNewCocktail } from './CocktailList
 import PillStyleStatus from '../../Components/PillStyleStatus';
 import PagerView from 'react-native-pager-view';
 import CocktailCard from '../../Components/CocktailCard';
-const Maps = () => {
+import { useNavigation } from '@react-navigation/native';
+import OpenBottomSheet, { OpenBottomSheetHandle } from '../../Components/BottomSheet/OpenBottomSheet';
+import FilterBottomSheet from '../../Components/BottomSheet/FilterBottomSheet';
+const Maps = ({ sheetRef }: { sheetRef: React.RefObject<OpenBottomSheetHandle> }) => {
   const { width } = Dimensions.get('window');
   const { cocktails } = useBestCocktail();
   const { newCocktails } = useNewCocktail();
   const { allCocktails } = useCocktailLIst();
   const [pageIndex, setPageIndex] = useState(0);
   const page = [];
+  const navigation = useNavigation();
+  const bottomSheet = () => {
+
+    sheetRef.current?.open()
+  }
 
   for (let i = 0; i < newCocktails.length; i += 3) {
     page.push(newCocktails.slice(i, i + 3));
@@ -38,9 +46,10 @@ const Maps = () => {
         <Appbar.Content title="" />
 
         {/* 오른쪽 아이콘 */}
-        <Appbar.Action icon="magnify" onPress={() => { }} />
+        <Appbar.Action icon="magnify" onPress={() => { navigation.navigate('SearchScreen' as never); }} />
         <Appbar.Action icon="bookmark-outline" onPress={() => { }} />
       </Appbar.Header>
+
 
 
       {/* 필터 영역 */}
@@ -48,6 +57,7 @@ const Maps = () => {
         horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.filterView}
+
       >
         {['최신순', '도수', '스타일', '맛', '베이스'].map((label, idx) => (
           <Button
@@ -65,6 +75,7 @@ const Maps = () => {
             }}
             style={[styles.chip, styles.chipUnselected]}
             labelStyle={[styles.chipLabel]}
+            onPress={() => bottomSheet()}
           >
             {label}
           </Button>
@@ -261,6 +272,14 @@ const Maps = () => {
         />
 
       </ScrollView>
+
+      {/* 필터 바텀시트 영역 */}
+
+      <OpenBottomSheet ref={sheetRef}>
+        <FilterBottomSheet />
+
+      </OpenBottomSheet>
+
 
 
       {/* 추후 구글 Add 추가하기 */}
