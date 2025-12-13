@@ -4,7 +4,7 @@ import { StyleSheet, View, ActivityIndicator, Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import SplashScreen from 'react-native-splash-screen';
 import Navigation from './src/Navigation/Navigation';
-import {Provider as PaperProvider} from 'react-native-paper';
+import { Provider as PaperProvider } from 'react-native-paper';
 import { useSafeAreaInsets, SafeAreaProvider } from 'react-native-safe-area-context';
 import { setGlobalInsets } from './src/assets/contexts/globalInsets';
 // import MobileAds from "react-native-google-mobile-ads";
@@ -13,6 +13,8 @@ import { setGlobalInsets } from './src/assets/contexts/globalInsets';
 import { ToastProvider } from './src/Components/ToastContext';
 
 import RNBootSplash from 'react-native-bootsplash';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 
 function AppContent() {
   const insets = useSafeAreaInsets();
@@ -71,14 +73,17 @@ function App(): React.JSX.Element {
   }
 
   return (
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <BottomSheetModalProvider>
+        <PaperProvider>
+          <SafeAreaProvider>
+            <AppContent />
+          </SafeAreaProvider>
+        </PaperProvider>
+      </BottomSheetModalProvider>
+    </GestureHandlerRootView>
 
-    <PaperProvider>
-    <SafeAreaProvider>
-      <AppContent />
-    </SafeAreaProvider>
-  </PaperProvider>
-
-    );
+  );
 }
 
 const styles = StyleSheet.create({
