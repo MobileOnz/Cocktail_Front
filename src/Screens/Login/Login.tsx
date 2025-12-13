@@ -1,8 +1,8 @@
 import React, {useEffect,useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, ImageBackground } from 'react-native';
 import { StackScreenProps } from '@react-navigation/stack';
 import * as KakaoLogin from '@react-native-seoul/kakao-login';
-import { heightPercentage, widthPercentage, fontPercentage } from '../assets/styles/FigmaScreen';
+import { heightPercentage, widthPercentage, fontPercentage } from '../../assets/styles/FigmaScreen';
 import NaverLogin from '@react-native-seoul/naver-login';
 import type {
   NaverLoginResponse,
@@ -12,9 +12,9 @@ import axios from 'axios';
 import {API_BASE_URL} from '@env';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
-import { RootStackParamList } from '../Navigation/Navigation';
+import { RootStackParamList } from '../../Navigation/Navigation';
 
-import {useToast} from '../Components/ToastContext';
+import {useToast} from '../../Components/ToastContext';
 
 //env에서 서버 주소 가져옴
 const server = API_BASE_URL;
@@ -311,85 +311,88 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
 
 
   return (
-    <View style={styles.container}>
-      {/* X 버튼 (닫기) */}
-      <TouchableOpacity
-        style={styles.closeButton}
-        onPress={() => navigation.navigate('BottomTabNavigator', { screen: '지도' })
-
-        }
-      >
-        <Image
-          source={require('../assets/drawable/close.png')}
-          style={styles.closeIcon}
-        />
-      </TouchableOpacity>
-
-      {/* 로그인 안내 문구 */}
-      <Text style={styles.title}>
-        로그인하고 우리집 근처{'\n'}칵테일 바를 찾아보세요!
-      </Text>
-
-      {/* 중앙 칵테일 잔 이미지 */}
-      <Image
-        source={require('../assets/drawable/login_logo.png')}
-        style={styles.logo}
-      />
-
-      {/* 로그인 버튼 */}
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.loginButton} onPress={kakaoLogin}>
-          <Image
-            source={require('../assets/drawable/kakao_button.png')}
-            style={styles.buttonImage}
-          />
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.loginButton} onPress={naverLogin}>
-          <Image
-            source={require('../assets/drawable/naver_button.png')}
-            style={styles.buttonImage}
-          />
-        </TouchableOpacity>
-
-      {/* google로그인 버튼 */}
-        <TouchableOpacity
-          style={styles.loginButton}
-          onPress={signInWithGoogle}
+    <ImageBackground
+      source={require('../../assets/drawable/mainBg.png')}
+      style={styles.background}
+      resizeMode="cover"
+    >
+        <View style={styles.container}>
+          {/* X 버튼 (닫기) */}
+          <TouchableOpacity
+            style={styles.closeButton}
+            onPress={() => navigation.navigate('SignupScreen')}
           >
-          <Image
-            source={require('../assets/drawable/google_button.png')}
-            style={styles.buttonImage}
-          />
-        </TouchableOpacity>
+            <Image
+              source={require('../../assets/drawable/close.png')}
+              style={styles.closeIcon}
+            />
+          </TouchableOpacity>
+
+        {/* 로그인 안내 문구 */}
+        <Text style={styles.title}>
+          칵테일의 시작, 한 잔에 담긴{'\n'}새로운 경험을 발견하세요
+        </Text>
+
+        {/* 로그인 버튼 */}
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.loginButton} onPress={kakaoLogin}>
+            <Image
+              source={require('../../assets/drawable/kakao_button.png')}
+              style={styles.buttonImage}
+            />
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.loginButton} onPress={naverLogin}>
+            <Image
+              source={require('../../assets/drawable/naver_button.png')}
+              style={styles.buttonImage}
+            />
+          </TouchableOpacity>
+
+        {/* google로그인 버튼 */}
+          <TouchableOpacity
+            style={styles.loginButton}
+            onPress={signInWithGoogle}
+            >
+            <Image
+              source={require('../../assets/drawable/google_button.png')}
+              style={styles.buttonImage}
+            />
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
+    </ImageBackground>
+    
   );
 };
 
 const styles = StyleSheet.create({
+  background: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+  },
   container: {
     flex: 1,
-    backgroundColor: '#ffffff',
     alignItems: 'center',
     paddingTop: heightPercentage(50),
   },
   closeButton: {
     position: 'absolute',
-    top: heightPercentage(20),
-    right: widthPercentage(20),
+    top: heightPercentage(11),
+    right: widthPercentage(13),
   },
   closeIcon: {
-    width: widthPercentage(18),
-    height: heightPercentage(18),
+    width: widthPercentage(30),
+    height: heightPercentage(30),
     marginTop: heightPercentage(50),
   },
   title: {
     fontSize: fontPercentage(22),
-    fontWeight: '700',
+    fontWeight: '600',
     textAlign: 'center',
-    color: '#000',
-    marginTop: heightPercentage(150),
+    color: '#FFFFFF',
+    marginTop: heightPercentage(92),
     lineHeight: fontPercentage(22 * 1.364),
     letterSpacing: fontPercentage(-1.94),
 
@@ -401,7 +404,8 @@ const styles = StyleSheet.create({
     marginTop: heightPercentage(20),
   },
   buttonContainer: {
-    marginTop: heightPercentage(20),
+    position: 'absolute',
+    bottom: 52,
     width: '100%',
     alignItems: 'center',
   },
