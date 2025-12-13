@@ -15,10 +15,10 @@ import {
 } from '../../assets/styles/FigmaScreen';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '../../Navigation/Navigation';
-import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+// import axios from 'axios';
+// import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StackScreenProps } from '@react-navigation/stack';
-import instance from '../../tokenRequest/axios_interceptor';
+// import instance from '../../tokenRequest/axios_interceptor';
 import { Divider } from 'react-native-paper';
 
 
@@ -29,7 +29,7 @@ type SignupScreenProps = StackScreenProps<RootStackParamList, 'SignupScreen'>;
 const SignupScreen: React.FC<SignupScreenProps> = ({ navigation }) => {
 
   const route = useRoute<SignupScreenRouteProp>();
-  const signUpCode = route.params?.code;
+  // const signUpCode = route.params?.code;
   const [modalVisible, setModalVisible] = useState(false)
   
 
