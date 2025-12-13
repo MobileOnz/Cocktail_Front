@@ -17,8 +17,8 @@ type Props = {
 
 export default function CocktailCard({
   name,
-  image,
   type,
+  image,
   bookmarked = false,
   onPress,
   onToggleBookmark,

@@ -14,7 +14,7 @@ import theme from '../../assets/styles/theme';
 import { fontPercentage, heightPercentage, widthPercentage } from '../../assets/styles/FigmaScreen';
 import PuzzlePiece from '../../configs/CurvedImage';
 import { truncate } from 'lodash';
-import { useBestCocktail, useCocktailLIst, useNewCocktail } from './CocktailListViewModel';
+import { useBestCocktail, useCocktailLIst, useHomeViewModel, useNewCocktail } from './CocktailListViewModel';
 import PillStyleStatus from '../../Components/PillStyleStatus';
 import PagerView from 'react-native-pager-view';
 import CocktailCard from '../../Components/CocktailCard';
@@ -26,6 +26,14 @@ const Home = () => {
   const [pageIndex, setPageIndex] = useState(0);
   const page: typeof newCocktails[] = [];
   const navigation = useNavigation<any>();
+
+  const {
+    refreshList,
+    intermediateList,
+    beginnerList,
+    loading,
+    error
+  } = useHomeViewModel();
 
   for (let i = 0; i < newCocktails.length; i += 3) {
     page.push(newCocktails.slice(i, i + 3));
@@ -184,15 +192,16 @@ const Home = () => {
           기분 전환이 필요할 땐 상큼한 한 잔 🍋
         </Text>
         <FlatList
-          data={allCocktails}
+          data={refreshList}
           horizontal
           keyExtractor={item => String(item.id)}
           showsHorizontalScrollIndicator={false}
           renderItem={({ item }) => (
             <CocktailCard
+              id={item.id}
               name={item.name}
-              imageUri={item.image}
-              tone={item.type}
+              image={item.image}
+              type={item.type}
               bookmarked={true}
               onPress={() =>
                 navigation.navigate('CocktailDetailScreen', {
@@ -208,15 +217,16 @@ const Home = () => {
           부담 없이 편하게 시도할 수 있는 맛 🧃
         </Text>
         <FlatList
-          data={allCocktails}
+          data={beginnerList}
           horizontal
           keyExtractor={item => String(item.id)}
           showsHorizontalScrollIndicator={false}
           renderItem={({ item }) => (
             <CocktailCard
+              id={item.id}
               name={item.name}
-              imageUri={item.image}
-              tone={item.type}
+              image={item.image}
+              type={item.type}
               bookmarked={true}
               onPress={() =>
                 navigation.navigate('CocktailDetailScreen', {
@@ -232,15 +242,16 @@ const Home = () => {
           중급자로 거듭나보고 싶다면? 🥃
         </Text>
         <FlatList
-          data={allCocktails}
+          data={intermediateList}
           horizontal
           keyExtractor={item => String(item.id)}
           showsHorizontalScrollIndicator={false}
           renderItem={({ item }) => (
             <CocktailCard
+              id={item.id}
               name={item.name}
-              imageUri={item.image}
-              tone={item.type}
+              image={item.image}
+              type={item.type}
               bookmarked={true}
               onPress={() =>
                 navigation.navigate('CocktailDetailScreen', {
@@ -252,6 +263,7 @@ const Home = () => {
           )}
         />
       </ScrollView>
+      <View style={{ marginVertical: '10%' }}></View>
     </SafeAreaView>
   );
 };

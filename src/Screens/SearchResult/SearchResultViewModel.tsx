@@ -1,15 +1,20 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { CocktailCard } from '../../model/domain/CocktailCard'
-import { CocktailSearchRepository } from '../../model/repository/SearchRepository';
+import { CocktailSearchRepository, ICocktailSearchRepository } from '../../model/repository/SearchRepository';
 import axios from 'axios';
+import { di } from '../../DI/Container';
 
-const useSearchResultViewModel = (keyword: string) => {
+type UseSearchResultDeps = {
+    repository?: ICocktailSearchRepository;
+};
+
+const useSearchResultViewModel = (keyword: string, deps?: UseSearchResultDeps) => {
     const [results, setResults] = useState<CocktailCard[]>([]);
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
     // const navigation = useNavigation()
 
-    const repository = useMemo(() => new CocktailSearchRepository(), [])
+    const repository = deps?.repository ?? di.cocktailSearchRepository;
 
 
     const fetchResult = useCallback(async () => {
