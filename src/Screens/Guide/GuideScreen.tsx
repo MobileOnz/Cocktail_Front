@@ -25,7 +25,8 @@ const GuideScreen: React.FC<Props> = ({ navigation }) => {
   const [viewType, setviewType] = useState(0)  
   // const [images, setImages] = useState([]);     // 서버에서 받아온 이미지
   // const [loading, setLoading] = useState(false); // 로딩 상태
-
+  const [loading] = useState(false); // 로딩 상태
+  
   // 테스트 이미지
   const testImages = [
     { id: 1, src: require('../../assets/drawable/testGuide.jpg'), title: '칵테일이란' },
