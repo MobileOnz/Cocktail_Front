@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   Image,
   StyleSheet,
-  ScrollView,
   Modal
 } from 'react-native';
 import {
@@ -35,45 +34,45 @@ const SignupScreen: React.FC<SignupScreenProps> = ({ navigation }) => {
   
 
   //회원가입 처리
-  const signUpRequest = async () => {
-    if (!nickname) {
-      console.log('닉네임이 없습니다.');
-      return;
-    }
-    const payload = {
-      code: signUpCode,
-      nickName: nickname,
-      ageTerm: agreements.age,
-      serviceTerm: agreements.terms,
-      marketingTerm: agreements.marketing,
-      adTerm: agreements.ads,
-    };
-    try {
-      const response = await instance.post('/api/auth/signup', payload, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      console.log('백엔드 응답', response.data);
-      const backendAccessToken = response.data.data.access_token;
-      const backendRefreshToken = response.data.data.refresh_token;
+  // const signUpRequest = async () => {
+  //   if (!nickname) {
+  //     console.log('닉네임이 없습니다.');
+  //     return;
+  //   }
+  //   const payload = {
+  //     code: signUpCode,
+  //     nickName: nickname,
+  //     ageTerm: agreements.age,
+  //     serviceTerm: agreements.terms,
+  //     marketingTerm: agreements.marketing,
+  //     adTerm: agreements.ads,
+  //   };
+  //   try {
+  //     const response = await instance.post('/api/auth/signup', payload, {
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //     });
+  //     console.log('백엔드 응답', response.data);
+  //     const backendAccessToken = response.data.data.access_token;
+  //     const backendRefreshToken = response.data.data.refresh_token;
 
-      if (backendAccessToken) {
-        console.log(backendAccessToken);
-        await AsyncStorage.setItem('accessToken', backendAccessToken);
-      }
-      if (backendRefreshToken) {
-        console.log(backendRefreshToken);
-        await AsyncStorage.setItem('refreshToken', backendRefreshToken);
-      }
-      navigation.navigate('BottomTabNavigator' as never);
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.error('서버 에러 응답', error.response?.data);
-        console.error('에러 코드', error.response?.status);
-      }
-    }
-  };
+  //     if (backendAccessToken) {
+  //       console.log(backendAccessToken);
+  //       await AsyncStorage.setItem('accessToken', backendAccessToken);
+  //     }
+  //     if (backendRefreshToken) {
+  //       console.log(backendRefreshToken);
+  //       await AsyncStorage.setItem('refreshToken', backendRefreshToken);
+  //     }
+  //     navigation.navigate('BottomTabNavigator' as never);
+  //   } catch (error) {
+  //     if (axios.isAxiosError(error)) {
+  //       console.error('서버 에러 응답', error.response?.data);
+  //       console.error('에러 코드', error.response?.status);
+  //     }
+  //   }
+  // };
 
   //필수만 bold 처리
   const textBoldChange = (text: string) => {
