@@ -2,13 +2,13 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import LoginScreen from '../Screens/Login';
+import LoginScreen from '../Screens/Login/Login';
 import Home from '../BottomTab/Cocktail_List/CocktailListScreen';
 import SearchScreen from '../Screens/Search/SearchScreen';
 import BottomTabNavigator from './BottomTabNavigator';
 import LoadingScreen from '../Screens/LoadingScreen';
 import ResultScreen from '../Screens/ResultScreen';
-import SignupScreen from '../Screens/SignupScreen';
+import SignupScreen from '../Screens/Login/SignupScreen';
 import ProfileScreen from '../Screens/MyPage/ProfileScreen';
 import TermsAndConditionsScreen from '../Screens/MyPage/TermsAndConditionsScreen';
 import QuitScreen from '../Screens/MyPage/QuitScreen'
