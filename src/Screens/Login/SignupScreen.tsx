@@ -13,7 +13,7 @@ import {
   widthPercentage,
   fontPercentage,
 } from '../../assets/styles/FigmaScreen';
-import { RouteProp, useRoute } from '@react-navigation/native';
+import { RouteProp } from '@react-navigation/native';
 import { RootStackParamList } from '../../Navigation/Navigation';
 // import axios from 'axios';
 // import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -23,7 +23,7 @@ import { Divider } from 'react-native-paper';
 
 
 // const server = API_BASE_URL;
-type SignupScreenRouteProp = RouteProp<RootStackParamList, 'SignupScreen'>;
+// type SignupScreenRouteProp = RouteProp<RootStackParamList, 'SignupScreen'>;
 type SignupScreenProps = StackScreenProps<RootStackParamList, 'SignupScreen'>;
 
 const SignupScreen: React.FC<SignupScreenProps> = ({ navigation }) => {
