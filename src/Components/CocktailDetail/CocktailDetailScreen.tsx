@@ -6,11 +6,9 @@ import { ActivityIndicator, Divider, IconButton } from 'react-native-paper';
 
 import PillStyleStatus from '../PillStyleStatus';
 import { RootStackParamList } from '../../Navigation/Navigation';
-import { CocktailDataSource } from '../../model/DataSource/CocktailDataSource';
-import { CocktailDetailViewModel } from './CocktailDetailViewModel';
-import { CocktailDetailDto } from '../../model/dto/CocktailDto';
 import { useNavigation } from '@react-navigation/native';
 import { fontPercentage, heightPercentage, widthPercentage } from '../../assets/styles/FigmaScreen';
+import useCocktailDetailViewModel from './CocktailDetailViewModel';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'CocktailDetailScreen'>;
 
@@ -35,50 +33,10 @@ const DetailRow = ({
 
 export function CocktailDetailScreen({ route }: Props) {
 
-
   const { cocktailId } = route.params;
   const navigation = useNavigation();
 
-  const repository = useMemo(() => new CocktailDataSource(), []);
-  const viewModel = useMemo(
-    () => new CocktailDetailViewModel(repository),
-    [repository],
-  );
-
-  const [detail, setDetail] = useState<CocktailDetailDto | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    let isMounted = true;
-
-    const fetchDetail = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-
-        const data = await viewModel.load(cocktailId);
-
-        if (isMounted) {
-          setDetail(data);
-        }
-      } catch (e) {
-        if (isMounted) {
-          setError('칵테일 정보를 불러오지 못했습니다.');
-        }
-      } finally {
-        if (isMounted) {
-          setLoading(false);
-        }
-      }
-    };
-
-    fetchDetail();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [cocktailId, viewModel]);
+  const { detail, loading, error } = useCocktailDetailViewModel(cocktailId);
 
   //  로딩 상태
   if (loading) {
@@ -103,7 +61,7 @@ export function CocktailDetailScreen({ route }: Props) {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.imageContainer}>
-        <Image source={{ uri: detail.image }} style={styles.image} />
+        <Image source={{ uri: detail.imageUrl }} style={styles.image} />
 
         {/* 상단 바 전체를 한 View에 묶기 */}
         <View style={styles.imageHeader}>
@@ -127,20 +85,20 @@ export function CocktailDetailScreen({ route }: Props) {
       {/* 스타일 */}
       <View style={styles.contentWrapper}>
         <DetailRow label="스타일" align="center">
-          <PillStyleStatus tone={detail.tone} />
+          <PillStyleStatus tone={detail.style} />
         </DetailRow>
 
         <DetailRow label="유래·역사">
-          <Text>{detail.summary}</Text>
+          <Text>{detail.originText}</Text>
         </DetailRow>
 
         <Divider style={styles.sectionDivider} />
 
         <DetailRow label="도수">
-          <Text> {detail.abv}</Text>
+          <Text> {detail.abvBand}</Text>
         </DetailRow>
         <DetailRow label="맛">
-          <Text> {detail.taste}</Text>
+          <Text> {detail.}</Text>
         </DetailRow>
         <DetailRow label="분위기">
           <Text> {detail.mood}</Text>
