@@ -1,14 +1,24 @@
 import React from 'react';
-import { Text, ScrollView, StyleSheet, SafeAreaView } from 'react-native';
+import { Text, ScrollView, StyleSheet, SafeAreaView, View, TouchableOpacity, Image} from 'react-native';
+import { widthPercentage, heightPercentage, fontPercentage } from '../../assets/styles/FigmaScreen';
+import { useNavigation } from '@react-navigation/native';
+
 
 const TermsAndConditionsScreen = () => {
-
+  const navigation = useNavigation();
 
   return (
     <SafeAreaView style={{flex: 1}}>
-      <ScrollView style={styles.container}>
-        <Text style={styles.title}>이용 약관</Text>
+      {/* 상단 헤더 */}
+      <View style={styles.header}>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+              <Image source={require('../../assets/drawable/left-chevron.png')} style={styles.backIcon} />
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>이용약관</Text>
+          <View style={styles.backIcon} />
+      </View>
 
+      <ScrollView style={styles.container}>
         <Text style={styles.sectionTitle}>제1조 (목적)</Text>
         <Text style={styles.sectionContent}>
           이 약관은 "Onz" 애플리케이션(이하 "앱")을 이용하는 이용자와 서비스 제공자 간의 권리, 의무 및 책임사항을 규정함을 목적으로 합니다.
@@ -91,21 +101,38 @@ const TermsAndConditionsScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
+    paddingHorizontal: widthPercentage(16)
   },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    height: heightPercentage(52),
+    paddingHorizontal: widthPercentage(16),
+    paddingTop: heightPercentage(14),
+    paddingBottom: heightPercentage(10)
+
+  },
+  headerTitle: {
+    fontSize: fontPercentage(20),
+    fontWeight: '600',
+    color: '#1B1B1B',
+  },
+  backIcon: {
+    width: widthPercentage(28),
+    height: widthPercentage(28),
+    resizeMode: 'contain',
   },
   sectionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginVertical: 8,
+    fontSize: fontPercentage(14),
+    fontWeight: '600',
+    marginTop: heightPercentage(16),
+    color: '#171719'
   },
   sectionContent: {
-    fontSize: 16,
-    marginBottom: 10,
+    fontSize: fontPercentage(12),
+    marginTop: heightPercentage(8),
+    color: '#171719'
   },
   agreementContainer: {
     marginVertical: 20,

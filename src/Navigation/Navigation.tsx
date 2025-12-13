@@ -9,8 +9,10 @@ import BottomTabNavigator from './BottomTabNavigator';
 import LoadingScreen from '../Screens/LoadingScreen';
 import ResultScreen from '../Screens/ResultScreen';
 import SignupScreen from '../Screens/SignupScreen';
-import ProfileScreen from '../Screens/ProfileScreen';
-import TermsAndConditionsScreen from '../Screens/TermsAndConditionsScreen';
+import ProfileScreen from '../Screens/MyPage/ProfileScreen';
+import TermsAndConditionsScreen from '../Screens/MyPage/TermsAndConditionsScreen';
+import QuitScreen from '../Screens/MyPage/QuitScreen'
+import PrivacyPolicyScreen from '../Screens/MyPage/PrivacyPolicyScreen'
 import { CocktailDetailScreen } from '../Components/CocktailDetail/CocktailDetailScreen';
 import RecommendationScreen from '../Screens/Recommend/RecommendationScreen'
 import GuideScreen from '../Screens/Guide/GuideScreen'
@@ -49,6 +51,7 @@ export type RootStackParamList = {
     cocktailDescription: string;
   };
   ProfileScreen: undefined;
+  QuitScreen: undefined;
   RecommendationIntro: undefined;
   GuideScreen: undefined;
   GuideDetailScreen: {
@@ -57,7 +60,8 @@ export type RootStackParamList = {
     title: string
   };
   SignupScreen: { code?: string };
-  TermsAndConditionsScreen: undefined
+  TermsAndConditionsScreen: undefined;
+  PrivacyPolicyScreen: undefined;
   CocktailDetailScreen: { cocktailId: number }
   SearchResultScreen: { keyword: string }
   CocktailBoxScreen: undefined
@@ -74,6 +78,7 @@ const Navigation: React.FC = () => {
         screenOptions={{ headerShown: false }}
       >
         <Stack.Screen name="TermsAndConditionsScreen" component={TermsAndConditionsScreen} />
+        <Stack.Screen name="PrivacyPolicyScreen" component={PrivacyPolicyScreen} />
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="SearchScreen" component={SearchScreen} />
         <Stack.Screen name="Home" component={Home} />
@@ -86,6 +91,7 @@ const Navigation: React.FC = () => {
         <Stack.Screen name="GuideDetailScreen" component={GuideDetailScreen} />
         <Stack.Screen name="SignupScreen" component={SignupScreen} />
         <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
+        <Stack.Screen name="QuitScreen" component={QuitScreen} />
         <Stack.Screen name='CocktailBoxScreen' component={CocktailBoxScreen} />
         <Stack.Screen name='SearchResultScreen' component={SearchResultScreen} />
       </Stack.Navigator>
