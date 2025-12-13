@@ -13,7 +13,7 @@ import {
   widthPercentage,
   fontPercentage,
 } from '../../assets/styles/FigmaScreen';
-import { RouteProp } from '@react-navigation/native';
+// import { RouteProp, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '../../Navigation/Navigation';
 // import axios from 'axios';
 // import AsyncStorage from '@react-native-async-storage/async-storage';
