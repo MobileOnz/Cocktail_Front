@@ -28,7 +28,7 @@ type SignupScreenProps = StackScreenProps<RootStackParamList, 'SignupScreen'>;
 
 const SignupScreen: React.FC<SignupScreenProps> = ({ navigation }) => {
 
-  const route = useRoute<SignupScreenRouteProp>();
+  // const route = useRoute<SignupScreenRouteProp>();
   // const signUpCode = route.params?.code;
   const [modalVisible, setModalVisible] = useState(false)
   
