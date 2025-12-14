@@ -1,15 +1,16 @@
-import { CocktailDetailRepository, ICocktailDetailRepository } from "../model/repository/CocktailDetailRepository";
-import { HomeCocktailRepository, IHomeCocktailRepository } from "../model/repository/HomeCocktailRepository";
-import { CocktailSearchRepository, ICocktailSearchRepository } from "../model/repository/SearchRepository";
+import { CocktailDetailRepository, ICocktailDetailRepository } from '../model/repository/CocktailDetailRepository';
+import { HomeCocktailRepository, IHomeCocktailRepository } from '../model/repository/HomeCocktailRepository';
+import { ISearchRepository, SearchRepository } from '../model/repository/SearchRepository';
+
 
 class DIContainer {
-    readonly cocktailSearchRepository: ICocktailSearchRepository;
+    readonly cocktailSearchRepository: ISearchRepository;
     readonly homeCocktailRepository: IHomeCocktailRepository;
     readonly cocktailDetailRepository: ICocktailDetailRepository;
     constructor() {
-        this.cocktailSearchRepository = new CocktailSearchRepository;
-        this.homeCocktailRepository = new HomeCocktailRepository;
-        this.cocktailDetailRepository = new CocktailDetailRepository
+        this.cocktailSearchRepository = new SearchRepository();
+        this.homeCocktailRepository = new HomeCocktailRepository();
+        this.cocktailDetailRepository = new CocktailDetailRepository();
     }
 
 }

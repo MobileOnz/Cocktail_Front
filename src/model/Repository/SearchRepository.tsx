@@ -1,12 +1,12 @@
-import { SearchDataSource } from "../DataSource/SearchDataSource";
-import { CocktailCard } from "../domain/CocktailCard";
-import { CocktailSchema } from "../Schema/CocktailSchema";
+import { SearchDataSource } from '../DataSource/SearchDataSource';
+import { CocktailCard } from '../domain/CocktailCard';
+import { CocktailSchema } from '../Schema/CocktailSchema';
 
-export interface ICocktailSearchRepository {
+export interface ISearchRepository {
     search(keyword: string): Promise<CocktailCard[]>
 }
 
-export class CocktailSearchRepository implements ICocktailSearchRepository {
+export class SearchRepository implements ISearchRepository {
     private dataSource: SearchDataSource;
 
     constructor(dataSource?: SearchDataSource) {

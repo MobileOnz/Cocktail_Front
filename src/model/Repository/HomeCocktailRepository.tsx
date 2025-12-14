@@ -1,6 +1,6 @@
-import { HomeCocktailListDataSource } from "../DataSource/HomeCockctailDataSource";
-import { CocktailCard } from "../domain/CocktailCard";
-import { CocktailSchema } from "../Schema/CocktailSchema";
+import { HomeCocktailListDataSource } from '../DataSource/HomeCockctailDataSource';
+import { CocktailCard } from '../domain/CocktailCard';
+import { CocktailSchema } from '../Schema/CocktailSchema';
 
 export interface IHomeCocktailRepository {
     refresh(): Promise<CocktailCard[]>

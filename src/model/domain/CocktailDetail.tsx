@@ -7,9 +7,10 @@ export interface CocktailDetail {
     minAlcohol: number;
     originText: string;
     season: string;
-    ingredientsText: string;
+    ingredients: string[];
     style: string;
     glassType: string;
+    glassImageUrl: string;
     base: string;
     imageUrl: string;
     flavors: string[];

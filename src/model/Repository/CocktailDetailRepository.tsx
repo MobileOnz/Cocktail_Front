@@ -1,6 +1,6 @@
-import { CocktailDetail } from "../domain/CocktailDetail";
-import { CocktailDetailDataSource } from "../DataSource/CocktailDetailDataSource";
-import { CocktailSchema } from "../Schema/CocktailSchema";
+import { CocktailDetail } from '../domain/CocktailDetail';
+import { CocktailDetailDataSource } from '../DataSource/CocktailDetailDataSource';
+import { CocktailSchema } from '../Schema/CocktailSchema';
 
 export interface ICocktailDetailRepository {
   getDetailData(id: number): Promise<CocktailDetail>;
@@ -30,9 +30,10 @@ export class CocktailDetailRepository implements ICocktailDetailRepository {
       minAlcohol: dto.minAlcohol,
       originText: dto.originText,
       season: dto.season,
-      ingredientsText: dto.ingredientsText,
+      ingredients: dto.ingredients,
       style: dto.style,
       glassType: dto.glassType,
+      glassImageUrl: dto.glassImageUrl,
       base: dto.base,
       imageUrl: dto.imageUrl,
       flavors: dto.flavors,
@@ -42,3 +43,4 @@ export class CocktailDetailRepository implements ICocktailDetailRepository {
     return detail;
   }
 }
+
