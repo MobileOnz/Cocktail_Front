@@ -25,7 +25,7 @@ const DetailRow = ({
     <View style={[styles.row, { alignItems: align }]}>
       <Text style={styles.label}>{label}</Text>
       <View style={styles.valueWrapper}>
-        <Text style={styles.valueText}>{children}</Text>
+        {children}
       </View>
     </View>
   );
@@ -89,39 +89,48 @@ export function CocktailDetailScreen({ route }: Props) {
         </DetailRow>
 
         <DetailRow label="유래·역사">
-          <Text>{detail.originText}</Text>
+          <Text style={styles.valueText}>{detail.originText}</Text>
         </DetailRow>
 
         <Divider style={styles.sectionDivider} />
 
         <DetailRow label="도수">
-          <Text> {detail.abvBand}</Text>
+          <Text style={styles.valueText}> {detail.abvBand}</Text>
         </DetailRow>
         <DetailRow label="맛">
-          <Text> {detail.}</Text>
+          <Text style={styles.valueText}>
+            {detail.flavors.join(' • ')}
+          </Text>
         </DetailRow>
         <DetailRow label="분위기">
-          <Text> {detail.mood}</Text>
+          <Text style={styles.valueText}> {detail.moods.join(' • ')}</Text>
         </DetailRow>
         <DetailRow label="계절">
-          <Text> {detail.season}</Text>
+          <Text style={styles.valueText}> {detail.season}</Text>
         </DetailRow>
         <DetailRow label="베이스">
-          <Text> {detail.base}</Text>
+          <Text style={styles.valueText}> {detail.base}</Text>
         </DetailRow>
         <DetailRow label="재료">
-          {detail.ingredients.map((ing, idx) => (
-            <Text key={idx}>
-              {ing.name} {ing.amount},
-            </Text>
-          ))}
+          <View style={{ flexDirection: 'column', gap: 6 }}>
+            {detail.ingredients.map((item, index) => (
+              <Text key={`ingredient-${index}`} style={styles.valueText}>
+                {item}
+              </Text>
+            ))}
+          </View>
         </DetailRow>
         {/* 추후 넣기 */}
         <DetailRow label="잔 유형">
-          <Text> {detail.abv}</Text>
+          <Text style={styles.valueText}> {detail.glassType}</Text>
+          <Image source={{ uri: detail.glassImageUrl }} style={styles.glassImage} />
         </DetailRow>
       </View>
+
+
       <Divider style={styles.Divider} />
+
+
       <Text style={styles.valueText}>   이 칵테일, 입문자도 즐길 수 있을까요?</Text>
       <View style={styles.buttonContainer}>
         <Pressable style={[styles.button, { marginRight: widthPercentage(10) }]} onPress={() => { }}>
@@ -199,6 +208,11 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  glassImage: {
+    width: '100%',
+    height: heightPercentage(420),
+    resizeMode: 'cover',
   },
 
   // 로딩 텍스트
