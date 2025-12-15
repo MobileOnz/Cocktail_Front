@@ -1,6 +1,5 @@
 // CocktailDetailScreen.tsx
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import React, { useEffect, useMemo, useState } from 'react';
 import { Image, ScrollView, Text, View, StyleSheet, Pressable } from 'react-native';
 import { ActivityIndicator, Divider, IconButton } from 'react-native-paper';
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -14,30 +14,32 @@ import theme from '../../assets/styles/theme';
 import { fontPercentage, heightPercentage, widthPercentage } from '../../assets/styles/FigmaScreen';
 import PuzzlePiece from '../../configs/CurvedImage';
 import { truncate } from 'lodash';
-import { useBestCocktail, useCocktailLIst, useHomeViewModel, useNewCocktail } from './CocktailListViewModel';
 import PillStyleStatus from '../../Components/PillStyleStatus';
 import PagerView from 'react-native-pager-view';
 import CocktailCard from '../../Components/CocktailCard';
 import { useNavigation } from '@react-navigation/native';
+import { useHomeViewModel } from './CocktailListViewModel';
 const Home = () => {
-  const { cocktails } = useBestCocktail();
-  const { newCocktails } = useNewCocktail();
-  const { allCocktails } = useCocktailLIst();
+
   const [pageIndex, setPageIndex] = useState(0);
-  const page: typeof newCocktails[] = [];
   const navigation = useNavigation<any>();
 
   const {
+    bestCocktail,
+    newCocktail,
     refreshList,
-    intermediateList,
     beginnerList,
-    loading,
-    error
+    intermediateList,
+
   } = useHomeViewModel();
 
-  for (let i = 0; i < newCocktails.length; i += 3) {
-    page.push(newCocktails.slice(i, i + 3));
-  }
+  const pages = useMemo(() => {
+    const result = [];
+    for (let i = 0; i < newCocktail.length; i += 3) {
+      result.push(newCocktail.slice(i, i + 3));
+    }
+    return result;
+  }, [newCocktail]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -55,7 +57,7 @@ const Home = () => {
 
         {/* 오른쪽 아이콘 */}
         <Appbar.Action icon="magnify" onPress={() => { navigation.navigate('SearchScreen' as never); }} />
-        <Appbar.Action icon="bookmark-outline" onPress={() => { navigation.navigate('CocktailBoxScreen' as never) }} />
+        <Appbar.Action icon="bookmark-outline" onPress={() => { navigation.navigate('CocktailBoxScreen' as never); }} />
       </Appbar.Header>
 
       {/* 필터 영역 */}
@@ -96,11 +98,11 @@ const Home = () => {
             Best 입문자용 칵테일
           </Text>
           <FlatList
-            data={cocktails}
+            data={bestCocktail}
             keyExtractor={item => String(item.id)}
             horizontal
             showsHorizontalScrollIndicator={false}
-            renderItem={({ item }) => (
+            renderItem={({ item, index }) => (
               <TouchableOpacity
                 activeOpacity={0.8}
                 onPress={() =>
@@ -114,13 +116,13 @@ const Home = () => {
 
                   {/* 랭크 */}
                   <View style={styles.bestRankWrapper}>
-                    <Text style={styles.bestRankText}>{item.rank}</Text>
+                    <Text style={styles.bestRankText}>{index + 1}</Text>
                   </View>
 
                   {/* 제목 */}
                   <View style={styles.bestTitleWrapper}>
                     <Text style={styles.bestTitleText}>
-                      {truncate(item.title, { length: 7, omission: '...' })}
+                      {truncate(item.name, { length: 7, omission: '...' })}
                     </Text>
                   </View>
 
@@ -149,7 +151,7 @@ const Home = () => {
             initialPage={0}
             onPageSelected={e => setPageIndex(e.nativeEvent.position)}
           >
-            {page.map((items, p) => (
+            {pages.map((items, p) => (
               <View key={p} style={styles.pagerPage}>
                 {items.map(item => (
                   <View key={item.id} style={styles.newCocktailRow}>
@@ -174,7 +176,7 @@ const Home = () => {
 
           {/* 인디케이터 */}
           <View style={styles.indicatorContainer}>
-            {page.map((_, i) => (
+            {pages.map((_, i) => (
               <View
                 key={i}
                 style={[
@@ -263,7 +265,7 @@ const Home = () => {
           )}
         />
       </ScrollView>
-      <View style={{ marginVertical: '10%' }}></View>
+      <View style={{ marginVertical: '10%' }} />
     </SafeAreaView>
   );
 };
