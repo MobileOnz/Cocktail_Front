@@ -6,6 +6,8 @@ export interface IHomeCocktailRepository {
     refresh(): Promise<CocktailCard[]>
     intermediate(): Promise<CocktailCard[]>
     beginner(): Promise<CocktailCard[]>
+    newCocktail(): Promise<CocktailCard[]>
+    bestCocktail(): Promise<CocktailCard[]>
 }
 
 export class HomeCocktailRepository implements IHomeCocktailRepository {
@@ -13,6 +15,36 @@ export class HomeCocktailRepository implements IHomeCocktailRepository {
 
     constructor(dataSource?: HomeCocktailListDataSource) {
         this.dataSource = dataSource ?? new HomeCocktailListDataSource();
+    }
+    // 새로운
+    async newCocktail(): Promise<CocktailCard[]> {
+        const dto = await this.dataSource.newCOcktailData();
+
+        const validSchema = dto.map((item) => {
+            return CocktailSchema.parse(item);
+        });
+
+        return validSchema.map(dto => ({
+            id: dto.id,
+            name: dto.korName,
+            type: dto.style,
+            image: dto.imageUrl,
+        }));
+    }
+    // 베스트
+    async bestCocktail(): Promise<CocktailCard[]> {
+        const dto = await this.dataSource.bestCocktailData();
+
+        const validSchema = dto.map((item) => {
+            return CocktailSchema.parse(item);
+        });
+
+        return validSchema.map(dto => ({
+            id: dto.id,
+            name: dto.korName,
+            type: dto.style,
+            image: dto.imageUrl,
+        }));
     }
 
     // 상큼한

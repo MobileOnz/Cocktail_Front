@@ -1,17 +1,17 @@
 import { useCallback, useEffect, useState } from 'react';
-import { cocktailDetailTestData } from './TestData';
-import { BestCocktailDto } from '../../model/DTO/bestCocktailDto';
-import { NewCocktailDto } from '../../model/DTO/NewCocktailDto';
 import { IHomeCocktailRepository } from '../../model/repository/HomeCocktailRepository';
 import { di } from '../../DI/Container';
 import { CocktailCard } from '../../model/domain/CocktailCard';
+
 
 type UseSearchResultDeps = {
   repository?: IHomeCocktailRepository;
 };
 
-export const useHomeViewModel = (deps?: { repository?: IHomeCocktailRepository }) => {
+export const useHomeViewModel = (deps?: UseSearchResultDeps) => {
   const repository = deps?.repository ?? di.homeCocktailRepository;
+  const [newCocktail, setNewCocktail] = useState<CocktailCard[]>([]);
+  const [bestCocktail, setBestCocktail] = useState<CocktailCard[]>([]);
   const [refreshList, setRefreshList] = useState<CocktailCard[]>([]);
   const [intermediateList, setIntermediateList] = useState<CocktailCard[]>([]);
   const [beginnerList, setBeginnerList] = useState<CocktailCard[]>([]);
@@ -23,88 +23,41 @@ export const useHomeViewModel = (deps?: { repository?: IHomeCocktailRepository }
     setError(null);
 
     try {
-      const [refreshData, intermediateData, beginnerData] = await Promise.all([
+      const [newCocktailData, bestCocktailData, refreshData, intermediateData, beginnerData] = await Promise.all([
+        repository.newCocktail(),
+        repository.bestCocktail(),
         repository.refresh(),
         repository.intermediate(),
         repository.beginner(),
       ]);
-
+      setNewCocktail(newCocktailData);
+      setBestCocktail(bestCocktailData);
       setRefreshList(refreshData);
       setIntermediateList(intermediateData);
       setBeginnerList(beginnerData);
 
     } catch (e) {
       console.log(e);
-      setError("데이터 로딩 중 오류가 발생했습니다.");
+      setError('데이터 로딩 중 오류가 발생했습니다.');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
 
 
-  }, [repository])
+  }, [repository]);
 
   useEffect(() => {
-    fetchHomeData()
+    fetchHomeData();
 
-  }, [fetchHomeData])
+  }, [fetchHomeData]);
 
   return {
+    bestCocktail,
+    newCocktail,
     refreshList,
     beginnerList,
     intermediateList,
     loading,
-    error
-  }
-}
-
-//베스트 칵테일 가져오기
-export const useBestCocktail = (deps?: IHomeCocktailRepository) => {
-  const [cocktails, setCocktails] = useState<BestCocktailDto[]>([]);
-
-  useEffect(() => {
-    const bestCocktailData = cocktailDetailTestData.map((item, index) => ({
-      id: item.id,
-      title: item.title,
-      image: item.image,
-      rank: `${index + 1}`,
-    }));
-    setCocktails(bestCocktailData);
-  }, []);
-  return { cocktails };
+    error,
+  };
 };
-
-//새로운 칵테일 가져오기
-export const useNewCocktail = () => {
-  const [newCocktails, setCocktails] = useState<NewCocktailDto[]>([]);
-
-  useEffect(() => {
-    const newCocktailData = cocktailDetailTestData.map((item) => ({
-      id: item.id,
-      name: item.title,
-      type: item.tone,
-      image: item.image,
-    }));
-    setCocktails(newCocktailData);
-  }, []);
-  return { newCocktails };
-};
-
-//칵테일 필더적용
-export const useCocktailLIst = () => {
-  const [allCocktails, setCocktails] = useState<NewCocktailDto[]>([]);
-
-  useEffect(() => {
-    const newCocktailData = cocktailDetailTestData.map((item) => ({
-      id: item.id,
-      name: item.title,
-      type: item.tone,
-      image: item.image,
-    }));
-    setCocktails(newCocktailData);
-  }, []);
-  return { allCocktails };
-};
-
-export default function useCocktailListViewModel() {
-
-}
