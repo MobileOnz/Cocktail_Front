@@ -78,6 +78,8 @@ export function CocktailDetailScreen({ route }: Props) {
             <IconButton icon="share-outline" size={24} iconColor="#fff" onPress={() => { }} />
           </View>
         </View>
+        <Text style={styles.korText}>{detail.korName}</Text>
+        <Text style={styles.engText}>{detail.engName}</Text>
       </View>
 
 
@@ -228,6 +230,22 @@ const styles = StyleSheet.create({
     aspectRatio: 3 / 4,
     resizeMode: 'cover',
 
+  },
+  korText: {
+    position: 'absolute',
+    left: 20,
+    bottom: 70,
+    fontWeight: '700',
+    fontSize: fontPercentage(20),
+    color: '#FFF',
+  },
+  engText: {
+    position: 'absolute',
+    left: 20,
+    bottom: 40,
+    fontWeight: '600',
+    fontSize: fontPercentage(20),
+    color: '#FFF',
   },
   imageHeader: {
     position: 'absolute',
