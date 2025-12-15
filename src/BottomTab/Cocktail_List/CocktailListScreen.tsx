@@ -25,6 +25,7 @@ const Home = () => {
   const navigation = useNavigation<any>();
 
   const {
+    randomCocktail,
     bestCocktail,
     newCocktail,
     refreshList,
@@ -51,7 +52,6 @@ const Home = () => {
           style={styles.bannerImage}
           resizeMode="contain"
         />
-
         {/* 가운데 공백 */}
         <Appbar.Content title="" />
 
@@ -87,10 +87,11 @@ const Home = () => {
         contentContainerStyle={styles.allScrollView}
       >
         {/* 메인 사진 */}
-        <Image
-          source={require('../../assets/textImage/main_test.png')}
-          style={styles.mainImage}
-        />
+        <View style={styles.randomWrapper}>
+          <Image source={{ uri: randomCocktail?.image }} style={styles.mainImage} />
+          <Text style={styles.bannerKoText}>{randomCocktail?.korName}</Text>
+          <Text style={styles.bannerEnText}>{randomCocktail?.engName}</Text>
+        </View>
 
         {/* Best 입문자용 칵테일 */}
         <View style={styles.bestSectionWrapper}>
@@ -280,15 +281,40 @@ const styles = StyleSheet.create({
     backgroundColor: theme.background,
     paddingHorizontal: 8,
   },
+  randomWrapper: {
+    position: 'relative',
+    alignItems: 'center',
+  },
   bannerImage: {
     width: widthPercentage(120),
     height: heightPercentage(40),
+  },
+  bannerKoText: {
+    position: 'absolute',
+    bottom: 100,
+    left: 24,
+    right: 24,
+    textAlign: 'center',
+    color: '#fff',
+    fontSize: fontPercentage(18),
+    fontWeight: '600',
+  },
+  bannerEnText: {
+    position: 'absolute',
+    bottom: 60,
+    left: 24,
+    right: 24,
+    color: '#fff',
+    textAlign: 'center',
+    fontSize: fontPercentage(20),
+    fontWeight: '600',
   },
   mainText: {
     fontWeight: '700',
     paddingVertical: 10,
     alignContent: 'flex-start',
     paddingLeft: 10,
+    borderRadius: 16,
   },
   filterView: {
     flexDirection: 'row',
@@ -329,8 +355,9 @@ const styles = StyleSheet.create({
     color: '#222',
   },
   mainImage: {
-    width: 375,
-    height: 457,
+    width: widthPercentage(357),
+    height: heightPercentage(457),
+    borderRadius: 16,
   },
   bestSectionWrapper: {
     alignItems: 'flex-start',

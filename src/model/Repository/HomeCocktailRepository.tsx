@@ -1,8 +1,10 @@
 import { HomeCocktailListDataSource } from '../DataSource/HomeCockctailDataSource';
 import { CocktailCard } from '../domain/CocktailCard';
+import { CocktailMain } from '../domain/CocktailMain';
 import { CocktailSchema } from '../Schema/CocktailSchema';
 
 export interface IHomeCocktailRepository {
+    random(): Promise<CocktailMain>
     refresh(): Promise<CocktailCard[]>
     intermediate(): Promise<CocktailCard[]>
     beginner(): Promise<CocktailCard[]>
@@ -16,6 +18,21 @@ export class HomeCocktailRepository implements IHomeCocktailRepository {
     constructor(dataSource?: HomeCocktailListDataSource) {
         this.dataSource = dataSource ?? new HomeCocktailListDataSource();
     }
+    // 랜덤
+    async random(): Promise<CocktailMain> {
+        const dto = await this.dataSource.randomCocktailData();
+
+        const validSchema = CocktailSchema.parse(dto);
+
+
+        return {
+            id: validSchema.id,
+            korName: validSchema.korName,
+            engName: validSchema.engName,
+            image: validSchema.imageUrl,
+        };
+    }
+
     // 새로운
     async newCocktail(): Promise<CocktailCard[]> {
         const dto = await this.dataSource.newCOcktailData();

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { IHomeCocktailRepository } from '../../model/repository/HomeCocktailRepository';
 import { di } from '../../DI/Container';
 import { CocktailCard } from '../../model/domain/CocktailCard';
+import { CocktailMain } from '../../model/domain/CocktailMain';
 
 
 type UseSearchResultDeps = {
@@ -10,6 +11,7 @@ type UseSearchResultDeps = {
 
 export const useHomeViewModel = (deps?: UseSearchResultDeps) => {
   const repository = deps?.repository ?? di.homeCocktailRepository;
+  const [randomCocktail, setRandomCocktail] = useState<CocktailMain>();
   const [newCocktail, setNewCocktail] = useState<CocktailCard[]>([]);
   const [bestCocktail, setBestCocktail] = useState<CocktailCard[]>([]);
   const [refreshList, setRefreshList] = useState<CocktailCard[]>([]);
@@ -23,13 +25,15 @@ export const useHomeViewModel = (deps?: UseSearchResultDeps) => {
     setError(null);
 
     try {
-      const [newCocktailData, bestCocktailData, refreshData, intermediateData, beginnerData] = await Promise.all([
+      const [randomCocktailData, newCocktailData, bestCocktailData, refreshData, intermediateData, beginnerData] = await Promise.all([
+        repository.random(),
         repository.newCocktail(),
         repository.bestCocktail(),
         repository.refresh(),
         repository.intermediate(),
         repository.beginner(),
       ]);
+      setRandomCocktail(randomCocktailData);
       setNewCocktail(newCocktailData);
       setBestCocktail(bestCocktailData);
       setRefreshList(refreshData);
@@ -52,6 +56,7 @@ export const useHomeViewModel = (deps?: UseSearchResultDeps) => {
   }, [fetchHomeData]);
 
   return {
+    randomCocktail,
     bestCocktail,
     newCocktail,
     refreshList,

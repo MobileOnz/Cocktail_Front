@@ -1,37 +1,26 @@
 import instance from '../../tokenRequest/axios_interceptor';
+import { CocktailMain } from '../domain/CocktailMain';
 import { CocktailDto } from '../dto/CocktailDto';
 
 export class HomeCocktailListDataSource {
-    // // 랜덤
-    // async randomCocktailData(): Promise<CocktailDto[]> {
-    //     const res = await instance.get("/api/v2/cocktails/refresh")
+    // 랜덤
+    async randomCocktailData(): Promise<CocktailMain> {
+        const res = await instance.get('/api/v2/cocktails/random');
 
-    //     return res.data.data as CocktailDto[];
-    // }
+        return res.data.data as CocktailMain;
+    }
 
     // 베스트
     async bestCocktailData(): Promise<CocktailDto[]> {
-        const res = await instance.get('/api/v2/cocktails', {
-            params: {
-                'page': 0,
-                'size': 10,
-                'sort': 'korName,asc',
-            },
-        });
+        const res = await instance.get('/api/v2/cocktails/best');
 
-        return res.data.data.content as CocktailDto[];
+        return res.data.data as CocktailDto[];
     }
     // 새로 업데이트 된
     async newCOcktailData(): Promise<CocktailDto[]> {
-        const res = await instance.get('/api/v2/cocktails', {
-            params: {
-                'page': 0,
-                'size': 10,
-                'sort': 'korName,asc',
-            },
-        });
+        const res = await instance.get('/api/v2/cocktails/recent');
 
-        return res.data.data.content as CocktailDto[];
+        return res.data.data as CocktailDto[];
     }
 
 
