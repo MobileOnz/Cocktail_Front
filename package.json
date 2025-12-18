@@ -11,9 +11,11 @@
     "postinstall": "patch-package"
   },
   "dependencies": {
+    "@amplitude/analytics-react-native": "^1.5.16",
+    "@amplitude/plugin-session-replay-react-native": "^0.4.5",
     "@expo/vector-icons": "^14.0.4",
     "@gorhom/bottom-sheet": "^5.2.6",
-    "@react-native-async-storage/async-storage": "^2.1.1",
+    "@react-native-async-storage/async-storage": "^2.2.0",
     "@react-native-clipboard/clipboard": "1.16.2",
     "@react-native-community/blur": "^4.4.1",
     "@react-native-firebase/app": "21.12.0",
