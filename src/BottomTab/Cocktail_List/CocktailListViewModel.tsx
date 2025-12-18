@@ -3,6 +3,7 @@ import { IHomeCocktailRepository } from '../../model/repository/HomeCocktailRepo
 import { di } from '../../DI/Container';
 import { CocktailCard } from '../../model/domain/CocktailCard';
 import { CocktailMain } from '../../model/domain/CocktailMain';
+import { submitAnswerRecommend } from '../../analytics/eventProperty';
 
 
 type UseSearchResultDeps = {
@@ -24,6 +25,11 @@ export const useHomeViewModel = (deps?: UseSearchResultDeps) => {
     setLoading(true);
     setError(null);
 
+    submitAnswerRecommend({
+      questionStep: 1,
+      answerCode: 'q1_sweet',
+      recommendFlowId: 'v1_test',
+    });
     try {
       const [randomCocktailData, newCocktailData, bestCocktailData, refreshData, intermediateData, beginnerData] = await Promise.all([
         repository.random(),

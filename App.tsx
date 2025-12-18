@@ -4,15 +4,17 @@ import { StyleSheet, View, ActivityIndicator, Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import SplashScreen from 'react-native-splash-screen';
 import Navigation from './src/Navigation/Navigation';
-import {Provider as PaperProvider} from 'react-native-paper';
+import { Provider as PaperProvider } from 'react-native-paper';
 import { useSafeAreaInsets, SafeAreaProvider } from 'react-native-safe-area-context';
 import { setGlobalInsets } from './src/assets/contexts/globalInsets';
 // import MobileAds from "react-native-google-mobile-ads";
 // import { firebase } from "@react-native-firebase/app";
-
+import { initAmplitude } from './src/analytics/amplitudeInit';
 import { ToastProvider } from './src/Components/ToastContext';
 
 import RNBootSplash from 'react-native-bootsplash';
+
+
 
 function AppContent() {
   const insets = useSafeAreaInsets();
@@ -30,6 +32,7 @@ function AppContent() {
 
 function App(): React.JSX.Element {
 
+
   const [isFirstLaunch, setIsFirstLaunch] = useState<null | boolean>(null);
 
   // useEffect(() => {
@@ -41,6 +44,7 @@ function App(): React.JSX.Element {
   //     });
   // }, []);
   useEffect(() => {
+    initAmplitude();
     const checkOnboarding = async () => {
       try {
         const value = await AsyncStorage.getItem('onboardingDone');
@@ -73,12 +77,12 @@ function App(): React.JSX.Element {
   return (
 
     <PaperProvider>
-    <SafeAreaProvider>
-      <AppContent />
-    </SafeAreaProvider>
-  </PaperProvider>
+      <SafeAreaProvider>
+        <AppContent />
+      </SafeAreaProvider>
+    </PaperProvider>
 
-    );
+  );
 }
 
 const styles = StyleSheet.create({
