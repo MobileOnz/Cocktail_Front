@@ -1,18 +1,20 @@
 // App.tsx
-import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, ActivityIndicator, Platform } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { useEffect } from 'react';
+
 import SplashScreen from 'react-native-splash-screen';
 import Navigation from './src/Navigation/Navigation';
-import {Provider as PaperProvider} from 'react-native-paper';
+import { Provider as PaperProvider } from 'react-native-paper';
 import { useSafeAreaInsets, SafeAreaProvider } from 'react-native-safe-area-context';
 import { setGlobalInsets } from './src/assets/contexts/globalInsets';
 // import MobileAds from "react-native-google-mobile-ads";
 // import { firebase } from "@react-native-firebase/app";
-
+import { initAmplitude } from './src/analytics/amplitudeInit';
 import { ToastProvider } from './src/Components/ToastContext';
-
+import { initDb } from './src/model/local/index';
 import RNBootSplash from 'react-native-bootsplash';
+import { syncKeywordData } from './src/model/local/service/keywordService';
+import { Platform } from 'react-native';
+
 
 function AppContent() {
   const insets = useSafeAreaInsets();
@@ -30,7 +32,7 @@ function AppContent() {
 
 function App(): React.JSX.Element {
 
-  const [isFirstLaunch, setIsFirstLaunch] = useState<null | boolean>(null);
+
 
   // useEffect(() => {
 
@@ -41,52 +43,41 @@ function App(): React.JSX.Element {
   //     });
   // }, []);
   useEffect(() => {
-    const checkOnboarding = async () => {
+    initAmplitude();
+
+    const bootstrapLocalData = async () => {
       try {
-        const value = await AsyncStorage.getItem('onboardingDone');
-        setIsFirstLaunch(value === null);
+        await initDb();                 // 테이블/마이그레이션
+        const keywords = await syncKeywordData();    // SQLite 저장
+        console.log('[Keyword first item]', keywords?.[0]);
       } catch (error) {
-        console.error('AsyncStorage error: ', error);
+        console.error('bootstrap error: ', error);
+        // 실패해도 앱은 띄우기
+      } finally {
+        // 3) 모든 작업 끝난 뒤 스플래시 제거
+        if (Platform.OS === 'ios') {
+          RNBootSplash.hide({ fade: true });
+        } else {
+          SplashScreen.hide();
+        }
       }
     };
 
-    checkOnboarding();
-
-    // SplashScreen 숨기기
-    setTimeout(() => {
-      if (Platform.OS === 'ios') {
-        RNBootSplash.hide();  // iOS에서는 bootsplash 사용
-      } else {
-        SplashScreen.hide();  // Android에서는 splash-screen 사용
-      }
-    }, 3000);
+    bootstrapLocalData();
   }, []);
 
-  if (isFirstLaunch === null) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#0000ff" />
-      </View>
-    );
-  }
+
 
   return (
 
     <PaperProvider>
-    <SafeAreaProvider>
-      <AppContent />
-    </SafeAreaProvider>
-  </PaperProvider>
+      <SafeAreaProvider>
+        <AppContent />
+      </SafeAreaProvider>
+    </PaperProvider>
 
-    );
+  );
 }
 
-const styles = StyleSheet.create({
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-});
 
 export default App;
