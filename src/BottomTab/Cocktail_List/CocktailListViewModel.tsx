@@ -3,6 +3,7 @@ import { IHomeCocktailRepository } from '../../model/repository/HomeCocktailRepo
 import { di } from '../../DI/Container';
 import { CocktailCard } from '../../model/domain/CocktailCard';
 import { CocktailMain } from '../../model/domain/CocktailMain';
+import { API_BASE_URL } from '@env';
 
 
 type UseSearchResultDeps = {
@@ -25,6 +26,7 @@ export const useHomeViewModel = (deps?: UseSearchResultDeps) => {
     setError(null);
 
     try {
+      console.log(API_BASE_URL);
       const [randomCocktailData, newCocktailData, bestCocktailData, refreshData, intermediateData, beginnerData] = await Promise.all([
         repository.random(),
         repository.newCocktail(),
