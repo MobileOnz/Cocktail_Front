@@ -1,16 +1,13 @@
 // CocktailDetailScreen.tsx
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import React, { useEffect, useMemo, useState } from 'react';
 import { Image, ScrollView, Text, View, StyleSheet, Pressable } from 'react-native';
 import { ActivityIndicator, Divider, IconButton } from 'react-native-paper';
 
 import PillStyleStatus from '../PillStyleStatus';
 import { RootStackParamList } from '../../Navigation/Navigation';
-import { CocktailDataSource } from '../../model/DataSource/CocktailDataSource';
-import { CocktailDetailViewModel } from './CocktailDetailViewModel';
-import { CocktailDetailDto } from '../../model/dto/CocktailDto';
 import { useNavigation } from '@react-navigation/native';
 import { fontPercentage, heightPercentage, widthPercentage } from '../../assets/styles/FigmaScreen';
+import useCocktailDetailViewModel from './CocktailDetailViewModel';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'CocktailDetailScreen'>;
 
@@ -27,7 +24,7 @@ const DetailRow = ({
     <View style={[styles.row, { alignItems: align }]}>
       <Text style={styles.label}>{label}</Text>
       <View style={styles.valueWrapper}>
-        <Text style={styles.valueText}>{children}</Text>
+        {children}
       </View>
     </View>
   );
@@ -35,50 +32,10 @@ const DetailRow = ({
 
 export function CocktailDetailScreen({ route }: Props) {
 
-
   const { cocktailId } = route.params;
   const navigation = useNavigation();
 
-  const repository = useMemo(() => new CocktailDataSource(), []);
-  const viewModel = useMemo(
-    () => new CocktailDetailViewModel(repository),
-    [repository],
-  );
-
-  const [detail, setDetail] = useState<CocktailDetailDto | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    let isMounted = true;
-
-    const fetchDetail = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-
-        const data = await viewModel.load(cocktailId);
-
-        if (isMounted) {
-          setDetail(data);
-        }
-      } catch (e) {
-        if (isMounted) {
-          setError('칵테일 정보를 불러오지 못했습니다.');
-        }
-      } finally {
-        if (isMounted) {
-          setLoading(false);
-        }
-      }
-    };
-
-    fetchDetail();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [cocktailId, viewModel]);
+  const { detail, loading, error } = useCocktailDetailViewModel(cocktailId);
 
   //  로딩 상태
   if (loading) {
@@ -103,7 +60,7 @@ export function CocktailDetailScreen({ route }: Props) {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.imageContainer}>
-        <Image source={{ uri: detail.image }} style={styles.image} />
+        <Image source={{ uri: detail.imageUrl }} style={styles.image} />
 
         {/* 상단 바 전체를 한 View에 묶기 */}
         <View style={styles.imageHeader}>
@@ -121,49 +78,60 @@ export function CocktailDetailScreen({ route }: Props) {
             <IconButton icon="share-outline" size={24} iconColor="#fff" onPress={() => { }} />
           </View>
         </View>
+        <Text style={styles.korText}>{detail.korName}</Text>
+        <Text style={styles.engText}>{detail.engName}</Text>
       </View>
 
 
       {/* 스타일 */}
       <View style={styles.contentWrapper}>
         <DetailRow label="스타일" align="center">
-          <PillStyleStatus tone={detail.tone} />
+          <PillStyleStatus tone={detail.style} />
         </DetailRow>
 
         <DetailRow label="유래·역사">
-          <Text>{detail.summary}</Text>
+          <Text style={styles.valueText}>{detail.originText}</Text>
         </DetailRow>
 
         <Divider style={styles.sectionDivider} />
 
         <DetailRow label="도수">
-          <Text> {detail.abv}</Text>
+          <Text style={styles.valueText}> {detail.abvBand}</Text>
         </DetailRow>
         <DetailRow label="맛">
-          <Text> {detail.taste}</Text>
+          <Text style={styles.valueText}>
+            {detail.flavors.join(' • ')}
+          </Text>
         </DetailRow>
         <DetailRow label="분위기">
-          <Text> {detail.mood}</Text>
+          <Text style={styles.valueText}> {detail.moods.join(' • ')}</Text>
         </DetailRow>
         <DetailRow label="계절">
-          <Text> {detail.season}</Text>
+          <Text style={styles.valueText}> {detail.season}</Text>
         </DetailRow>
         <DetailRow label="베이스">
-          <Text> {detail.base}</Text>
+          <Text style={styles.valueText}> {detail.base}</Text>
         </DetailRow>
         <DetailRow label="재료">
-          {detail.ingredients.map((ing, idx) => (
-            <Text key={idx}>
-              {ing.name} {ing.amount},
-            </Text>
-          ))}
+          <View style={{ flexDirection: 'column', gap: 6 }}>
+            {detail.ingredients.map((item, index) => (
+              <Text key={`ingredient-${index}`} style={styles.valueText}>
+                {item}
+              </Text>
+            ))}
+          </View>
         </DetailRow>
         {/* 추후 넣기 */}
         <DetailRow label="잔 유형">
-          <Text> {detail.abv}</Text>
+          <Text style={styles.valueText}> {detail.glassType}</Text>
+          <Image source={{ uri: detail.glassImageUrl }} style={styles.glassImage} />
         </DetailRow>
       </View>
+
+
       <Divider style={styles.Divider} />
+
+
       <Text style={styles.valueText}>   이 칵테일, 입문자도 즐길 수 있을까요?</Text>
       <View style={styles.buttonContainer}>
         <Pressable style={[styles.button, { marginRight: widthPercentage(10) }]} onPress={() => { }}>
@@ -242,6 +210,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  glassImage: {
+    width: '100%',
+    height: heightPercentage(420),
+    resizeMode: 'cover',
+  },
 
   // 로딩 텍스트
   loadingText: {
@@ -257,6 +230,22 @@ const styles = StyleSheet.create({
     aspectRatio: 3 / 4,
     resizeMode: 'cover',
 
+  },
+  korText: {
+    position: 'absolute',
+    left: 20,
+    bottom: 70,
+    fontWeight: '700',
+    fontSize: fontPercentage(20),
+    color: '#FFF',
+  },
+  engText: {
+    position: 'absolute',
+    left: 20,
+    bottom: 40,
+    fontWeight: '600',
+    fontSize: fontPercentage(20),
+    color: '#FFF',
   },
   imageHeader: {
     position: 'absolute',

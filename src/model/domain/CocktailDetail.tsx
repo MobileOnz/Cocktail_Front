@@ -1,4 +1,4 @@
-export interface CocktailDto {
+export interface CocktailDetail {
     id: number;
     korName: string;
     engName: string;
