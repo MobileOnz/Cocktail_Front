@@ -13,6 +13,8 @@ import { setGlobalInsets } from './src/assets/contexts/globalInsets';
 import { ToastProvider } from './src/Components/ToastContext';
 
 import RNBootSplash from 'react-native-bootsplash';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import NaverLogin from '@react-native-seoul/naver-login';
 
 function AppContent() {
   const insets = useSafeAreaInsets();
@@ -31,7 +33,10 @@ function AppContent() {
 function App(): React.JSX.Element {
 
   const [isFirstLaunch, setIsFirstLaunch] = useState<null | boolean>(null);
-
+  const consumerKey = 'ZGxXBBPpRH3V1SuUWME8';
+  const consumerSecret = 'joOUHCi6DR';
+  const appName = 'onz';
+  const serviceUrlScheme = 'naverlogin';
   // useEffect(() => {
 
   //   MobileAds()
@@ -40,6 +45,27 @@ function App(): React.JSX.Element {
   //       console.log("AdMob 초기화 완료");
   //     });
   // }, []);
+
+  useEffect(() => {
+    GoogleSignin.configure({
+    offlineAccess: true,
+      webClientId:
+        '1058340377075-vt8u6qabph0f0van79eqhkt9j2f1jkbe.apps.googleusercontent.com',
+      iosClientId:
+        '1058340377075-an8fq49j4mg29fq9rm88qpi253dd2vts.apps.googleusercontent.com',
+    });
+    NaverLogin.initialize({
+      appName,
+      consumerKey,
+      consumerSecret,
+      serviceUrlSchemeIOS: serviceUrlScheme,
+      disableNaverAppAuthIOS: true,
+    });
+    NaverLogin.logout;
+    NaverLogin.deleteToken;
+  }, []);
+
+
   useEffect(() => {
     const checkOnboarding = async () => {
       try {
