@@ -1,0 +1,39 @@
+import { AuthRemoteDataSource } from "../DataSource/AuthRemoteDataSource";
+import { ISocialAuthDataSource } from "../DataSource/ISocialAuthDataSource";
+import { AuthResult } from "../domain/AuthResult";
+import { SignUpRequest } from "../domain/SignupRequest";
+
+export class AuthRepository {
+  constructor(
+    private naverDataSource: ISocialAuthDataSource,
+    private googleDataSource: ISocialAuthDataSource,
+    private kakaoDataSource: ISocialAuthDataSource,
+    private authRemoteDataSource: AuthRemoteDataSource
+  ) {}
+
+  naverLogin(): Promise<AuthResult> {
+    return this.naverDataSource.login();
+  }
+
+  kakaoLogin(): Promise<AuthResult> {
+    return this.kakaoDataSource.login()
+  }
+
+  getKakaoLoginUrl() {
+    return this.kakaoDataSource.getLoginUrl()
+  }
+
+  getNaverLoginUrl() {
+    return this.naverDataSource.getLoginUrl()
+  }
+
+  getGoogleLoginUrl() {
+    return this.googleDataSource.getLoginUrl()
+  }
+
+
+  signUp(req: SignUpRequest) {
+    return this.authRemoteDataSource.signUp(req)
+  }
+  
+}

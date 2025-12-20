@@ -9,7 +9,7 @@ import { useNavigation } from '@react-navigation/native';
 import Home from '../BottomTab/Cocktail_List/CocktailListScreen';
 import CocktailBookScreen from '../BottomTab/CocktailBookScreen';
 import RecommendationsScreen from '../BottomTab/RecommendationIntroScreen';
-import MyPageScreen from '../BottomTab/MyPageScreen';
+import MyPageScreen from '../Screens/MyPage/MyPageScreen';
 import LoginBottomSheet from '../BottomSheet/LoginBottomSheetProps';
 import theme from '../assets/styles/theme';
 import {
