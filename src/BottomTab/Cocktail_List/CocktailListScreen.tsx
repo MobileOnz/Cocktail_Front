@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -14,22 +14,33 @@ import theme from '../../assets/styles/theme';
 import { fontPercentage, heightPercentage, widthPercentage } from '../../assets/styles/FigmaScreen';
 import PuzzlePiece from '../../configs/CurvedImage';
 import { truncate } from 'lodash';
-import { useBestCocktail, useCocktailLIst, useNewCocktail } from './CocktailListViewModel';
 import PillStyleStatus from '../../Components/PillStyleStatus';
 import PagerView from 'react-native-pager-view';
 import CocktailCard from '../../Components/CocktailCard';
 import { useNavigation } from '@react-navigation/native';
+import { useHomeViewModel } from './CocktailListViewModel';
 const Home = () => {
-  const { cocktails } = useBestCocktail();
-  const { newCocktails } = useNewCocktail();
-  const { allCocktails } = useCocktailLIst();
+
   const [pageIndex, setPageIndex] = useState(0);
-  const page: typeof newCocktails[] = [];
   const navigation = useNavigation<any>();
 
-  for (let i = 0; i < newCocktails.length; i += 3) {
-    page.push(newCocktails.slice(i, i + 3));
-  }
+  const {
+    randomCocktail,
+    bestCocktail,
+    newCocktail,
+    refreshList,
+    beginnerList,
+    intermediateList,
+
+  } = useHomeViewModel();
+
+  const pages = useMemo(() => {
+    const result = [];
+    for (let i = 0; i < newCocktail.length; i += 3) {
+      result.push(newCocktail.slice(i, i + 3));
+    }
+    return result;
+  }, [newCocktail]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -41,13 +52,12 @@ const Home = () => {
           style={styles.bannerImage}
           resizeMode="contain"
         />
-
         {/* 가운데 공백 */}
         <Appbar.Content title="" />
 
         {/* 오른쪽 아이콘 */}
         <Appbar.Action icon="magnify" onPress={() => { navigation.navigate('SearchScreen' as never); }} />
-        <Appbar.Action icon="bookmark-outline" onPress={() => { navigation.navigate('CocktailBoxScreen' as never) }} />
+        <Appbar.Action icon="bookmark-outline" onPress={() => { navigation.navigate('CocktailBoxScreen' as never); }} />
       </Appbar.Header>
 
       {/* 필터 영역 */}
@@ -77,10 +87,11 @@ const Home = () => {
         contentContainerStyle={styles.allScrollView}
       >
         {/* 메인 사진 */}
-        <Image
-          source={require('../../assets/textImage/main_test.png')}
-          style={styles.mainImage}
-        />
+        <View style={styles.randomWrapper}>
+          <Image source={{ uri: randomCocktail?.image }} style={styles.mainImage} />
+          <Text style={styles.bannerKoText}>{randomCocktail?.korName}</Text>
+          <Text style={styles.bannerEnText}>{randomCocktail?.engName}</Text>
+        </View>
 
         {/* Best 입문자용 칵테일 */}
         <View style={styles.bestSectionWrapper}>
@@ -88,11 +99,11 @@ const Home = () => {
             Best 입문자용 칵테일
           </Text>
           <FlatList
-            data={cocktails}
+            data={bestCocktail}
             keyExtractor={item => String(item.id)}
             horizontal
             showsHorizontalScrollIndicator={false}
-            renderItem={({ item }) => (
+            renderItem={({ item, index }) => (
               <TouchableOpacity
                 activeOpacity={0.8}
                 onPress={() =>
@@ -106,13 +117,13 @@ const Home = () => {
 
                   {/* 랭크 */}
                   <View style={styles.bestRankWrapper}>
-                    <Text style={styles.bestRankText}>{item.rank}</Text>
+                    <Text style={styles.bestRankText}>{index + 1}</Text>
                   </View>
 
                   {/* 제목 */}
                   <View style={styles.bestTitleWrapper}>
                     <Text style={styles.bestTitleText}>
-                      {truncate(item.title, { length: 7, omission: '...' })}
+                      {truncate(item.name, { length: 7, omission: '...' })}
                     </Text>
                   </View>
 
@@ -141,7 +152,7 @@ const Home = () => {
             initialPage={0}
             onPageSelected={e => setPageIndex(e.nativeEvent.position)}
           >
-            {page.map((items, p) => (
+            {pages.map((items, p) => (
               <View key={p} style={styles.pagerPage}>
                 {items.map(item => (
                   <View key={item.id} style={styles.newCocktailRow}>
@@ -166,7 +177,7 @@ const Home = () => {
 
           {/* 인디케이터 */}
           <View style={styles.indicatorContainer}>
-            {page.map((_, i) => (
+            {pages.map((_, i) => (
               <View
                 key={i}
                 style={[
@@ -184,15 +195,16 @@ const Home = () => {
           기분 전환이 필요할 땐 상큼한 한 잔 🍋
         </Text>
         <FlatList
-          data={allCocktails}
+          data={refreshList}
           horizontal
           keyExtractor={item => String(item.id)}
           showsHorizontalScrollIndicator={false}
           renderItem={({ item }) => (
             <CocktailCard
+              id={item.id}
               name={item.name}
-              imageUri={item.image}
-              tone={item.type}
+              image={item.image}
+              type={item.type}
               bookmarked={true}
               onPress={() =>
                 navigation.navigate('CocktailDetailScreen', {
@@ -208,15 +220,16 @@ const Home = () => {
           부담 없이 편하게 시도할 수 있는 맛 🧃
         </Text>
         <FlatList
-          data={allCocktails}
+          data={beginnerList}
           horizontal
           keyExtractor={item => String(item.id)}
           showsHorizontalScrollIndicator={false}
           renderItem={({ item }) => (
             <CocktailCard
+              id={item.id}
               name={item.name}
-              imageUri={item.image}
-              tone={item.type}
+              image={item.image}
+              type={item.type}
               bookmarked={true}
               onPress={() =>
                 navigation.navigate('CocktailDetailScreen', {
@@ -232,15 +245,16 @@ const Home = () => {
           중급자로 거듭나보고 싶다면? 🥃
         </Text>
         <FlatList
-          data={allCocktails}
+          data={intermediateList}
           horizontal
           keyExtractor={item => String(item.id)}
           showsHorizontalScrollIndicator={false}
           renderItem={({ item }) => (
             <CocktailCard
+              id={item.id}
               name={item.name}
-              imageUri={item.image}
-              tone={item.type}
+              image={item.image}
+              type={item.type}
               bookmarked={true}
               onPress={() =>
                 navigation.navigate('CocktailDetailScreen', {
@@ -252,6 +266,7 @@ const Home = () => {
           )}
         />
       </ScrollView>
+      <View style={{ marginVertical: '10%' }} />
     </SafeAreaView>
   );
 };
@@ -266,15 +281,40 @@ const styles = StyleSheet.create({
     backgroundColor: theme.background,
     paddingHorizontal: 8,
   },
+  randomWrapper: {
+    position: 'relative',
+    alignItems: 'center',
+  },
   bannerImage: {
     width: widthPercentage(120),
     height: heightPercentage(40),
+  },
+  bannerKoText: {
+    position: 'absolute',
+    bottom: 100,
+    left: 24,
+    right: 24,
+    textAlign: 'center',
+    color: '#fff',
+    fontSize: fontPercentage(18),
+    fontWeight: '600',
+  },
+  bannerEnText: {
+    position: 'absolute',
+    bottom: 60,
+    left: 24,
+    right: 24,
+    color: '#fff',
+    textAlign: 'center',
+    fontSize: fontPercentage(20),
+    fontWeight: '600',
   },
   mainText: {
     fontWeight: '700',
     paddingVertical: 10,
     alignContent: 'flex-start',
     paddingLeft: 10,
+    borderRadius: 16,
   },
   filterView: {
     flexDirection: 'row',
@@ -315,8 +355,9 @@ const styles = StyleSheet.create({
     color: '#222',
   },
   mainImage: {
-    width: 375,
-    height: 457,
+    width: widthPercentage(357),
+    height: heightPercentage(457),
+    borderRadius: 16,
   },
   bestSectionWrapper: {
     alignItems: 'flex-start',
