@@ -4,52 +4,52 @@ import { CocktailSearchRepository } from '../../model/repository/SearchRepositor
 import axios from 'axios';
 
 const useSearchResultViewModel = (keyword: string) => {
-    const [results, setResults] = useState<CocktailCard[]>([]);
-    const [loading, setLoading] = useState(false)
-    const [error, setError] = useState<string | null>(null)
-    // const navigation = useNavigation()
+    // const [results, setResults] = useState<CocktailCard[]>([]);
+    // const [loading, setLoading] = useState(false)
+    // const [error, setError] = useState<string | null>(null)
+    // // const navigation = useNavigation()
 
-    const repository = useMemo(() => new CocktailSearchRepository(), [])
+    // const repository = useMemo(() => new CocktailSearchRepository(), [])
 
 
-    const fetchResult = useCallback(async () => {
-        const trimmed = keyword.trim();
-        if (!trimmed)
-            return;
-        setLoading(true)
-        setError(null)
+    // const fetchResult = useCallback(async () => {
+    //     const trimmed = keyword.trim();
+    //     if (!trimmed)
+    //         return;
+    //     setLoading(true)
+    //     setError(null)
 
-        try {
-            const data = await repository.search(keyword.trim())
-            setResults(data)
-        } catch (error) {
-            if (axios.isAxiosError(error)) {
-                console.log(" AxiosError message:", error.message);
-                console.log(" AxiosError code:", error.code);
-                console.log(" AxiosError config:", error.config);
-                console.log(" AxiosError request:", error.request);
-                console.log(" AxiosError response:", error.response?.data);
-                console.log(" AxiosError status:", error.response?.status);
-            } else {
-                console.log(" Unknown error:", error);
-            }
-        }
-        finally {
-            setLoading(false)
-        }
+    //     try {
+    //         const data = await repository.search(keyword.trim())
+    //         setResults(data)
+    //     } catch (error) {
+    //         if (axios.isAxiosError(error)) {
+    //             console.log(" AxiosError message:", error.message);
+    //             console.log(" AxiosError code:", error.code);
+    //             console.log(" AxiosError config:", error.config);
+    //             console.log(" AxiosError request:", error.request);
+    //             console.log(" AxiosError response:", error.response?.data);
+    //             console.log(" AxiosError status:", error.response?.status);
+    //         } else {
+    //             console.log(" Unknown error:", error);
+    //         }
+    //     }
+    //     finally {
+    //         setLoading(false)
+    //     }
 
-    }, [keyword, repository])
+    // }, [keyword, repository])
 
-    useEffect(() => {
-        fetchResult()
-    }, [fetchResult])
+    // useEffect(() => {
+    //     fetchResult()
+    // }, [fetchResult])
 
-    return {
-        results,
-        loading,
-        error,
-        refetch: fetchResult
-    }
+    // return {
+    //     results,
+    //     loading,
+    //     error,
+    //     refetch: fetchResult
+    // }
 
 }
 
