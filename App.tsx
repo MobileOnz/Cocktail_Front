@@ -12,6 +12,8 @@ import { initAmplitude } from './src/analytics/amplitudeInit';
 import { ToastProvider } from './src/Components/ToastContext';
 import { initDb } from './src/model/local/index';
 import RNBootSplash from 'react-native-bootsplash';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import NaverLogin from '@react-native-seoul/naver-login';
 import { syncKeywordData } from './src/model/local/service/keywordService';
@@ -97,12 +99,15 @@ function App(): React.JSX.Element {
 
 
   return (
-
-    <PaperProvider>
-      <SafeAreaProvider>
-        <AppContent />
-      </SafeAreaProvider>
-    </PaperProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <BottomSheetModalProvider>
+        <PaperProvider>
+          <SafeAreaProvider>
+            <AppContent />
+          </SafeAreaProvider>
+        </PaperProvider>
+      </BottomSheetModalProvider>
+    </GestureHandlerRootView>
 
   );
 }

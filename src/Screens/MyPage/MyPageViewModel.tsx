@@ -9,11 +9,11 @@ import { UserUpdate } from "../../model/dto/UserUpdateDto"
 
 const MyPageViewModel = () => {
   const repository = useMemo(
-    () => 
-        new MemberRepository(
-            new MemberRemoteDataSource(),
-            new AuthRemoteDataSource()
-        ),
+    () =>
+      new MemberRepository(
+        new MemberRemoteDataSource(),
+        new AuthRemoteDataSource()
+      ),
     []
   );
 
@@ -53,12 +53,12 @@ const MyPageViewModel = () => {
   const logOut = async () => {
     try {
       const status = await repository.logout();
-      console.log("로그아웃 처리 완료");
-      return status
+      console.log('로그아웃 처리 완료');
+      return status;
     } catch (error) {
-      console.error("로그아웃 실패", error);
+      console.error('로그아웃 실패', error);
     }
-  }
+  };
 
   // const uploadProfileImage = async() {
   //   try {
