@@ -266,7 +266,7 @@ const Home = () => {
           )}
         />
       </ScrollView>
-      <View style={{ marginVertical: '10%' }} />
+
     </SafeAreaView>
   );
 };
