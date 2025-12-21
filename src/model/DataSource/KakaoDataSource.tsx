@@ -6,18 +6,6 @@ import { API_BASE_URL } from '@env';
 import { AuthError, AuthErrorType } from '../domain/AuthError';
 
 export class KakaoAuthDataSource implements ISocialAuthDataSource {
-
-  async getLoginUrl(): Promise<{ loginUrl: string }> {
-    console.log('getLoginUrl: ', API_BASE_URL);
-    const response = await axios.get(
-      `${API_BASE_URL}/api/v2/auth/kakao/login-url`
-    );
-    console.log('getLoginUrl: ', response.data);
-    return response.data;
-  }
-
-
-
   async login(): Promise<AuthResult> {
     try {
       const auth: KakaoOAuthToken = await login();
