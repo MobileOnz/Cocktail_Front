@@ -1,225 +1,58 @@
-import React, {useEffect,useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, ImageBackground, Linking } from 'react-native';
 import { StackScreenProps } from '@react-navigation/stack';
-import * as KakaoLogin from '@react-native-seoul/kakao-login';
 import { heightPercentage, widthPercentage, fontPercentage } from '../../assets/styles/FigmaScreen';
-import NaverLogin from '@react-native-seoul/naver-login';
-import type {
-  NaverLoginResponse,
-} from '@react-native-seoul/naver-login';
-
-import axios from 'axios';
-import {API_BASE_URL} from '@env';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import { RootStackParamList } from '../../Navigation/Navigation';
 
 import {useToast} from '../../Components/ToastContext';
 import AuthViewModel from './AuthViewModel';
 import { AuthError, AuthErrorType } from '../../model/domain/AuthError';
 
-//env에서 서버 주소 가져옴
-const server = API_BASE_URL;
-
-
-//구글로그인  설정
-// const config = {
-//   issuer: 'https://accounts.google.com',
-//   clientId: process.env.GOOGLE_CLIENT_ID as string,
-//   redirectUrl: process.env.GOOGLE_REDIRECT_URI as string,
-//   scopes: ['openid', 'profile', 'email'],
-//   serviceConfiguration: {
-//     authorizationEndpoint: 'https://accounts.google.com/o/oauth2/auth',
-//     tokenEndpoint: 'https://oauth2.googleapis.com/token',
-//   },
-// };
-
-
 type LoginScreenProps = StackScreenProps<RootStackParamList, 'Login'>;
 
 const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
   const {showToast} = useToast();
-  const { loginWithNaver, loginWithKakao, startKakaoLogin, startNaverLogin, startGoogleLogin} = AuthViewModel()
+  const { loginWithNaver, loginWithKakao, loginWithGoogle } = AuthViewModel()
 
-  //네이버 로그인
-  // const naverLogin = async (): Promise<void> => {
-  //   try {
-  //     const { failureResponse, successResponse } = await NaverLogin.login();
-  //     setSuccessResponse(successResponse);
-  //     setFailureResponse(failureResponse);
+  const naverLogin = async () => {
+    try {
+      const result = await loginWithNaver();
 
-  //     if (successResponse) {
-  //       const { accessToken} = successResponse;
-  //       const payload = {
-  //         provider: 'naver',
-  //         accessToken : accessToken,
-  //       };
-  //       const response = await axios.post(`${server}/api/auth/social-login`, payload, {
-  //         headers: {
-  //           'Content-Type': 'application/json',
-  //         },
-  //       });
-
-  //       const code = response.data.data.code;
-  //       if(code){
-  //         navigation.navigate('SignupScreen',{code : code});
-  //       }else{
-  //         //여기서 토큰을 발행함. 만약 새로운 유저가 가입을 한 것이라면 SignupScreen에 code값을 담아 옮겨주면 된다.
-  //         const backendAccessToken = response.data.data.access_token;
-  //         const backendRefreshToken = response.data.data.refresh_token;
-  //         console.log('backendAccessToken: ',backendAccessToken);
-  //       if (backendAccessToken) {
-  //         await AsyncStorage.setItem('accessToken', backendAccessToken);
-  //         showToast('로그인 되었습니다.');
-
-  //         //로그인을 수행하고 돌아왔을 때도 refresh를 수행해주기 위함
-  //         setTimeout(() => {
-  //           navigation.navigate('BottomTabNavigator', {
-  //             screen: '지도', // <- MyPage 탭의 이름으로 정확히 수정
-  //             params: { shouldRefresh: true },
-  //           });
-  //         }, 100);
-  //       }
-  //       if (backendRefreshToken) {
-  //         await AsyncStorage.setItem('refreshToken', backendRefreshToken);
-  //       }
-  //       }
-  //     } else if (failureResponse) {
-  //       console.log('네이버 로그인 실패:', failureResponse);
-  //     } else {
-  //       setFailureResponse({ message: '로그인 정보가 없습니다.', isCancel: false });
-  //     }
-  //   } catch (error: unknown) {
-  //     if (axios.isAxiosError(error)) {
-  //       console.log('서버 응답 상태:', error.response?.status);
-  //       console.log('서버 응답 내용:', error.response?.data);
-  //     } else {
-  //       console.error('네이버 로그인 중 예외 발생:', error);
-  //     }
-  //   }
-  // };
-
- const naverLogin = async () => {
-  try {
-    const result = await loginWithNaver();
-
-    if (result.type === "token") {
-      showToast("로그인하였습니다.");
-      navigation.navigate("BottomTabNavigator", {
-        screen: "지도",
-        params: { shouldRefresh: true },
-      });
-      return;
-    }
-
-    if (result.type === "signup") {
-      navigation.navigate("SignupScreen", {
-        code: result.signupCode,
-      });
-      return;
-    }
-
-  } catch (error) {
-    if (error instanceof AuthError) {
-      switch (error.type) {
-        case AuthErrorType.TOKEN_EXPIRED:
-          showToast("로그인이 만료되었습니다.");
-          break;
-
-        case AuthErrorType.SOCIAL_LOGIN_FAILED:
-          showToast("소셜 로그인에 실패했습니다.");
-          break;
-
-        default:
-          showToast("로그인에 실패했습니다.");
+      if (result.type === "token") {
+        showToast("로그인하였습니다.");
+        navigation.navigate("BottomTabNavigator", {
+          screen: "지도",
+          params: { shouldRefresh: true },
+        });
+        return;
       }
-      return;
+
+      if (result.type === "signup") {
+        navigation.navigate("SignupScreen", {
+          code: result.signupCode,
+        });
+        return;
+      }
+
+    } catch (error) {
+      if (error instanceof AuthError) {
+        switch (error.type) {
+          case AuthErrorType.TOKEN_EXPIRED:
+            showToast("로그인이 만료되었습니다.");
+            break;
+
+          case AuthErrorType.SOCIAL_LOGIN_FAILED:
+            showToast("소셜 로그인에 실패했습니다.");
+            break;
+
+          default:
+            showToast("로그인에 실패했습니다.");
+        }
+        return;
+      }
+
+      showToast("알 수 없는 오류가 발생했습니다.");
     }
-
-    showToast("알 수 없는 오류가 발생했습니다.");
-  }
-};
-
-
-      // 카카오 로그인 함수
-  // const kakaoLogin = () => {
-  //   KakaoLogin.login()
-
-  //   .then(async (result) => {
-  //     console.log('Login Success', JSON.stringify(result));
-
-  //     const accessToken = result.accessToken;
-  //     const payload = {
-  //       provider: 'kakao',
-  //       accessToken : accessToken,
-  //     };
-
-  //     const response = await axios.post(`${server}/api/auth/social-login`, payload, {
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //       },
-
-  //     });
-  //     const code = response.data.data.code;
-  //     if(code){
-  //       navigation.navigate('SignupScreen',{code : code});
-  //     }else{
-  //       //여기서 토큰을 발행함. 만약 새로운 유저가 가입을 한 것이라면 SignupScreen에 code값을 담아 옮겨주면 된다.
-  //       const backendAccessToken = response.data.data.access_token;
-  //       const backendRefreshToken = response.data.data.refresh_token;
-  //       console.log('backendAccessToken: ',backendAccessToken);
-  //     if (backendAccessToken) {
-  //       await AsyncStorage.setItem('accessToken', backendAccessToken);
-  //       showToast('로그인 되었습니다.');
-  //     }
-  //     if (backendRefreshToken) {
-  //       console.log(backendRefreshToken);
-  //       await AsyncStorage.setItem('refreshToken', backendRefreshToken);
-  //     }
-  //     // navigation.navigate("BottomTabNavigator");
-  //     //로그인을 수행하고 돌아왔을 때도 refresh를 수행해주기 위함
-  //     setTimeout(() => {
-  //       navigation.navigate('BottomTabNavigator', {
-  //         screen: '지도', // <- MyPage 탭의 이름으로 정확히 수정
-  //         params: { shouldRefresh: true },
-  //       });
-  //     }, 100);
-  //   }
-  //     })
-  //     .catch((error) => {
-  //       if (error.code === 'E_CANCELLED_OPERATION') {
-  //         console.log('Login Cancel', error.message);
-  //       } else {
-  //         console.log(`Login Fail(code:${error.code})`, error.message);
-  //       }
-  //     });
-  // };
-
-  const onKakakoLoginPress = async() => {
-    const { loginUrl } = await startKakaoLogin();
-    console.log("onKakakoLoginPress: ", loginUrl)
-    Linking.openURL(loginUrl)
-  }
-
-  const onNaverLoginPress = async() => {
-    const { loginUrl } = await startNaverLogin();
-    console.log("onNaverLoginPress: ", loginUrl)
-    Linking.openURL(loginUrl)
-  }
-
-  Linking.addEventListener("url", async ({url}) => {
-    const code = new URL(url).searchParams.get("code");
-    const state = new URL(url).searchParams.get("state");
-
-    console.log(code, state)
-
-  })
-
-  const onGoogleLoginPress = async() => {
-    const { loginUrl } = await startGoogleLogin();
-    console.log("onGoogleLoginPress: ", loginUrl)
-    Linking.openURL(loginUrl)
-  }
+  };
 
   const kakaoLogin = async() => {
     try {
@@ -295,96 +128,46 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
 
 
       //구글 로그인
-  // const signInWithGoogle = async () => {
-  //   try {
-  //     const accessToken = (await GoogleSignin.getTokens()).accessToken;
-
-  //     const payload = {
-  //       provider: 'google',
-  //       code: null,
-  //       state: null,
-  //       accessToken : accessToken,
-  //     };
-
-  //     const response = await axios.post(`${server}/api/auth/social-login`, payload, {
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //       },
-
-  //     });
-  //     const code = response.data.data.code;
-  //     if(code){
-  //       navigation.navigate("SignupScreen",{code : code})
-  //     }else{
-  //       //여기서 토큰을 발행함. 만약 새로운 유저가 가입을 한 것이라면 SignupScreen에 code값을 담아 옮겨주면 된다.
-  //       const backendAccessToken = response.data.data.access_token;
-  //       const backendRefreshToken = response.data.data.refresh_token;
-  //       console.log("backendAccessToken: ",backendAccessToken);
-  //     if (backendAccessToken) {
-  //       await AsyncStorage.setItem('accessToken', backendAccessToken);
-  //     }
-  //     if (backendRefreshToken) {
-  //       await AsyncStorage.setItem('refreshToken', backendRefreshToken);
-  //     }
-  //     navigation.navigate("BottomTabNavigator");
-  //     }
-
-  //   } catch (error) {
-  //     console.log('Google Sign-In Error:', JSON.stringify(error, null, 2));
-  //   }
-  // };
-  const signInWithGoogle = async () => {
+  const googleLogin = async () => {
     try {
-      // 1. 플레이서비스 체크 (Android용이지만 iOS에서도 무방)
-      await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
-
-      // 2. 로그인 UI 띄우기
-      // const userInfo = await GoogleSignin.signIn();
-
-      // 3. 로그인 성공했으면 토큰 가져오기
-      const { accessToken } = await GoogleSignin.getTokens();
-
-      console.log('✅ 구글 로그인 성공, accessToken:', accessToken);
-
-      // 4. 서버로 소셜 로그인 요청 보내기
-      const payload = {
-        provider: 'google',
-        code: null,
-        state: null,
-        accessToken: accessToken,
-      };
-
-      const response = await axios.post(`${server}/api/auth/social-login`, payload, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      const code = response.data.data.code;
-      if (code) {
-        navigation.navigate('SignupScreen', { code });
-      } else {
-        const backendAccessToken = response.data.data.access_token;
-        const backendRefreshToken = response.data.data.refresh_token;
-
-        if (backendAccessToken) {
-          await AsyncStorage.setItem('accessToken', backendAccessToken);
-        }
-        if (backendRefreshToken) {
-          await AsyncStorage.setItem('refreshToken', backendRefreshToken);
-        }
-       setTimeout(() => {
-            navigation.navigate('BottomTabNavigator', {
-              screen: '지도', // <- MyPage 탭의 이름으로 정확히 수정
-              params: { shouldRefresh: true },
-            });
-          }, 100);
+      const result = await loginWithGoogle();
+      console.log(JSON.stringify(result))
+      if (result.type === "token") {
+        showToast("로그인하였습니다.");
+        navigation.navigate("BottomTabNavigator", {
+          screen: "지도",
+          params: { shouldRefresh: true },
+        });
+        return;
       }
+
+      if (result.type === "signup") {
+        navigation.navigate("SignupScreen", {
+          code: result.signupCode,
+        });
+        return;
+      }
+
     } catch (error) {
-      console.error('❌ Google Sign-In Error:', JSON.stringify(error, null, 2));
+      if (error instanceof AuthError) {
+        switch (error.type) {
+          case AuthErrorType.TOKEN_EXPIRED:
+            showToast("로그인이 만료되었습니다.");
+            break;
+
+          case AuthErrorType.SOCIAL_LOGIN_FAILED:
+            showToast("소셜 로그인에 실패했습니다.");
+            break;
+
+          default:
+            showToast("로그인에 실패했습니다.");
+        }
+        return;
+      }
+
+      showToast("알 수 없는 오류가 발생했습니다.");
     }
   };
-
 
 
 
@@ -420,7 +203,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
             />
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.loginButton} onPress={onNaverLoginPress}>
+          <TouchableOpacity style={styles.loginButton} onPress={naverLogin}>
             <Image
               source={require('../../assets/drawable/naver_button.png')}
               style={styles.buttonImage}
@@ -430,7 +213,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
         {/* google로그인 버튼 */}
           <TouchableOpacity
             style={styles.loginButton}
-            onPress={onGoogleLoginPress}
+            onPress={googleLogin}
             >
             <Image
               source={require('../../assets/drawable/google_button.png')}
