@@ -2,6 +2,8 @@
 import { useCallback, useEffect, useState } from 'react';
 import { RootStackParamList } from '../../Navigation/Navigation';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { searchKeywords } from '../../model/repository/KeywordRepository';
+import { Keyword } from '../../model/dto/KeywordDto';
 
 export type SearchLog = {
     keyword: string;
@@ -20,7 +22,7 @@ export const useSearchViewModel = ({
     initialKeyword,
 }: UseSearchViewModelParams) => {
     const [searchText, setSearchText] = useState('');
-    const [suggestions, setSuggestions] = useState<string[]>([]);
+    const [suggestions, setSuggestions] = useState<Keyword[]>([]);
     const [recentNameSearches, _setRecentNameSearches] = useState<SearchLog[]>([]);
     const [recentMenuSearches, _setRecentMenuSearches] = useState<SearchLog[]>([]);
 
@@ -28,7 +30,7 @@ export const useSearchViewModel = ({
     const navigateToMap = useCallback((keyword: string) => {
         if (!keyword) { return; }
         navigation.navigate('SearchResultScreen', { keyword });
-        setSearchText('')
+        setSearchText('');
     }, [navigation]);
 
     /** 🔹 맞춤 추천에서 넘어온 initialKeyword 처리 */
@@ -39,67 +41,19 @@ export const useSearchViewModel = ({
         }
     }, [initialKeyword, navigateToMap]);
 
-    // /** 🔹 최근 검색어 불러오기 */
-    // useEffect(() => {
-    //     const fetchRecentSearches = async () => {
-    //         try {
-    //             const accessToken = await AsyncStorage.getItem('accessToken');
-    //             console.log('🔥 accessToken from AsyncStorage:', accessToken);
+    const handleSearchTextChange = async (text: string) => {
+        console.log('[VM] onChangeText fired:', text);
+        setSearchText(text);
 
-    //             if (!accessToken) {
-    //                 console.log('로그인 안된 사용자 - 토큰 없음');
-    //                 return;
-    //             }
-
-    //             const res = await instance.get('/api/search/searchlog', {
-    //                 authRequired: true,
-    //             } as any);
-
-    //             const result = res.data;
-    //             console.log('📥 최근 검색어 요청 결과:', result);
-
-    //             if (result.code === 1) {
-    //                 setRecentNameSearches(result.data.name || []);
-    //                 setRecentMenuSearches(result.data.menu || []);
-    //             } else {
-    //                 console.log('🔒 로그인 안 된 사용자 - 서버에서 비정상 처리됨');
-    //             }
-    //         } catch (err) {
-    //             console.error('❌ 최근 검색어 불러오기 실패:', err);
-    //         }
-    //     };
-
-    //     fetchRecentSearches();
-    // }, []);
-
-    // /** 🔹 추천 검색어 fetch */
-    // useEffect(() => {
-    //     const fetchSuggestions = async () => {
-    //         if (searchText.length === 0) {
-    //             setSuggestions([]);
-    //             return;
-    //         }
-
-    //         try {
-    //             const res = await instance.get('/api/search/suggestions', {
-    //                 params: { query: searchText },
-    //                 authOptional: true,
-    //             } as any);
-
-    //             const result = res.data;
-    //             if (result.code === 1 && Array.isArray(result.data)) {
-    //                 setSuggestions(result.data);
-    //             } else {
-    //                 setSuggestions([]);
-    //             }
-    //         } catch (err) {
-    //             console.error('❌ 추천 검색어 불러오기 실패:', err);
-    //             setSuggestions([]);
-    //         }
-    //     };
-
-    //     fetchSuggestions();
-    // }, [searchText]);
+        try {
+            const list = await searchKeywords(text);
+            console.log('[VM] query:', text, 'suggestions:', list.length, list[0]);
+            setSuggestions(list);
+        } catch (e) {
+            console.log('[VM] searchKeywords error:', e);
+            setSuggestions([]);
+        }
+    };
 
     /** 🔹 검색 submit */
     const handleSubmitSearch = () => {
@@ -140,11 +94,12 @@ export const useSearchViewModel = ({
         setSearchText,
 
         // handlers
+        handleSearchTextChange,
         handleSubmitSearch,
         handleSuggestionPress,
         handleRecentSearchPress,
         handleClearText,
         handleGoBack,
-        navigateToMap
+        navigateToMap,
     };
 };

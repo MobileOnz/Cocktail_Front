@@ -1,5 +1,5 @@
-import instance from "../../tokenRequest/axios_interceptor";
-import { CocktailDto } from "../dto/CocktailDto";
+import instance from '../../tokenRequest/axios_interceptor';
+import { CocktailDto } from '../dto/CocktailDto';
 
 export class SearchDataSource {
     async search(keyword: string): Promise<CocktailDto[]> {
