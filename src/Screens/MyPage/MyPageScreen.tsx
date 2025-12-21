@@ -39,7 +39,7 @@ const MyPageScreen = () => {
     };
 
     fetch();
-  }, []);
+  });
 
   // const [showWithdrawModal, setShowWithdrawModal] = useState(false);
 

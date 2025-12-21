@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity, Image, ImageBackground, Linking } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, ImageBackground } from 'react-native';
 import { StackScreenProps } from '@react-navigation/stack';
 import { heightPercentage, widthPercentage, fontPercentage } from '../../assets/styles/FigmaScreen';
 import { RootStackParamList } from '../../Navigation/Navigation';
