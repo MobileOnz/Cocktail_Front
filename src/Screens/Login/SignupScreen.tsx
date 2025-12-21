@@ -15,7 +15,6 @@ import {
 } from '../../assets/styles/FigmaScreen';
 // import { RouteProp, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '../../Navigation/Navigation';
-import axios from 'axios';
 // import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StackScreenProps } from '@react-navigation/stack';
 // import instance from '../../tokenRequest/axios_interceptor';

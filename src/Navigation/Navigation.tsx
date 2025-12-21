@@ -19,6 +19,7 @@ import GuideScreen from '../Screens/Guide/GuideScreen'
 import GuideDetailScreen from '../Screens/Guide/GuideDetail';
 import CocktailBoxScreen from '../Screens/CocktailBox/CocktailBoxScreen';
 import SearchResultScreen from '../Screens/SearchResult/SearchResultScreen';
+import { User } from '../model/domain/User';
 
 export type BottomTabParamList = {
   지도: undefined;
@@ -50,7 +51,7 @@ export type RootStackParamList = {
     cocktailName: string;
     cocktailDescription: string;
   };
-  ProfileScreen: undefined;
+  ProfileScreen: { user: User};
   QuitScreen: undefined;
   RecommendationIntro: undefined;
   GuideScreen: undefined;
