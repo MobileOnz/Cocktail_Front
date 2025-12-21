@@ -1,13 +1,14 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, Image, TouchableOpacity, SafeAreaView } from 'react-native';
-import { widthPercentage, heightPercentage, fontPercentage } from '../assets/styles/FigmaScreen';
+import { widthPercentage, heightPercentage, fontPercentage } from '../../assets/styles/FigmaScreen';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { RootStackParamList } from '../Navigation/Navigation';
+import { RootStackParamList } from '../../Navigation/Navigation';
+import MyPageViewModel from './MyPageViewModel';
+import { User } from '../../model/domain/User';
 // import WithdrawBottomSheet from '../BottomSheet/WithdrawBottomSheet';
-// import { useToast } from '../Components/ToastContext';
-// import instance from '../tokenRequest/axios_interceptor';
-// import SignOutModal from '../Components/SignOutModal';
+import SignOutModal from '../../Components/SignOutModal';
+import { useToast } from '../../Components/ToastContext';
 
 //import { BannerAd, BannerAdSize, TestIds } from 'react-native-google-mobile-ads';
 
@@ -16,18 +17,31 @@ type NavigationProp = StackNavigationProp<RootStackParamList>;
 
 const MyPageScreen = () => {
   const navigation = useNavigation<NavigationProp>();
-  const [isLoggedIn] = useState(false);
-  // const [isLoggedIn, setIsLoggedIn] = useState(false);
-  // const { showToast } = useToast();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const {showToast} = useToast();
 
-  // const [showSignOutModal, setShowSignOutModal] = useState(false);
-
-//   const link = () => {
-//     Linking.openURL('https://sites.google.com/view/onz-info/');
-// };
+  const [showSignOutModal, setShowSignOutModal] = useState(false);
   // const [profileImageUri, setProfileImageUri] = useState<string | null>(null);
-  const [nickname] = useState('aa');
-  // const [nickname, setNickname] = useState('aa');
+  const [nickname, setNickName] = useState('');
+
+  const [ user, setUser] = useState<User | null>(null)
+
+  const { getMemberInfo, logOut } = MyPageViewModel()
+
+  useEffect(() => {
+    const fetch = async () => {
+      const user = await getMemberInfo();
+      if (!user) {
+        setIsLoggedIn(false);
+        return;
+      }
+      setIsLoggedIn(true);
+      setUser(user);
+    };
+
+    fetch();
+  }, []);
+
   // const [showWithdrawModal, setShowWithdrawModal] = useState(false);
 
 // const handleWithdraw = async () => {
@@ -48,22 +62,21 @@ const MyPageScreen = () => {
 // };
 
 
-  // const handleLogout = async () => {
-  //   try {
-  //     await instance.post('/api/auth/logout', null, {
-  //       authRequired: true,
-  //     }as any);
-  //     showToast('로그아웃 되었습니다.');
-  //     setIsLoggedIn(false);
-  //     setNickname('');
-  //     setProfileImageUri(null);
-  //   } catch (err) {
-  //     console.error('🚨 로그아웃 실패:', err);
-  //     showToast('로그아웃 실패');
-  //   } finally {
-  //     setShowSignOutModal(false);
-  //   }
-  // };
+  const handleLogout = async () => {
+    try {
+      const status = await logOut()
+      showToast('로그아웃 되었습니다.');
+      if (status === 200) {
+        setIsLoggedIn(false);
+        setUser(null)
+      }
+    } catch (err) {
+      console.error('🚨 로그아웃 실패:', err);
+      showToast('로그아웃 실패');
+    } finally {
+      setShowSignOutModal(false);
+    }
+  };
 
 
   // useEffect(() => {
@@ -158,22 +171,22 @@ const MyPageScreen = () => {
         <>
           <TouchableOpacity style={styles.profileInfoContainer} onPress={handleLoginPress}>
             <Image
-              source={require('../assets/drawable/profile.png')}
+              source={require('../../assets/drawable/profile.png')}
               style={styles.profileImage}
             />
-            <Text style={styles.userNickNmText}>사용자 닉네임</Text>
-            <Image source={require('../assets/drawable/right-chevron.png')} style={styles.profilerightArrow} />
+            <Text style={styles.userNickNmText}>{user?.nickname || "사용자 닉네임"}</Text>
+            <Image source={require('../../assets/drawable/right-chevron.png')} style={styles.profilerightArrow} />
           </TouchableOpacity>
         
           <TouchableOpacity style={styles.cocktailBox}>
             <Text style={styles.cocktailBoxText}>나의 칵테일 보관함</Text>
-            <Image source={require('../assets/drawable/bookmark.png')} style={styles.cockTailBookmark} />
+            <Image source={require('../../assets/drawable/bookmark.png')} style={styles.cockTailBookmark} />
           </TouchableOpacity>
         </>
       ) : (
         <TouchableOpacity style={styles.loginContainer} onPress={handleLoginPress}>
           <Text style={styles.loginText}>
-            {isLoggedIn ? nickname : '로그인・회원가입'}
+            {isLoggedIn ? user?.nickname : '로그인・회원가입'}
           </Text> 
         </TouchableOpacity>
       )}
@@ -218,13 +231,13 @@ const MyPageScreen = () => {
         isVisible={showWithdrawModal}
         onClose={() => setShowWithdrawModal(false)}
         onWithdraw={handleWithdraw}
-      />
+      />*/}
 
     <SignOutModal
       visible={showSignOutModal}
       onClose={() => setShowSignOutModal(false)}
       onSignOut={handleLogout}
-    /> */}
+    /> 
 
     </SafeAreaView>
 
