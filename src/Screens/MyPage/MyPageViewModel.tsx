@@ -95,7 +95,7 @@ const MyPageViewModel = () => {
       )
     }
 
-  return { getMemberInfo, logOut, handleProfileImageChange};
+  return { user, loading, getMemberInfo, logOut, handleProfileImageChange};
 };
 
 export default MyPageViewModel;

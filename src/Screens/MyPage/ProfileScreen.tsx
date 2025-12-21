@@ -1,4 +1,4 @@
-import React, { useState} from 'react';
+import React, { useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -13,12 +13,8 @@ import {
 } from 'react-native';
 import { widthPercentage, heightPercentage, fontPercentage } from '../../assets/styles/FigmaScreen';
 import { RouteProp, useNavigation } from '@react-navigation/native';
-import { launchImageLibrary } from 'react-native-image-picker';
-import ImageResizer from 'react-native-image-resizer';
-import instance from '../../tokenRequest/axios_interceptor';
 import { RootStackParamList } from '../../Navigation/Navigation';
 import  MyPageViewModel from './MyPageViewModel'
-// import { API_BASE_URL } from '@env';
 
 type ProfileScreenRouteProp = RouteProp<RootStackParamList, 'ProfileScreen'>;
 
@@ -34,8 +30,8 @@ const ProfileScreen: React.FC<Props> = ({route}: Props) => {
   const navigation = useNavigation();
   const [nickname, setNickname] = useState('닉네임');
   // const [newNickname, setNewNickname] = useState('');
-  const [profileUri, setProfileUri] = useState<string | null>(user.profileUrl || null);
-  const [initialProfileUri, setInitialProfileUri] = useState<string | null>(user.profileUrl || null);
+  const [profileUri, setProfileUri] = useState<string | null>(null);
+  // const [initialProfileUri, setInitialProfileUri] = useState<string | null>(user.profileUrl || null);
 
   const inputAccessoryViewID = 'nicknameInputAccessory';
 
@@ -48,7 +44,14 @@ const ProfileScreen: React.FC<Props> = ({route}: Props) => {
 
   const colorScheme = useColorScheme();
 
-  const { getMemberInfo, logOut, handleProfileImageChange} = MyPageViewModel()
+  const { handleProfileImageChange} = MyPageViewModel()
+
+  useEffect(() => {
+  if (user?.nickname) {
+    setNickname(user.nickname);
+    setProfileUri(user.profileUrl || null)
+  }
+}, [user]);
 
   // useEffect(() => {
   //   const fetchProfileData = async () => {
@@ -233,11 +236,11 @@ const ProfileScreen: React.FC<Props> = ({route}: Props) => {
             
             {nickNmState === true ? (
               <TextInput style={styles.nicknameInput}
-                value={user?.nickname}
+                value={nickname}
                 onChangeText={setNickname}
                 />
             ) : (
-              <Text style={styles.nickNameText}>{user?.nickname || ""}</Text>
+              <Text style={styles.nickNameText}>{nickname || ""}</Text>
               )
             }
             
