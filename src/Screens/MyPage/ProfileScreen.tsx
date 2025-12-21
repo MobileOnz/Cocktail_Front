@@ -1,4 +1,4 @@
-import React, { useState} from 'react';
+import React, { useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -12,19 +12,26 @@ import {
   useColorScheme,
 } from 'react-native';
 import { widthPercentage, heightPercentage, fontPercentage } from '../../assets/styles/FigmaScreen';
-import { useNavigation } from '@react-navigation/native';
-import { launchImageLibrary } from 'react-native-image-picker';
-import ImageResizer from 'react-native-image-resizer';
-import instance from '../../tokenRequest/axios_interceptor';
-// import { API_BASE_URL } from '@env';
+import { RouteProp, useNavigation } from '@react-navigation/native';
+import { RootStackParamList } from '../../Navigation/Navigation';
+import  MyPageViewModel from './MyPageViewModel'
+
+type ProfileScreenRouteProp = RouteProp<RootStackParamList, 'ProfileScreen'>;
+
+interface Props {
+  route: ProfileScreenRouteProp;
+}
 
 
-const ProfileScreen: React.FC = () => {
+const ProfileScreen: React.FC<Props> = ({route}: Props) => {
+  const { user } = route.params
+  console.log(user)
+
   const navigation = useNavigation();
   const [nickname, setNickname] = useState('닉네임');
   // const [newNickname, setNewNickname] = useState('');
   const [profileUri, setProfileUri] = useState<string | null>(null);
-  const [initialProfileUri, setInitialProfileUri] = useState<string | null>(null);
+  // const [initialProfileUri, setInitialProfileUri] = useState<string | null>(user.profileUrl || null);
 
   const inputAccessoryViewID = 'nicknameInputAccessory';
 
@@ -36,6 +43,15 @@ const ProfileScreen: React.FC = () => {
 
 
   const colorScheme = useColorScheme();
+
+  const { handleProfileImageChange} = MyPageViewModel()
+
+  useEffect(() => {
+  if (user?.nickname) {
+    setNickname(user.nickname);
+    setProfileUri(user.profileUrl || null)
+  }
+}, [user]);
 
   // useEffect(() => {
   //   const fetchProfileData = async () => {
@@ -146,58 +162,44 @@ const ProfileScreen: React.FC = () => {
   //   }
   // };
 
-  const handleProfileImageChange = async () => {
-    launchImageLibrary(
-      { mediaType: 'photo', selectionLimit: 1 },
-      async (response) => {
-        if (!response.didCancel && response.assets && response.assets.length > 0) {
-          try {
-            const asset = response.assets[0];
-            console.log('📸 선택된 원본 이미지:', asset);
+  // const handleProfileImageChange = async () => {
+  //   launchImageLibrary(
+  //     { mediaType: 'photo', selectionLimit: 1 },
+  //     async (response) => {
+  //       if (!response.didCancel && response.assets && response.assets.length > 0) {
+  //         try {
+  //           const asset = response.assets[0];
+  //           console.log('📸 선택된 원본 이미지:', asset);
 
-            const resizedImage = await ImageResizer.createResizedImage(
-              asset.uri!,
-              400, // 너비 (원본 비율 유지됨)
-              400, // 높이
-              'PNG', // 포맷 강제 지정
-              80 // 품질 (0~100)
-            );
+  //           const resizedImage = await ImageResizer.createResizedImage(
+  //             asset.uri!,
+  //             400, // 너비 (원본 비율 유지됨)
+  //             400, // 높이
+  //             'PNG', // 포맷 강제 지정
+  //             80 // 품질 (0~100)
+  //           );
 
-            const uri = resizedImage.uri;
+  //           const uri = resizedImage.uri;
 
 
-            if (!initialProfileUri) {setInitialProfileUri(uri);}
-            setProfileUri(uri);
+  //           if (!initialProfileUri) {setInitialProfileUri(uri);}
+  //           setProfileUri(uri);
 
-            // ✅ 여기서 즉시 업로드 (instance 사용)
-            const formData = new FormData();
-            formData.append('file', {
-              uri: uri.startsWith('file://') ? uri : `file://${uri}`,
-              name: `profile_${Date.now()}.png`,
-              type: 'image/png',
-            } as any);
+            
 
-            const uploadRes = await instance.post('/api/upload/profile', formData, {
-              headers: {
-                'Content-Type': 'multipart/form-data', // FormData일 땐 직접 설정
-              },
-              timeout: 10000,
-              authRequired: true,
-            }as any);
-
-            const uploadJson = uploadRes.data;
-            if (uploadJson?.code === 1) {
-              console.log('✅ 즉시 프로필 이미지 업로드 성공');
-            } else {
-              console.warn('❌ 즉시 업로드 실패:', uploadJson?.msg);
-            }
-          } catch (error) {
-            console.error('❌ 이미지 리사이즈 실패 또는 업로드 오류:', error);
-          }
-        }
-      }
-    );
-  };
+  //           const uploadJson = uploadRes.data;
+  //           if (uploadJson?.code === 1) {
+  //             console.log('✅ 즉시 프로필 이미지 업로드 성공');
+  //           } else {
+  //             console.warn('❌ 즉시 업로드 실패:', uploadJson?.msg);
+  //           }
+  //         } catch (error) {
+  //           console.error('❌ 이미지 리사이즈 실패 또는 업로드 오류:', error);
+  //         }
+  //       }
+  //     }
+  //   );
+  // };
 
 
   return (
@@ -238,7 +240,7 @@ const ProfileScreen: React.FC = () => {
                 onChangeText={setNickname}
                 />
             ) : (
-              <Text style={styles.nickNameText}>{nickname}</Text>
+              <Text style={styles.nickNameText}>{nickname || ""}</Text>
               )
             }
             
@@ -265,8 +267,8 @@ const ProfileScreen: React.FC = () => {
         <Text style={styles.accountLabel}>연결된 계정</Text>
 
         <View style={styles.nickNameContainer}>
-            <Text style={styles.nickNameText}>yunsuk990@naver.com</Text>
-             {renderAccountItem('카카오', require('../../assets/drawable/kakao.png'))}
+            <Text style={styles.nickNameText}>{user?.email || ""}</Text>
+              {renderAccountItem(getSocialLabel(user?.socialLogin) || '', getSocialIcon(user?.socialLogin))}
         </View>
         
         <TouchableOpacity
@@ -335,6 +337,32 @@ const renderAccountItem = (text: string, iconUrl: string) => {
       <Text style={styles.accountText}>{text}</Text>
     </View>
   );
+};
+
+const getSocialIcon = (socialLogin?: string) => {
+  switch (socialLogin) {
+    case 'KAKAO':
+      return require('../../assets/drawable/kakao.png');
+    case 'NAVER':
+      return require('../../assets/drawable/kakao.png');
+    case 'GOOGLE':
+      return require('../../assets/drawable/kakao.png');;
+    default:
+      return require('../../assets/drawable/kakao.png');
+  }
+};
+
+const getSocialLabel = (socialLogin?: string) => {
+  switch (socialLogin) {
+    case 'KAKAO':
+      return '카카오';
+    case 'NAVER':
+      return '네이버';
+    case 'GOOGLE':
+      return '구글';
+    default:
+      return '';
+  }
 };
 
 

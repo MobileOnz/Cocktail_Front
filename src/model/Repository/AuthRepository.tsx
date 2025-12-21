@@ -19,18 +19,9 @@ export class AuthRepository {
     return this.kakaoDataSource.login()
   }
 
-  getKakaoLoginUrl() {
-    return this.kakaoDataSource.getLoginUrl()
+  googleLogin(): Promise<AuthResult> {
+    return this.googleDataSource.login()
   }
-
-  getNaverLoginUrl() {
-    return this.naverDataSource.getLoginUrl()
-  }
-
-  getGoogleLoginUrl() {
-    return this.googleDataSource.getLoginUrl()
-  }
-
 
   signUp(req: SignUpRequest) {
     return this.authRemoteDataSource.signUp(req)
