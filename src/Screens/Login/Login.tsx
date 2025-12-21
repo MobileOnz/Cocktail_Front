@@ -5,7 +5,7 @@ import { heightPercentage, widthPercentage, fontPercentage } from '../../assets/
 
 
 // import axios from 'axios';
-import { API_BASE_URL } from '@env';
+// import { API_BASE_URL } from '@env';
 // import AsyncStorage from '@react-native-async-storage/async-storage';
 // import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import { RootStackParamList } from '../../Navigation/Navigation';
@@ -35,7 +35,7 @@ type LoginScreenProps = StackScreenProps<RootStackParamList, 'Login'>;
 
 const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
   const { showToast } = useToast();
-  const { loginWithNaver, loginWithKakao, startKakaoLogin, startNaverLogin, startGoogleLogin } = AuthViewModel();
+  const { loginWithKakao, startGoogleLogin } = AuthViewModel();
 
   //네이버 로그인
   // const naverLogin = async (): Promise<void> => {
