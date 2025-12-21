@@ -28,18 +28,18 @@ const MyPageScreen = () => {
   const { getMemberInfo, logOut } = MyPageViewModel()
 
   useEffect(() => {
-    const fetch = async () => {
-      const user = await getMemberInfo();
-      if (!user) {
-        setIsLoggedIn(false);
-        return;
-      }
-      setIsLoggedIn(true);
-      setUser(user);
-    };
+  const fetch = async () => {
+    const user = await getMemberInfo();
+    if (!user) {
+      setIsLoggedIn(false);
+      return;
+    }
+    setIsLoggedIn(true);
+    setUser(user);
+  };
 
-    fetch();
-  });
+  fetch();
+}, []);
 
   // const [showWithdrawModal, setShowWithdrawModal] = useState(false);
 
