@@ -6,15 +6,6 @@ import { AuthError, AuthErrorType } from "../domain/AuthError";
 import { API_BASE_URL } from "@env";
 
 export class NaverAuthDataSource implements ISocialAuthDataSource {
-  
-  
-  async getLoginUrl(): Promise< {loginUrl: string}> {
-    const response = await axios.get(
-      `${API_BASE_URL}/api/v2/auth/naver/login-url`
-    );
-    console.log("getLoginUrl: ", response.data)
-    return response.data
-  }
 
   async login(): Promise<AuthResult> {
     const { successResponse, failureResponse } = await NaverLogin.login();
@@ -39,12 +30,12 @@ export class NaverAuthDataSource implements ISocialAuthDataSource {
         {
           provider: "naver",
           code: null,
-          state: "",
+          state: null,
           accessToken: successResponse.accessToken,
         }
-      );
+      )
 
-      const data = response.data.data;
+      const data = response.data;
       console.log("서버 응답: " + data)
       if (data.type === "token") {
         return {
