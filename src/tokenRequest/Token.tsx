@@ -45,9 +45,9 @@ export async function tokenRefresh(): Promise<string | null> {
         return null;
       }
 
-      const response = await axios.post(`${API_BASE_URL}/api/auth/refresh`, null, {
+      const response = await axios.post(`${API_BASE_URL}/api/v2/auth/reissue`, null, {
         headers: {
-          'Refresh-Token': refreshToken,
+          'RefreshToken': refreshToken,
         },
       });
 
