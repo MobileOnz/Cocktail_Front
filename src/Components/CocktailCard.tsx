@@ -6,19 +6,19 @@ import PillStyleStatus from '../Components/PillStyleStatus';
 import { heightPercentage, widthPercentage } from '../assets/styles/FigmaScreen';
 
 type Props = {
+  id: number;
   name: string;
-  imageUri: string;
-  tone: string;
+  image: string;
+  type: string;
   bookmarked?: boolean;
   onPress?: () => void;
   onToggleBookmark?: (_next: boolean) => void;
-
 };
 
 export default function CocktailCard({
   name,
-  imageUri,
-  tone,
+  type,
+  image,
   bookmarked = false,
   onPress,
   onToggleBookmark,
@@ -28,11 +28,11 @@ export default function CocktailCard({
       <Pressable onPress={onPress} style={[styles.card]}>
         {/* 이미지 영역 */}
         <View style={styles.imageWrap}>
-          <Image source={{ uri: imageUri }} style={styles.image} resizeMode="cover" />
+          <Image source={{ uri: image }} style={styles.image} resizeMode="cover" />
 
           {/* 좌상단: 톤 라벨 */}
           <View style={styles.pillWrap}>
-            <PillStyleStatus tone={tone} />
+            <PillStyleStatus tone={type} />
           </View>
 
           {/* 우상단: 북마크 */}

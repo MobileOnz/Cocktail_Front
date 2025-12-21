@@ -1,104 +1,70 @@
-import { useEffect, useState } from 'react';
-import { BestCocktailDto } from '../../model/dto/bestCocktailDto';
-
-const BestData : BestCocktailDto[] = [
-  {
-    id : 1,
-    image : 'https://picsum.photos/400/400',
-    name : '칵테일명',
-  },
-  {
-    id : 2,
-    image : 'https://picsum.photos/400/400',
-    name : '칵테일명',
-  },
-  {
-    id : 3,
-    image : 'https://picsum.photos/400/400',
-    name : '칵테일명',
-  },
-];
-
-const NewCocktailData = [
-  {
-    id : 1, name : '칵테일명',type : 'light', image : 'https://picsum.photos/400/400',
-  },
-    {
-    id : 2, name : '칵테일명',type : 'standard', image : 'https://picsum.photos/400/400',
-  },
-    {
-    id : 3, name : '칵테일명',type : 'special', image : 'https://picsum.photos/400/400',
-    },
-    {
-    id : 4, name : '칵테일명',type : 'strong', image : 'https://picsum.photos/400/400',
-    },
-     {
-    id : 5, name : '칵테일명',type : 'classic', image : 'https://picsum.photos/400/400',
-    },
-     {
-    id : 6, name : '칵테일명',type : 'classic', image : 'https://picsum.photos/400/400',
-    },
-];
-
-export interface BestCocktailVM {
-  id: number;
-  title: string;
-  image: string;
-  rank: string;
-}
-export interface NewCocktailVM{
-  id: number;
-  name: string;
-  type: string;
-  image: string;
-}
+import { useCallback, useEffect, useState } from 'react';
+import { IHomeCocktailRepository } from '../../model/repository/HomeCocktailRepository';
+import { di } from '../../DI/Container';
+import { CocktailCard } from '../../model/domain/CocktailCard';
+import { CocktailMain } from '../../model/domain/CocktailMain';
+import { API_BASE_URL } from '@env';
 
 
-//베스트 칵테일 가져오기
-export const useBestCocktail = () => {
-  const [cocktails, setCocktails] = useState<BestCocktailVM[]>([]);
-
-  useEffect(() => {
-    const bestCocktailData = BestData.map((item, index) => ({
-      id : item.id,
-      title : item.name,
-      image : item.image,
-      rank : `${index + 1}`,
-    }));
-    setCocktails(bestCocktailData);
-  }, []);
-  return {cocktails};
+type UseSearchResultDeps = {
+  repository?: IHomeCocktailRepository;
 };
 
-//새로운 칵테일 가져오기
-export const useNewCocktail = () => {
-  const [newCocktails, setCocktails] = useState<NewCocktailVM[]>([]);
+export const useHomeViewModel = (deps?: UseSearchResultDeps) => {
+  const repository = deps?.repository ?? di.homeCocktailRepository;
+  const [randomCocktail, setRandomCocktail] = useState<CocktailMain>();
+  const [newCocktail, setNewCocktail] = useState<CocktailCard[]>([]);
+  const [bestCocktail, setBestCocktail] = useState<CocktailCard[]>([]);
+  const [refreshList, setRefreshList] = useState<CocktailCard[]>([]);
+  const [intermediateList, setIntermediateList] = useState<CocktailCard[]>([]);
+  const [beginnerList, setBeginnerList] = useState<CocktailCard[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchHomeData = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      console.log(API_BASE_URL);
+      const [randomCocktailData, newCocktailData, bestCocktailData, refreshData, intermediateData, beginnerData] = await Promise.all([
+        repository.random(),
+        repository.newCocktail(),
+        repository.bestCocktail(),
+        repository.refresh(),
+        repository.intermediate(),
+        repository.beginner(),
+      ]);
+      setRandomCocktail(randomCocktailData);
+      setNewCocktail(newCocktailData);
+      setBestCocktail(bestCocktailData);
+      setRefreshList(refreshData);
+      setIntermediateList(intermediateData);
+      setBeginnerList(beginnerData);
+
+    } catch (e) {
+      console.log(e);
+      setError('데이터 로딩 중 오류가 발생했습니다.');
+    } finally {
+      setLoading(false);
+    }
+
+
+  }, [repository]);
 
   useEffect(() => {
-    const newCocktailData = NewCocktailData.map((item) => ({
-      id : item.id,
-      name : item.name,
-      type : item.type,
-      image : item.image,
-    }));
-    setCocktails(newCocktailData);
-  }, []);
-  return {newCocktails};
+    fetchHomeData();
+
+  }, [fetchHomeData]);
+
+  return {
+    randomCocktail,
+    bestCocktail,
+    newCocktail,
+    refreshList,
+    beginnerList,
+    intermediateList,
+    loading,
+    error,
+  };
 };
-
-//칵테일 가져오기 필터 적용 확인하기
-export const useCocktailLIst = () => {
-  const [allCocktails, setCocktails] = useState<NewCocktailVM[]>([]);
-
-  useEffect(() => {
-    const newCocktailData = NewCocktailData.map((item) => ({
-      id : item.id,
-      name : item.name,
-      type : item.type,
-      image : item.image,
-    }));
-    setCocktails(newCocktailData);
-  }, []);
-  return {allCocktails};
-};
-
