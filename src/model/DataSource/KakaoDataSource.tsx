@@ -8,30 +8,30 @@ import { AuthError, AuthErrorType } from '../domain/AuthError';
 export class KakaoAuthDataSource implements ISocialAuthDataSource {
   async login(): Promise<AuthResult> {
     try {
-      const auth: KakaoOAuthToken = await login()
-      console.log(JSON.stringify(auth), {API_BASE_URL})
+      const auth: KakaoOAuthToken = await login();
+      console.log(JSON.stringify(auth), { API_BASE_URL });
 
-      const accessToken = auth.accessToken
+      const accessToken = auth.accessToken;
 
       if (!accessToken) {
         throw new AuthError(
           AuthErrorType.TOKEN_EXPIRED,
-            "카카오 액세스 토큰 만료"
+          '카카오 액세스 토큰 만료'
         );
       }
-      console.log('accessToken', accessToken)
+      console.log('accessToken', accessToken);
       const response = await axios.post(
         `${API_BASE_URL}/api/v2/auth/social-login`,
         {
           provider: 'kakao',
           accessToken: accessToken,
-          code: "",
-          state: "",
+          code: '',
+          state: '',
         }
       );
-      
-      const data = response.data
-      console.log("카카오 로그인 - 백엔드 응답값: " + data.accessToken)
+
+      const data = response.data;
+      console.log('카카오 로그인 - 백엔드 응답값: ' + data.accessToken);
       // 신규 회원
       if (data.type === 'signup') {
         return {
