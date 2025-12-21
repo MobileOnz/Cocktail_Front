@@ -3,7 +3,6 @@ import { API_BASE_URL } from "@env";
 import instance from "../../tokenRequest/axios_interceptor";
 import { UserResponse } from "../dto/UserDto";
 import { UserUpdate, UserUpdateResponse } from "../dto/UserUpdateDto"
-import { ca } from "zod/v4/locales";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
