@@ -22,7 +22,6 @@ const MyPageScreen = () => {
 
   const [showSignOutModal, setShowSignOutModal] = useState(false);
   // const [profileImageUri, setProfileImageUri] = useState<string | null>(null);
-  const [nickname, setNickName] = useState('');
 
   const [ user, setUser] = useState<User | null>(null)
 
@@ -137,8 +136,13 @@ const MyPageScreen = () => {
 
 
 
+  // 현재 화면에서
   const handleLoginPress = () => {
-    navigation.navigate(isLoggedIn ? 'ProfileScreen' : 'Login');
+    if (isLoggedIn) {
+      navigation.navigate('ProfileScreen', { user }); // User 객체만 ProfileScreen에 전달
+    } else {
+      navigation.navigate('Login'); // 로그인 화면은 params 없이 이동
+    }
   };
 
   return (
