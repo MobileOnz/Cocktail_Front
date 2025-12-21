@@ -65,6 +65,7 @@ const Home = () => {
         horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.filterView}
+
       >
         {['최신순', '도수', '스타일', '맛', '베이스'].map((label, idx) => (
           <Button
@@ -266,7 +267,7 @@ const Home = () => {
           )}
         />
       </ScrollView>
-      <View style={{ marginVertical: '10%' }} />
+
     </SafeAreaView>
   );
 };

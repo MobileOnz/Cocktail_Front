@@ -1,20 +1,20 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
-import { FlatList, ScrollView } from 'react-native-gesture-handler'
-import { ActivityIndicator, Button, Icon, IconButton } from 'react-native-paper'
-import { fontPercentage, widthPercentage } from '../../assets/styles/FigmaScreen'
-import theme from '../../assets/styles/theme'
-import { NativeStackScreenProps } from '@react-navigation/native-stack'
-import { RootStackParamList } from '../../Navigation/Navigation'
-import CocktailCard from '../../Components/CocktailCard'
-import useSearchResultViewModel from './SearchResultViewModel'
+import { StyleSheet, Text, View } from 'react-native';
+import React from 'react';
+import { FlatList, ScrollView } from 'react-native-gesture-handler';
+import { ActivityIndicator, Button, Icon, IconButton } from 'react-native-paper';
+import { fontPercentage, heightPercentage, widthPercentage } from '../../assets/styles/FigmaScreen';
+import theme from '../../assets/styles/theme';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../../Navigation/Navigation';
+import CocktailCard from '../../Components/CocktailCard';
+import useSearchResultViewModel from './SearchResultViewModel';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'SearchResultScreen'>;
 
 
 const SearchResultScreen = ({ navigation, route }: Props) => {
   const { keyword } = route.params;
-  const { results, loading, error } = useSearchResultViewModel(keyword)
+  const { results, loading, error } = useSearchResultViewModel(keyword);
 
   return (
     <View style={styles.container}>
@@ -34,12 +34,12 @@ const SearchResultScreen = ({ navigation, route }: Props) => {
               <IconButton
                 icon="chevron-left"
                 size={30}
-                onPress={() => navigation.navigate("BottomTabNavigator", {
-                  screen: "홈"
+                onPress={() => navigation.navigate('BottomTabNavigator', {
+                  screen: '홈',
                 })}
               />
               <View style={styles.search}>
-                <Icon source="magnify" size={24} color='#BDBDBD' />
+                <Icon source="magnify" size={24} color="#BDBDBD" />
                 <Text style={styles.searchText}>{keyword}</Text>
               </View>
               <IconButton icon="close" size={30}
@@ -100,7 +100,7 @@ const SearchResultScreen = ({ navigation, route }: Props) => {
   );
 };
 
-export default SearchResultScreen
+export default SearchResultScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -108,7 +108,8 @@ const styles = StyleSheet.create({
   },
   searchText: {
     marginLeft: 8,
-    fontSize: fontPercentage(24),
+    fontWeight: '500',
+    fontSize: fontPercentage(16),
     color: 'black',
   },
   text: {
@@ -124,11 +125,12 @@ const styles = StyleSheet.create({
   search: {
     padding: 10,
     borderRadius: 8,
-    backgroundColor: '#F3EFE6',
+    backgroundColor: '#E0E0E0',
     width: '70%',
     justifyContent: 'flex-start',
     alignItems: 'center',
     flexDirection: 'row',
+    height: heightPercentage(48),
   },
 
   filterView: {

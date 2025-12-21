@@ -9,19 +9,19 @@ export class AuthRemoteDataSource {
   async signUp(req: SignUpRequest): Promise<SignUpResponse> {
     try {
       const response = await axios.post(
-        `${API_BASE_URL}/api/v2/auth/signup` ,
+        `${API_BASE_URL}/api/v2/auth/signup`,
         req
       );
-      console.log(JSON.stringify(response.data))
-      return response.data
-    } catch(error: any) {
-      console.error("signup error:", error.response?.data || error);
+      console.log(JSON.stringify(response.data));
+      return response.data;
+    } catch (error: any) {
+      console.error('signup error:', error.response?.data || error);
 
       throw error;
     }
   }
 
-  async logOut() : Promise<number> {
+  async logOut(): Promise<number> {
     try {
       const accessToken = await AsyncStorage.getItem("accessToken");
       console.log(accessToken, accessToken)
@@ -34,14 +34,14 @@ export class AuthRemoteDataSource {
           },
         }
       );
-      console.log("AuthRemoteDataSource 로그아웃 성공", response.status);
+      console.log('AuthRemoteDataSource 로그아웃 성공', response.status);
       // 필요 시 로컬 스토리지 토큰 삭제
-      await AsyncStorage.removeItem("accessToken");
-      await AsyncStorage.removeItem("refreshToken");
+      await AsyncStorage.removeItem('accessToken');
+      await AsyncStorage.removeItem('refreshToken');
 
-      return response.status
+      return response.status;
     } catch (error: any) {
-      console.error("AuthRemoteDataSource 로그아웃 실패:", error.response?.data || error);
+      console.error('AuthRemoteDataSource 로그아웃 실패:', error.response?.data || error);
       throw error;
     }
   }
