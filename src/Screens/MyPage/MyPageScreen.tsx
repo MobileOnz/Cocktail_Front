@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, Image, TouchableOpacity, SafeAreaView } from 'react-native';
+import { StyleSheet, Text, View, Image, TouchableOpacity, SafeAreaView, ActivityIndicator } from 'react-native';
 import { widthPercentage, heightPercentage, fontPercentage } from '../../assets/styles/FigmaScreen';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -19,47 +19,23 @@ const MyPageScreen = () => {
   const navigation = useNavigation<NavigationProp>();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const {showToast} = useToast();
-
   const [showSignOutModal, setShowSignOutModal] = useState(false);
-  // const [profileImageUri, setProfileImageUri] = useState<string | null>(null);
-
   const [ user, setUser] = useState<User | null>(null)
-
-  const { getMemberInfo, logOut } = MyPageViewModel()
+  const { loading, profileUri, getMemberInfo, logOut } = MyPageViewModel()
 
   useEffect(() => {
-  const fetch = async () => {
-    const user = await getMemberInfo();
-    if (!user) {
-      setIsLoggedIn(false);
-      return;
-    }
-    setIsLoggedIn(true);
-    setUser(user);
-  };
+    const fetch = async () => {
+      const user = await getMemberInfo();
+      if (!user) {
+        setIsLoggedIn(false);
+        return;
+      }
+      setIsLoggedIn(true);
+      setUser(user);
+    };
 
-  fetch();
-}, []);
-
-  // const [showWithdrawModal, setShowWithdrawModal] = useState(false);
-
-// const handleWithdraw = async () => {
-//   try {
-//     await instance.delete('/api/delete/member', {
-//       authRequired: true,
-//     }as any);
-//     showToast('탈퇴가 완료되었습니다.');
-
-//     setIsLoggedIn(false);
-//     setNickname('');
-//     setProfileImageUri(null);
-//   } catch (err: any) {
-//     console.log('🚨 탈퇴 오류:', err.response?.data || err.message);
-//   } finally {
-//     setShowWithdrawModal(false);
-//   }
-// };
-
+    fetch();
+  }, []);
 
   const handleLogout = async () => {
     try {
@@ -162,86 +138,85 @@ const MyPageScreen = () => {
             }}
           />
       </View> */}
-      
-      <View style={styles.topBar}>
-        <Text style={styles.topTitleText}>마이페이지</Text>
-      </View>
-
-      {/* 광고 이미지 넣기*/}
-      {isLoggedIn && <View style={styles.bannerAd}></View>}
-
-      {/* 로그인 O */}
-      {isLoggedIn ? (
-        <>
-          <TouchableOpacity style={styles.profileInfoContainer} onPress={handleLoginPress}>
-            <Image
-              source={require('../../assets/drawable/profile.png')}
-              style={styles.profileImage}
-            />
-            <Text style={styles.userNickNmText}>{user?.nickname || "사용자 닉네임"}</Text>
-            <Image source={require('../../assets/drawable/right-chevron.png')} style={styles.profilerightArrow} />
-          </TouchableOpacity>
-        
-          <TouchableOpacity style={styles.cocktailBox}>
-            <Text style={styles.cocktailBoxText}>나의 칵테일 보관함</Text>
-            <Image source={require('../../assets/drawable/bookmark.png')} style={styles.cockTailBookmark} />
-          </TouchableOpacity>
-        </>
-      ) : (
-        <TouchableOpacity style={styles.loginContainer} onPress={handleLoginPress}>
-          <Text style={styles.loginText}>
-            {isLoggedIn ? user?.nickname : '로그인・회원가입'}
-          </Text> 
-        </TouchableOpacity>
-      )}
-
-      {/* 광고 이미지 넣기*/}
-      {!isLoggedIn && <View style={styles.bannerAd}></View>}
-
-
-
-      <Text style={styles.supportTitle}>고객지원</Text>
-      <View style={styles.supportSection}>
-        {renderSupportItem('버전 정보')}
-        <TouchableOpacity>
-          {renderSupportItem('1:1 문의하기')}
-        </TouchableOpacity>
-        <TouchableOpacity>
-          {renderSupportItem('서비스 리뷰 남기기')}
-        </TouchableOpacity>
-      </View>
-
-      <Text style={styles.supportSecondTitle}>서비스 약관</Text>
-      <TouchableOpacity onPress={()=>navigation.navigate('TermsAndConditionsScreen')}>
-        {renderSupportItem('이용약관')}
-      </TouchableOpacity>
-      <TouchableOpacity onPress={()=>navigation.navigate('PrivacyPolicyScreen')}>
-        {renderSupportItem('개인정보 처리방침')}
-      </TouchableOpacity>
-
-      {isLoggedIn && (
+      { loading ? (
+        <ActivityIndicator size="large" color="#000000ff" style={{flex: 1}} />
+      ): (
         <View>
-          <TouchableOpacity onPress={() => setShowSignOutModal(true)}>
-            {renderSupportItemWithoutIcon('로그아웃')}
+          <View style={styles.topBar}>
+            <Text style={styles.topTitleText}>마이페이지</Text>
+          </View>
+    
+          {/* 광고 이미지 넣기*/}
+          {isLoggedIn && <View style={styles.bannerAd}></View>}
+    
+          {/* 로그인 O */}
+          {isLoggedIn ? (
+            <>
+              <TouchableOpacity style={styles.profileInfoContainer} onPress={handleLoginPress}>
+                <Image
+                  source={
+                    profileUri 
+                    ? {uri: profileUri}
+                    : require('../../assets/drawable/profile.png')}
+                  style={styles.profileImage}
+                />
+                <Text style={styles.userNickNmText}>{user?.nickname || "사용자 닉네임"}</Text>
+                <Image source={require('../../assets/drawable/right-chevron.png')} style={styles.profilerightArrow} />
+              </TouchableOpacity>
+            
+              <TouchableOpacity style={styles.cocktailBox}>
+                <Text style={styles.cocktailBoxText}>나의 칵테일 보관함</Text>
+                <Image source={require('../../assets/drawable/bookmark.png')} style={styles.cockTailBookmark} />
+              </TouchableOpacity>
+            </>
+          ) : (
+            <TouchableOpacity style={styles.loginContainer} onPress={handleLoginPress}>
+              <Text style={styles.loginText}>
+                {isLoggedIn ? user?.nickname : '로그인・회원가입'}
+              </Text> 
+            </TouchableOpacity>
+          )}
+    
+          {/* 광고 이미지 넣기*/}
+          {!isLoggedIn && <View style={styles.bannerAd}></View>}
+    
+    
+    
+          <Text style={styles.supportTitle}>고객지원</Text>
+          <View style={styles.supportSection}>
+            {renderSupportItem('버전 정보')}
+            <TouchableOpacity>
+              {renderSupportItem('1:1 문의하기')}
+            </TouchableOpacity>
+            <TouchableOpacity>
+              {renderSupportItem('서비스 리뷰 남기기')}
+            </TouchableOpacity>
+          </View>
+    
+          <Text style={styles.supportSecondTitle}>서비스 약관</Text>
+          <TouchableOpacity onPress={()=>navigation.navigate('TermsAndConditionsScreen')}>
+            {renderSupportItem('이용약관')}
           </TouchableOpacity>
-
-          {/* <TouchableOpacity onPress={() => setShowWithdrawModal(true)}>
-            {renderSupportItemWithoutIcon('회원탈퇴')}
-          </TouchableOpacity> */}
+          <TouchableOpacity onPress={()=>navigation.navigate('PrivacyPolicyScreen')}>
+            {renderSupportItem('개인정보 처리방침')}
+          </TouchableOpacity>
+    
+          {isLoggedIn && (
+            <View>
+              <TouchableOpacity onPress={() => setShowSignOutModal(true)}>
+                {renderSupportItemWithoutIcon('로그아웃')}
+              </TouchableOpacity>
+            </View>
+          )}
+      
+            
+          <SignOutModal
+            visible={showSignOutModal}
+            onClose={() => setShowSignOutModal(false)}
+            onSignOut={handleLogout}
+          /> 
         </View>
       )}
-
-      {/* <WithdrawBottomSheet
-        isVisible={showWithdrawModal}
-        onClose={() => setShowWithdrawModal(false)}
-        onWithdraw={handleWithdraw}
-      />*/}
-
-    <SignOutModal
-      visible={showSignOutModal}
-      onClose={() => setShowSignOutModal(false)}
-      onSignOut={handleLogout}
-    /> 
 
     </SafeAreaView>
 
