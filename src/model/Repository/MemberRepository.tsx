@@ -15,7 +15,7 @@ export class MemberRepository {
         id: dto.id,
         nickname: dto.nickname,
         email: dto.email,
-        socialLogin: dto.social_login,
+        socialLogin: dto.socialLogin,
         profileUrl: dto.profile ?? undefined,
         role: dto.role as "ROLE_USER" | "ROLE_ADMIN",
 
@@ -30,5 +30,9 @@ export class MemberRepository {
 
   async logout(): Promise<number> {
     return this.authRemoteDataSource.logOut()
+  }
+
+  async uploadProfileImage(fileUri: string) {
+    return this.memberRemoteDataSource.uploadProfileImage(fileUri)
   }
 }
