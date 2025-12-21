@@ -18,15 +18,15 @@ type NavigationProp = StackNavigationProp<RootStackParamList>;
 const MyPageScreen = () => {
   const navigation = useNavigation<NavigationProp>();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const {showToast} = useToast();
+  const { showToast } = useToast();
 
   const [showSignOutModal, setShowSignOutModal] = useState(false);
   // const [profileImageUri, setProfileImageUri] = useState<string | null>(null);
-  const [nickname, setNickName] = useState('');
+  // const [nickname, setNickName] = useState('');
 
-  const [ user, setUser] = useState<User | null>(null)
+  const [user, setUser] = useState<User | null>(null);
 
-  const { getMemberInfo, logOut } = MyPageViewModel()
+  const { getMemberInfo, logOut } = MyPageViewModel();
 
   useEffect(() => {
     const fetch = async () => {
@@ -40,35 +40,35 @@ const MyPageScreen = () => {
     };
 
     fetch();
-  }, []);
+  }, [getMemberInfo]);
 
   // const [showWithdrawModal, setShowWithdrawModal] = useState(false);
 
-// const handleWithdraw = async () => {
-//   try {
-//     await instance.delete('/api/delete/member', {
-//       authRequired: true,
-//     }as any);
-//     showToast('탈퇴가 완료되었습니다.');
+  // const handleWithdraw = async () => {
+  //   try {
+  //     await instance.delete('/api/delete/member', {
+  //       authRequired: true,
+  //     }as any);
+  //     showToast('탈퇴가 완료되었습니다.');
 
-//     setIsLoggedIn(false);
-//     setNickname('');
-//     setProfileImageUri(null);
-//   } catch (err: any) {
-//     console.log('🚨 탈퇴 오류:', err.response?.data || err.message);
-//   } finally {
-//     setShowWithdrawModal(false);
-//   }
-// };
+  //     setIsLoggedIn(false);
+  //     setNickname('');
+  //     setProfileImageUri(null);
+  //   } catch (err: any) {
+  //     console.log('🚨 탈퇴 오류:', err.response?.data || err.message);
+  //   } finally {
+  //     setShowWithdrawModal(false);
+  //   }
+  // };
 
 
   const handleLogout = async () => {
     try {
-      const status = await logOut()
+      const status = await logOut();
       showToast('로그아웃 되었습니다.');
       if (status === 200) {
         setIsLoggedIn(false);
-        setUser(null)
+        setUser(null);
       }
     } catch (err) {
       console.error('🚨 로그아웃 실패:', err);
@@ -158,13 +158,13 @@ const MyPageScreen = () => {
             }}
           />
       </View> */}
-      
+
       <View style={styles.topBar}>
         <Text style={styles.topTitleText}>마이페이지</Text>
       </View>
 
       {/* 광고 이미지 넣기*/}
-      {isLoggedIn && <View style={styles.bannerAd}></View>}
+      {isLoggedIn && <View style={styles.bannerAd} />}
 
       {/* 로그인 O */}
       {isLoggedIn ? (
@@ -174,10 +174,10 @@ const MyPageScreen = () => {
               source={require('../../assets/drawable/profile.png')}
               style={styles.profileImage}
             />
-            <Text style={styles.userNickNmText}>{user?.nickname || "사용자 닉네임"}</Text>
+            <Text style={styles.userNickNmText}>{user?.nickname || '사용자 닉네임'}</Text>
             <Image source={require('../../assets/drawable/right-chevron.png')} style={styles.profilerightArrow} />
           </TouchableOpacity>
-        
+
           <TouchableOpacity style={styles.cocktailBox}>
             <Text style={styles.cocktailBoxText}>나의 칵테일 보관함</Text>
             <Image source={require('../../assets/drawable/bookmark.png')} style={styles.cockTailBookmark} />
@@ -187,12 +187,12 @@ const MyPageScreen = () => {
         <TouchableOpacity style={styles.loginContainer} onPress={handleLoginPress}>
           <Text style={styles.loginText}>
             {isLoggedIn ? user?.nickname : '로그인・회원가입'}
-          </Text> 
+          </Text>
         </TouchableOpacity>
       )}
 
       {/* 광고 이미지 넣기*/}
-      {!isLoggedIn && <View style={styles.bannerAd}></View>}
+      {!isLoggedIn && <View style={styles.bannerAd} />}
 
 
 
@@ -208,10 +208,10 @@ const MyPageScreen = () => {
       </View>
 
       <Text style={styles.supportSecondTitle}>서비스 약관</Text>
-      <TouchableOpacity onPress={()=>navigation.navigate('TermsAndConditionsScreen')}>
+      <TouchableOpacity onPress={() => navigation.navigate('TermsAndConditionsScreen')}>
         {renderSupportItem('이용약관')}
       </TouchableOpacity>
-      <TouchableOpacity onPress={()=>navigation.navigate('PrivacyPolicyScreen')}>
+      <TouchableOpacity onPress={() => navigation.navigate('PrivacyPolicyScreen')}>
         {renderSupportItem('개인정보 처리방침')}
       </TouchableOpacity>
 
@@ -233,11 +233,11 @@ const MyPageScreen = () => {
         onWithdraw={handleWithdraw}
       />*/}
 
-    <SignOutModal
-      visible={showSignOutModal}
-      onClose={() => setShowSignOutModal(false)}
-      onSignOut={handleLogout}
-    /> 
+      <SignOutModal
+        visible={showSignOutModal}
+        onClose={() => setShowSignOutModal(false)}
+        onSignOut={handleLogout}
+      />
 
     </SafeAreaView>
 
@@ -254,7 +254,7 @@ const renderSupportItem = (text: string) => {
 };
 
 const renderSupportItemWithoutIcon = (text: string) => (
-  <View style={[styles.supportItem, {marginTop: heightPercentage(8)}]}>
+  <View style={[styles.supportItem, { marginTop: heightPercentage(8) }]}>
     <Text style={[styles.supportText, { color: '#BDBDBD' }]}>{text}</Text>
   </View>
 );
@@ -267,12 +267,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fffcf3',
   },
-  topBar : {
+  topBar: {
     width: '100%',
     height: 52,
     paddingHorizontal: widthPercentage(16),
     paddingTop: heightPercentage(14),
-    paddingBottom: heightPercentage(10)
+    paddingBottom: heightPercentage(10),
   },
   topTitleText: {
     fontSize: fontPercentage(20),
@@ -299,7 +299,7 @@ const styles = StyleSheet.create({
     fontSize: fontPercentage(16),
     color: '#1B1B1B',
     fontWeight: '600',
-    flex: 1
+    flex: 1,
   },
   withdrawText: {
     marginTop: heightPercentage(27),
@@ -318,7 +318,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: widthPercentage(16),
     marginTop: heightPercentage(24),
     backgroundColor: '#313131',
-    borderRadius: 8
+    borderRadius: 8,
   },
   cocktailBoxText: {
     flex: 1,
@@ -334,7 +334,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: heightPercentage(14),
     backgroundColor: '#313131',
     borderRadius: 8,
-    marginTop: heightPercentage(16)
+    marginTop: heightPercentage(16),
   },
   loginText: {
     fontSize: fontPercentage(16),
@@ -348,7 +348,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: widthPercentage(16),
     paddingVertical: heightPercentage(8),
     marginTop: heightPercentage(24),
-    height: heightPercentage(36)
+    height: heightPercentage(36),
   },
   supportSecondTitle: {
     fontSize: fontPercentage(14),
@@ -357,10 +357,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: widthPercentage(16),
     paddingVertical: heightPercentage(8),
     marginTop: heightPercentage(16),
-    height: heightPercentage(36)
+    height: heightPercentage(36),
   },
   supportSection: {
-    
+
   },
   supportItem: {
     flexDirection: 'row',
@@ -375,7 +375,7 @@ const styles = StyleSheet.create({
   supportText: {
     fontSize: fontPercentage(16),
     color: '#1B1B1B',
-    fontWeight: '500'
+    fontWeight: '500',
   },
   profilerightArrow: {
     width: widthPercentage(24),
@@ -384,7 +384,7 @@ const styles = StyleSheet.create({
   cockTailBookmark: {
     width: widthPercentage(24),
     height: widthPercentage(24),
-    tintColor: '#FFFFFF'
+    tintColor: '#FFFFFF',
   },
   rightArrow: {
     width: widthPercentage(24),
