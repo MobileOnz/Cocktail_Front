@@ -1,10 +1,11 @@
-import { useCallback, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { MemberRemoteDataSource } from "../../model/DataSource/MemberDataSource";
 import { MemberRepository } from "../../model/Repository/MemberRepository";
 import { AuthRemoteDataSource } from "../../model/DataSource/AuthRemoteDataSource";
 import { launchImageLibrary } from "react-native-image-picker";
 import ImageResizer from "react-native-image-resizer";
 import { User } from "../../model/domain/User";
+import { UserUpdate } from "../../model/dto/UserUpdateDto"
 
 const MyPageViewModel = () => {
   const repository = useMemo(
@@ -16,14 +17,26 @@ const MyPageViewModel = () => {
     []
   );
 
+  const [profileUri, setProfileUri] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(false)
+  const [nickname, setNickname] = useState('');
 
-  const getMemberInfo = useCallback(async () => {
+  useEffect(() => {
+    getMemberInfo();
+  }, [profileUri]);
+  
+  const getMemberInfo = async () => {
     try {
       setLoading(true)
       const result = await repository.getMyInfo();
       setUser(result)
+      setNickname(result.nickname)
+      
+      if (user?.profileUrl !== null) {
+        getUserProfileImage()
+      }
+
       console.log("내 정보 수신: ", result)
       return result
     } catch (e: any) {
@@ -33,9 +46,9 @@ const MyPageViewModel = () => {
       }
       throw e;
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }, [repository]);
+  };
 
   const logOut = async () => {
     try {
@@ -57,12 +70,73 @@ const MyPageViewModel = () => {
   //   }
   // }
 
+  const updateUserProfile = async() => {
+    console.log("updateUserProfile", nickname + " : " + user?.nickname)
+    if (nickname === user?.nickname) {
+      return
+    }
+    const data: UserUpdate = {
+      gender : "",
+      name : "",
+      addr : "",
+      age : 0,
+      adTerm : user?.terms.ad,
+      marketingTerm : user?.terms.marketing,
+      nickName : nickname
+    }
+    try {
+      const res = await repository.updateUserProfile(data)
+      console.log("updateUserProfile 백엔드 응답: ", res)
+    } catch (error) {
+      console.log("updateUserProfile 백엔드 응답: ", "오류")
+    }
+  }
+
+  const getUserProfileImage = async() => {
+    try {
+      setLoading(true)
+      const blob = await repository.getUserProfileImage()
+      console.log("MyPageViewModel: ", blob)
+      if (blob !== null) {
+  
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          const base64data = reader.result as string;
+          setProfileUri(base64data);
+          console.log('📷 Base64 이미지 설정 완료');
+        };
+        reader.readAsDataURL(blob);
+      }
+    } catch (error) {
+      setLoading(false)
+      console.log("getUserProfileImage 백엔드 응답: ", "오류")
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const withDrawUser = async() => {
+    try {
+      setLoading(true)
+      const res = await repository.withDrawUser()
+      return res.code
+    } catch(error){
+      setLoading(false)
+      return -1
+    } finally {
+      setLoading(false);
+    }
+  }
+
+
+
   const handleProfileImageChange = async () => {
       launchImageLibrary(
         { mediaType: 'photo', selectionLimit: 1 },
         async (response) => {
           if (!response.didCancel && response.assets && response.assets.length > 0) {
             try {
+              setLoading(true)
               const asset = response.assets[0];
               console.log('📸 선택된 원본 이미지:', asset);
   
@@ -77,8 +151,8 @@ const MyPageViewModel = () => {
               const uri = resizedImage.uri;
               console.log("image: ", uri)
   
-              // if (!initialProfileUri) {setInitialProfileUri(uri);}
-              // setProfileUri(uri);
+              if (!profileUri) {setProfileUri(uri);}
+              setProfileUri(uri);
   
               const res = await repository.uploadProfileImage(uri)
               console.log("백엔드 응답: ", res)
@@ -89,13 +163,16 @@ const MyPageViewModel = () => {
               }
             } catch (error) {
               console.error('❌ 이미지 리사이즈 실패 또는 업로드 오류:', error);
+            } finally {
+              setLoading(false)
             }
+
           }
         }
       )
     }
 
-  return { user, loading, getMemberInfo, logOut, handleProfileImageChange};
+  return { nickname, setNickname, profileUri, setProfileUri, user, setUser, loading, withDrawUser, getMemberInfo, logOut, handleProfileImageChange, updateUserProfile};
 };
 
 export default MyPageViewModel;

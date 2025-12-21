@@ -24,7 +24,7 @@ export class AuthRemoteDataSource {
   async logOut() : Promise<number> {
     try {
       const accessToken = await AsyncStorage.getItem("accessToken");
-      console.log(accessToken, "12")
+      console.log(accessToken, accessToken)
       const response = await axios.post(
         `${API_BASE_URL}/api/v2/auth/logout`,
         {},
@@ -45,4 +45,6 @@ export class AuthRemoteDataSource {
       throw error;
     }
   }
+
+  
 }
