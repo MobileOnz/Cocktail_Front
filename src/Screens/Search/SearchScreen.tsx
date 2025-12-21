@@ -2,12 +2,13 @@
 import React from 'react';
 import {
   View,
-  Text,
+
   StyleSheet,
   TouchableOpacity,
-  ScrollView,
+
   StatusBar,
-  Image,
+  Text,
+
 } from 'react-native';
 import { StackScreenProps } from '@react-navigation/stack';
 import theme from '../../assets/styles/theme';
@@ -27,14 +28,11 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation, route }) => {
 
   const {
     searchText,
-    suggestions,
-    recentNameSearches,
-    recentMenuSearches,
-    setSearchText,
-    handleSuggestionPress,
-    handleRecentSearchPress,
+    handleSearchTextChange,
     handleClearText,
+    suggestions,
     handleGoBack,
+    navigateToMap,
   } = useSearchViewModel({
     navigation,
     initialKeyword,
@@ -58,7 +56,8 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation, route }) => {
           mode="outlined"
           placeholder="칵테일을 검색해보세요."
           value={searchText}
-          onChangeText={setSearchText}
+          onChangeText={handleSearchTextChange}
+          onSubmitEditing={() => navigateToMap(searchText)}
           left={<TextInput.Icon icon="magnify" />}
           right={
             searchText.length > 0 ? (
@@ -74,66 +73,22 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation, route }) => {
         />
       </View>
 
-      {/* 추천 검색어 & 최근 검색어 */}
-      <ScrollView
-        contentContainerStyle={[
-          styles.scrollContent,
-          { backgroundColor: theme.background },
-        ]}
-      >
-        {searchText.length > 0 && suggestions.length > 0 && (
-          <>
-            <Text style={styles.sectionTitle}>추천 검색어</Text>
-            {suggestions.map((keyword, index) => (
-              <TouchableOpacity
-                key={index}
-                style={styles.keywordButton}
-                onPress={() => handleSuggestionPress(keyword)}
-              >
-                <Text style={styles.keywordText}>{keyword}</Text>
-              </TouchableOpacity>
-            ))}
-          </>
-        )}
+      {searchText.length > 0 && (
 
-        {(searchText.length === 0 || initialKeyword) && (
-          <>
-            <Text
-              style={[
-                styles.sectionTitle,
-                { marginTop: 24, fontSize: 18 },
-              ]}
-            >
-              최근 검색어
-            </Text>
-            {[...recentNameSearches, ...recentMenuSearches].map(
-              (item, index) => {
-                const iconSource =
-                  item.search_type === 'NAME'
-                    ? require('../../assets/drawable/search_location_icon.png')
-                    : require('../../assets/drawable/search_menu_icon.png');
+        <View style={{ padding: 16 }}>
+          {suggestions.map((item, index) => (
+            <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', padding: 10 }}
+              onPress={() => navigateToMap(item.name)}
+              key={index}>
+              <Icon name="magnify" size={16} color="##313131" />
+              <Text style={{ fontSize: fontPercentage(16), color: '#616161' }}> {item.name}</Text>
 
-                return (
-                  <TouchableOpacity
-                    key={`${item.keyword}-${index}`}
-                    style={styles.recentItem}
-                    onPress={() => handleRecentSearchPress(item.keyword)}
-                  >
-                    <View style={styles.recentRow}>
-                      <Image
-                        source={iconSource}
-                        style={styles.recentIcon}
-                        resizeMode="contain"
-                      />
-                      <Text style={styles.recentText}>{item.keyword}</Text>
-                    </View>
-                  </TouchableOpacity>
-                );
-              },
-            )}
-          </>
-        )}
-      </ScrollView>
+            </TouchableOpacity>
+          ))}
+        </View>
+      )}
+
+
     </View>
   );
 };
