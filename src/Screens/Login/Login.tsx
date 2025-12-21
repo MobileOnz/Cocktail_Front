@@ -3,7 +3,7 @@ import { StackScreenProps } from '@react-navigation/stack';
 import { heightPercentage, widthPercentage, fontPercentage } from '../../assets/styles/FigmaScreen';
 import { RootStackParamList } from '../../Navigation/Navigation';
 
-import {useToast} from '../../Components/ToastContext';
+import { useToast } from '../../Components/ToastContext';
 import AuthViewModel from './AuthViewModel';
 import { AuthError, AuthErrorType } from '../../model/domain/AuthError';
 
@@ -54,46 +54,46 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
     }
   };
 
-  const kakaoLogin = async() => {
+  const kakaoLogin = async () => {
     try {
-    const result = await loginWithKakao();
-    console.log(JSON.stringify(result))
-    if (result.type === "token") {
-      showToast("로그인하였습니다.");
-      navigation.navigate("BottomTabNavigator", {
-        screen: "지도",
-        params: { shouldRefresh: true },
-      });
-      return;
-    }
-
-    if (result.type === "signup") {
-      navigation.navigate("SignupScreen", {
-        code: result.signupCode,
-      });
-      return;
-    }
-
-  } catch (error) {
-    if (error instanceof AuthError) {
-      switch (error.type) {
-        case AuthErrorType.TOKEN_EXPIRED:
-          showToast("로그인이 만료되었습니다.");
-          break;
-
-        case AuthErrorType.SOCIAL_LOGIN_FAILED:
-          showToast("소셜 로그인에 실패했습니다.");
-          break;
-
-        default:
-          showToast("로그인에 실패했습니다.");
+      const result = await loginWithKakao();
+      console.log(JSON.stringify(result));
+      if (result.type === 'token') {
+        showToast('로그인하였습니다.');
+        navigation.navigate('BottomTabNavigator', {
+          screen: '지도',
+          params: { shouldRefresh: true },
+        });
+        return;
       }
-      return;
-    }
 
-    showToast("알 수 없는 오류가 발생했습니다.");
-  }
-}
+      if (result.type === 'signup') {
+        navigation.navigate('SignupScreen', {
+          code: result.signupCode,
+        });
+        return;
+      }
+
+    } catch (error) {
+      if (error instanceof AuthError) {
+        switch (error.type) {
+          case AuthErrorType.TOKEN_EXPIRED:
+            showToast('로그인이 만료되었습니다.');
+            break;
+
+          case AuthErrorType.SOCIAL_LOGIN_FAILED:
+            showToast('소셜 로그인에 실패했습니다.');
+            break;
+
+          default:
+            showToast('로그인에 실패했습니다.');
+        }
+        return;
+      }
+
+      showToast('알 수 없는 오류가 발생했습니다.');
+    }
+  };
 
 
   // const debugDelete = async () => {
@@ -177,17 +177,17 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
       style={styles.background}
       resizeMode="cover"
     >
-        <View style={styles.container}>
-          {/* X 버튼 (닫기) */}
-          <TouchableOpacity
-            style={styles.closeButton}
-            onPress={() => navigation.navigate('SignupScreen')}
-          >
-            <Image
-              source={require('../../assets/drawable/close.png')}
-              style={styles.closeIcon}
-            />
-          </TouchableOpacity>
+      <View style={styles.container}>
+        {/* X 버튼 (닫기) */}
+        <TouchableOpacity
+          style={styles.closeButton}
+          onPress={() => navigation.navigate('SignupScreen')}
+        >
+          <Image
+            source={require('../../assets/drawable/close.png')}
+            style={styles.closeIcon}
+          />
+        </TouchableOpacity>
 
         {/* 로그인 안내 문구 */}
         <Text style={styles.title}>
@@ -210,7 +210,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
             />
           </TouchableOpacity>
 
-        {/* google로그인 버튼 */}
+          {/* google로그인 버튼 */}
           <TouchableOpacity
             style={styles.loginButton}
             onPress={googleLogin}
@@ -223,7 +223,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
         </View>
       </View>
     </ImageBackground>
-    
+
   );
 };
 

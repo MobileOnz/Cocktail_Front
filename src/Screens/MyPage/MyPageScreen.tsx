@@ -39,11 +39,11 @@ const MyPageScreen = () => {
 
   const handleLogout = async () => {
     try {
-      const status = await logOut()
+      const status = await logOut();
       showToast('로그아웃 되었습니다.');
       if (status === 200) {
         setIsLoggedIn(false);
-        setUser(null)
+        setUser(null);
       }
     } catch (err) {
       console.error('🚨 로그아웃 실패:', err);
@@ -233,7 +233,7 @@ const renderSupportItem = (text: string) => {
 };
 
 const renderSupportItemWithoutIcon = (text: string) => (
-  <View style={[styles.supportItem, {marginTop: heightPercentage(8)}]}>
+  <View style={[styles.supportItem, { marginTop: heightPercentage(8) }]}>
     <Text style={[styles.supportText, { color: '#BDBDBD' }]}>{text}</Text>
   </View>
 );
@@ -246,12 +246,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fffcf3',
   },
-  topBar : {
+  topBar: {
     width: '100%',
     height: 52,
     paddingHorizontal: widthPercentage(16),
     paddingTop: heightPercentage(14),
-    paddingBottom: heightPercentage(10)
+    paddingBottom: heightPercentage(10),
   },
   topTitleText: {
     fontSize: fontPercentage(20),
@@ -278,7 +278,7 @@ const styles = StyleSheet.create({
     fontSize: fontPercentage(16),
     color: '#1B1B1B',
     fontWeight: '600',
-    flex: 1
+    flex: 1,
   },
   withdrawText: {
     marginTop: heightPercentage(27),
@@ -297,7 +297,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: widthPercentage(16),
     marginTop: heightPercentage(24),
     backgroundColor: '#313131',
-    borderRadius: 8
+    borderRadius: 8,
   },
   cocktailBoxText: {
     flex: 1,
@@ -313,7 +313,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: heightPercentage(14),
     backgroundColor: '#313131',
     borderRadius: 8,
-    marginTop: heightPercentage(16)
+    marginTop: heightPercentage(16),
   },
   loginText: {
     fontSize: fontPercentage(16),
@@ -327,7 +327,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: widthPercentage(16),
     paddingVertical: heightPercentage(8),
     marginTop: heightPercentage(24),
-    height: heightPercentage(36)
+    height: heightPercentage(36),
   },
   supportSecondTitle: {
     fontSize: fontPercentage(14),
@@ -336,10 +336,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: widthPercentage(16),
     paddingVertical: heightPercentage(8),
     marginTop: heightPercentage(16),
-    height: heightPercentage(36)
+    height: heightPercentage(36),
   },
   supportSection: {
-    
+
   },
   supportItem: {
     flexDirection: 'row',
@@ -354,7 +354,7 @@ const styles = StyleSheet.create({
   supportText: {
     fontSize: fontPercentage(16),
     color: '#1B1B1B',
-    fontWeight: '500'
+    fontWeight: '500',
   },
   profilerightArrow: {
     width: widthPercentage(24),
@@ -363,7 +363,7 @@ const styles = StyleSheet.create({
   cockTailBookmark: {
     width: widthPercentage(24),
     height: widthPercentage(24),
-    tintColor: '#FFFFFF'
+    tintColor: '#FFFFFF',
   },
   rightArrow: {
     width: widthPercentage(24),
