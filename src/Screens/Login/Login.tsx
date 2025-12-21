@@ -1,25 +1,21 @@
-import React, {useEffect,useState } from 'react';
+
 import { View, Text, StyleSheet, TouchableOpacity, Image, ImageBackground, Linking } from 'react-native';
 import { StackScreenProps } from '@react-navigation/stack';
-import * as KakaoLogin from '@react-native-seoul/kakao-login';
 import { heightPercentage, widthPercentage, fontPercentage } from '../../assets/styles/FigmaScreen';
-import NaverLogin from '@react-native-seoul/naver-login';
-import type {
-  NaverLoginResponse,
-} from '@react-native-seoul/naver-login';
 
-import axios from 'axios';
-import {API_BASE_URL} from '@env';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import {GoogleSignin} from '@react-native-google-signin/google-signin';
+
+// import axios from 'axios';
+import { API_BASE_URL } from '@env';
+// import AsyncStorage from '@react-native-async-storage/async-storage';
+// import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import { RootStackParamList } from '../../Navigation/Navigation';
 
-import {useToast} from '../../Components/ToastContext';
+import { useToast } from '../../Components/ToastContext';
 import AuthViewModel from './AuthViewModel';
 import { AuthError, AuthErrorType } from '../../model/domain/AuthError';
 
-//env에서 서버 주소 가져옴
-const server = API_BASE_URL;
+// //env에서 서버 주소 가져옴
+// const server = API_BASE_URL;
 
 
 //구글로그인  설정
@@ -38,8 +34,8 @@ const server = API_BASE_URL;
 type LoginScreenProps = StackScreenProps<RootStackParamList, 'Login'>;
 
 const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
-  const {showToast} = useToast();
-  const { loginWithNaver, loginWithKakao, startKakaoLogin, startNaverLogin, startGoogleLogin} = AuthViewModel()
+  const { showToast } = useToast();
+  const { loginWithNaver, loginWithKakao, startKakaoLogin, startNaverLogin, startGoogleLogin } = AuthViewModel();
 
   //네이버 로그인
   // const naverLogin = async (): Promise<void> => {
@@ -99,49 +95,49 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
   //   }
   // };
 
- const naverLogin = async () => {
-  try {
-    const result = await loginWithNaver();
+  //  const naverLogin = async () => {
+  //   try {
+  //     const result = await loginWithNaver();
 
-    if (result.type === "token") {
-      showToast("로그인하였습니다.");
-      navigation.navigate("BottomTabNavigator", {
-        screen: "지도",
-        params: { shouldRefresh: true },
-      });
-      return;
-    }
+  //     if (result.type === "token") {
+  //       showToast("로그인하였습니다.");
+  //       navigation.navigate("BottomTabNavigator", {
+  //         screen: "지도",
+  //         params: { shouldRefresh: true },
+  //       });
+  //       return;
+  //     }
 
-    if (result.type === "signup") {
-      navigation.navigate("SignupScreen", {
-        code: result.signupCode,
-      });
-      return;
-    }
+  //     if (result.type === "signup") {
+  //       navigation.navigate("SignupScreen", {
+  //         code: result.signupCode,
+  //       });
+  //       return;
+  //     }
 
-  } catch (error) {
-    if (error instanceof AuthError) {
-      switch (error.type) {
-        case AuthErrorType.TOKEN_EXPIRED:
-          showToast("로그인이 만료되었습니다.");
-          break;
+  //   } catch (error) {
+  //     if (error instanceof AuthError) {
+  //       switch (error.type) {
+  //         case AuthErrorType.TOKEN_EXPIRED:
+  //           showToast("로그인이 만료되었습니다.");
+  //           break;
 
-        case AuthErrorType.SOCIAL_LOGIN_FAILED:
-          showToast("소셜 로그인에 실패했습니다.");
-          break;
+  //         case AuthErrorType.SOCIAL_LOGIN_FAILED:
+  //           showToast("소셜 로그인에 실패했습니다.");
+  //           break;
 
-        default:
-          showToast("로그인에 실패했습니다.");
-      }
-      return;
-    }
+  //         default:
+  //           showToast("로그인에 실패했습니다.");
+  //       }
+  //       return;
+  //     }
 
-    showToast("알 수 없는 오류가 발생했습니다.");
-  }
-};
+  //     showToast("알 수 없는 오류가 발생했습니다.");
+  //   }
+  // };
 
 
-      // 카카오 로그인 함수
+  // 카카오 로그인 함수
   // const kakaoLogin = () => {
   //   KakaoLogin.login()
 
@@ -193,74 +189,74 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
   //         console.log(`Login Fail(code:${error.code})`, error.message);
   //       }
   //     });
-  // };
+  // // };
 
-  const onKakakoLoginPress = async() => {
-    const { loginUrl } = await startKakaoLogin();
-    console.log("onKakakoLoginPress: ", loginUrl)
-    Linking.openURL(loginUrl)
-  }
+  // const onKakakoLoginPress = async() => {
+  //   const { loginUrl } = await startKakaoLogin();
+  //   console.log("onKakakoLoginPress: ", loginUrl)
+  //   Linking.openURL(loginUrl)
+  // }
 
-  const onNaverLoginPress = async() => {
-    const { loginUrl } = await startNaverLogin();
-    console.log("onNaverLoginPress: ", loginUrl)
-    Linking.openURL(loginUrl)
-  }
+  // const onNaverLoginPress = async() => {
+  //   const { loginUrl } = await startNaverLogin();
+  //   console.log("onNaverLoginPress: ", loginUrl)
+  //   Linking.openURL(loginUrl)
+  // }
 
-  Linking.addEventListener("url", async ({url}) => {
-    const code = new URL(url).searchParams.get("code");
-    const state = new URL(url).searchParams.get("state");
+  // Linking.addEventListener("url", async ({url}) => {
+  //   const code = new URL(url).searchParams.get("code");
+  //   const state = new URL(url).searchParams.get("state");
 
-    console.log(code, state)
+  //   console.log(code, state)
 
-  })
+  // })
 
-  const onGoogleLoginPress = async() => {
+  const onGoogleLoginPress = async () => {
     const { loginUrl } = await startGoogleLogin();
-    console.log("onGoogleLoginPress: ", loginUrl)
-    Linking.openURL(loginUrl)
-  }
+    console.log('onGoogleLoginPress: ', loginUrl);
+    Linking.openURL(loginUrl);
+  };
 
-  const kakaoLogin = async() => {
+  const kakaoLogin = async () => {
     try {
-    const result = await loginWithKakao();
-    console.log(JSON.stringify(result))
-    if (result.type === "token") {
-      showToast("로그인하였습니다.");
-      navigation.navigate("BottomTabNavigator", {
-        screen: "지도",
-        params: { shouldRefresh: true },
-      });
-      return;
-    }
-
-    if (result.type === "signup") {
-      navigation.navigate("SignupScreen", {
-        code: result.signupCode,
-      });
-      return;
-    }
-
-  } catch (error) {
-    if (error instanceof AuthError) {
-      switch (error.type) {
-        case AuthErrorType.TOKEN_EXPIRED:
-          showToast("로그인이 만료되었습니다.");
-          break;
-
-        case AuthErrorType.SOCIAL_LOGIN_FAILED:
-          showToast("소셜 로그인에 실패했습니다.");
-          break;
-
-        default:
-          showToast("로그인에 실패했습니다.");
+      const result = await loginWithKakao();
+      console.log(JSON.stringify(result));
+      if (result.type === 'token') {
+        showToast('로그인하였습니다.');
+        navigation.navigate('BottomTabNavigator', {
+          screen: '지도',
+          params: { shouldRefresh: true },
+        });
+        return;
       }
-      return;
-    }
 
-    showToast("알 수 없는 오류가 발생했습니다.");
-  }
-}
+      if (result.type === 'signup') {
+        navigation.navigate('SignupScreen', {
+          code: result.signupCode,
+        });
+        return;
+      }
+
+    } catch (error) {
+      if (error instanceof AuthError) {
+        switch (error.type) {
+          case AuthErrorType.TOKEN_EXPIRED:
+            showToast('로그인이 만료되었습니다.');
+            break;
+
+          case AuthErrorType.SOCIAL_LOGIN_FAILED:
+            showToast('소셜 로그인에 실패했습니다.');
+            break;
+
+          default:
+            showToast('로그인에 실패했습니다.');
+        }
+        return;
+      }
+
+      showToast('알 수 없는 오류가 발생했습니다.');
+    }
+  };
 
 
   // const debugDelete = async () => {
@@ -294,7 +290,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
 
 
 
-      //구글 로그인
+  //구글 로그인
   // const signInWithGoogle = async () => {
   //   try {
   //     const accessToken = (await GoogleSignin.getTokens()).accessToken;
@@ -333,57 +329,57 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
   //     console.log('Google Sign-In Error:', JSON.stringify(error, null, 2));
   //   }
   // };
-  const signInWithGoogle = async () => {
-    try {
-      // 1. 플레이서비스 체크 (Android용이지만 iOS에서도 무방)
-      await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+  // const signInWithGoogle = async () => {
+  //   try {
+  //     // 1. 플레이서비스 체크 (Android용이지만 iOS에서도 무방)
+  //     await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
 
-      // 2. 로그인 UI 띄우기
-      // const userInfo = await GoogleSignin.signIn();
+  //     // 2. 로그인 UI 띄우기
+  //     // const userInfo = await GoogleSignin.signIn();
 
-      // 3. 로그인 성공했으면 토큰 가져오기
-      const { accessToken } = await GoogleSignin.getTokens();
+  //     // 3. 로그인 성공했으면 토큰 가져오기
+  //     const { accessToken } = await GoogleSignin.getTokens();
 
-      console.log('✅ 구글 로그인 성공, accessToken:', accessToken);
+  //     console.log('✅ 구글 로그인 성공, accessToken:', accessToken);
 
-      // 4. 서버로 소셜 로그인 요청 보내기
-      const payload = {
-        provider: 'google',
-        code: null,
-        state: null,
-        accessToken: accessToken,
-      };
+  //     // 4. 서버로 소셜 로그인 요청 보내기
+  //     const payload = {
+  //       provider: 'google',
+  //       code: null,
+  //       state: null,
+  //       accessToken: accessToken,
+  //     };
 
-      const response = await axios.post(`${server}/api/auth/social-login`, payload, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
+  //     const response = await axios.post(`${server}/api/auth/social-login`, payload, {
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //     });
 
-      const code = response.data.data.code;
-      if (code) {
-        navigation.navigate('SignupScreen', { code });
-      } else {
-        const backendAccessToken = response.data.data.access_token;
-        const backendRefreshToken = response.data.data.refresh_token;
+  //     const code = response.data.data.code;
+  //     if (code) {
+  //       navigation.navigate('SignupScreen', { code });
+  //     } else {
+  //       const backendAccessToken = response.data.data.access_token;
+  //       const backendRefreshToken = response.data.data.refresh_token;
 
-        if (backendAccessToken) {
-          await AsyncStorage.setItem('accessToken', backendAccessToken);
-        }
-        if (backendRefreshToken) {
-          await AsyncStorage.setItem('refreshToken', backendRefreshToken);
-        }
-       setTimeout(() => {
-            navigation.navigate('BottomTabNavigator', {
-              screen: '지도', // <- MyPage 탭의 이름으로 정확히 수정
-              params: { shouldRefresh: true },
-            });
-          }, 100);
-      }
-    } catch (error) {
-      console.error('❌ Google Sign-In Error:', JSON.stringify(error, null, 2));
-    }
-  };
+  //       if (backendAccessToken) {
+  //         await AsyncStorage.setItem('accessToken', backendAccessToken);
+  //       }
+  //       if (backendRefreshToken) {
+  //         await AsyncStorage.setItem('refreshToken', backendRefreshToken);
+  //       }
+  //      setTimeout(() => {
+  //           navigation.navigate('BottomTabNavigator', {
+  //             screen: '지도', // <- MyPage 탭의 이름으로 정확히 수정
+  //             params: { shouldRefresh: true },
+  //           });
+  //         }, 100);
+  //     }
+  //   } catch (error) {
+  //     console.error('❌ Google Sign-In Error:', JSON.stringify(error, null, 2));
+  //   }
+  // };
 
 
 
@@ -394,17 +390,17 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
       style={styles.background}
       resizeMode="cover"
     >
-        <View style={styles.container}>
-          {/* X 버튼 (닫기) */}
-          <TouchableOpacity
-            style={styles.closeButton}
-            onPress={() => navigation.navigate('SignupScreen')}
-          >
-            <Image
-              source={require('../../assets/drawable/close.png')}
-              style={styles.closeIcon}
-            />
-          </TouchableOpacity>
+      <View style={styles.container}>
+        {/* X 버튼 (닫기) */}
+        <TouchableOpacity
+          style={styles.closeButton}
+          onPress={() => navigation.navigate('SignupScreen')}
+        >
+          <Image
+            source={require('../../assets/drawable/close.png')}
+            style={styles.closeIcon}
+          />
+        </TouchableOpacity>
 
         {/* 로그인 안내 문구 */}
         <Text style={styles.title}>
@@ -427,11 +423,11 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
             />
           </TouchableOpacity>
 
-        {/* google로그인 버튼 */}
+          {/* google로그인 버튼 */}
           <TouchableOpacity
             style={styles.loginButton}
             onPress={onGoogleLoginPress}
-            >
+          >
             <Image
               source={require('../../assets/drawable/google_button.png')}
               style={styles.buttonImage}
@@ -440,7 +436,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
         </View>
       </View>
     </ImageBackground>
-    
+
   );
 };
 
