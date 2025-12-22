@@ -9,7 +9,7 @@ import { BlurView } from '@react-native-community/blur';
 import Home from '../BottomTab/Cocktail_List/CocktailListScreen';
 
 import RecommendationsScreen from '../BottomTab/RecommendationIntroScreen';
-import MyPageScreen from '../BottomTab/MyPageScreen';
+import MyPageScreen from '../Screens/MyPage/MyPageScreen';
 
 import theme from '../assets/styles/theme';
 

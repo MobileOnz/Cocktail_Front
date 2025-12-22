@@ -346,13 +346,13 @@ const renderAccountItem = (text: string, iconUrl: string) => {
 const getSocialIcon = (socialLogin?: string) => {
   switch (socialLogin) {
     case 'KAKAO':
-      return require('../../assets/drawable/Kakao.png');
+      return require('../../assets/drawable/kakao.png');
     case 'NAVER':
       return require('../../assets/drawable/Naver.png');
     case 'GOOGLE':
       return require('../../assets/drawable/Google.png');;
     default:
-      return require('../../assets/drawable/Kakao.png');
+      return require('../../assets/drawable/kakao.png');
   }
 };
 
