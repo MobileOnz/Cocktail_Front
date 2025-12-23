@@ -51,6 +51,7 @@ const BottomTabNavigator = () => {
             backgroundColor: 'transparent',
             borderTopWidth: 0,
             elevation: 0,
+            height: '6%',
             borderRadius: 999,
             overflow: 'hidden',
           },
