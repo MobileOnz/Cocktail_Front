@@ -35,6 +35,7 @@ const OpenBottomSheet = forwardRef<OpenBottomSheetHandle, OpenBottomSheetProps>(
             open: () => {
                 console.log('[OpenBottomSheet] open() called');
                 bottomSheetRef.current?.snapToIndex(0); // '80%' 위치
+
             },
             close: () => {
                 console.log('[OpenBottomSheet] close() called');
