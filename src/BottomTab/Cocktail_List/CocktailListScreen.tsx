@@ -9,7 +9,7 @@ import {
   Dimensions,
   TouchableOpacity,
 } from 'react-native';
-import { Appbar, Button, Divider, IconButton, Text } from 'react-native-paper';
+import { Appbar, Divider, IconButton, Text } from 'react-native-paper';
 import theme from '../../assets/styles/theme';
 import { fontPercentage, heightPercentage, widthPercentage } from '../../assets/styles/FigmaScreen';
 import PuzzlePiece from '../../configs/CurvedImage';
@@ -60,27 +60,6 @@ const Home = () => {
         <Appbar.Action icon="bookmark-outline" onPress={() => { navigation.navigate('CocktailBoxScreen' as never); }} />
       </Appbar.Header>
 
-      {/* 필터 영역 */}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.filterView}
-
-      >
-        {['최신순', '도수', '스타일', '맛', '베이스'].map((label, idx) => (
-          <Button
-            key={idx}
-            mode="outlined"
-            icon={label === '최신순' ? undefined : 'chevron-down'}
-            compact
-            contentStyle={styles.filterButtonContent}
-            style={[styles.chip, styles.chipUnselected]}
-            labelStyle={styles.chipLabel}
-          >
-            {label}
-          </Button>
-        ))}
-      </ScrollView>
 
       {/* 컨텐츠 뷰 */}
       <ScrollView
