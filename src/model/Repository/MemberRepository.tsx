@@ -1,6 +1,7 @@
 import { AuthRemoteDataSource } from "../DataSource/AuthRemoteDataSource";
 import { MemberRemoteDataSource } from "../DataSource/MemberDataSource";
 import { User } from "../domain/User";
+import { UserUpdate, UserUpdateResponse } from "../dto/UserUpdateDto"
 
 export class MemberRepository {
   constructor(
@@ -28,11 +29,26 @@ export class MemberRepository {
     }
   }
 
+  async withDrawUser(): Promise<{
+    code: number,
+    msg: string,
+  }> {
+    return this.memberRemoteDataSource.withDrawUser()
+  }
+
   async logout(): Promise<number> {
     return this.authRemoteDataSource.logOut()
   }
 
   async uploadProfileImage(fileUri: string) {
     return this.memberRemoteDataSource.uploadProfileImage(fileUri)
+  }
+
+  async updateUserProfile(data: UserUpdate): Promise<UserUpdateResponse> {
+    return this.memberRemoteDataSource.updateUserProfile(data)
+  }
+
+  async getUserProfileImage(): Promise<Blob | null> {
+    return this.memberRemoteDataSource.getUserProfileImage()
   }
 }
