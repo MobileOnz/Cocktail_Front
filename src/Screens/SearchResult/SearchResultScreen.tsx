@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View } from 'react-native';
-import React from 'react';
+import React, { useRef } from 'react';
 import { FlatList, ScrollView } from 'react-native-gesture-handler';
 import { ActivityIndicator, Button, Icon, IconButton } from 'react-native-paper';
 import { fontPercentage, heightPercentage, widthPercentage } from '../../assets/styles/FigmaScreen';
@@ -8,6 +8,8 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../Navigation/Navigation';
 import CocktailCard from '../../Components/CocktailCard';
 import useSearchResultViewModel from './SearchResultViewModel';
+import OpenBottomSheet, { OpenBottomSheetHandle } from '../../Components/BottomSheet/OpenBottomSheet';
+import FilterBottomSheet from '../../Components/BottomSheet/FilterBottomSheet';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'SearchResultScreen'>;
 
@@ -15,6 +17,7 @@ type Props = NativeStackScreenProps<RootStackParamList, 'SearchResultScreen'>;
 const SearchResultScreen = ({ navigation, route }: Props) => {
   const { keyword } = route.params;
   const { results, loading, error } = useSearchResultViewModel(keyword);
+  const bottomSheetRef = useRef<OpenBottomSheetHandle>(null);
 
   return (
     <View style={styles.container}>
@@ -61,6 +64,7 @@ const SearchResultScreen = ({ navigation, route }: Props) => {
                   contentStyle={styles.filterButtonContent}
                   style={[styles.chip, styles.chipUnselected]}
                   labelStyle={styles.chipLabel}
+                  onPress={() => bottomSheetRef.current?.open()}
                 >
                   {label}
                 </Button>
@@ -96,6 +100,9 @@ const SearchResultScreen = ({ navigation, route }: Props) => {
           </View>
         )}
       />
+      <OpenBottomSheet ref={bottomSheetRef}>
+        <FilterBottomSheet />
+      </OpenBottomSheet>
     </View>
   );
 };
