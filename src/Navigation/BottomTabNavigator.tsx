@@ -9,7 +9,7 @@ import { BlurView } from '@react-native-community/blur';
 import Home from '../BottomTab/Cocktail_List/CocktailListScreen';
 
 import RecommendationsScreen from '../BottomTab/RecommendationIntroScreen';
-import MyPageScreen from '../BottomTab/MyPageScreen';
+
 
 import theme from '../assets/styles/theme';
 
@@ -17,6 +17,7 @@ import theme from '../assets/styles/theme';
 import { BottomTabParamList } from './Navigation';
 import GuideScreen from '../Screens/Guide/GuideScreen';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import MyPageScreen from '../Screens/MyPage/MyPageScreen';
 
 const Tab = createBottomTabNavigator<BottomTabParamList>();
 
