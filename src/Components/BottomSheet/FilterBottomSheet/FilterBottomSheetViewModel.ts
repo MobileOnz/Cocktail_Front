@@ -1,0 +1,77 @@
+import { useCallback, useMemo, useState } from 'react';
+
+export type SortType = '최신순' | '인기순';
+export type FilterState = {
+    sort: SortType;
+    degree: string[];
+    style: string[];
+    taste: string[];
+    base: string[];
+};
+
+export const DEFAULT_FILTER: FilterState = {
+    sort: '최신순',
+    degree: [],
+    style: [],
+    taste: [],
+    base: [],
+};
+
+type Params = {
+    initialValue?: FilterState;
+    onApply?: (value: FilterState) => void;
+};
+
+export const useFilterBottomSheetViewModel = ({ initialValue, onApply }: Params) => {
+
+    const init = initialValue ?? DEFAULT_FILTER;
+
+    const [selectedSort, setSelectedSort] = useState<SortType>(init.sort);
+    const [selectedDegree, setSelectedDegree] = useState<string[]>([]);
+    const [selectedStyle, setSelectedStyle] = useState<string[]>([]);
+    const [selectedTaste, setSelectedTaste] = useState<string[]>([]);
+    const [selectedBase, setSelectedBase] = useState<string[]>([]);
+
+
+    const value: FilterState = useMemo(
+        () => ({
+            sort: selectedSort,
+            degree: selectedDegree,
+            style: selectedStyle,
+            taste: selectedTaste,
+            base: selectedBase,
+        }),
+        [selectedSort, selectedDegree, selectedStyle, selectedTaste, selectedBase]
+    );
+
+    const reset = useCallback(() => {
+        setSelectedSort(init.sort);
+        setSelectedDegree(init.degree);
+        setSelectedStyle(init.style);
+        setSelectedTaste(init.taste);
+        setSelectedBase(init.base);
+    }, [init.sort, init.degree, init.style, init.taste, init.base]);
+
+    const apply = useCallback(() => {
+        onApply?.(value);
+    }, [onApply, value]);
+
+    return {
+        selectedSort,
+        selectedDegree,
+        selectedStyle,
+        selectedTaste,
+        selectedBase,
+        setSelectedSort,
+        setSelectedDegree,
+        setSelectedStyle,
+        setSelectedTaste,
+        setSelectedBase,
+
+        reset,
+        apply,
+
+
+        value,
+    };
+};
