@@ -4,6 +4,7 @@ import { di } from '../../DI/Container';
 import { CocktailCard } from '../../model/domain/CocktailCard';
 import { CocktailMain } from '../../model/domain/CocktailMain';
 import { API_BASE_URL } from '@env';
+import { is } from 'zod/v4/locales';
 
 
 type UseSearchResultDeps = {
@@ -20,6 +21,19 @@ export const useHomeViewModel = (deps?: UseSearchResultDeps) => {
   const [beginnerList, setBeginnerList] = useState<CocktailCard[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  const handleScroll = (event: any) => {
+    const offsetY = event.nativeEvent.contentOffset.y;
+
+    const isTop = offsetY <= 10;
+
+    if (!isTop && !isScrolled) {
+      setIsScrolled(true);
+    } else if (isTop && isScrolled) {
+      setIsScrolled(false);
+    }
+  };
 
   const fetchHomeData = useCallback(async () => {
     setLoading(true);
@@ -66,5 +80,8 @@ export const useHomeViewModel = (deps?: UseSearchResultDeps) => {
     intermediateList,
     loading,
     error,
+    handleScroll,
+    isScrolled,
+    setIsScrolled,
   };
 };
