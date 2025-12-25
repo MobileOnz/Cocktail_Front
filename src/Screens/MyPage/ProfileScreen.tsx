@@ -343,18 +343,18 @@ const renderAccountItem = (text: string, iconUrl: string) => {
   );
 };
 
-// const getSocialIcon = (socialLogin?: string) => {
-//   switch (socialLogin) {
-//     case 'KAKAO':
-//       return require('../../assets/drawable/Kakao.png');
-//     case 'NAVER':
-//       return require('../../assets/drawable/Naver.png');
-//     case 'GOOGLE':
-//       return require('../../assets/drawable/Google.png');;
-//     default:
-//       return require('../../assets/drawable/Kakao.png');
-//   }
-// };
+const getSocialIcon = (socialLogin?: string) => {
+  switch (socialLogin) {
+    case 'KAKAO':
+      return require('../../assets/drawable/kakao_button.png');
+    case 'NAVER':
+      return require('../../assets/drawable/naver_button.png');
+    case 'GOOGLE':
+      return require('../../assets/drawable/google_button.png');
+    default:
+      return require('../../assets/drawable/kakao_button.png');
+  }
+};
 
 const getSocialLabel = (socialLogin?: string) => {
   switch (socialLogin) {
