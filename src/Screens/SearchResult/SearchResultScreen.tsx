@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native';
 import React, { useRef } from 'react';
-import { FlatList, ScrollView } from 'react-native-gesture-handler';
+import { FlatList, Pressable, ScrollView } from 'react-native-gesture-handler';
 import { ActivityIndicator, Button, Icon, IconButton } from 'react-native-paper';
 import { fontPercentage, heightPercentage, widthPercentage } from '../../assets/styles/FigmaScreen';
 import theme from '../../assets/styles/theme';
@@ -9,7 +9,9 @@ import { RootStackParamList } from '../../Navigation/Navigation';
 import CocktailCard from '../../Components/CocktailCard';
 import useSearchResultViewModel from './SearchResultViewModel';
 import OpenBottomSheet, { OpenBottomSheetHandle } from '../../Components/BottomSheet/OpenBottomSheet';
-import FilterBottomSheet from '../../Components/BottomSheet/FilterBottomSheet';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import FilterBottomSheet, { FilterBottomSheetRef } from '../../Components/BottomSheet/FilterBottomSheet/FilterBottomSheet';
+import { fi } from 'zod/v4/locales';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'SearchResultScreen'>;
 
@@ -18,9 +20,10 @@ const SearchResultScreen = ({ navigation, route }: Props) => {
   const { keyword } = route.params;
   const { results, loading, error } = useSearchResultViewModel(keyword);
   const bottomSheetRef = useRef<OpenBottomSheetHandle>(null);
+  const filterRef = useRef<FilterBottomSheetRef>(null);
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <FlatList
         data={loading || error ? [] : results}
         style={{ flex: 1 }}
@@ -100,10 +103,27 @@ const SearchResultScreen = ({ navigation, route }: Props) => {
           </View>
         )}
       />
-      <OpenBottomSheet ref={bottomSheetRef}>
+      <OpenBottomSheet
+        ref={bottomSheetRef}
+        footer={
+          <View style={styles.footer}>
+            <Pressable style={styles.resetButton} onPress={() => { filterRef.current?.reset(); }} >
+              <Text style={styles.resetText}>초기화</Text>
+            </Pressable>
+
+            <Pressable style={styles.applyButton} onPress={() => {
+              filterRef.current?.apply();
+              bottomSheetRef.current?.close?.();
+            }
+            }>
+              <Text style={styles.applyText}>적용하기</Text>
+            </Pressable>
+          </View>
+        }
+      >
         <FilterBottomSheet />
       </OpenBottomSheet>
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -186,5 +206,42 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 40,
+  },
+  footer: {
+    flexDirection: 'row',
+    gap: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    backgroundColor: theme.background,
+    borderTopWidth: 1,
+    borderTopColor: '#eee',
+  },
+  resetButton: {
+    flex: 1,
+    height: heightPercentage(50),
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#D0D0D0',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: theme.background,
+  },
+  applyButton: {
+    flex: 1,
+    height: heightPercentage(50),
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#111111',
+  },
+  resetText: {
+    fontSize: 14,
+    color: '#444444',
+    fontWeight: '500',
+  },
+  applyText: {
+    fontSize: 14,
+    color: '#FFFFFF',
+    fontWeight: '600',
   },
 });

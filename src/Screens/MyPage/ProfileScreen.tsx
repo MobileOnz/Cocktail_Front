@@ -1,4 +1,4 @@
-import React, { useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -15,7 +15,7 @@ import {
 import { widthPercentage, heightPercentage, fontPercentage } from '../../assets/styles/FigmaScreen';
 import { RouteProp, useNavigation } from '@react-navigation/native';
 import { RootStackParamList } from '../../Navigation/Navigation';
-import  MyPageViewModel from './MyPageViewModel'
+import MyPageViewModel from './MyPageViewModel';
 
 type ProfileScreenRouteProp = RouteProp<RootStackParamList, 'ProfileScreen'>;
 
@@ -24,32 +24,32 @@ interface Props {
 }
 
 
-const ProfileScreen: React.FC<Props> = ({route}: Props) => {
-  const { user } = route.params
-  console.log(user)
-  
+const ProfileScreen: React.FC<Props> = ({ route }: Props) => {
+  const { user } = route.params;
+  console.log(user);
+
   const navigation = useNavigation();
-  const { loading, nickname, setNickname, profileUri, setProfileUri, handleProfileImageChange, updateUserProfile} = MyPageViewModel()
+  const { loading, nickname, setNickname, profileUri, setProfileUri, handleProfileImageChange, updateUserProfile } = MyPageViewModel();
   // const [newNickname, setNewNickname] = useState('');
   // const [initialProfileUri, setInitialProfileUri] = useState<string | null>(user.profileUrl || null);
   const inputAccessoryViewID = 'nicknameInputAccessory';
   // const isProfileChanged = profileUri !== initialProfileUri;
   // const isChanged = isNicknameChanged || isProfileChanged;
-  const [nickNmState, setNickNmState ] = useState(false)
+  const [nickNmState, setNickNmState] = useState(false);
   const colorScheme = useColorScheme();
 
   useEffect(() => {
     if (user?.nickname) {
       setNickname(user.nickname);
-      setProfileUri(user.profileUrl || null)
+      setProfileUri(user.profileUrl || null);
     }
   }, [user]);
 
-  const onHandleProfileUpdate = async() => {
-    setNickNmState(!nickNmState)
-    updateUserProfile()
+  const onHandleProfileUpdate = async () => {
+    setNickNmState(!nickNmState);
+    updateUserProfile();
 
-  }
+  };
 
 
   // useEffect(() => {
@@ -184,7 +184,7 @@ const ProfileScreen: React.FC<Props> = ({route}: Props) => {
   //           if (!initialProfileUri) {setInitialProfileUri(uri);}
   //           setProfileUri(uri);
 
-            
+
 
   //           const uploadJson = uploadRes.data;
   //           if (uploadJson?.code === 1) {
@@ -203,10 +203,10 @@ const ProfileScreen: React.FC<Props> = ({route}: Props) => {
 
   return (
     <View style={styles.container}>
-      { loading ? (
-        <ActivityIndicator size="large" color="#000000ff" style={{flex: 1}} />
+      {loading ? (
+        <ActivityIndicator size="large" color="#000000ff" style={{ flex: 1 }} />
       ) : (
-        <View> 
+        <View>
           {/* 상단 헤더 */}
           <View style={styles.header}>
             <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -236,23 +236,23 @@ const ProfileScreen: React.FC<Props> = ({route}: Props) => {
             <Text style={styles.nicknameLabel}>닉네임</Text>
 
             <View style={styles.nickNameContainer}>
-                
-                {nickNmState === true ? (
-                  <TextInput style={styles.nicknameInput}
-                    value={nickname}
-                    onChangeText={setNickname}
-                    />
-                ) : (
-                  <Text style={styles.nickNameText}>{nickname || ""}</Text>
-                  )
-                }
-                
-                <TouchableOpacity
-                  style={styles.editNickBtn}
-                  onPress={onHandleProfileUpdate}
-                >
-                  <Text style={styles.editNickName}>수정하기</Text>
-                </TouchableOpacity>
+
+              {nickNmState === true ? (
+                <TextInput style={styles.nicknameInput}
+                  value={nickname}
+                  onChangeText={setNickname}
+                />
+              ) : (
+                <Text style={styles.nickNameText}>{nickname || ''}</Text>
+              )
+              }
+
+              <TouchableOpacity
+                style={styles.editNickBtn}
+                onPress={onHandleProfileUpdate}
+              >
+                <Text style={styles.editNickName}>수정하기</Text>
+              </TouchableOpacity>
 
             </View>
             {/* <TextInput
@@ -268,17 +268,17 @@ const ProfileScreen: React.FC<Props> = ({route}: Props) => {
             <Text style={styles.accountLabel}>연결된 계정</Text>
 
             <View style={styles.accountNameContainer}>
-                <Text style={styles.nickNameText}>{user?.email || ""}</Text>
-                  {renderAccountItem(getSocialLabel(user?.socialLogin) || '', getSocialIcon(user?.socialLogin))}
+              <Text style={styles.nickNameText}>{user?.email || ''}</Text>
+              {renderAccountItem(getSocialLabel(user?.socialLogin) || '', getSocialIcon(user?.socialLogin))}
             </View>
-            
+
             <TouchableOpacity
               onPress={() => navigation.navigate('QuitScreen')}
             >
               <Text style={styles.quitText}>서비스 탈퇴하기</Text>
             </TouchableOpacity>
           </View>
-          
+
 
 
           {/* 키보드 상단 '완료' 버튼 (iOS 한정) */}
@@ -292,14 +292,14 @@ const ProfileScreen: React.FC<Props> = ({route}: Props) => {
                 {/* 좌측 화살표들 생략 가능 */}
                 <View style={{ flex: 1 }} />
                 <TouchableOpacity onPress={Keyboard.dismiss}>
-                <Text
-                  style={[
-                    styles.accessoryDoneText,
-                    colorScheme === 'dark' && { color: '#fff' },
-                  ]}
-                >
-                  완료
-                </Text>
+                  <Text
+                    style={[
+                      styles.accessoryDoneText,
+                      colorScheme === 'dark' && { color: '#fff' },
+                    ]}
+                  >
+                    완료
+                  </Text>
                 </TouchableOpacity>
               </View>
             </InputAccessoryView>
@@ -307,7 +307,7 @@ const ProfileScreen: React.FC<Props> = ({route}: Props) => {
         </View>
       )}
 
-      
+
 
       {/* 저장하기 버튼 */}
       {/* <TouchableOpacity
@@ -343,18 +343,18 @@ const renderAccountItem = (text: string, iconUrl: string) => {
   );
 };
 
-const getSocialIcon = (socialLogin?: string) => {
-  switch (socialLogin) {
-    case 'KAKAO':
-      return require('../../assets/drawable/Kakao.png');
-    case 'NAVER':
-      return require('../../assets/drawable/Naver.png');
-    case 'GOOGLE':
-      return require('../../assets/drawable/Google.png');;
-    default:
-      return require('../../assets/drawable/Kakao.png');
-  }
-};
+// const getSocialIcon = (socialLogin?: string) => {
+//   switch (socialLogin) {
+//     case 'KAKAO':
+//       return require('../../assets/drawable/Kakao.png');
+//     case 'NAVER':
+//       return require('../../assets/drawable/Naver.png');
+//     case 'GOOGLE':
+//       return require('../../assets/drawable/Google.png');;
+//     default:
+//       return require('../../assets/drawable/Kakao.png');
+//   }
+// };
 
 const getSocialLabel = (socialLogin?: string) => {
   switch (socialLogin) {
@@ -373,7 +373,7 @@ const getSocialLabel = (socialLogin?: string) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF'
+    backgroundColor: '#FFFFFF',
   },
   header: {
     flexDirection: 'row',
@@ -382,12 +382,12 @@ const styles = StyleSheet.create({
     height: heightPercentage(52),
     paddingHorizontal: widthPercentage(16),
     paddingTop: heightPercentage(14),
-    paddingBottom: heightPercentage(10)
+    paddingBottom: heightPercentage(10),
 
   },
   icon: {
     width: widthPercentage(24),
-    height: heightPercentage(24)
+    height: heightPercentage(24),
   },
   headerTitle: {
     fontSize: fontPercentage(20),
@@ -442,7 +442,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     paddingVertical: heightPercentage(8),
     paddingHorizontal: widthPercentage(20),
-    marginTop: heightPercentage(16)
+    marginTop: heightPercentage(16),
   },
   accountNameContainer: {
     flexDirection: 'row',
@@ -452,7 +452,7 @@ const styles = StyleSheet.create({
     paddingVertical: heightPercentage(14),
     marginHorizontal: widthPercentage(12),
     paddingHorizontal: widthPercentage(12),
-    borderRadius: 8, 
+    borderRadius: 8,
   },
   nickNameContainer: {
     flexDirection: 'row',
@@ -463,7 +463,7 @@ const styles = StyleSheet.create({
     marginHorizontal: widthPercentage(12),
     paddingLeft: widthPercentage(12),
     paddingRight: widthPercentage(8),
-    borderRadius: 8, 
+    borderRadius: 8,
   },
   nickNameText: {
     fontSize: fontPercentage(16),
@@ -479,7 +479,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     justifyContent: 'center',
     paddingVertical: heightPercentage(8),
-    paddingHorizontal: widthPercentage(8)
+    paddingHorizontal: widthPercentage(8),
   },
   editNickName: {
     fontSize: fontPercentage(12),
@@ -493,17 +493,17 @@ const styles = StyleSheet.create({
     borderBottomColor: '#ccc',
     paddingVertical: heightPercentage(0),
     paddingHorizontal: widthPercentage(0),
-    marginEnd: widthPercentage(10)
+    marginEnd: widthPercentage(10),
   },
   accountItem: {
     flexDirection: 'row',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   accountText: {
     fontSize: fontPercentage(13),
     color: '#000000',
     fontWeight: '400',
-    marginLeft: widthPercentage(8)
+    marginLeft: widthPercentage(8),
   },
   quitText: {
     marginTop: heightPercentage(18),
@@ -511,7 +511,7 @@ const styles = StyleSheet.create({
     color: '#616161',
     textAlign: 'right',
     fontWeight: '500',
-    marginHorizontal: widthPercentage(20)
+    marginHorizontal: widthPercentage(20),
   },
   saveButton: {
     position: 'absolute',
