@@ -9,14 +9,15 @@ import {
   Easing,
 } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { RootStackParamList } from '../Navigation/Navigation';
+import { RootStackParamList } from '../../Navigation/Navigation';
 import {
   widthPercentage,
   heightPercentage,
   fontPercentage,
-} from '../assets/styles/FigmaScreen';
+} from '../../assets/styles/FigmaScreen';
 // import LottieView from 'lottie-react-native';
 import { Martini, Wine, GlassWater, BottleWine } from 'lucide-react-native';
+import { LinearGradient } from 'react-native-linear-gradient';
 
 // 4가지 칵테일 잔 아이콘
 const icons = [
@@ -96,70 +97,68 @@ const RecommendationIntroScreen: React.FC<Props> = ({ navigation }) => {
 
   // Gradient 바탕색 적용하기
   return (
-    <View style={styles.container}>
-      {/* 뒤로가기 버튼 */}
-      <TouchableOpacity
-        onPress={() => navigation.goBack()}
-        style={styles.backButton}
-      >
-        <Image
-          source={require('../assets/drawable/left-chevron.png')}
-          style={styles.icon}
-        />
-      </TouchableOpacity>
 
-      <Animated.View style={{opacity}}>
-        <IconComponent size={350} color="#FF9E8B" strokeWidth={1} fill="#FF9E8B" />
-      </Animated.View>      
-
-      {/* 칵테일 이미지 */}
-      {/* {
-        Platform.OS === 'ios' ? (
-          <Image
-            source={require('../assets/drawable/Union.png')}
-            style={styles.cocktailImage}
-          />
-        ) : (
-
-          <Image
-            source={require('../assets/drawable/Union.png')}
-            style={styles.cocktailImage}
-          />
-
-          // <LottieView
-          //   source={require('../assets/drawable/cocktail_recommend.json')}
-          //   autoPlay
-          //   loop
-          //   style={styles.cocktailImage}
-          // />
-        )
-      } */}
-
-      {/* 설명 텍스트 (페이드인 애니메이션) */}
-      <Animated.View style={{ opacity: fadeAnim }}>
-        <Text style={styles.descriptionFirst}>
-          당신의 취향, 한 잔으로 알아볼까요?
-        </Text>
-        <Text style={styles.descriptionSecond}>
-          오늘은 달콤하게, 내일은 상큼하게.{'\n'}지금, 당신만의 칵테일을 찾아보세요.
-        </Text>
-      </Animated.View>
-
-
-      {/* 버튼 */}
-      <Animated.View style={[
-        { transform: [{ scale: buttonScale }] },
-        styles.confirmButtonContainer
-      ]}>
-
+    <LinearGradient
+      colors={['#FAF1E3', '#F6E0D8', '#EDEBE4', '#F0F2EE']}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+      style={{ flex: 1 }}
+    >
+      {/* 화면 내용 */}
+      <View style={styles.container}>
+        {/* 뒤로가기 버튼 */}
         <TouchableOpacity
-          style={styles.confirmButton}
-          onPress={handlePress}
+          onPress={() => {
+            navigation.reset({
+              index: 0,
+              routes: [
+                {
+                  name: 'BottomTabNavigator',
+                  params: {
+                    screen: '홈',
+                  },
+                },
+              ],
+            });
+          }}
+          style={styles.backButton}
         >
-          <Text style={styles.confirmButtonText}>시작하기</Text>
+          <Image
+            source={require('../../assets/drawable/left-chevron.png')}
+            style={styles.icon}
+          />
         </TouchableOpacity>
-      </Animated.View>
-    </View>
+
+        <Animated.View style={{opacity}}>
+          <IconComponent style = {{width: '100%', marginBottom: 50}} size={400} color="#FFFFFF" strokeWidth={1} fill="#FFFFFF" />
+        </Animated.View>      
+
+        {/* 설명 텍스트 (페이드인 애니메이션) */}
+        <Animated.View style={{ opacity: fadeAnim}}>
+          <Text style={styles.descriptionFirst}>
+            당신의 취향, 한 잔으로 알아볼까요?
+          </Text>
+          <Text style={styles.descriptionSecond}>
+            오늘은 달콤하게, 내일은 상큼하게.{'\n'}지금, 당신만의 칵테일을 찾아보세요.
+          </Text>
+        </Animated.View>
+
+
+        {/* 버튼 */}
+        <Animated.View style={[
+          { transform: [{ scale: buttonScale }] },
+          styles.confirmButtonContainer
+        ]}>
+
+          <TouchableOpacity
+            style={styles.confirmButton}
+            onPress={handlePress}
+          >
+            <Text style={styles.confirmButtonText}>시작하기</Text>
+          </TouchableOpacity>
+        </Animated.View>
+      </View>
+    </LinearGradient>
   );
 };
 
@@ -171,8 +170,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#FFFCF3',
+    alignItems: 'center'
   },
   backButton: {
     position: 'absolute',
@@ -190,15 +188,12 @@ const styles = StyleSheet.create({
 
   },
   descriptionFirst: {
-    width: widthPercentage(375),
     fontSize: fontPercentage(20),
-    marginTop: heightPercentage(20),
     color: '#1B1B1B',
     fontWeight: '600',
     textAlign: 'center',
   },
-  descriptionSecond: {
-    width: widthPercentage(375),
+  descriptionSecond: {    
     fontSize: fontPercentage(14),
     lineHeight: fontPercentage(20),
     fontWeight: 'medium',
@@ -229,7 +224,7 @@ const styles = StyleSheet.create({
   },
   confirmButtonContainer: {
     position: 'absolute',
-    bottom: 120,
+    bottom: 52,
     alignItems: 'center',
   }
 });

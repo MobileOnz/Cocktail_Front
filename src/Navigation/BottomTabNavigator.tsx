@@ -8,7 +8,7 @@ import { useNavigation } from '@react-navigation/native';
 
 import Home from '../BottomTab/Cocktail_List/CocktailListScreen';
 import CocktailBookScreen from '../BottomTab/CocktailBookScreen';
-import RecommendationsScreen from '../BottomTab/RecommendationIntroScreen';
+import RecommendationIntroScreen from '../Screens/Recommend/RecommendationIntroScreen';
 import MyPageScreen from '../BottomTab/MyPageScreen';
 import LoginBottomSheet from '../BottomSheet/LoginBottomSheetProps';
 import theme from '../assets/styles/theme';
@@ -132,11 +132,17 @@ const BottomTabNavigator = () => {
         <Tab.Screen name="칵테일 백과" component={CocktailBookScreen} options={{ headerShown: false }} />
         <Tab.Screen
           name="맞춤 추천"
-          component={RecommendationsScreen}
+          component={RecommendationIntroScreen}
           options={{
             headerShown: false,
             // tabBarButton: CustomTabBarButton,
           }}
+          listeners={({ navigation }) => ({
+            tabPress: e => {
+              e.preventDefault(); // ❗ 탭 전환 막기
+              navigation.getParent()?.navigate('RecommendIntroScreen');
+            },
+          })}
         />
 
         <Tab.Screen
