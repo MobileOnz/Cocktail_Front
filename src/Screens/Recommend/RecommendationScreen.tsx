@@ -7,10 +7,13 @@ import {
   StyleSheet,
   Image,
   ScrollView,
+  ActivityIndicator,
 } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../../Navigation/Navigation';
-import { widthPercentage, heightPercentage, fontPercentage } from '../../assets/styles/FigmaScreen';
+import { widthPercentage, heightPercentage, fontPercentage } from '../../assets/styles/FigmaScreen'; 
+import RecommendationViewModel from './RecommendationViewModel.tsx'
+import { da } from 'zod/v4/locales';
 // import instance from '../../tokenRequest/axios_interceptor';
 
 type RecommendationSreenNavigationProp = StackNavigationProp<
@@ -25,19 +28,22 @@ interface Props {
 
 
 const RecommendationScreen: React.FC<Props> = ({ navigation }) => {
-  const [currentStep, setCurrentStep] = useState(0);
-  const [selectedAnswers, setSelectedAnswers] = useState([null, null, null, null]);
+  const { currentStep, setCurrentStep, selectedAnswers, setSelectedAnswers, loading, recommend, result, setResult }= RecommendationViewModel()
 
   // [버튼] 다음 단계 이동
-  const handleConfirmBtn = () => {
-    if (currentStep < 5) {
+  const handleConfirmBtn = async() => {
+    if (currentStep < 4) {
       setCurrentStep(currentStep + 1)
+      
     }
-  }
+    console.log(currentStep)
+    if (currentStep == 4) {
+      navigation.navigate('LoadingVideoScreen', { answers: selectedAnswers})
+    }
+  } 
 
   // [버튼] 이전 단계 이동
   const handleBackBtn = () => {
-    console.log(currentStep)
     if (currentStep == 0) {
       navigation.goBack()
     }
@@ -52,6 +58,16 @@ const RecommendationScreen: React.FC<Props> = ({ navigation }) => {
       updated[currentStep] = answerId;   // 해당 단계 위치에 저장
       return updated;
     });
+  }
+
+    //  로딩 상태
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator />
+        <Text style={styles.loadingText}>불러오는 중...</Text>
+      </View>
+    );
   }
 
   return (
@@ -69,7 +85,19 @@ const RecommendationScreen: React.FC<Props> = ({ navigation }) => {
             style={styles.icon}
           />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate('BottomTabNavigator', {screen : '맞춤 추천'})}>
+        <TouchableOpacity onPress={() => 
+          navigation.reset({
+            index: 0,
+            routes: [
+                {
+                name: 'BottomTabNavigator',
+                params: {
+                    screen: '홈',
+                },
+                },
+            ],
+          })
+        }>
             <Image source={require('../../assets/drawable/close.png')}
             style={styles.icon} />
         </TouchableOpacity>
@@ -84,53 +112,24 @@ const RecommendationScreen: React.FC<Props> = ({ navigation }) => {
         {currentStep === 2 && (<Question3 currentStep={currentStep} selectedAnswers={selectedAnswers} onSelectQuestion={(answerId)=> handleAnswerSelect(answerId)}  />) }
         {currentStep === 3 && (<Question4 currentStep={currentStep} selectedAnswers={selectedAnswers} onSelectQuestion={(answerId)=> handleAnswerSelect(answerId)}  />) }
         {currentStep === 4 && (<Question5 currentStep={currentStep} selectedAnswers={selectedAnswers} onSelectQuestion={(answerId)=> handleAnswerSelect(answerId)}  />) }
-        {currentStep === 5 && (<ResultScreen/>) }      
       </View>
 
     
 
       {/* 바텀 뷰 */}
       <View style={styles.bottomContainer}>
-        {currentStep === 5 ? (
-          <View style={styles.lastButtonsWrapper}>
-            <TouchableOpacity 
-              style={[
-                styles.bottomBtnLeft,
-              ]} 
-              onPress={handleConfirmBtn}
-            >
-            <Text style={[
-              styles.bottomBtnLeftText,
-            ]}>한 잔 더 추천받기</Text>
-
-            </TouchableOpacity>  
-            
-            <TouchableOpacity 
-              style={[
-                styles.bottomBtnRight,
-              ]} 
-              onPress={handleConfirmBtn}
-            >
-              <Text style={[
-                styles.bottomBtnRightText,
-              ]}>이 칵테일 보기</Text>
-
-            </TouchableOpacity>  
-          </View>
-        ) : (
-          <TouchableOpacity 
-            style={[
-              styles.confirmButton,
-              selectedAnswers[currentStep] ? styles.activeButton : styles.disabledButton
-            ]}
-            onPress={handleConfirmBtn}
-            disabled={selectedAnswers[currentStep] ? false : true}
-          >
+        <TouchableOpacity 
+          style={[
+            styles.confirmButton,
+            selectedAnswers[currentStep] ? styles.activeButton : styles.disabledButton
+          ]}
+          onPress={handleConfirmBtn}
+          disabled={selectedAnswers[currentStep] ? false : true}
+        >
             <Text style={[
               styles.confirmButtonText,
             ]}>다음으로</Text>
         </TouchableOpacity>  
-        )}
       </View>
     </View>
   );
@@ -438,118 +437,8 @@ const Question5 = ({ currentStep, selectedAnswers, onSelectQuestion}) => {
   );
 }
 
-// 결과 화면
-const ResultScreen = () => {
-  const [isFlipped, setIsFlipped] = useState(false)
-  const flipAnim = useRef(new Animated.Value(0)).current
-
-  const flipCard = () => {
-    if (isFlipped) {
-      Animated.timing(flipAnim, {
-        toValue: 0,
-        duration: 300,
-        useNativeDriver: true
-      }).start(() => setIsFlipped(false))
-    } else {
-      Animated.timing(flipAnim, {
-        toValue: 1,
-        duration: 300,
-        useNativeDriver: true
-      }).start(() => setIsFlipped(true))
-    }
-  }
-
-  const frontRotate = flipAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['0deg', '180deg']
-  })
-
-  const backRotate = flipAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['180deg', '360deg']
-  })
-
-  return (
-    <View style={{flex:1}}>
-      <Text style={styles.titleIntroduceText}>(닉네임)님, 오늘은 이 한 잔이 좋겠네요.</Text>
-      <Text style={styles.description}>기분에 따라, 편하게 즐겨보세요</Text>
-
-      <View style={{flex:1}}>
-        {/* 뒤집기 아이콘 */}
-        <TouchableOpacity onPress={flipCard} style={styles.flipButton}>
-          <Image
-            source={require('../../assets/drawable/Flip.png')} 
-            style={{width: widthPercentage(34), height: heightPercentage(34)}}
-          />
-        </TouchableOpacity>
-
-        <Animated.View
-          style={[
-            styles.card,
-            {
-              transform: [{rotateY: frontRotate}]
-            }
-          ]}
-        >
-          <Image
-            source={require('../../assets/drawable/cocktailBellini.png')} 
-            style={{width:'100%', height: '85%', resizeMode:'cover', borderRadius: 8}}
-          />
-          <Text style={styles.resultText}>
-            Trinidad Sour
-          </Text>
-          <Text style={styles.resultTitleText}>
-            트리니디드 사워
-          </Text>
-        </Animated.View>
-        
-        <Animated.View
-          style={[
-            styles.card,
-            styles.cardBack,
-            {
-              transform: [
-                {rotateY: backRotate},
-              ]
-            }
-          ]}
-        >
-          <Image
-            source={require('../../assets/drawable/cocktailBellini.png')} 
-            style={{width:'100%', height: '85%', resizeMode:'cover', borderRadius: 8, transform: [{scaleX: -1}] }}
-            blurRadius={6}
-          />
-
-          <View style={[styles.resultInfoContainer, {width: '80%'}]}>
-            <View style={styles.resultInfoBox}>
-              <Text style={styles.resultInfoTitleText}>도수</Text>
-              <Text style={styles.resultInfoSubText}>ABV 18-20% 보통</Text>
-            </View>
-
-            <View style={styles.resultInfoBox}>
-              <Text style={styles.resultInfoTitleText}>맛</Text>
-              <Text style={styles.resultInfoSubText}>쌉쌀한 </Text>
-            </View>
-
-            <View style={styles.resultInfoBox}>
-              <Text style={styles.resultInfoTitleText}>계절</Text>
-              <Text style={styles.resultInfoSubText}>사계절</Text>
-            </View>
-
-            <View style={styles.resultInfoBox}>
-              <Text style={styles.resultInfoTitleText}>분위기</Text>
-              <Text style={styles.resultInfoSubText}>독특한</Text>
-            </View>
-          </View>
-        </Animated.View>
-      </View>
-    </View>
-  );
-};
-
 
 const QuestionBox = ({id, currentId, icon, title, subTitle, step, onPress }) => {
-  console.log(id, subTitle)
 
   let boxStyle = styles.commonInnerBox
 
@@ -620,16 +509,6 @@ const styles = StyleSheet.create({
   icon: {
     width: widthPercentage(24),
     height: widthPercentage(24),
-    resizeMode: 'contain',
-  },
-  
-  flipButton: {
-    position: 'absolute',
-    top: 18,
-    right: 28,
-    zIndex: 10,
-    width: widthPercentage(24),
-    height: heightPercentage(24),
     resizeMode: 'contain',
   },
   
@@ -710,7 +589,7 @@ const styles = StyleSheet.create({
     borderColor: '#E0E0E0',
     alignItems: 'center',
     borderRadius: 8,
-    paddingVertical: heightPercentage(12),
+    paddingVertical: heightPercentage(16),
     paddingHorizontal: widthPercentage(16),
     marginTop: heightPercentage(8)
   },
@@ -718,10 +597,10 @@ const styles = StyleSheet.create({
   disabledInnerBox: {
     flexDirection: 'row',
     borderWidth: 1,
-    borderColor: '#E0E0E0',
+    borderColor: '#F5F5F5',
     alignItems: 'center',
     borderRadius: 8,
-    paddingVertical: heightPercentage(12),
+    paddingVertical: heightPercentage(16),
     paddingHorizontal: widthPercentage(16),
     marginTop: heightPercentage(8),
     backgroundColor: '#F5F5F5',
@@ -734,7 +613,7 @@ const styles = StyleSheet.create({
     borderColor: '#1B1B1B',
     alignItems: 'center',
     borderRadius: 8,
-    paddingVertical: heightPercentage(12),
+    paddingVertical: heightPercentage(16),
     paddingHorizontal: widthPercentage(16),
     marginTop: heightPercentage(8)
   },
@@ -742,103 +621,6 @@ const styles = StyleSheet.create({
   questionContainer: {
     marginTop: heightPercentage(20),
     paddingBottom: heightPercentage(80)
-  },
-
-  resultText: {
-    position: 'absolute',
-    marginTop: heightPercentage(345),
-    marginLeft: widthPercentage(20),
-    fontSize: fontPercentage(20),
-    color: '#FFFFFF',
-    fontWeight: '700',
-    fontStyle: 'italic'
-  },
-
-  resultTitleText: {
-    position: 'absolute',
-    marginTop: heightPercentage(378),
-    marginLeft: widthPercentage(20),
-    fontSize: fontPercentage(20),
-    color: '#FFFFFF',
-    fontWeight: '700',
-  },
-
-  lastButtonsWrapper: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    columnGap: 10
-  },
-
-  bottomBtnLeft: {
-    flex: 1,
-    backgroundColor: '#FFFFFF',
-    borderColor: '#E0E0E0',
-    borderWidth: 1,
-    paddingVertical: heightPercentage(14),
-    paddingHorizontal: widthPercentage(16),
-    marginLeft: widthPercentage(16),
-    borderRadius: 8,
-    alignItems: 'center'
-  },
-
-  bottomBtnRight: {
-    flex: 1,
-    backgroundColor: '#313131',
-    paddingVertical: heightPercentage(14),
-    paddingHorizontal: widthPercentage(16),
-    marginRight: widthPercentage(16),
-    borderRadius: 8,
-    alignItems: 'center'
-  },
-
-  bottomBtnLeftText: {
-    fontWeight: '600',
-    fontSize: fontPercentage(14),
-    color: '#1B1B1B',
-  },
-  bottomBtnRightText: {
-    fontWeight: '600',
-    fontSize: fontPercentage(14),
-    color: '#FFFFFF',
-  },
-
-  card: {
-    backfaceVisibility: 'hidden',
-    width: '100%',
-    height: '100%',
-    position: 'absolute',
-  },
-
-  cardBack: {
-    backfaceVisibility: 'hidden',
-    width: '100%',
-    height: '100%',
-    position: 'relative',
-  },
-
-  resultInfoContainer: {
-    position: 'absolute',
-    left: 20,
-    bottom: 100
-  },
-
-  resultInfoBox: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: heightPercentage(5)
-  },
-
-  resultInfoTitleText: {
-    fontSize: fontPercentage(14),
-    color: '#BDBDBD',
-    width: widthPercentage(60)
-  },
-  
-  resultInfoSubText: {
-    fontSize: fontPercentage(16),
-    fontWeight: '500',
-    color: '#FFFFFF',
-    marginLeft: widthPercentage(8)
   },
 
   progressContainer: {
@@ -853,6 +635,14 @@ const styles = StyleSheet.create({
     height: '100%',
     backgroundColor: '#21103C',
     borderRadius: 20,
+  },
+
+  loadingText: {
+    fontSize: fontPercentage(18),
+    fontWeight: 'bold',
+    color: '#2D2D2D',
+    marginBottom: heightPercentage(20),
+    textAlign: 'center',
   },
 
 });
