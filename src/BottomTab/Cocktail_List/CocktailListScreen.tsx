@@ -8,8 +8,9 @@ import {
   SafeAreaView,
   Dimensions,
   TouchableOpacity,
+  StatusBar,
 } from 'react-native';
-import { Appbar, Button, Divider, IconButton, Text } from 'react-native-paper';
+import { Appbar, Divider, IconButton, Text } from 'react-native-paper';
 import theme from '../../assets/styles/theme';
 import { fontPercentage, heightPercentage, widthPercentage } from '../../assets/styles/FigmaScreen';
 import PuzzlePiece from '../../configs/CurvedImage';
@@ -19,36 +20,30 @@ import PagerView from 'react-native-pager-view';
 import CocktailCard from '../../Components/CocktailCard';
 import { useNavigation } from '@react-navigation/native';
 import { useHomeViewModel } from './CocktailListViewModel';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 const Home = () => {
 
   const [pageIndex, setPageIndex] = useState(0);
   const navigation = useNavigation<any>();
 
-  const {
-    randomCocktail,
-    bestCocktail,
-    newCocktail,
-    refreshList,
-    beginnerList,
-    intermediateList,
-
-  } = useHomeViewModel();
+  const vm = useHomeViewModel();
 
   const pages = useMemo(() => {
     const result = [];
-    for (let i = 0; i < newCocktail.length; i += 3) {
-      result.push(newCocktail.slice(i, i + 3));
+    for (let i = 0; i < vm.newCocktail.length; i += 3) {
+      result.push(vm.newCocktail.slice(i, i + 3));
     }
     return result;
-  }, [newCocktail]);
-
+  }, [vm.newCocktail]);
   return (
     <SafeAreaView style={styles.container}>
       {/* 상단 헤더 */}
-      <Appbar.Header style={styles.header}>
+      <StatusBar barStyle={vm.isScrolled ? 'dark-content' : 'light-content'} backgroundColor={vm.isScrolled ? '#ffffff' : '#000000'} />
+      <Appbar.Header style={[styles.header, { backgroundColor: vm.isScrolled ? '#fff' : '#000' }]}>
         {/* 왼쪽 로고 */}
         <Image
-          source={require('../../assets/drawable/banner.jpg')}
+          source={
+            vm.isScrolled ? require('../../assets/drawable/banner_black.png') : require('../../assets/drawable/banner_white.png')}
           style={styles.bannerImage}
           resizeMode="contain"
         />
@@ -56,41 +51,23 @@ const Home = () => {
         <Appbar.Content title="" />
 
         {/* 오른쪽 아이콘 */}
-        <Appbar.Action icon="magnify" onPress={() => { navigation.navigate('SearchScreen' as never); }} />
-        <Appbar.Action icon="bookmark-outline" onPress={() => { navigation.navigate('CocktailBoxScreen' as never); }} />
+        <Appbar.Action icon="magnify" color={vm.isScrolled ? '#000' : '#fff'} onPress={() => { navigation.navigate('SearchScreen' as never); }} />
+        <Appbar.Action icon="bookmark-outline" color={vm.isScrolled ? '#000' : '#fff'} onPress={() => { navigation.navigate('CocktailBoxScreen' as never); }} />
       </Appbar.Header>
 
-      {/* 필터 영역 */}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.filterView}
-      >
-        {['최신순', '도수', '스타일', '맛', '베이스'].map((label, idx) => (
-          <Button
-            key={idx}
-            mode="outlined"
-            icon={label === '최신순' ? undefined : 'chevron-down'}
-            compact
-            contentStyle={styles.filterButtonContent}
-            style={[styles.chip, styles.chipUnselected]}
-            labelStyle={styles.chipLabel}
-          >
-            {label}
-          </Button>
-        ))}
-      </ScrollView>
 
       {/* 컨텐츠 뷰 */}
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.allScrollView}
+        onScroll={vm.handleScroll}
+        scrollEventThrottle={16}
       >
         {/* 메인 사진 */}
         <View style={styles.randomWrapper}>
-          <Image source={{ uri: randomCocktail?.image }} style={styles.mainImage} />
-          <Text style={styles.bannerKoText}>{randomCocktail?.korName}</Text>
-          <Text style={styles.bannerEnText}>{randomCocktail?.engName}</Text>
+          <Image source={{ uri: vm.randomCocktail?.image }} style={styles.mainImage} />
+          <Text style={styles.bannerKoText}>{vm.randomCocktail?.korName}</Text>
+          <Text style={styles.bannerEnText}>{vm.randomCocktail?.engName}</Text>
         </View>
 
         {/* Best 입문자용 칵테일 */}
@@ -99,7 +76,7 @@ const Home = () => {
             Best 입문자용 칵테일
           </Text>
           <FlatList
-            data={bestCocktail}
+            data={vm.bestCocktail}
             keyExtractor={item => String(item.id)}
             horizontal
             showsHorizontalScrollIndicator={false}
@@ -144,9 +121,17 @@ const Home = () => {
 
         {/* 새로 업데이트 된 칵테일 리스트 */}
         <View>
-          <Text variant="bodyLarge" style={styles.mainText}>
-            새로 업데이트 된 칵테일
-          </Text>
+          <View style={{ justifyContent: 'space-between', flexDirection: 'row', paddingHorizontal: 20 }}>
+            <Text variant="bodyLarge" style={styles.mainText}>
+              새로 업데이트 된 칵테일
+            </Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Text variant="bodyLarge" style={{ color: '#616161', fontSize: fontPercentage(14), fontWeight: '500' }}>
+                더보기
+              </Text>
+              <MaterialIcons name="chevron-right" size={20} style={{ paddingLeft: 4 }} />
+            </View>
+          </View>
           <PagerView
             style={styles.pagerView}
             initialPage={0}
@@ -195,7 +180,7 @@ const Home = () => {
           기분 전환이 필요할 땐 상큼한 한 잔 🍋
         </Text>
         <FlatList
-          data={refreshList}
+          data={vm.refreshList}
           horizontal
           keyExtractor={item => String(item.id)}
           showsHorizontalScrollIndicator={false}
@@ -220,7 +205,7 @@ const Home = () => {
           부담 없이 편하게 시도할 수 있는 맛 🧃
         </Text>
         <FlatList
-          data={beginnerList}
+          data={vm.beginnerList}
           horizontal
           keyExtractor={item => String(item.id)}
           showsHorizontalScrollIndicator={false}
@@ -245,7 +230,7 @@ const Home = () => {
           중급자로 거듭나보고 싶다면? 🥃
         </Text>
         <FlatList
-          data={intermediateList}
+          data={vm.intermediateList}
           horizontal
           keyExtractor={item => String(item.id)}
           showsHorizontalScrollIndicator={false}
@@ -266,7 +251,7 @@ const Home = () => {
           )}
         />
       </ScrollView>
-      <View style={{ marginVertical: '10%' }} />
+
     </SafeAreaView>
   );
 };
@@ -275,18 +260,15 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: theme.background,
-    gap: 8,
+
   },
-  header: {
-    backgroundColor: theme.background,
-    paddingHorizontal: 8,
-  },
+  header: {},
   randomWrapper: {
     position: 'relative',
     alignItems: 'center',
   },
   bannerImage: {
-    width: widthPercentage(120),
+    width: '20%',
     height: heightPercentage(40),
   },
   bannerKoText: {
@@ -312,9 +294,7 @@ const styles = StyleSheet.create({
   mainText: {
     fontWeight: '700',
     paddingVertical: 10,
-    alignContent: 'flex-start',
     paddingLeft: 10,
-    borderRadius: 16,
   },
   filterView: {
     flexDirection: 'row',
@@ -331,8 +311,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   allScrollView: {
-    marginTop: heightPercentage(10),
-    paddingVertical: heightPercentage(10),
+    paddingBottom: heightPercentage(10),
   },
   chip: {
     borderRadius: 100,
@@ -355,9 +334,10 @@ const styles = StyleSheet.create({
     color: '#222',
   },
   mainImage: {
-    width: widthPercentage(357),
+    width: '100%',
     height: heightPercentage(457),
-    borderRadius: 16,
+    borderBottomLeftRadius: 32,
+    borderBottomRightRadius: 32,
   },
   bestSectionWrapper: {
     alignItems: 'flex-start',

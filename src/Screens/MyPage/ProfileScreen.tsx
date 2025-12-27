@@ -1,4 +1,4 @@
-import React, { useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -10,32 +10,47 @@ import {
   Platform,
   InputAccessoryView,
   useColorScheme,
+  ActivityIndicator,
 } from 'react-native';
 import { widthPercentage, heightPercentage, fontPercentage } from '../../assets/styles/FigmaScreen';
-import { useNavigation } from '@react-navigation/native';
-import { launchImageLibrary } from 'react-native-image-picker';
-import ImageResizer from 'react-native-image-resizer';
-import instance from '../../tokenRequest/axios_interceptor';
-// import { API_BASE_URL } from '@env';
+import { RouteProp, useNavigation } from '@react-navigation/native';
+import { RootStackParamList } from '../../Navigation/Navigation';
+import MyPageViewModel from './MyPageViewModel';
+
+type ProfileScreenRouteProp = RouteProp<RootStackParamList, 'ProfileScreen'>;
+
+interface Props {
+  route: ProfileScreenRouteProp;
+}
 
 
-const ProfileScreen: React.FC = () => {
+const ProfileScreen: React.FC<Props> = ({ route }: Props) => {
+  const { user } = route.params;
+  console.log(user);
+
   const navigation = useNavigation();
-  const [nickname, setNickname] = useState('닉네임');
+  const { loading, nickname, setNickname, profileUri, setProfileUri, handleProfileImageChange, updateUserProfile } = MyPageViewModel();
   // const [newNickname, setNewNickname] = useState('');
-  const [profileUri, setProfileUri] = useState<string | null>(null);
-  const [initialProfileUri, setInitialProfileUri] = useState<string | null>(null);
-
+  // const [initialProfileUri, setInitialProfileUri] = useState<string | null>(user.profileUrl || null);
   const inputAccessoryViewID = 'nicknameInputAccessory';
-
-  // const isNicknameChanged = newNickname.trim() !== '' && newNickname !== nickname;
   // const isProfileChanged = profileUri !== initialProfileUri;
   // const isChanged = isNicknameChanged || isProfileChanged;
-
-  const [nickNmState, setNickNmState ] = useState(false)
-
-
+  const [nickNmState, setNickNmState] = useState(false);
   const colorScheme = useColorScheme();
+
+  useEffect(() => {
+    if (user?.nickname) {
+      setNickname(user.nickname);
+      setProfileUri(user.profileUrl || null);
+    }
+  }, [user]);
+
+  const onHandleProfileUpdate = async () => {
+    setNickNmState(!nickNmState);
+    updateUserProfile();
+
+  };
+
 
   // useEffect(() => {
   //   const fetchProfileData = async () => {
@@ -146,161 +161,152 @@ const ProfileScreen: React.FC = () => {
   //   }
   // };
 
-  const handleProfileImageChange = async () => {
-    launchImageLibrary(
-      { mediaType: 'photo', selectionLimit: 1 },
-      async (response) => {
-        if (!response.didCancel && response.assets && response.assets.length > 0) {
-          try {
-            const asset = response.assets[0];
-            console.log('📸 선택된 원본 이미지:', asset);
+  // const handleProfileImageChange = async () => {
+  //   launchImageLibrary(
+  //     { mediaType: 'photo', selectionLimit: 1 },
+  //     async (response) => {
+  //       if (!response.didCancel && response.assets && response.assets.length > 0) {
+  //         try {
+  //           const asset = response.assets[0];
+  //           console.log('📸 선택된 원본 이미지:', asset);
 
-            const resizedImage = await ImageResizer.createResizedImage(
-              asset.uri!,
-              400, // 너비 (원본 비율 유지됨)
-              400, // 높이
-              'PNG', // 포맷 강제 지정
-              80 // 품질 (0~100)
-            );
+  //           const resizedImage = await ImageResizer.createResizedImage(
+  //             asset.uri!,
+  //             400, // 너비 (원본 비율 유지됨)
+  //             400, // 높이
+  //             'PNG', // 포맷 강제 지정
+  //             80 // 품질 (0~100)
+  //           );
 
-            const uri = resizedImage.uri;
+  //           const uri = resizedImage.uri;
 
 
-            if (!initialProfileUri) {setInitialProfileUri(uri);}
-            setProfileUri(uri);
+  //           if (!initialProfileUri) {setInitialProfileUri(uri);}
+  //           setProfileUri(uri);
 
-            // ✅ 여기서 즉시 업로드 (instance 사용)
-            const formData = new FormData();
-            formData.append('file', {
-              uri: uri.startsWith('file://') ? uri : `file://${uri}`,
-              name: `profile_${Date.now()}.png`,
-              type: 'image/png',
-            } as any);
 
-            const uploadRes = await instance.post('/api/upload/profile', formData, {
-              headers: {
-                'Content-Type': 'multipart/form-data', // FormData일 땐 직접 설정
-              },
-              timeout: 10000,
-              authRequired: true,
-            }as any);
 
-            const uploadJson = uploadRes.data;
-            if (uploadJson?.code === 1) {
-              console.log('✅ 즉시 프로필 이미지 업로드 성공');
-            } else {
-              console.warn('❌ 즉시 업로드 실패:', uploadJson?.msg);
-            }
-          } catch (error) {
-            console.error('❌ 이미지 리사이즈 실패 또는 업로드 오류:', error);
-          }
-        }
-      }
-    );
-  };
+  //           const uploadJson = uploadRes.data;
+  //           if (uploadJson?.code === 1) {
+  //             console.log('✅ 즉시 프로필 이미지 업로드 성공');
+  //           } else {
+  //             console.warn('❌ 즉시 업로드 실패:', uploadJson?.msg);
+  //           }
+  //         } catch (error) {
+  //           console.error('❌ 이미지 리사이즈 실패 또는 업로드 오류:', error);
+  //         }
+  //       }
+  //     }
+  //   );
+  // };
 
 
   return (
     <View style={styles.container}>
-      {/* 상단 헤더 */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Image source={require('../../assets/drawable/left-chevron.png')} style={styles.backIcon} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>프로필 설정</Text>
-        <View style={styles.backIcon} />
-      </View>
-
-      {/* 프로필 이미지 */}
-      <View style={styles.profileSection}>
-        <TouchableOpacity style={styles.profileWrapper} onPress={handleProfileImageChange}>
-          <Image
-            source={
-              profileUri
-                ? { uri: profileUri }
-                : require('../../assets/drawable/default_profile.png')
-            }
-            style={styles.profileImage}
-          />
-          <Image source={require('../../assets/drawable/edit_icon.png')} style={styles.editIcon} />
-        </TouchableOpacity>
-      </View>
-
-      {/* 닉네임 입력 */}
-      <View style={styles.nicknameSection}>
-        <Text style={styles.nicknameLabel}>닉네임</Text>
-
-        <View style={styles.nickNameContainer}>
-            
-            {nickNmState === true ? (
-              <TextInput style={styles.nicknameInput}
-                value={nickname}
-                onChangeText={setNickname}
-                />
-            ) : (
-              <Text style={styles.nickNameText}>{nickname}</Text>
-              )
-            }
-            
-            <TouchableOpacity
-              style={styles.editNickBtn}
-              onPress={() => {
-                setNickNmState(!nickNmState)
-              }}
-            >
-              <Text style={styles.editNickName}>수정하기</Text>
+      {loading ? (
+        <ActivityIndicator size="large" color="#000000ff" style={{ flex: 1 }} />
+      ) : (
+        <View>
+          {/* 상단 헤더 */}
+          <View style={styles.header}>
+            <TouchableOpacity onPress={() => navigation.goBack()}>
+              <Image source={require('../../assets/drawable/left-chevron.png')} style={styles.backIcon} />
             </TouchableOpacity>
+            <Text style={styles.headerTitle}>프로필 설정</Text>
+            <View style={styles.backIcon} />
+          </View>
 
-        </View>
-        {/* <TextInput
-          style={styles.nicknameInput}
-          value={newNickname}
-          onChangeText={setNewNickname}
-          placeholder={nickname}
-          returnKeyType="default"
-          inputAccessoryViewID={inputAccessoryViewID}
-          keyboardAppearance={colorScheme === 'dark' ? 'dark' : 'light'}
-        /> */}
-
-        <Text style={styles.accountLabel}>연결된 계정</Text>
-
-        <View style={styles.nickNameContainer}>
-            <Text style={styles.nickNameText}>yunsuk990@naver.com</Text>
-             {renderAccountItem('카카오', require('../../assets/drawable/kakao.png'))}
-        </View>
-        
-        <TouchableOpacity
-          onPress={() => navigation.navigate('QuitScreen')}
-        >
-          <Text style={styles.quitText}>서비스 탈퇴하기</Text>
-        </TouchableOpacity>
-      </View>
-      
-
-
-      {/* 키보드 상단 '완료' 버튼 (iOS 한정) */}
-      {Platform.OS === 'ios' && (
-        <InputAccessoryView nativeID={inputAccessoryViewID}>
-          <View style={
-            [
-              styles.accessory,
-              colorScheme === 'dark' ? styles.accessoryDark : styles.accessoryLight,
-            ]}>
-            {/* 좌측 화살표들 생략 가능 */}
-            <View style={{ flex: 1 }} />
-            <TouchableOpacity onPress={Keyboard.dismiss}>
-            <Text
-              style={[
-                styles.accessoryDoneText,
-                colorScheme === 'dark' && { color: '#fff' },
-              ]}
-            >
-              완료
-            </Text>
+          {/* 프로필 이미지 */}
+          <View style={styles.profileSection}>
+            <TouchableOpacity style={styles.profileWrapper} onPress={handleProfileImageChange}>
+              <Image
+                source={
+                  profileUri
+                    ? { uri: profileUri }
+                    : require('../../assets/drawable/default_profile.png')
+                }
+                style={styles.profileImage}
+              />
+              <Image source={require('../../assets/drawable/edit_icon.png')} style={styles.editIcon} />
             </TouchableOpacity>
           </View>
-        </InputAccessoryView>
+
+          {/* 닉네임 입력 */}
+          <View style={styles.nicknameSection}>
+            <Text style={styles.nicknameLabel}>닉네임</Text>
+
+            <View style={styles.nickNameContainer}>
+
+              {nickNmState === true ? (
+                <TextInput style={styles.nicknameInput}
+                  value={nickname}
+                  onChangeText={setNickname}
+                />
+              ) : (
+                <Text style={styles.nickNameText}>{nickname || ''}</Text>
+              )
+              }
+
+              <TouchableOpacity
+                style={styles.editNickBtn}
+                onPress={onHandleProfileUpdate}
+              >
+                <Text style={styles.editNickName}>수정하기</Text>
+              </TouchableOpacity>
+
+            </View>
+            {/* <TextInput
+              style={styles.nicknameInput}
+              value={newNickname}
+              onChangeText={setNewNickname}
+              placeholder={nickname}
+              returnKeyType="default"
+              inputAccessoryViewID={inputAccessoryViewID}
+              keyboardAppearance={colorScheme === 'dark' ? 'dark' : 'light'}
+            /> */}
+
+            <Text style={styles.accountLabel}>연결된 계정</Text>
+
+            <View style={styles.accountNameContainer}>
+              <Text style={styles.nickNameText}>{user?.email || ''}</Text>
+              {renderAccountItem(getSocialLabel(user?.socialLogin) || '', getSocialIcon(user?.socialLogin))}
+            </View>
+
+            <TouchableOpacity
+              onPress={() => navigation.navigate('QuitScreen')}
+            >
+              <Text style={styles.quitText}>서비스 탈퇴하기</Text>
+            </TouchableOpacity>
+          </View>
+
+
+
+          {/* 키보드 상단 '완료' 버튼 (iOS 한정) */}
+          {Platform.OS === 'ios' && (
+            <InputAccessoryView nativeID={inputAccessoryViewID}>
+              <View style={
+                [
+                  styles.accessory,
+                  colorScheme === 'dark' ? styles.accessoryDark : styles.accessoryLight,
+                ]}>
+                {/* 좌측 화살표들 생략 가능 */}
+                <View style={{ flex: 1 }} />
+                <TouchableOpacity onPress={Keyboard.dismiss}>
+                  <Text
+                    style={[
+                      styles.accessoryDoneText,
+                      colorScheme === 'dark' && { color: '#fff' },
+                    ]}
+                  >
+                    완료
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </InputAccessoryView>
+          )}
+        </View>
       )}
+
 
 
       {/* 저장하기 버튼 */}
@@ -337,11 +343,37 @@ const renderAccountItem = (text: string, iconUrl: string) => {
   );
 };
 
+const getSocialIcon = (socialLogin?: string) => {
+  switch (socialLogin) {
+    case 'KAKAO':
+      return require('../../assets/drawable/kakao_button.png');
+    case 'NAVER':
+      return require('../../assets/drawable/naver_button.png');
+    case 'GOOGLE':
+      return require('../../assets/drawable/google_button.png');
+    default:
+      return require('../../assets/drawable/kakao_button.png');
+  }
+};
+
+const getSocialLabel = (socialLogin?: string) => {
+  switch (socialLogin) {
+    case 'KAKAO':
+      return '카카오';
+    case 'NAVER':
+      return '네이버';
+    case 'GOOGLE':
+      return '구글';
+    default:
+      return '';
+  }
+};
+
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF'
+    backgroundColor: '#FFFFFF',
   },
   header: {
     flexDirection: 'row',
@@ -350,12 +382,12 @@ const styles = StyleSheet.create({
     height: heightPercentage(52),
     paddingHorizontal: widthPercentage(16),
     paddingTop: heightPercentage(14),
-    paddingBottom: heightPercentage(10)
+    paddingBottom: heightPercentage(10),
 
   },
   icon: {
     width: widthPercentage(24),
-    height: heightPercentage(24)
+    height: heightPercentage(24),
   },
   headerTitle: {
     fontSize: fontPercentage(20),
@@ -410,7 +442,17 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     paddingVertical: heightPercentage(8),
     paddingHorizontal: widthPercentage(20),
-    marginTop: heightPercentage(16)
+    marginTop: heightPercentage(16),
+  },
+  accountNameContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: heightPercentage(52),
+    backgroundColor: '#F5F5F5',
+    paddingVertical: heightPercentage(14),
+    marginHorizontal: widthPercentage(12),
+    paddingHorizontal: widthPercentage(12),
+    borderRadius: 8,
   },
   nickNameContainer: {
     flexDirection: 'row',
@@ -418,9 +460,10 @@ const styles = StyleSheet.create({
     height: heightPercentage(52),
     backgroundColor: '#F5F5F5',
     paddingVertical: heightPercentage(14),
-    marginHorizontal: widthPercentage(16),
-    paddingHorizontal: widthPercentage(16),
-    borderRadius: 8, 
+    marginHorizontal: widthPercentage(12),
+    paddingLeft: widthPercentage(12),
+    paddingRight: widthPercentage(8),
+    borderRadius: 8,
   },
   nickNameText: {
     fontSize: fontPercentage(16),
@@ -436,7 +479,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     justifyContent: 'center',
     paddingVertical: heightPercentage(8),
-    paddingHorizontal: widthPercentage(8)
+    paddingHorizontal: widthPercentage(8),
   },
   editNickName: {
     fontSize: fontPercentage(12),
@@ -450,25 +493,25 @@ const styles = StyleSheet.create({
     borderBottomColor: '#ccc',
     paddingVertical: heightPercentage(0),
     paddingHorizontal: widthPercentage(0),
-    marginEnd: widthPercentage(10)
+    marginEnd: widthPercentage(10),
   },
   accountItem: {
     flexDirection: 'row',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   accountText: {
     fontSize: fontPercentage(13),
     color: '#000000',
     fontWeight: '400',
-    marginLeft: widthPercentage(8)
+    marginLeft: widthPercentage(8),
   },
   quitText: {
     marginTop: heightPercentage(18),
-    fontSize: fontPercentage(16),
+    fontSize: fontPercentage(14),
     color: '#616161',
     textAlign: 'right',
     fontWeight: '500',
-    marginHorizontal: widthPercentage(20)
+    marginHorizontal: widthPercentage(20),
   },
   saveButton: {
     position: 'absolute',

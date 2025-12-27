@@ -22,6 +22,7 @@ import SearchResultScreen from '../Screens/SearchResult/SearchResultScreen';
 import RecommendationIntroScreen from '../Screens/Recommend/RecommendationIntroScreen';
 import LoadingVideoScreen from '../Screens/Recommend/LoadingVideoScreen';
 import RecommendResultScreen from '../Screens/Recommend/RecommendResultScreen';
+import { User } from '../model/domain/User';
 
 export type BottomTabParamList = {
   지도: undefined;
@@ -54,7 +55,7 @@ export type RootStackParamList = {
     cocktailDescription: string;
   };
   RecommendResultScreen: undefined;
-  ProfileScreen: undefined;
+  ProfileScreen: { user: User};
   QuitScreen: undefined;
   RecommendationIntro: undefined;
   LoadingVideoScreen: { answers: number[]};

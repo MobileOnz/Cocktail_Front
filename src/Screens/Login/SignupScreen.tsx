@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   Image,
   StyleSheet,
-  Modal
+  Modal,
 } from 'react-native';
 import {
   heightPercentage,
@@ -15,64 +15,55 @@ import {
 } from '../../assets/styles/FigmaScreen';
 // import { RouteProp, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '../../Navigation/Navigation';
-// import axios from 'axios';
 // import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StackScreenProps } from '@react-navigation/stack';
 // import instance from '../../tokenRequest/axios_interceptor';
 import { Divider } from 'react-native-paper';
-
+import { RouteProp, useRoute } from '@react-navigation/native';
+import SignUpViewModel from './SignUpViewModel';
+import { SignUpRequest } from '../../model/domain/SignupRequest';
+import DeviceInfo from 'react-native-device-info';
+import { useToast } from '../../Components/ToastContext';
 
 // const server = API_BASE_URL;
-// type SignupScreenRouteProp = RouteProp<RootStackParamList, 'SignupScreen'>;
+type SignupScreenRouteProp = RouteProp<RootStackParamList, 'SignupScreen'>;
 type SignupScreenProps = StackScreenProps<RootStackParamList, 'SignupScreen'>;
 
 const SignupScreen: React.FC<SignupScreenProps> = ({ navigation }) => {
 
-  // const route = useRoute<SignupScreenRouteProp>();
-  // const signUpCode = route.params?.code;
-  const [modalVisible, setModalVisible] = useState(false)
-  
+  const route = useRoute<SignupScreenRouteProp>();
+  const signUpCode: string = route.params?.code;
+  const { showToast } = useToast();
+  const { signUp } = SignUpViewModel();
+  const [modalVisible, setModalVisible] = useState(false);
+
 
   //회원가입 처리
-  // const signUpRequest = async () => {
-  //   if (!nickname) {
-  //     console.log('닉네임이 없습니다.');
-  //     return;
-  //   }
-  //   const payload = {
-  //     code: signUpCode,
-  //     nickName: nickname,
-  //     ageTerm: agreements.age,
-  //     serviceTerm: agreements.terms,
-  //     marketingTerm: agreements.marketing,
-  //     adTerm: agreements.ads,
-  //   };
-  //   try {
-  //     const response = await instance.post('/api/auth/signup', payload, {
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //       },
-  //     });
-  //     console.log('백엔드 응답', response.data);
-  //     const backendAccessToken = response.data.data.access_token;
-  //     const backendRefreshToken = response.data.data.refresh_token;
+  const signUpRequest = async () => {
+    if (!nickname) {
+      console.log('닉네임이 없습니다.');
+      return;
+    }
+    const deviceId = await DeviceInfo.getUniqueId();
+    const payload: SignUpRequest = {
+      code: signUpCode,           // 인증 코드 (UUID)
+      nickName: nickname,         // 닉네임
+      deviceNumber: deviceId,     // 디바이스 고유 식별자
+      ageTerm: agreements.age,      // 연령 약관 동의
+      serviceTerm: agreements.terms, // 서비스 이용약관 동의
+      marketingTerm: agreements.marketing, // 마케팅 수신 동의
+      adTerm: agreements.ads,       // 광고성 정보 수신 동의
+    };
+    console.log(JSON.stringify(payload));
 
-  //     if (backendAccessToken) {
-  //       console.log(backendAccessToken);
-  //       await AsyncStorage.setItem('accessToken', backendAccessToken);
-  //     }
-  //     if (backendRefreshToken) {
-  //       console.log(backendRefreshToken);
-  //       await AsyncStorage.setItem('refreshToken', backendRefreshToken);
-  //     }
-  //     navigation.navigate('BottomTabNavigator' as never);
-  //   } catch (error) {
-  //     if (axios.isAxiosError(error)) {
-  //       console.error('서버 에러 응답', error.response?.data);
-  //       console.error('에러 코드', error.response?.status);
-  //     }
-  //   }
-  // };
+    try {
+      const result = await signUp(payload);
+      console.log('백엔드 응답', result);
+      navigation.navigate('BottomTabNavigator' as never);
+    } catch (error: any) {
+      showToast('알 수 없는 오류가 발생했습니다.');
+    }
+  };
 
   //필수만 bold 처리
   const textBoldChange = (text: string) => {
@@ -135,7 +126,7 @@ const SignupScreen: React.FC<SignupScreenProps> = ({ navigation }) => {
 
   // 모달 버튼 활성화/비활성화 여부
   const isButtonDisabled = (agreements.age && agreements.terms);
-  const isNickDisabled = (nickname != '' )
+  const isNickDisabled = (nickname != '');
 
   return (
     <View style={styles.container}>
@@ -192,7 +183,7 @@ const SignupScreen: React.FC<SignupScreenProps> = ({ navigation }) => {
 
       <Modal
         visible={modalVisible}
-        animationType='slide'
+        animationType="slide"
         transparent
         onRequestClose={() => setModalVisible(false)}
       >
@@ -222,8 +213,8 @@ const SignupScreen: React.FC<SignupScreenProps> = ({ navigation }) => {
                 />
                 <Text style={styles.agreementText}>모든 약관에 동의합니다</Text>
               </TouchableOpacity>
-              
-              <Divider style={styles.divider}/>
+
+              <Divider style={styles.divider} />
               {/* 개별 약관 동의 */}
               {[
                 { key: 'age', text: '(필수) 만 17세 이상입니다.' },
@@ -269,11 +260,11 @@ const SignupScreen: React.FC<SignupScreenProps> = ({ navigation }) => {
               <TouchableOpacity
                 style={[styles.startBtn, !isButtonDisabled && styles.startBtnDisabled]}
                 disabled={!isButtonDisabled}
-                onPress={() => {}}
+                onPress={signUpRequest}
               >
                 <Text style={styles.startText}>시작하기</Text>
               </TouchableOpacity>
-              
+
             </View>
 
           </View>
@@ -291,7 +282,7 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     flex: 1,
-    paddingHorizontal: widthPercentage(16)
+    paddingHorizontal: widthPercentage(16),
   },
   header: {
     flexDirection: 'row',
@@ -315,7 +306,7 @@ const styles = StyleSheet.create({
   },
   closeIcon: {
     width: widthPercentage(24),
-    height: heightPercentage(24)
+    height: heightPercentage(24),
   },
   welcomeTitle: {
     fontSize: fontPercentage(22),
@@ -327,7 +318,7 @@ const styles = StyleSheet.create({
     fontSize: fontPercentage(16),
     fontWeight: '500',
     color: '#616161',
-    marginTop: heightPercentage(4)
+    marginTop: heightPercentage(4),
   },
 
   inputContainer: {
@@ -337,7 +328,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F5F5F5',
     borderRadius: 8,
     paddingHorizontal: widthPercentage(8),
-    marginTop: heightPercentage(28)
+    marginTop: heightPercentage(28),
   },
   input: {
     flex: 1,
@@ -398,17 +389,17 @@ const styles = StyleSheet.create({
   },
   startButtonDisabled: {
     backgroundColor: '#E0E0E0',
-    borderRadius: 8
+    borderRadius: 8,
   },
   startButtonText: {
     fontSize: fontPercentage(16),
     color: '#FAFAFA',
-    fontWeight: '600'
+    fontWeight: '600',
   },
   startButtonTextDisabled: {
     fontSize: fontPercentage(16),
     color: '#FAFAFA',
-    fontWeight: '600'
+    fontWeight: '600',
   },
   detailBox: {
     padding: widthPercentage(10),
@@ -432,16 +423,16 @@ const styles = StyleSheet.create({
   modalHeader: {
     alignItems: 'flex-end',
     paddingTop: heightPercentage(16),
-    paddingRight: widthPercentage(16)
+    paddingRight: widthPercentage(16),
   },
   modalContent: {
     paddingHorizontal: widthPercentage(16),
-    justifyContent: 'flex-end'
+    justifyContent: 'flex-end',
   },
   divider: {
     height: 1,
     backgroundColor: '#D9D9D9',
-    marginBottom: heightPercentage(8)
+    marginBottom: heightPercentage(8),
   },
   startBtn: {
     width: '100%',
@@ -451,15 +442,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     height: heightPercentage(52),
-    borderRadius: 8
+    borderRadius: 8,
   },
   startBtnDisabled: {
-    backgroundColor: '#E0E0E0'
+    backgroundColor: '#E0E0E0',
   },
   startText: {
     fontSize: fontPercentage(16),
     color: '#FFFFFF',
-    fontWeight: '600'
+    fontWeight: '600',
   },
 });
 

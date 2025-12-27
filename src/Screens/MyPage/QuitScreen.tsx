@@ -8,9 +8,17 @@ import {
   Text
 } from 'react-native';
 import { widthPercentage, heightPercentage, fontPercentage } from '../../assets/styles/FigmaScreen';
+import WithdrawBottomSheet from '../../BottomSheet/WithdrawBottomSheet';
+import { useState } from 'react';
+import MyPageViewModel from './MyPageViewModel';
+import { useToast } from '../../Components/ToastContext';
 
 const QuitScreen: React.FC = () => {
   const navigation = useNavigation();
+  const [showWithdrawModal, setShowWithdrawModal] = useState(false);
+  const {showToast} = useToast();
+  
+  const { withDrawUser, setUser, setNickname, setProfileUri } = MyPageViewModel()
   
   const quitSubTitle = [
     {
@@ -26,6 +34,31 @@ const QuitScreen: React.FC = () => {
         text: '탈퇴 후 24시간 동안 재가입이 제한됩니다.'
     },
   ]
+
+  const handleWithdraw = async () => {
+    try {
+      const res = await withDrawUser()
+      console.log("handleWithdraw: ", res)
+      if (res === 1) {
+        showToast('탈퇴가 완료되었습니다.');
+        setUser(null)
+        setNickname('')
+        setProfileUri(null)
+  
+        navigation.navigate("BottomTabNavigator", {
+          screen: "지도",
+          params: { shouldRefresh: true },
+        });
+      } else {
+          console.log("서버 에러") 
+      }
+      
+    } catch (err: any) {
+      console.log('🚨 탈퇴 오류:', err.response?.data || err.message);
+    } finally {
+      setShowWithdrawModal(false);
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -44,8 +77,11 @@ const QuitScreen: React.FC = () => {
             <Text style={styles.subTitle}>탈퇴 전 아래 내용을 꼭 확인해주세요.</Text>
 
             <View style={styles.quitClueContainer}>
-                <Text style={styles.quitClueTitle}>회원 탈퇴 시 유의사항 안내</Text>
-                
+                <View style={{flexDirection: 'row'}}> 
+                  <Image source={require("../../assets/drawable/Warning.png")} style={{width: 20, height: 20, resizeMode: 'contain'}} />
+                  <Text style={styles.quitClueTitle}>회원 탈퇴 시 유의사항 안내</Text>
+                </View>
+
                 {quitSubTitle.map(item => (
                     <Text key={item.id} style={styles.quitClueSubTitle}>
                         {item.id}. {item.text}
@@ -55,9 +91,21 @@ const QuitScreen: React.FC = () => {
             </View>
         </View>
 
-        <TouchableOpacity style={styles.quitBtn}>
+        <WithdrawBottomSheet
+          isVisible={showWithdrawModal}
+          onClose={() => setShowWithdrawModal(false)}
+          onWithdraw={handleWithdraw}
+        />
+
+
+        <TouchableOpacity 
+          style={styles.quitBtn}
+          onPress={() => setShowWithdrawModal(true)}
+        >
             <Text style={styles.quitText}>탈퇴하기</Text>   
         </TouchableOpacity>
+
+        
 
     </View>
   );
@@ -96,7 +144,7 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     flex: 1,
-    paddingHorizontal: widthPercentage(16),
+    paddingHorizontal: widthPercentage(24),
     marginBottom: heightPercentage(52),
   },
   quitTitle: {
@@ -114,13 +162,15 @@ const styles = StyleSheet.create({
   quitClueContainer: {
     backgroundColor: '#F5F5F5',
     paddingVertical: heightPercentage(12),
-    paddingHorizontal: widthPercentage(16),
-    marginTop: heightPercentage(20)
+    paddingHorizontal: widthPercentage(12),
+    marginTop: heightPercentage(20), 
+    borderRadius: 8
   }, 
   quitClueTitle: {
     fontWeight: '600',
     fontSize: fontPercentage(14),
     color: '#FF465C',
+    marginLeft: widthPercentage(2)
   },
   quitClueSubTitle: {
     fontWeight: '500',
