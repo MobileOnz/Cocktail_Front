@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   View,
   Text,
@@ -6,13 +6,10 @@ import {
   Animated,
   StyleSheet,
   Image,
-  ScrollView,
-  ActivityIndicator,
 } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../../Navigation/Navigation';
 import { widthPercentage, heightPercentage, fontPercentage } from '../../assets/styles/FigmaScreen'; 
-import RecommendationViewModel from './RecommendationViewModel.tsx'
 
 type RecommendResultSreenNavigationProp = StackNavigationProp<
   RootStackParamList,
@@ -24,15 +21,13 @@ interface Props {
   route: any
 }
 
-
-
 const RecommendResultScreen: React.FC<Props> = ({ navigation, route }) => {
     const { result } = route.params;
     console.log(JSON.stringify(result))
 
-    const handleBackBtn = () => {
-        navigation.goBack()
-    }
+    // const handleBackBtn = () => {
+    //     navigation.goBack()
+    // }
 
     // [버튼] 한잔 더 추천받기
     const resetRecommendation = () => {

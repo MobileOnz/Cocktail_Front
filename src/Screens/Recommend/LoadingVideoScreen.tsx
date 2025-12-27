@@ -1,5 +1,5 @@
 import { StackNavigationProp } from '@react-navigation/stack';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { View, StyleSheet, Animated } from 'react-native';
 import Video from 'react-native-video';
 import { RootStackParamList } from '../../Navigation/Navigation';
