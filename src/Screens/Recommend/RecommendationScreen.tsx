@@ -6,8 +6,7 @@ import {
   Animated,
   StyleSheet,
   Image,
-  ScrollView,
-  ActivityIndicator,
+  ScrollView
 } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../../Navigation/Navigation';

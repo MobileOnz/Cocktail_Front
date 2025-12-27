@@ -1,7 +1,6 @@
 import { useMemo, useState } from "react";
 import { CocktailRecommendRepository } from "../../model/Repository/CocktailRecommendRepository";
 import { RecommendCocktailDataSource } from "../../model/DataSource/RecommendCocktailDataSource";
-import { CocktailDetail } from "../../model/domain/CocktailDetail";
 
 const VideoViewModel = () => {
     const repository = useMemo(

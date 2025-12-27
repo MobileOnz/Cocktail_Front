@@ -1,15 +1,14 @@
 import { useMemo, useState } from "react";
-import { CocktailRecommendRepository } from "../../model/Repository/CocktailRecommendRepository";
-import { RecommendCocktailDataSource } from "../../model/DataSource/RecommendCocktailDataSource";
-import { CocktailDetail } from "../../model/domain/CocktailDetail";
+// import { CocktailRecommendRepository } from "../../model/Repository/CocktailRecommendRepository";
+// import { RecommendCocktailDataSource } from "../../model/DataSource/RecommendCocktailDataSource";
 
 const RecommendationViewModel = () => {
-    const repository = useMemo(
-        () =>
-          new CocktailRecommendRepository(
-            new RecommendCocktailDataSource(),
-          ),
-    []);
+    // const repository = useMemo(
+    //     () =>
+    //       new CocktailRecommendRepository(
+    //         new RecommendCocktailDataSource(),
+    //       ),
+    // []);
 
     const [currentStep, setCurrentStep] = useState(0);
     const [selectedAnswers, setSelectedAnswers] = useState([null, null, null, null, null]);
