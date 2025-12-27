@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -13,8 +13,6 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../../Navigation/Navigation';
 import { widthPercentage, heightPercentage, fontPercentage } from '../../assets/styles/FigmaScreen'; 
 import RecommendationViewModel from './RecommendationViewModel.tsx'
-import { da } from 'zod/v4/locales';
-// import instance from '../../tokenRequest/axios_interceptor';
 
 type RecommendationSreenNavigationProp = StackNavigationProp<
   RootStackParamList,
@@ -28,7 +26,7 @@ interface Props {
 
 
 const RecommendationScreen: React.FC<Props> = ({ navigation }) => {
-  const { currentStep, setCurrentStep, selectedAnswers, setSelectedAnswers, loading, recommend, result, setResult }= RecommendationViewModel()
+  const { currentStep, setCurrentStep, selectedAnswers, setSelectedAnswers}= RecommendationViewModel()
 
   // [버튼] 다음 단계 이동
   const handleConfirmBtn = async() => {
@@ -58,16 +56,6 @@ const RecommendationScreen: React.FC<Props> = ({ navigation }) => {
       updated[currentStep] = answerId;   // 해당 단계 위치에 저장
       return updated;
     });
-  }
-
-    //  로딩 상태
-  if (loading) {
-    return (
-      <View style={styles.container}>
-        <ActivityIndicator />
-        <Text style={styles.loadingText}>불러오는 중...</Text>
-      </View>
-    );
   }
 
   return (
@@ -635,14 +623,6 @@ const styles = StyleSheet.create({
     height: '100%',
     backgroundColor: '#21103C',
     borderRadius: 20,
-  },
-
-  loadingText: {
-    fontSize: fontPercentage(18),
-    fontWeight: 'bold',
-    color: '#2D2D2D',
-    marginBottom: heightPercentage(20),
-    textAlign: 'center',
   },
 
 });
