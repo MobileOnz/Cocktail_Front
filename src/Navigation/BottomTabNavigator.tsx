@@ -3,14 +3,10 @@ import { StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { BlurView } from '@react-native-community/blur';
-
 // import AsyncStorage from '@react-native-async-storage/async-storage';
-
 import Home from '../BottomTab/Cocktail_List/CocktailListScreen';
-import CocktailBookScreen from '../BottomTab/CocktailBookScreen';
 import RecommendationIntroScreen from '../Screens/Recommend/RecommendationIntroScreen';
 import MyPageScreen from '../BottomTab/MyPageScreen';
-import LoginBottomSheet from '../BottomSheet/LoginBottomSheetProps';
 import theme from '../assets/styles/theme';
 
 // import { isTokenExpired } from '../tokenRequest/Token';
