@@ -23,6 +23,7 @@ import RecommendationIntroScreen from '../Screens/Recommend/RecommendationIntroS
 import LoadingVideoScreen from '../Screens/Recommend/LoadingVideoScreen';
 import RecommendResultScreen from '../Screens/Recommend/RecommendResultScreen';
 import { User } from '../model/domain/User';
+import { CocktailDetail } from '../model/domain/CocktailDetail';
 
 export type BottomTabParamList = {
   지도: undefined;
@@ -54,7 +55,10 @@ export type RootStackParamList = {
     cocktailName: string;
     cocktailDescription: string;
   };
-  RecommendResultScreen: undefined;
+  RecommendResultScreen: {
+    result: CocktailDetail,
+    answers: number[]
+  };
   ProfileScreen: { user: User};
   QuitScreen: undefined;
   RecommendationIntro: undefined;

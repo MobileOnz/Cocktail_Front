@@ -10,6 +10,7 @@ import {
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../../Navigation/Navigation';
 import { widthPercentage, heightPercentage, fontPercentage } from '../../assets/styles/FigmaScreen'; 
+import ResultViewModel from './ResultViewModel';
 
 type RecommendResultSreenNavigationProp = StackNavigationProp<
   RootStackParamList,
@@ -22,12 +23,8 @@ interface Props {
 }
 
 const RecommendResultScreen: React.FC<Props> = ({ navigation, route }) => {
-    const { result } = route.params;
-    console.log(JSON.stringify(result))
-
-    // const handleBackBtn = () => {
-    //     navigation.goBack()
-    // }
+    const { result, answers } = route.params;
+    const { clickCtaRecommendResult } = ResultViewModel()
 
     // [버튼] 한잔 더 추천받기
     const resetRecommendation = () => {
@@ -37,11 +34,11 @@ const RecommendResultScreen: React.FC<Props> = ({ navigation, route }) => {
         });
     };
 
-
     // 칵테일 상세화면 이동
     const handleCocktailDetail = () => {
         if ( result?.id) {
-        navigation.navigate("GuideDetailScreen", { id: result.id as number, src: result.imageUrl, title: result.korName } );
+          clickCtaRecommendResult(result.id, result.engName, answers)
+          navigation.navigate("GuideDetailScreen", { id: result.id as number, src: result.imageUrl, title: result.korName } );
         }
     }
 
@@ -108,7 +105,6 @@ const RecommendResultScreen: React.FC<Props> = ({ navigation, route }) => {
 
 // 결과 화면
 const ResultScreen = ( {data} ) => {
-  console.log("ResultScreen: ", JSON.stringify(data))
   const ABV_LABEL: Record<string, string> = {
     WEAK: '약함',
     MEDIUM: '보통',
@@ -195,7 +191,7 @@ const ResultScreen = ( {data} ) => {
             blurRadius={6}
           />
 
-          <View style={[styles.resultInfoContainer, {width: '80%'}]}>
+          <View style={styles.resultInfoContainer}>
             <View style={styles.resultInfoBox}>
               <Text style={styles.resultInfoTitleText}>도수</Text>
               <Text style={styles.resultInfoSubText}>ABV {data.minAlcohol}~{data.maxAlcohol}% {ABV_LABEL[data.abvBand]}</Text>
@@ -223,10 +219,11 @@ const ResultScreen = ( {data} ) => {
 };
 
 const styles = StyleSheet.create({
-    resultInfoContainer: {
+  resultInfoContainer: {
     position: 'absolute',
-    left: 20,
-    bottom: 100
+    left: widthPercentage(20),
+    right: widthPercentage(20),
+    bottom: 100,
   },
 
   resultInfoBox: {
@@ -236,16 +233,19 @@ const styles = StyleSheet.create({
   },
 
   resultInfoTitleText: {
+    flex: 1,
     fontSize: fontPercentage(14),
     color: '#BDBDBD',
-    width: widthPercentage(60)
+    
   },
   
   resultInfoSubText: {
+    flex: 4,
     fontSize: fontPercentage(16),
     fontWeight: '500',
     color: '#FFFFFF',
-    marginLeft: widthPercentage(8)
+    textAlign: 'left',
+    flexWrap: 'wrap',
   },
 
   card: {
