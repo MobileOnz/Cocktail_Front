@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { IHomeCocktailRepository } from '../../model/repository/HomeCocktailRepository';
+import { IHomeCocktailRepository } from '../../model/Repository/HomeCocktailRepository';
 import { di } from '../../DI/Container';
 import { CocktailCard } from '../../model/domain/CocktailCard';
 import { CocktailMain } from '../../model/domain/CocktailMain';
