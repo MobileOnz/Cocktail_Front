@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { AuthRepository } from '../../model/repository/AuthRepository';
+import { AuthRepository } from '../../model/Repository/AuthRepository';
 import { NaverAuthDataSource } from '../../model/DataSource/NaverDataSource';
 import { GoogleAuthDataSource } from '../../model/DataSource/GoogleDataSource';
 import { KakaoAuthDataSource } from '../../model/DataSource/KakaoDataSource';

@@ -11,11 +11,11 @@ import ResultScreen from '../Screens/ResultScreen';
 import SignupScreen from '../Screens/Login/SignupScreen';
 import ProfileScreen from '../Screens/MyPage/ProfileScreen';
 import TermsAndConditionsScreen from '../Screens/MyPage/TermsAndConditionsScreen';
-import QuitScreen from '../Screens/MyPage/QuitScreen'
-import PrivacyPolicyScreen from '../Screens/MyPage/PrivacyPolicyScreen'
+import QuitScreen from '../Screens/MyPage/QuitScreen';
+import PrivacyPolicyScreen from '../Screens/MyPage/PrivacyPolicyScreen';
 import { CocktailDetailScreen } from '../Components/CocktailDetail/CocktailDetailScreen';
-import RecommendationScreen from '../Screens/Recommend/RecommendationScreen'
-import GuideScreen from '../Screens/Guide/GuideScreen'
+import RecommendationScreen from '../Screens/Recommend/RecommendationScreen';
+import GuideScreen from '../Screens/Guide/GuideScreen';
 import GuideDetailScreen from '../Screens/Guide/GuideDetail';
 import CocktailBoxScreen from '../Screens/CocktailBox/CocktailBoxScreen';
 import SearchResultScreen from '../Screens/SearchResult/SearchResultScreen';
@@ -24,6 +24,7 @@ import LoadingVideoScreen from '../Screens/Recommend/LoadingVideoScreen';
 import RecommendResultScreen from '../Screens/Recommend/RecommendResultScreen';
 import { User } from '../model/domain/User';
 import { CocktailDetail } from '../model/domain/CocktailDetail';
+import AllCocktailScreen from '../Screens/AllCocktail/AllCocktailScreen';
 
 export type BottomTabParamList = {
   지도: undefined;
@@ -42,6 +43,7 @@ export type RootStackParamList = {
       shouldRefresh?: boolean;
     };
   };
+  AllCocktailScreen: undefined;
   RecommendationFlow: undefined;
   LoadingScreen: {
     alcholType: number;
@@ -107,7 +109,7 @@ const Navigation: React.FC = () => {
         <Stack.Screen name='SearchResultScreen' component={SearchResultScreen} />
         <Stack.Screen name='LoadingVideoScreen' component={LoadingVideoScreen} />
         <Stack.Screen name='RecommendResultScreen' component={RecommendResultScreen} />
-
+        <Stack.Screen name="AllCocktailScreen" component={AllCocktailScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
