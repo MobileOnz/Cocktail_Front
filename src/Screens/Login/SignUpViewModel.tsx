@@ -6,7 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AuthError, AuthErrorType } from '../../model/domain/AuthError';
 import { AuthRemoteDataSource } from '../../model/DataSource/AuthRemoteDataSource';
 import { SignUpRequest } from '../../model/domain/SignupRequest';
-import { AuthRepository } from '../../model/repository/AuthRepository';
+import { AuthRepository } from '../../model/Repository/AuthRepository';
 
 const SignUpViewModel = () => {
   const repository = useMemo(
