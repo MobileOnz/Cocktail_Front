@@ -151,8 +151,8 @@ export const FilterBottomSheet = forwardRef<FilterBottomSheetRef, Props>(
                 <Tag
                   key={option}
                   label={option}
-                  selected={vm.selectedDegree.includes(option)}
-                  onPress={() => toggleValue(vm.selectedDegree, option, vm.setSelectedDegree)}
+                  selected={vm.selectedDegree === option}
+                  onPress={() => vm.setSelectedDegree(option)}
                 />
               ))}
             </View>
@@ -166,8 +166,8 @@ export const FilterBottomSheet = forwardRef<FilterBottomSheetRef, Props>(
                 <Tag
                   key={option}
                   label={option}
-                  selected={vm.selectedStyle.includes(option)}
-                  onPress={() => toggleValue(vm.selectedStyle, option, vm.setSelectedStyle)}
+                  selected={vm.selectedStyle === option}
+                  onPress={() => vm.setSelectedStyle(option)}
                 />
               ))}
             </View>

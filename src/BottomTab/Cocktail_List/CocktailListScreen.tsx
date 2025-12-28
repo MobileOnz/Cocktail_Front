@@ -126,9 +126,11 @@ const Home = () => {
               새로 업데이트 된 칵테일
             </Text>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <Text variant="bodyLarge" style={{ color: '#616161', fontSize: fontPercentage(14), fontWeight: '500' }}>
-                더보기
-              </Text>
+              <TouchableOpacity onPress={() => { navigation.navigate('AllCocktailScreen' as never); }}>
+                <Text variant="bodyLarge" style={{ color: '#616161', fontSize: fontPercentage(14), fontWeight: '500' }}>
+                  더보기
+                </Text>
+              </TouchableOpacity>
               <MaterialIcons name="chevron-right" size={20} style={{ paddingLeft: 4 }} />
             </View>
           </View>

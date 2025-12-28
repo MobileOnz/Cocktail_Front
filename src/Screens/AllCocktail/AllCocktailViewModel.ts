@@ -1,15 +1,15 @@
 import { useCallback, useEffect, useState } from 'react';
-import { CocktailCard } from '../../model/domain/CocktailCard';
-import axios from 'axios';
-import { di } from '../../DI/Container';
 import { ISearchRepository } from '../../model/repository/SearchRepository';
+import { CocktailCard } from '../../model/domain/CocktailCard';
+import { di } from '../../DI/Container';
+import axios from 'axios';
 import { DEFAULT_FILTER, FilterState } from '../../Components/BottomSheet/FilterBottomSheet/FilterBottomSheetViewModel';
 
 type UseSearchResultDeps = {
     repository?: ISearchRepository;
 };
 
-const useSearchResultViewModel = (keyword: string, deps?: UseSearchResultDeps) => {
+const useAllCocktailViewModel = (keyword?: string, deps?: UseSearchResultDeps) => {
     const [results, setResults] = useState<CocktailCard[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -21,6 +21,7 @@ const useSearchResultViewModel = (keyword: string, deps?: UseSearchResultDeps) =
     const fetchResult = useCallback(async (filter?: FilterState) => {
         setLoading(true);
         setError(null);
+
         if (filter) { setAppliedFilter(filter); }
         try {
             const targetFilter = filter ?? appliedFilter;
@@ -29,6 +30,7 @@ const useSearchResultViewModel = (keyword: string, deps?: UseSearchResultDeps) =
             const tasteParam = targetFilter.taste.length > 0 ? targetFilter.taste : undefined;
             const baseParam = targetFilter.base.length > 0 ? targetFilter.base : undefined;
             const sortParam = targetFilter.sort;
+
 
             const data = await repository.search(
                 keyword?.trim(),
@@ -66,10 +68,10 @@ const useSearchResultViewModel = (keyword: string, deps?: UseSearchResultDeps) =
         results,
         loading,
         error,
-        refetch: fetchResult,
         appliedFilter,
+        refetch: fetchResult,
     };
 
 };
 
-export default useSearchResultViewModel;
+export default useAllCocktailViewModel;
