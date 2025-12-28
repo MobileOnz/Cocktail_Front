@@ -25,7 +25,7 @@ const texts = [
 
 const LoadingVideoScreen: React.FC<Props> = ({navigation, route}) => {
     const { answers } = route.params;
-    const { textIdx, setTextIdx, recommend } = VideoViewModel()
+    const { textIdx, setTextIdx, recommend, viewPageRecommendation } = VideoViewModel()
     const {showToast} = useToast();
     const fadeAnim = useRef(new Animated.Value(1)).current;
     const translateY = useRef(new Animated.Value(0)).current;
@@ -90,8 +90,9 @@ const LoadingVideoScreen: React.FC<Props> = ({navigation, route}) => {
               }, 4500);
               return
             } else {
+              viewPageRecommendation(answers)
               setTimeout( () => {
-                  navigation.navigate('RecommendResultScreen', { result })
+                  navigation.navigate('RecommendResultScreen', { result, answers })
               }, 4500);
             }
         };

@@ -25,15 +25,14 @@ interface Props {
 
 
 const RecommendationScreen: React.FC<Props> = ({ navigation }) => {
-  const { currentStep, setCurrentStep, selectedAnswers, setSelectedAnswers}= RecommendationViewModel()
+  const { currentStep, setCurrentStep, selectedAnswers, setSelectedAnswers, submitAmplifyRecommend}= RecommendationViewModel()
 
   // [버튼] 다음 단계 이동
   const handleConfirmBtn = async() => {
-    if (currentStep < 4) {
+    if (currentStep < 4) {  
+      submitAmplifyRecommend()
       setCurrentStep(currentStep + 1)
-      
     }
-    console.log(currentStep)
     if (currentStep == 4) {
       navigation.navigate('LoadingVideoScreen', { answers: selectedAnswers})
     }
