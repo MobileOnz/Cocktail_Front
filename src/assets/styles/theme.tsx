@@ -1,6 +1,6 @@
 const theme = {
-  background: '#F5F5F5',
-  text: '#333', // 가독성을 위해 어두운 색 추천
+  background: '#FFFFFF',
+  text: '#333',
   bottomTextColor: '#B9B6AD',
 };
 
