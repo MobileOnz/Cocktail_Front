@@ -1,6 +1,6 @@
-import { CocktailDetailRepository, ICocktailDetailRepository } from '../model/repository/CocktailDetailRepository';
-import { HomeCocktailRepository, IHomeCocktailRepository } from '../model/repository/HomeCocktailRepository';
-import { ISearchRepository, SearchRepository } from '../model/repository/SearchRepository';
+import { CocktailDetailRepository, ICocktailDetailRepository } from '../model/Repository/CocktailDetailRepository';
+import { HomeCocktailRepository, IHomeCocktailRepository } from '../model/Repository/HomeCocktailRepository';
+import { ISearchRepository, SearchRepository } from '../model/Repository/SearchRepository';
 
 
 class DIContainer {
