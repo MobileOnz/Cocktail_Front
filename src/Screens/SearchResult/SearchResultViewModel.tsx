@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { CocktailCard } from '../../model/domain/CocktailCard';
 import axios from 'axios';
 import { di } from '../../DI/Container';
-import { ISearchRepository } from '../../model/repository/SearchRepository';
+import { ISearchRepository } from '../../model/Repository/SearchRepository';
 
 type UseSearchResultDeps = {
     repository?: ISearchRepository;
