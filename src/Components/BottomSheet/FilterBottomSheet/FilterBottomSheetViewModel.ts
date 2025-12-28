@@ -3,16 +3,16 @@ import { useCallback, useMemo, useState } from 'react';
 export type SortType = '최신순' | '인기순';
 export type FilterState = {
     sort: SortType;
-    degree: string[];
-    style: string[];
+    degree: string;
+    style: string;
     taste: string[];
     base: string[];
 };
 
 export const DEFAULT_FILTER: FilterState = {
     sort: '최신순',
-    degree: [],
-    style: [],
+    degree: '',
+    style: '',
     taste: [],
     base: [],
 };
@@ -27,10 +27,10 @@ export const useFilterBottomSheetViewModel = ({ initialValue, onApply }: Params)
     const init = initialValue ?? DEFAULT_FILTER;
 
     const [selectedSort, setSelectedSort] = useState<SortType>(init.sort);
-    const [selectedDegree, setSelectedDegree] = useState<string[]>([]);
-    const [selectedStyle, setSelectedStyle] = useState<string[]>([]);
-    const [selectedTaste, setSelectedTaste] = useState<string[]>([]);
-    const [selectedBase, setSelectedBase] = useState<string[]>([]);
+    const [selectedDegree, setSelectedDegree] = useState<string>(init.degree);
+    const [selectedStyle, setSelectedStyle] = useState<string>(init.style);
+    const [selectedTaste, setSelectedTaste] = useState<string[]>(init.taste);
+    const [selectedBase, setSelectedBase] = useState<string[]>(init.base);
 
 
     const value: FilterState = useMemo(

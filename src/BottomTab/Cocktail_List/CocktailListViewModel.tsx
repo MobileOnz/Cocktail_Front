@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { IHomeCocktailRepository } from '../../model/repository/HomeCocktailRepository';
+import { IHomeCocktailRepository } from '../../model/Repository/HomeCocktailRepository';
 import { di } from '../../DI/Container';
 import { CocktailCard } from '../../model/domain/CocktailCard';
 import { CocktailMain } from '../../model/domain/CocktailMain';
@@ -22,6 +22,7 @@ export const useHomeViewModel = (deps?: UseSearchResultDeps) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isScrolled, setIsScrolled] = useState(false);
+
 
   const handleScroll = (event: any) => {
     const offsetY = event.nativeEvent.contentOffset.y;

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { ICocktailDetailRepository } from '../../model/repository/CocktailDetailRepository';
+import { ICocktailDetailRepository } from '../../model/Repository/CocktailDetailRepository';
 import { CocktailDetail } from '../../model/domain/CocktailDetail';
 import { di } from '../../DI/Container';
 
