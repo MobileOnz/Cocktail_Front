@@ -23,6 +23,7 @@ export const useHomeViewModel = (deps?: UseSearchResultDeps) => {
   const [error, setError] = useState<string | null>(null);
   const [isScrolled, setIsScrolled] = useState(false);
 
+
   const handleScroll = (event: any) => {
     const offsetY = event.nativeEvent.contentOffset.y;
 
