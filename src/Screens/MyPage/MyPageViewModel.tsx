@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { MemberRemoteDataSource } from '../../model/DataSource/MemberDataSource';
-import { MemberRepository } from '../../model/Repository/MemberRepository';
+import { MemberRepository } from '../../model/repository/MemberRepository';
 import { AuthRemoteDataSource } from '../../model/DataSource/AuthRemoteDataSource';
 import { launchImageLibrary } from 'react-native-image-picker';
 import ImageResizer from 'react-native-image-resizer';
@@ -22,9 +22,6 @@ const MyPageViewModel = () => {
   const [loading, setLoading] = useState(false);
   const [nickname, setNickname] = useState('');
 
-  useEffect(() => {
-    getMemberInfo();
-  }, [profileUri]);
 
   const getMemberInfo = async () => {
     try {
@@ -49,6 +46,9 @@ const MyPageViewModel = () => {
       setLoading(false);
     }
   };
+  useEffect(() => {
+    getMemberInfo();
+  }, []);
 
   const logOut = async () => {
     try {
