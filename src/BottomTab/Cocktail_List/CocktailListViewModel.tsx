@@ -1,10 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
-import { IHomeCocktailRepository } from '../../model/repository/HomeCocktailRepository';
+import { IHomeCocktailRepository } from '../../model/Repository/HomeCocktailRepository';
 import { di } from '../../DI/Container';
 import { CocktailCard } from '../../model/domain/CocktailCard';
 import { CocktailMain } from '../../model/domain/CocktailMain';
 import { API_BASE_URL } from '@env';
-import { is } from 'zod/v4/locales';
 
 
 type UseSearchResultDeps = {
