@@ -43,6 +43,7 @@ const ProfileScreen: React.FC<Props> = ({ route }: Props) => {
       setNickname(user.nickname);
       setProfileUri(user.profileUrl || null);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   const onHandleProfileUpdate = async () => {
