@@ -53,7 +53,7 @@ export function submitAnswerRecommend(params: {
 }
 
 export function viewPageRecommend(params: {
-    recommendFlowId: number;
+    recommendFlowId: string;
     answerQ1Code: string;
     answerQ2Code: string;
     answerQ3Code: string;

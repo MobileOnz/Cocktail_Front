@@ -3,14 +3,9 @@ import { StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { BlurView } from '@react-native-community/blur';
-
 // import AsyncStorage from '@react-native-async-storage/async-storage';
-
 import Home from '../BottomTab/Cocktail_List/CocktailListScreen';
-
-import RecommendationsScreen from '../BottomTab/RecommendationIntroScreen';
-
-
+import RecommendationIntroScreen from '../Screens/Recommend/RecommendationIntroScreen';
 import theme from '../assets/styles/theme';
 
 // import { isTokenExpired } from '../tokenRequest/Token';
@@ -83,10 +78,16 @@ const BottomTabNavigator = () => {
         <Tab.Screen name="홈" component={Home} options={{ headerShown: false }} />
         <Tab.Screen
           name="맞춤 추천"
-          component={RecommendationsScreen}
+          component={RecommendationIntroScreen}
           options={{
             headerShown: false,
           }}
+          listeners={({ navigation }) => ({
+            tabPress: e => {
+              e.preventDefault(); // ❗ 탭 전환 막기
+              navigation.getParent()?.navigate('RecommendIntroScreen');
+            },
+          })}
         />
 
         <Tab.Screen
