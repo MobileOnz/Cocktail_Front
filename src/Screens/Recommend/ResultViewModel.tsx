@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { clickCtaRecommendresult, submitAnswerRecommend } from "../../analytics/eventProperty";
+import { clickCtaRecommendresult } from "../../analytics/eventProperty";
 import { FLOW_ID } from "@env";
 
 const ResultViewModel = () => {

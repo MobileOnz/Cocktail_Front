@@ -68,6 +68,7 @@ const LoadingVideoScreen: React.FC<Props> = ({navigation, route}) => {
         }, 1500);
 
         return () => clearInterval(interval);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect( () => {
@@ -97,6 +98,7 @@ const LoadingVideoScreen: React.FC<Props> = ({navigation, route}) => {
             }
         };
         run();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
     
     return (
