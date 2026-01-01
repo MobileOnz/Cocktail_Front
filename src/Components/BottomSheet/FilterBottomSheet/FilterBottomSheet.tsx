@@ -1,15 +1,14 @@
-import React, { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
+import React, { forwardRef, useImperativeHandle } from 'react';
 import {
   StyleSheet,
   Text,
   View,
-  ScrollView,
   TouchableOpacity,
   Pressable,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet';
+import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { FilterState, useFilterBottomSheetViewModel } from './FilterBottomSheetViewModel';
 import theme from '../../../assets/styles/theme';
@@ -59,7 +58,7 @@ type Props = {
 
 
 export const FilterBottomSheet = forwardRef<FilterBottomSheetRef, Props>(
-  ({ initialValue, onApply, onClose }, ref) => {
+  ({ initialValue, onApply }, ref) => {
     const vm = useFilterBottomSheetViewModel({ initialValue, onApply });
 
     useImperativeHandle(ref, () => ({

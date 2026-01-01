@@ -30,7 +30,7 @@ const GuideScreen: React.FC<Props> = ({ navigation }) => {
 
   useEffect(() => {
     getGuideList();
-  }, []);
+  }, [viewType]);
 
   if (loading) {
     return (
