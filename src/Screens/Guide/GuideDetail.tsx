@@ -36,6 +36,7 @@ const GuideDetailScreen: React.FC<Props> = ({ navigation, route}) => {
 
     useEffect(() => {
       getGuideDetail(id)
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [id]);
 
     useEffect(() => {
@@ -49,6 +50,7 @@ const GuideDetailScreen: React.FC<Props> = ({ navigation, route}) => {
       return () => {
         clearTimeout(timer);
       };
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [guideDetail]);
 
     if (loading) {

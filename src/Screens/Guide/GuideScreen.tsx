@@ -30,6 +30,7 @@ const GuideScreen: React.FC<Props> = ({ navigation }) => {
 
   useEffect(() => {
     getGuideList();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [viewType]);
 
   if (loading) {
