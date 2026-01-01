@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { MemberRemoteDataSource } from '../../model/DataSource/MemberDataSource';
-import { MemberRepository } from '../../model/repository/MemberRepository';
+import { MemberRepository } from '../../model/Repository/MemberRepository';
 import { AuthRemoteDataSource } from '../../model/DataSource/AuthRemoteDataSource';
 import { launchImageLibrary } from 'react-native-image-picker';
 import ImageResizer from 'react-native-image-resizer';
@@ -24,7 +24,8 @@ const MyPageViewModel = () => {
 
   useEffect(() => {
     getMemberInfo();
-  }, [profileUri]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const getMemberInfo = async () => {
     try {
