@@ -18,10 +18,13 @@ import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import NaverLogin from '@react-native-seoul/naver-login';
 import { syncKeywordData } from './src/model/local/service/keywordService';
 import { Platform } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getUniqueId } from 'react-native-device-info';
 
 
 function AppContent() {
   const insets = useSafeAreaInsets();
+
 
   useEffect(() => {
     setGlobalInsets(insets);
@@ -53,13 +56,13 @@ function App(): React.JSX.Element {
 
   useEffect(() => {
     GoogleSignin.configure({
-    offlineAccess: true,
-    webClientId:
-      '1058340377075-vt8u6qabph0f0van79eqhkt9j2f1jkbe.apps.googleusercontent.com',
-    iosClientId:
-      '1058340377075-an8fq49j4mg29fq9rm88qpi253dd2vts.apps.googleusercontent.com',
+      offlineAccess: true,
+      webClientId:
+        '1058340377075-vt8u6qabph0f0van79eqhkt9j2f1jkbe.apps.googleusercontent.com',
+      iosClientId:
+        '1058340377075-an8fq49j4mg29fq9rm88qpi253dd2vts.apps.googleusercontent.com',
     });
-    
+
     NaverLogin.initialize({
       appName,
       consumerKey,
@@ -75,8 +78,13 @@ function App(): React.JSX.Element {
   useEffect(() => {
     initAmplitude();
 
+
     const bootstrapLocalData = async () => {
+
       try {
+        const token = await AsyncStorage.getItem('accessToken');
+        const deviceId = await getUniqueId();
+
         await initDb();                 // 테이블/마이그레이션
         const keywords = await syncKeywordData();    // SQLite 저장
         console.log('[Keyword first item]', keywords?.[0]);
