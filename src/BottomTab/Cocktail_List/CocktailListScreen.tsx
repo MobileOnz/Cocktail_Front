@@ -107,7 +107,7 @@ const Home = () => {
                   {/* 북마크 아이콘 */}
                   <IconButton
                     icon="bookmark-outline"
-                    onPress={() => { }}
+                    onPress={() => { vm.bookmarked(item.id); }}
                     size={28}
                     iconColor="#fff"
                     style={styles.bestBookmarkButton}
@@ -149,7 +149,7 @@ const Home = () => {
 
                     <IconButton
                       icon={'bookmark-outline'}
-                      onPress={() => { }}
+                      onPress={() => { vm.bookmarked(item.id); }}
                       size={28}
                       iconColor="#000"
                       style={styles.newCocktailBookmark}
