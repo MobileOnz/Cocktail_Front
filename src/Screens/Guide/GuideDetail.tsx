@@ -25,25 +25,25 @@ interface Props {
 
 
 const GuideDetailScreen: React.FC<Props> = ({ navigation, route}) => {
-    const {id, title } = route.params
-    const [ currentPage, setCurrentPage] = useState(0)
-    const { getGuideDetail, guideDetail, loading, stay3sViewGuideDetail } = GuideDetailViewModel()
+    const {id, title } = route.params;
+    const [ currentPage, setCurrentPage] = useState(0);
+    const { getGuideDetail, guideDetail, loading, stay3sViewGuideDetail } = GuideDetailViewModel();
 
     // 공유
     const handleSharePress = () => {
-        
-    }
+
+    };
 
     useEffect(() => {
-      getGuideDetail(id)
+      getGuideDetail(id);
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [id]);
 
     useEffect(() => {
-      if (!guideDetail) return;
+      if (!guideDetail) {return;}
 
       const timer = setTimeout(() => {
-        stay3sViewGuideDetail(guideDetail)
+        stay3sViewGuideDetail(guideDetail);
       }, 5000);
 
       // 화면 나가면 타이머 제거
@@ -55,9 +55,9 @@ const GuideDetailScreen: React.FC<Props> = ({ navigation, route}) => {
 
     if (loading) {
       return (
-        <View style={{ 
-          flex: 1, 
-          justifyContent: 'center', 
+        <View style={{
+          flex: 1,
+          justifyContent: 'center',
           alignItems: 'center',
         }}>
           <ActivityIndicator size="large" color="#000" />
@@ -71,7 +71,7 @@ const GuideDetailScreen: React.FC<Props> = ({ navigation, route}) => {
             <View style={styles.header}>
                 <TouchableOpacity
                     onPress={ () => {
-                        navigation.goBack()
+                        navigation.goBack();
                     }}
                 >
                     <Image
@@ -79,7 +79,7 @@ const GuideDetailScreen: React.FC<Props> = ({ navigation, route}) => {
                         style={styles.icon}
                     />
                 </TouchableOpacity>
-                <Text style={styles.headerTitle}>{title}</Text>    
+                <Text style={styles.headerTitle}>{title}</Text>
                 <TouchableOpacity
                     onPress={handleSharePress}
                 >
@@ -89,7 +89,7 @@ const GuideDetailScreen: React.FC<Props> = ({ navigation, route}) => {
                     />
                 </TouchableOpacity>
             </View>
-            
+
             <PagerView
                 style = { styles.centralContainer }
                 initialPage={0}
@@ -102,10 +102,10 @@ const GuideDetailScreen: React.FC<Props> = ({ navigation, route}) => {
                             source={{ uri: page.imageUrl }}
                             style={styles.itemImage}
                         />
-                        <View 
+                        <View
                             style={{
                                 paddingHorizontal: widthPercentage(16),
-                                paddingTop: heightPercentage(20)
+                                paddingTop: heightPercentage(20),
                             }}
                         >
                             <Text style={styles.titleText}>{page.subtitle}</Text>
@@ -121,16 +121,16 @@ const GuideDetailScreen: React.FC<Props> = ({ navigation, route}) => {
                         key={idx}
                         style={[
                             styles.indicator,
-                            currentPage === idx && styles.indicatorActive
+                            currentPage === idx && styles.indicatorActive,
                         ]}
                     />
                 ))}
             </View>
         </View>
     );
-}
+};
 
-export default GuideDetailScreen
+export default GuideDetailScreen;
 
 const styles = StyleSheet.create({
   rootContainer: {
@@ -149,7 +149,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: fontPercentage(20),
     color: '#1B1B1B',
-    fontWeight: '600'
+    fontWeight: '600',
   },
   icon: {
     width: widthPercentage(24),
@@ -162,11 +162,11 @@ const styles = StyleSheet.create({
   itemImage: {
     width: '100%',
     height: '65%',
-    resizeMode: 'cover'
+    resizeMode: 'cover',
   },
   bottomContainer: {
     flex: 1,
-    backgroundColor: '#ffffffff'
+    backgroundColor: '#ffffffff',
   },
   titleText: {
     fontSize: fontPercentage(20),
@@ -177,25 +177,25 @@ const styles = StyleSheet.create({
     marginTop: heightPercentage(8),
     fontSize: fontPercentage(16),
     color: '#616161',
-    fontWeight: '500'
+    fontWeight: '500',
   },
   indicatorContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
     paddingVertical: 8,
-    marginBottom: heightPercentage(32)
+    marginBottom: heightPercentage(32),
   },
   indicator: {
     width: 8,
     height: 8,
     borderRadius: 50,
     backgroundColor: '#E5E5E5',
-    marginHorizontal: 5
+    marginHorizontal: 5,
   },
   indicatorActive: {
     backgroundColor: '#AAAAAA',
     width: 8,
-    height: 8
-  }
-})
+    height: 8,
+  },
+});

@@ -1,6 +1,6 @@
-import { RecommendCocktailDataSource } from "../DataSource/RecommendCocktailDataSource";
-import { CocktailDetail } from "../domain/CocktailDetail";
-import { CocktailQuest } from "../domain/CocktailRec";
+import { RecommendCocktailDataSource } from '../DataSource/RecommendCocktailDataSource';
+import { CocktailDetail } from '../domain/CocktailDetail';
+import { CocktailQuest } from '../domain/CocktailRec';
 
 export class CocktailRecommendRepository  {
     constructor(
@@ -8,7 +8,7 @@ export class CocktailRecommendRepository  {
     ) {}
 
     recommend(data: CocktailQuest): Promise<CocktailDetail> {
-        return this.cocktailDataSource.recommend(data)
+        return this.cocktailDataSource.recommend(data);
     }
 
 }

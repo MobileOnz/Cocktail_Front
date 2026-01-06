@@ -5,7 +5,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   Image,
-  Text
+  Text,
 } from 'react-native';
 import { widthPercentage, heightPercentage, fontPercentage } from '../../assets/styles/FigmaScreen';
 import WithdrawBottomSheet from '../../BottomSheet/WithdrawBottomSheet';
@@ -17,13 +17,13 @@ const QuitScreen: React.FC = () => {
   const navigation = useNavigation();
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
   const {showToast} = useToast();
-  
-  const { withDrawUser, setUser, setNickname, setProfileUri } = MyPageViewModel()
-  
+
+  const { withDrawUser, setUser, setNickname, setProfileUri } = MyPageViewModel();
+
   const quitSubTitle = [
     {
         id: 1,
-        text: '탈퇴 시 모든 정보는 즉시 삭제돼요.'
+        text: '탈퇴 시 모든 정보는 즉시 삭제돼요.',
     },
     {
         id: 2,
@@ -31,28 +31,28 @@ const QuitScreen: React.FC = () => {
     },
     {
         id: 3,
-        text: '탈퇴 후 24시간 동안 재가입이 제한됩니다.'
+        text: '탈퇴 후 24시간 동안 재가입이 제한됩니다.',
     },
-  ]
+  ];
 
   const handleWithdraw = async () => {
     try {
-      const res = await withDrawUser()
-      console.log("handleWithdraw: ", res)
+      const res = await withDrawUser();
+      console.log('handleWithdraw: ', res);
       if (res === 1) {
         showToast('탈퇴가 완료되었습니다.');
-        setUser(null)
-        setNickname('')
-        setProfileUri(null)
-  
-        navigation.navigate("BottomTabNavigator", {
-          screen: "지도",
+        setUser(null);
+        setNickname('');
+        setProfileUri(null);
+
+        navigation.navigate('BottomTabNavigator', {
+          screen: '지도',
           params: { shouldRefresh: true },
         });
       } else {
-          console.log("서버 에러") 
+          console.log('서버 에러');
       }
-      
+
     } catch (err: any) {
       console.log('🚨 탈퇴 오류:', err.response?.data || err.message);
     } finally {
@@ -70,24 +70,24 @@ const QuitScreen: React.FC = () => {
             <Text style={styles.headerTitle}>회원탈퇴</Text>
             <View style={styles.backIcon} />
         </View>
-        
+
         <View style={styles.contentContainer}>
             <Text style={styles.quitTitle}>정말 떠나시겠어요?</Text>
             <Text style={styles.subTitle}>함께한 시간, 즐거웠어요.</Text>
             <Text style={styles.subTitle}>탈퇴 전 아래 내용을 꼭 확인해주세요.</Text>
 
             <View style={styles.quitClueContainer}>
-                <View style={{flexDirection: 'row'}}> 
-                  <Image source={require("../../assets/drawable/Warning.png")} style={{width: 20, height: 20, resizeMode: 'contain'}} />
+                <View style={{flexDirection: 'row'}}>
+                  <Image source={require('../../assets/drawable/Warning.png')} style={{width: 20, height: 20, resizeMode: 'contain'}} />
                   <Text style={styles.quitClueTitle}>회원 탈퇴 시 유의사항 안내</Text>
                 </View>
 
                 {quitSubTitle.map(item => (
                     <Text key={item.id} style={styles.quitClueSubTitle}>
                         {item.id}. {item.text}
-                    </Text>    
+                    </Text>
                 ))}
-                
+
             </View>
         </View>
 
@@ -98,25 +98,25 @@ const QuitScreen: React.FC = () => {
         />
 
 
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.quitBtn}
           onPress={() => setShowWithdrawModal(true)}
         >
-            <Text style={styles.quitText}>탈퇴하기</Text>   
+            <Text style={styles.quitText}>탈퇴하기</Text>
         </TouchableOpacity>
 
-        
+
 
     </View>
   );
-}
+};
 
-export default QuitScreen
+export default QuitScreen;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF'
+    backgroundColor: '#FFFFFF',
   },
   header: {
     flexDirection: 'row',
@@ -125,12 +125,12 @@ const styles = StyleSheet.create({
     height: heightPercentage(52),
     paddingHorizontal: widthPercentage(16),
     paddingTop: heightPercentage(14),
-    paddingBottom: heightPercentage(10)
+    paddingBottom: heightPercentage(10),
 
   },
   icon: {
     width: widthPercentage(24),
-    height: heightPercentage(24)
+    height: heightPercentage(24),
   },
   headerTitle: {
     fontSize: fontPercentage(20),
@@ -163,20 +163,20 @@ const styles = StyleSheet.create({
     backgroundColor: '#F5F5F5',
     paddingVertical: heightPercentage(12),
     paddingHorizontal: widthPercentage(12),
-    marginTop: heightPercentage(20), 
-    borderRadius: 8
-  }, 
+    marginTop: heightPercentage(20),
+    borderRadius: 8,
+  },
   quitClueTitle: {
     fontWeight: '600',
     fontSize: fontPercentage(14),
     color: '#FF465C',
-    marginLeft: widthPercentage(2)
+    marginLeft: widthPercentage(2),
   },
   quitClueSubTitle: {
     fontWeight: '500',
     fontSize: fontPercentage(14),
     color: '#1B1B1B',
-    marginTop: heightPercentage(14)
+    marginTop: heightPercentage(14),
   },
   quitBtn: {
     position: 'relative',
@@ -187,11 +187,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginHorizontal: widthPercentage(16),
     borderRadius: 8,
-    marginBottom: heightPercentage(14)
+    marginBottom: heightPercentage(14),
   },
   quitText: {
     fontSize: fontPercentage(16),
     fontWeight: '600',
-    color: '#FFFFFF', 
-  }
+    color: '#FFFFFF',
+  },
 });

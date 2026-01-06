@@ -7,7 +7,7 @@ import {
   Image,
   ScrollView,
   FlatList,
-  ActivityIndicator
+  ActivityIndicator,
 } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../../Navigation/Navigation';
@@ -25,8 +25,8 @@ interface Props {
 }
 
 const GuideScreen: React.FC<Props> = ({ navigation }) => {
-  const [viewType, setviewType] = useState(0)   // 보기 방식
-  const { guideList, getGuideList, loading } = GuideDetailViewModel()
+  const [viewType, setviewType] = useState(0);   // 보기 방식
+  const { guideList, getGuideList, loading } = GuideDetailViewModel();
 
   useEffect(() => {
     getGuideList();
@@ -35,9 +35,9 @@ const GuideScreen: React.FC<Props> = ({ navigation }) => {
 
   if (loading) {
     return (
-      <View style={{ 
-        flex: 1, 
-        justifyContent: 'center', 
+      <View style={{
+        flex: 1,
+        justifyContent: 'center',
         alignItems: 'center',
       }}>
         <ActivityIndicator size="large" color="#000" />
@@ -47,15 +47,15 @@ const GuideScreen: React.FC<Props> = ({ navigation }) => {
 
   const handleViewType = () => {
     setviewType(viewType === 0 ? 1 : 0);
-  }
+  };
 
   return (
     <View style={styles.rootContainer}>
       {/* 상단 뷰 */}
       <View style={styles.header}>
-        
+
         <Text style={styles.headerTitle}>콘텐츠</Text>
-        
+
         <TouchableOpacity
           onPress={handleViewType}
         >
@@ -71,8 +71,8 @@ const GuideScreen: React.FC<Props> = ({ navigation }) => {
           />
         )}
         </TouchableOpacity>
-      </View>      
-      
+      </View>
+
       <View style={styles.centralContainer}>
         {!loading && (
           viewType === 0 ? (
@@ -85,21 +85,21 @@ const GuideScreen: React.FC<Props> = ({ navigation }) => {
     </View>
   );
 
-}
+};
 
 const ListView = ({ data, navigation } : {
   data: GuideSummary[],
   navigation: any
 }) => {
   return (
-    <ScrollView 
+    <ScrollView
       style={styles.listRoot}
       showsVerticalScrollIndicator={false}
     >
       {data.map((item: GuideSummary) => (
-        <TouchableOpacity 
+        <TouchableOpacity
           activeOpacity={0.95}
-          key={item.part} 
+          key={item.part}
           style={styles.listItem}
           onPress={() => navigation.navigate('GuideDetailScreen', {id: item.part, src: item.imageUrl, title: item.title})}
         >
@@ -111,7 +111,7 @@ const ListView = ({ data, navigation } : {
               </View>
               <Text style={styles.listText}>{item.title}</Text>
           </View>
-        </TouchableOpacity>  
+        </TouchableOpacity>
       ))}
     </ScrollView>
   );
@@ -127,14 +127,14 @@ const GridView = ({ data, navigation }
       data={data}
       numColumns={2}
       style={styles.listRoot}
-      key={"grid"}
-      columnWrapperStyle={{ justifyContent: "space-between" }}
+      key={'grid'}
+      columnWrapperStyle={{ justifyContent: 'space-between' }}
       showsVerticalScrollIndicator={false}
       renderItem={({ item }) => (
-        
-        <TouchableOpacity 
+
+        <TouchableOpacity
           activeOpacity={0.9}
-          key={item.part} 
+          key={item.part}
           style={styles.gridItem}
           onPress={() => navigation.navigate('GuideDetailScreen', {id: item.part, src: item.imageUrl, title: item.title})}
         >
@@ -174,7 +174,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: fontPercentage(20),
     color: '#1B1B1B',
-    fontWeight: '600'
+    fontWeight: '600',
   },
   icon: {
     width: widthPercentage(24),
@@ -183,51 +183,51 @@ const styles = StyleSheet.create({
   },
   centralContainer: {
     flex: 1,
-    marginBottom: heightPercentage(100)
+    marginBottom: heightPercentage(100),
   },
 
   listRoot: {
-    marginHorizontal: widthPercentage(20), 
+    marginHorizontal: widthPercentage(20),
     marginTop: heightPercentage(16),
   },
 
   listItem: {
     position: 'relative',
     marginBottom: heightPercentage(16),
-    borderRadius: 8
+    borderRadius: 8,
   },
   listImage: {
     width: '100%',
     height: heightPercentage(436),
     borderRadius: 8,
-    resizeMode: 'cover'
+    resizeMode: 'cover',
   },
 
   bottomTextContainer: {
-    position: "absolute",
+    position: 'absolute',
     left: 16,
     bottom: 24,
   },
   tagContainer: {
     minWidth: widthPercentage(40),
     height: heightPercentage(20),
-    backgroundColor: "#FFFFFF33",
+    backgroundColor: '#FFFFFF33',
     paddingHorizontal: 8,
     paddingVertical: 2,
     borderRadius: 16,
     alignSelf: 'flex-start',
   },
-  
+
   listBadge: {
     color: '#ffffffff',
     fontSize: fontPercentage(12),
-    fontWeight: '500'
+    fontWeight: '500',
   },
   listText: {
     color: '#ffffffff',
     fontSize: fontPercentage(22),
     fontWeight: '600',
-    marginTop: heightPercentage(10)
+    marginTop: heightPercentage(10),
   },
   // 그리드 UI
   gridItem: {
@@ -240,17 +240,17 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 212,
     borderRadius: 8,
-    resizeMode: 'cover'
+    resizeMode: 'cover',
   },
   bottomGrideTextContainer: {
-    position: "absolute",
+    position: 'absolute',
     left: 8,
     bottom: 16,
   },
   tagGridContainer: {
     minWidth: widthPercentage(40),
     height: heightPercentage(16),
-    backgroundColor: "#FFFFFF33",
+    backgroundColor: '#FFFFFF33',
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: 16,
@@ -259,17 +259,17 @@ const styles = StyleSheet.create({
   listGridBadge: {
     color: '#ffffffff',
     fontSize: fontPercentage(10),
-    fontWeight: '500'
+    fontWeight: '500',
   },
   listGridText: {
     color: '#ffffffff',
     fontSize: fontPercentage(14),
     fontWeight: '600',
-    marginTop: heightPercentage(6)
+    marginTop: heightPercentage(6),
   },
 
 
 
-})
+});
 
-export default GuideScreen
+export default GuideScreen;

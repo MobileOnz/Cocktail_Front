@@ -1,4 +1,4 @@
-import { AuthResult } from "../domain/AuthResult";
+import { AuthResult } from '../domain/AuthResult';
 
 export interface ISocialAuthDataSource {
   login(): Promise<AuthResult>;

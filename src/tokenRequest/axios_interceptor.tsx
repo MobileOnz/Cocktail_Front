@@ -17,7 +17,7 @@ instance.interceptors.request.use(
       config.headers.Authorization = `${accessToken}`;
     } else {
       if (config.url?.includes('bookmarks') || config.url?.includes('user')) {
-        console.log('확인중')
+        console.log('확인중');
         Toast.show({
           type: 'info',
           text1: '로그인이 필요한 서비스입니다.',
@@ -31,7 +31,7 @@ instance.interceptors.request.use(
       config.headers['Content-Type'] = 'application/json';
     }
 
-    console.log("헤더", config.headers)
+    console.log('헤더', config.headers);
     return config;
   },
   (error) => {

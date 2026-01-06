@@ -101,7 +101,7 @@ const TermsAndConditionsScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: widthPercentage(16)
+    paddingHorizontal: widthPercentage(16),
   },
   header: {
     flexDirection: 'row',
@@ -110,7 +110,7 @@ const styles = StyleSheet.create({
     height: heightPercentage(52),
     paddingHorizontal: widthPercentage(16),
     paddingTop: heightPercentage(14),
-    paddingBottom: heightPercentage(10)
+    paddingBottom: heightPercentage(10),
 
   },
   headerTitle: {
@@ -127,12 +127,12 @@ const styles = StyleSheet.create({
     fontSize: fontPercentage(14),
     fontWeight: '600',
     marginTop: heightPercentage(16),
-    color: '#171719'
+    color: '#171719',
   },
   sectionContent: {
     fontSize: fontPercentage(12),
     marginTop: heightPercentage(8),
-    color: '#171719'
+    color: '#171719',
   },
   agreementContainer: {
     marginVertical: 20,

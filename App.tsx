@@ -18,8 +18,8 @@ import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import NaverLogin from '@react-native-seoul/naver-login';
 import { syncKeywordData } from './src/model/local/service/keywordService';
 import { Platform } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { getUniqueId } from 'react-native-device-info';
+// import AsyncStorage from '@react-native-async-storage/async-storage';
+// import { getUniqueId } from 'react-native-device-info';
 import Toast from 'react-native-toast-message';
 
 
@@ -84,8 +84,8 @@ function App(): React.JSX.Element {
     const bootstrapLocalData = async () => {
 
       try {
-        const token = await AsyncStorage.getItem('accessToken');
-        const deviceId = await getUniqueId();
+        // const token = await AsyncStorage.getItem('accessToken');
+        // const deviceId = await getUniqueId();
 
         await initDb();                 // 테이블/마이그레이션
         const keywords = await syncKeywordData();    // SQLite 저장
