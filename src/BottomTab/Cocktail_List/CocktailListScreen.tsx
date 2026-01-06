@@ -37,6 +37,7 @@ const Home = () => {
   }, [vm.newCocktail]);
   return (
     <SafeAreaView style={styles.container}>
+
       {/* 상단 헤더 */}
       <StatusBar barStyle={vm.isScrolled ? 'dark-content' : 'light-content'} backgroundColor={vm.isScrolled ? '#ffffff' : '#000000'} />
       <Appbar.Header style={[styles.header, { backgroundColor: vm.isScrolled ? '#fff' : '#000' }]}>
@@ -106,7 +107,7 @@ const Home = () => {
 
                   {/* 북마크 아이콘 */}
                   <IconButton
-                    icon="bookmark-outline"
+                    icon={item.isBookmarked ? "bookmark" : "bookmark-outline"}
                     onPress={() => { vm.bookmarked(item.id); }}
                     size={28}
                     iconColor="#fff"
@@ -148,7 +149,7 @@ const Home = () => {
                     </View>
 
                     <IconButton
-                      icon={'bookmark-outline'}
+                      icon={item.isBookmarked ? "bookmark" : "bookmark-outline"}
                       onPress={() => { vm.bookmarked(item.id); }}
                       size={28}
                       iconColor="#000"

@@ -42,7 +42,7 @@ export default function CocktailCard({
             style={styles.bookmarkBtn}
             accessibilityLabel="즐겨찾기"
           >
-            <Icon name={bookmarked ? 'bookmark-outline' : 'bookmark'} size={22} color="#FFF" />
+            <Icon name={bookmarked ? 'bookmark' : 'bookmark-outline'} size={22} color="#FFF" />
           </Pressable>
         </View>
       </Pressable>
