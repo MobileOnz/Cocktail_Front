@@ -19,7 +19,11 @@ import GuideScreen from '../Screens/Guide/GuideScreen';
 import GuideDetailScreen from '../Screens/Guide/GuideDetail';
 import CocktailBoxScreen from '../Screens/CocktailBox/CocktailBoxScreen';
 import SearchResultScreen from '../Screens/SearchResult/SearchResultScreen';
+import RecommendationIntroScreen from '../Screens/Recommend/RecommendationIntroScreen';
+import LoadingVideoScreen from '../Screens/Recommend/LoadingVideoScreen';
+import RecommendResultScreen from '../Screens/Recommend/RecommendResultScreen';
 import { User } from '../model/domain/User';
+import { CocktailDetail } from '../model/domain/CocktailDetail';
 import AllCocktailScreen from '../Screens/AllCocktail/AllCocktailScreen';
 
 export type BottomTabParamList = {
@@ -53,9 +57,14 @@ export type RootStackParamList = {
     cocktailName: string;
     cocktailDescription: string;
   };
-  ProfileScreen: { user: User };
+  RecommendResultScreen: {
+    result: CocktailDetail,
+    answers: number[]
+  };
+  ProfileScreen: { user: User};
   QuitScreen: undefined;
   RecommendationIntro: undefined;
+  LoadingVideoScreen: { answers: number[]};
   GuideScreen: undefined;
   GuideDetailScreen: {
     id: number,
@@ -92,11 +101,14 @@ const Navigation: React.FC = () => {
         <Stack.Screen name="CocktailDetailScreen" component={CocktailDetailScreen} />
         <Stack.Screen name="GuideScreen" component={GuideScreen} />
         <Stack.Screen name="GuideDetailScreen" component={GuideDetailScreen} />
+        <Stack.Screen name="RecommendIntroScreen" component={RecommendationIntroScreen} />
         <Stack.Screen name="SignupScreen" component={SignupScreen} />
         <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
         <Stack.Screen name="QuitScreen" component={QuitScreen} />
-        <Stack.Screen name="CocktailBoxScreen" component={CocktailBoxScreen} />
-        <Stack.Screen name="SearchResultScreen" component={SearchResultScreen} />
+        <Stack.Screen name='CocktailBoxScreen' component={CocktailBoxScreen} />
+        <Stack.Screen name='SearchResultScreen' component={SearchResultScreen} />
+        <Stack.Screen name='LoadingVideoScreen' component={LoadingVideoScreen} />
+        <Stack.Screen name='RecommendResultScreen' component={RecommendResultScreen} />
         <Stack.Screen name="AllCocktailScreen" component={AllCocktailScreen} />
       </Stack.Navigator>
     </NavigationContainer>
