@@ -42,7 +42,11 @@ export const useHomeViewModel = (deps?: UseSearchResultDeps) => {
 
 
     try {
-      await instance.post(`/api/v2/cocktails/${cocktailId}/bookmarks`);
+      const response = await instance.post(`/api/v2/cocktails/${cocktailId}/bookmarks`);
+
+      // ✅ 성공 로그
+      console.log(`[Bookmark] ✅ 성공 - ID: ${cocktailId}`);
+      console.log(`[Bookmark] 응답 데이터:`, response.data);
 
     } catch (error: any) {
       console.error('북마크 처리 중 에러 발생:', error);

@@ -21,6 +21,7 @@ export class BookmarkRepository implements IBookmarkRepository {
             name: dto.korName,
             type: dto.style,
             image: dto.imageUrl,
+            isBookmarked: dto.isBookmarked
         }));
     }
 
