@@ -20,6 +20,7 @@ import { syncKeywordData } from './src/model/local/service/keywordService';
 import { Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getUniqueId } from 'react-native-device-info';
+import Toast from 'react-native-toast-message';
 
 
 function AppContent() {
@@ -33,6 +34,7 @@ function AppContent() {
   return (
     <ToastProvider>
       <Navigation />
+      <Toast />
     </ToastProvider>
   );
 }
@@ -115,6 +117,7 @@ function App(): React.JSX.Element {
           </SafeAreaProvider>
         </PaperProvider>
       </BottomSheetModalProvider>
+
     </GestureHandlerRootView>
 
   );

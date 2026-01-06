@@ -25,33 +25,32 @@ export const useHomeViewModel = (deps?: UseSearchResultDeps) => {
   const [isScrolled, setIsScrolled] = useState(false);
 
   const bookmarked = async (cocktailId: number) => {
-    console.log('북마크 토큰:', cocktailId);
-    try {
-      const token = await AsyncStorage.getItem('accessToken');
 
-      if (!token) {
-        console.log('토큰이 없습니다. 로그인이 필요합니다.');
-        return;
-      }
-
-
-      const result = await instance.post(
-        `/api/v2/cocktails/${cocktailId}/bookmarks`,
-        {},
-        {
-          headers: {
-            Authorization: `${token}`,
-          },
-        }
+    //바로 아이템 표시를 위해 낙관적 UI 구조 활용
+    const toggleBookmarkInList = (list: CocktailCard[]) =>
+      list.map(item =>
+        item.id === cocktailId
+          ? { ...item, isBookmarked: !item.isBookmarked }
+          : item
       );
 
-      console.log('북마크 결과:', result.data);
+    setBestCocktail(prev => toggleBookmarkInList(prev));
+    setNewCocktail(prev => toggleBookmarkInList(prev));
+    setRefreshList(prev => toggleBookmarkInList(prev));
+    setBeginnerList(prev => toggleBookmarkInList(prev));
+    setIntermediateList(prev => toggleBookmarkInList(prev));
+
+
+
+    try {
+      await instance.post(`/api/v2/cocktails/${cocktailId}/bookmarks`);
 
     } catch (error: any) {
       console.error('북마크 처리 중 에러 발생:', error);
       console.log('에러 데이터:', error.response.data);
       console.log('에러 상태코드:', error.response.status);
       console.log('에러 헤더:', error.response.headers);
+      await fetchHomeData();
     }
   };
 

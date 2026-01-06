@@ -1,19 +1,19 @@
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { CocktailCard } from '../../model/domain/CocktailCard';
 import { IBookmarkRepository } from '../../model/repository/BookmarkRepository';
+import { di } from '../../DI/Container';
 
 type UseCocktailBoxDeps = {
     repository?: IBookmarkRepository;
 };
 
-const useCocktailBoxViewModel = (deps?: { bookmarkRepository?: UseCocktailBoxDeps }) => {
+const useCocktailBoxViewModel = (deps?: UseCocktailBoxDeps) => {
+    const repository = deps?.repository ?? di.bookmarkRepository;
     const [results, setResults] = useState<CocktailCard[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const repository = deps?.bookmarkRepository?.repository;
-
-    const fetchBookmarkedCocktails = async () => {
+    const fetchBookmarkedCocktails = useCallback(async () => {
         setLoading(true);
         setError(null);
 
@@ -25,7 +25,11 @@ const useCocktailBoxViewModel = (deps?: { bookmarkRepository?: UseCocktailBoxDep
             console.log('Error fetching bookmarked cocktails:', error);
             setError('다시 시도해주세요.');
         }
-    };
+    }, [repository]);
+
+    useEffect(() => {
+        fetchBookmarkedCocktails();
+    }, [fetchBookmarkedCocktails]);
 
     return {
         results,

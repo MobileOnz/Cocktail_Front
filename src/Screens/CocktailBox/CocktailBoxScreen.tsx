@@ -31,11 +31,6 @@ const CocktailBoxScreen = () => {
                             </View>
 
                         </Appbar.Header>
-                        <View style={styles.textContainer}>
-
-                            <Text style={styles.text}>아직 저장한 칵테일이 없네요.</Text>
-                            <Text style={styles.text}>마음에 드는 칵테일을 찾아볼까요?</Text>
-                        </View>
 
                     </SafeAreaView>
                 }

@@ -3,4 +3,5 @@ export interface CocktailCard {
     name: string;
     type: string;
     image: string;
+    isBookmarked: boolean;
 }
