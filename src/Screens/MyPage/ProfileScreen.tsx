@@ -16,6 +16,7 @@ import { widthPercentage, heightPercentage, fontPercentage } from '../../assets/
 import { RouteProp, useNavigation } from '@react-navigation/native';
 import { RootStackParamList } from '../../Navigation/Navigation';
 import MyPageViewModel from './MyPageViewModel';
+import { set } from 'lodash';
 
 type ProfileScreenRouteProp = RouteProp<RootStackParamList, 'ProfileScreen'>;
 
@@ -43,6 +44,7 @@ const ProfileScreen: React.FC<Props> = ({ route }: Props) => {
       setNickname(user.nickname);
       setProfileUri(user.profileUrl || null);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   const onHandleProfileUpdate = async () => {

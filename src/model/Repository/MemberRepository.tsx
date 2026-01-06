@@ -1,7 +1,7 @@
 import { AuthRemoteDataSource } from '../DataSource/AuthRemoteDataSource';
 import { MemberRemoteDataSource } from '../DataSource/MemberDataSource';
 import { User } from '../domain/User';
-import { UserUpdate, UserUpdateResponse } from '../dto/UserUpdateDto';
+import { UserUpdate, UserUpdateResponse } from '../dto/UserUpdateDto.ts';
 
 export class MemberRepository {
   constructor(

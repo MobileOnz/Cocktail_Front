@@ -1,5 +1,5 @@
 import { API_BASE_URL } from '@env';
-import { getToken, tokenRefresh, } from './Token';
+import { getToken, tokenRefresh } from './Token';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-toast-message';
@@ -14,7 +14,6 @@ instance.interceptors.request.use(
   async (config) => {
     const accessToken = await getToken();
     if (accessToken) {
-      console.log("accessToken 존재: ", accessToken)
       config.headers.Authorization = `${accessToken}`;
     } else {
       if (config.url?.includes('bookmarks') || config.url?.includes('user')) {
@@ -49,7 +48,6 @@ instance.interceptors.response.use(
       (originalRequest as any)._retry = true;
 
       const newAccessToken = await tokenRefresh();
-
       console.log('newAccessToken', newAccessToken);
       if (!newAccessToken) {
         Toast.show({
