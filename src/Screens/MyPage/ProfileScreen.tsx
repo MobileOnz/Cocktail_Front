@@ -16,6 +16,7 @@ import { widthPercentage, heightPercentage, fontPercentage } from '../../assets/
 import { RouteProp, useNavigation } from '@react-navigation/native';
 import { RootStackParamList } from '../../Navigation/Navigation';
 import MyPageViewModel from './MyPageViewModel';
+import { set } from 'lodash';
 
 type ProfileScreenRouteProp = RouteProp<RootStackParamList, 'ProfileScreen'>;
 
