@@ -1,6 +1,6 @@
 import { KeywordDatasource } from '../../DataSource/KeywordDatasource';
 import { Keyword } from '../../dto/KeywordDto';
-import { replaceAllKeywords } from '../../Repository/KeywordRepository';
+import { replaceAllKeywords } from '../../repository/KeywordRepository';
 
 
 const datasource = new KeywordDatasource();
