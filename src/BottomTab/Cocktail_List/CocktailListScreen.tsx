@@ -78,10 +78,12 @@ const Home = () => {
           </Text>
           <FlatList
             data={vm.bestCocktail}
+            extraData={vm.bestCocktail}
             keyExtractor={item => String(item.id)}
             horizontal
             showsHorizontalScrollIndicator={false}
             renderItem={({ item, index }) => (
+
               <TouchableOpacity
                 activeOpacity={0.8}
                 onPress={() =>
@@ -184,6 +186,7 @@ const Home = () => {
         </Text>
         <FlatList
           data={vm.refreshList}
+          extraData={vm.refreshList}
           horizontal
           keyExtractor={item => String(item.id)}
           showsHorizontalScrollIndicator={false}
@@ -211,6 +214,7 @@ const Home = () => {
         </Text>
         <FlatList
           data={vm.beginnerList}
+          extraData={vm.beginnerList}
           horizontal
           keyExtractor={item => String(item.id)}
           showsHorizontalScrollIndicator={false}
@@ -238,6 +242,7 @@ const Home = () => {
         </Text>
         <FlatList
           data={vm.intermediateList}
+          extraData={vm.intermediateList}
           horizontal
           keyExtractor={item => String(item.id)}
           showsHorizontalScrollIndicator={false}
