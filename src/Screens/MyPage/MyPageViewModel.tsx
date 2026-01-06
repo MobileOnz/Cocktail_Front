@@ -22,6 +22,10 @@ const MyPageViewModel = () => {
   const [loading, setLoading] = useState(false);
   const [nickname, setNickname] = useState('');
 
+  useEffect(() => {
+    getMemberInfo();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const getMemberInfo = async () => {
     try {
