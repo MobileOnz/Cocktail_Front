@@ -10,10 +10,10 @@ class DIContainer {
     readonly cocktailDetailRepository: ICocktailDetailRepository;
     readonly bookmarkRepository: IBookmarkRepository;
     constructor() {
-        this.bookmarkRepository = new BookmarkRepository();
         this.cocktailSearchRepository = new SearchRepository();
         this.homeCocktailRepository = new HomeCocktailRepository();
         this.cocktailDetailRepository = new CocktailDetailRepository();
+        this.bookmarkRepository = new BookmarkRepository();
     }
 
 }

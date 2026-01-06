@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { CocktailGuideRepository } from "../../model/Repository/CocktailGuideRepository";
+import { CocktailGuideRepository } from "../../model/repository/CocktailGuideRepository";
 import { CocktailGuideDataSource } from "../../model/DataSource/CocktailGuideDataSource";
 import { GuideSummary } from "../../model/domain/GuideSummary";
 import { Guide } from "../../model/domain/GuideDetail";
@@ -8,9 +8,9 @@ import { stay3sViewGuidedetail, viewPageGuidedetail } from "../../analytics/even
 const GuideDetailViewModel = () => {
     const repository = useMemo(
         () =>
-        new CocktailGuideRepository(
-            new CocktailGuideDataSource()
-        ),
+            new CocktailGuideRepository(
+                new CocktailGuideDataSource()
+            ),
         []
     );
 
@@ -31,7 +31,7 @@ const GuideDetailViewModel = () => {
         }
     }
 
-    const getGuideDetail = async(part: number) => {
+    const getGuideDetail = async (part: number) => {
         try {
             setLoading(true);
             const guideDetail = await repository.guideDetail(part)

@@ -8,7 +8,7 @@ type UseCocktailBoxDeps = {
 };
 
 const useCocktailBoxViewModel = (deps?: UseCocktailBoxDeps) => {
-    const repository = deps?.repository ?? di.bookmarkRepository;
+    const repository = deps?.repository ?? di?.bookmarkRepository;
     const [results, setResults] = useState<CocktailCard[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);

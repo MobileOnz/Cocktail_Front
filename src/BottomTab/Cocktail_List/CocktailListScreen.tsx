@@ -193,13 +193,15 @@ const Home = () => {
               name={item.name}
               image={item.image}
               type={item.type}
-              bookmarked={true}
+              bookmarked={item.isBookmarked}
               onPress={() =>
                 navigation.navigate('CocktailDetailScreen', {
                   cocktailId: item.id,
                 })
               }
-              onToggleBookmark={_next => { }}
+              onToggleBookmark={() => {
+                vm.bookmarked(item.id);
+              }}
             />
           )}
         />
@@ -218,13 +220,15 @@ const Home = () => {
               name={item.name}
               image={item.image}
               type={item.type}
-              bookmarked={true}
+              bookmarked={item.isBookmarked}
               onPress={() =>
                 navigation.navigate('CocktailDetailScreen', {
                   cocktailId: item.id,
                 })
               }
-              onToggleBookmark={_next => { }}
+              onToggleBookmark={() => {
+                vm.bookmarked(item.id);
+              }}
             />
           )}
         />
@@ -243,13 +247,15 @@ const Home = () => {
               name={item.name}
               image={item.image}
               type={item.type}
-              bookmarked={true}
+              bookmarked={item.isBookmarked}
               onPress={() =>
                 navigation.navigate('CocktailDetailScreen', {
                   cocktailId: item.id,
                 })
               }
-              onToggleBookmark={_next => { }}
+              onToggleBookmark={() => {
+                vm.bookmarked(item.id);
+              }}
             />
           )}
         />
