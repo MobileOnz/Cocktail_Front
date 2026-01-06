@@ -2,7 +2,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { RootStackParamList } from '../../Navigation/Navigation';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { searchKeywords } from '../../model/Repository/KeywordRepository';
+import { searchKeywords } from '../../model/repository/KeywordRepository';
 import { Keyword } from '../../model/dto/KeywordDto';
 
 export type SearchLog = {

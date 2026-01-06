@@ -105,10 +105,10 @@ const Navigation: React.FC = () => {
         <Stack.Screen name="SignupScreen" component={SignupScreen} />
         <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
         <Stack.Screen name="QuitScreen" component={QuitScreen} />
-        <Stack.Screen name='CocktailBoxScreen' component={CocktailBoxScreen} />
-        <Stack.Screen name='SearchResultScreen' component={SearchResultScreen} />
-        <Stack.Screen name='LoadingVideoScreen' component={LoadingVideoScreen} />
-        <Stack.Screen name='RecommendResultScreen' component={RecommendResultScreen} />
+        <Stack.Screen name="CocktailBoxScreen" component={CocktailBoxScreen} />
+        <Stack.Screen name="SearchResultScreen" component={SearchResultScreen} />
+        <Stack.Screen name="LoadingVideoScreen" component={LoadingVideoScreen} />
+        <Stack.Screen name="RecommendResultScreen" component={RecommendResultScreen} />
         <Stack.Screen name="AllCocktailScreen" component={AllCocktailScreen} />
       </Stack.Navigator>
     </NavigationContainer>

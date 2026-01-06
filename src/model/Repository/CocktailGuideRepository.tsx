@@ -1,6 +1,6 @@
-import { CocktailGuideDataSource } from "../DataSource/CocktailGuideDataSource";
-import { Guide } from "../domain/GuideDetail";
-import { GuideSummary } from "../domain/GuideSummary";
+import { CocktailGuideDataSource } from '../DataSource/CocktailGuideDataSource';
+import { Guide } from '../domain/GuideDetail';
+import { GuideSummary } from '../domain/GuideSummary';
 
 export class CocktailGuideRepository {
   constructor(
@@ -13,8 +13,8 @@ export class CocktailGuideRepository {
     return res.data.map(item => ({
         part: item.part,
         title: item.title,
-        imageUrl: item.imageUrl
-    }))
+        imageUrl: item.imageUrl,
+    }));
 
   }
 

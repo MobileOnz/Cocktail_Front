@@ -1,7 +1,7 @@
-import { AuthRemoteDataSource } from "../DataSource/AuthRemoteDataSource";
-import { ISocialAuthDataSource } from "../DataSource/ISocialAuthDataSource";
-import { AuthResult } from "../domain/AuthResult";
-import { SignUpRequest } from "../domain/SignupRequest";
+import { AuthRemoteDataSource } from '../DataSource/AuthRemoteDataSource';
+import { ISocialAuthDataSource } from '../DataSource/ISocialAuthDataSource';
+import { AuthResult } from '../domain/AuthResult';
+import { SignUpRequest } from '../domain/SignupRequest';
 
 export class AuthRepository {
   constructor(
@@ -16,15 +16,15 @@ export class AuthRepository {
   }
 
   kakaoLogin(): Promise<AuthResult> {
-    return this.kakaoDataSource.login()
+    return this.kakaoDataSource.login();
   }
 
   googleLogin(): Promise<AuthResult> {
-    return this.googleDataSource.login()
+    return this.googleDataSource.login();
   }
 
   signUp(req: SignUpRequest) {
-    return this.authRemoteDataSource.signUp(req)
+    return this.authRemoteDataSource.signUp(req);
   }
-  
+
 }

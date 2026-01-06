@@ -4,7 +4,7 @@ import { View, StyleSheet, Animated } from 'react-native';
 import Video from 'react-native-video';
 import { RootStackParamList } from '../../Navigation/Navigation';
 import VideoViewModel from './VideoViewModel';
-import {fontPercentage } from '../../assets/styles/FigmaScreen'; 
+import {fontPercentage } from '../../assets/styles/FigmaScreen';
 import { useToast } from '../../Components/ToastContext';
 
 type RecommendationLoadingVideoScreenNavigationProp = StackNavigationProp<
@@ -25,7 +25,7 @@ const texts = [
 
 const LoadingVideoScreen: React.FC<Props> = ({navigation, route}) => {
     const { answers } = route.params;
-    const { textIdx, setTextIdx, recommend, viewPageRecommendation } = VideoViewModel()
+    const { textIdx, setTextIdx, recommend, viewPageRecommendation } = VideoViewModel();
     const {showToast} = useToast();
     const fadeAnim = useRef(new Animated.Value(1)).current;
     const translateY = useRef(new Animated.Value(0)).current;
@@ -76,7 +76,7 @@ const LoadingVideoScreen: React.FC<Props> = ({navigation, route}) => {
             const result = await recommend(answers);
             if (!result) {
               setTimeout( () => {
-                showToast("칵테일 추천에 실패했어요")
+                showToast('칵테일 추천에 실패했어요');
                 navigation.reset({
                   index: 0,
                   routes: [
@@ -89,18 +89,18 @@ const LoadingVideoScreen: React.FC<Props> = ({navigation, route}) => {
                   ],
                 });
               }, 4500);
-              return
+              return;
             } else {
-              viewPageRecommendation(answers)
+              viewPageRecommendation(answers);
               setTimeout( () => {
-                  navigation.navigate('RecommendResultScreen', { result, answers })
+                  navigation.navigate('RecommendResultScreen', { result, answers });
               }, 4500);
             }
         };
         run();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
-    
+    }, []);
+
     return (
         <View style={styles.container}>
             <Video
@@ -150,6 +150,6 @@ const styles = StyleSheet.create({
     fontSize: fontPercentage(22),
     fontWeight: '600',
     color: 'white',
-    textAlign: 'center'
+    textAlign: 'center',
   },
 });

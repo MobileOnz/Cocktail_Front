@@ -131,7 +131,7 @@ const RecommendationIntroScreen: React.FC<Props> = ({ navigation }) => {
 
         <Animated.View style={{opacity}}>
           <IconComponent style = {{width: '100%', marginBottom: 50}} size={400} color="#FFFFFF" strokeWidth={1} fill="#FFFFFF" />
-        </Animated.View>      
+        </Animated.View>
 
         {/* 설명 텍스트 (페이드인 애니메이션) */}
         <Animated.View style={{ opacity: fadeAnim}}>
@@ -147,7 +147,7 @@ const RecommendationIntroScreen: React.FC<Props> = ({ navigation }) => {
         {/* 버튼 */}
         <Animated.View style={[
           { transform: [{ scale: buttonScale }] },
-          styles.confirmButtonContainer
+          styles.confirmButtonContainer,
         ]}>
 
           <TouchableOpacity
@@ -170,7 +170,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   backButton: {
     position: 'absolute',
@@ -193,7 +193,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     textAlign: 'center',
   },
-  descriptionSecond: {    
+  descriptionSecond: {
     fontSize: fontPercentage(14),
     lineHeight: fontPercentage(20),
     fontWeight: 'medium',
@@ -204,7 +204,7 @@ const styles = StyleSheet.create({
   cocktailImage: {
     width: widthPercentage(179),
     height: heightPercentage(335),
-    resizeMode: 'contain'
+    resizeMode: 'contain',
   },
   confirmButton: {
     width: widthPercentage(343),
@@ -220,11 +220,11 @@ const styles = StyleSheet.create({
   confirmButtonText: {
     fontSize: fontPercentage(16),
     color: '#FFFFFF',
-    fontWeight: '500'
+    fontWeight: '500',
   },
   confirmButtonContainer: {
     position: 'absolute',
     bottom: 52,
     alignItems: 'center',
-  }
+  },
 });
