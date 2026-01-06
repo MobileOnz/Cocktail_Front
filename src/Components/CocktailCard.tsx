@@ -12,10 +12,11 @@ type Props = {
   type: string;
   bookmarked?: boolean;
   onPress?: () => void;
-  onToggleBookmark?: (_next: boolean) => void;
+  onToggleBookmark?: (id: number, nextStatus: boolean) => void;
 };
 
 export default function CocktailCard({
+  id,
   name,
   type,
   image,
@@ -38,11 +39,11 @@ export default function CocktailCard({
           {/* 우상단: 북마크 */}
           <Pressable
             hitSlop={10}
-            onPress={() => onToggleBookmark?.(!bookmarked)}
+            onPress={() => onToggleBookmark?.(id, !bookmarked)}
             style={styles.bookmarkBtn}
             accessibilityLabel="즐겨찾기"
           >
-            <Icon name={bookmarked ? 'bookmark-outline' : 'bookmark'} size={22} color="#FFF" />
+            <Icon name={bookmarked ? 'bookmark' : 'bookmark-outline'} size={22} color="#FFF" />
           </Pressable>
         </View>
       </Pressable>

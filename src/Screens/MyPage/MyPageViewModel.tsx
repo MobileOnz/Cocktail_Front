@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { MemberRemoteDataSource } from '../../model/DataSource/MemberDataSource';
 import { MemberRepository } from '../../model/repository/MemberRepository';
 import { AuthRemoteDataSource } from '../../model/DataSource/AuthRemoteDataSource';
@@ -22,22 +22,40 @@ const MyPageViewModel = () => {
   const [loading, setLoading] = useState(false);
   const [nickname, setNickname] = useState('');
 
+  const getUserProfileImage = useCallback(async () => {
+    try {
+      setLoading(true);
+      const blob = await repository.getUserProfileImage();
+      if (blob !== null) {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          const base64data = reader.result as string;
+          setProfileUri(base64data);
+        };
+        reader.readAsDataURL(blob);
+      }
+    } catch (error) {
+      console.log('getUserProfileImage 오류');
+    } finally {
+      setLoading(false);
+    }
+  }, [repository]);
+
   useEffect(() => {
     getMemberInfo();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const getMemberInfo = async () => {
+  const getMemberInfo = useCallback(async () => {
     try {
       setLoading(true);
       const result = await repository.getMyInfo();
       setUser(result);
       setNickname(result.nickname);
 
-      if (user?.profileUrl !== null) {
+      if (result && result.profileUrl !== null) {
         getUserProfileImage();
       }
-
       console.log('내 정보 수신: ', result);
       return result;
     } catch (e: any) {
@@ -49,10 +67,11 @@ const MyPageViewModel = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [repository, getUserProfileImage]);
+
   useEffect(() => {
     getMemberInfo();
-  }, []);
+  }, [getMemberInfo]);
 
   const logOut = async () => {
     try {
@@ -96,28 +115,7 @@ const MyPageViewModel = () => {
     }
   };
 
-  const getUserProfileImage = async () => {
-    try {
-      setLoading(true);
-      const blob = await repository.getUserProfileImage();
-      console.log('MyPageViewModel: ', blob);
-      if (blob !== null) {
 
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          const base64data = reader.result as string;
-          setProfileUri(base64data);
-          console.log('📷 Base64 이미지 설정 완료');
-        };
-        reader.readAsDataURL(blob);
-      }
-    } catch (error) {
-      setLoading(false);
-      console.log('getUserProfileImage 백엔드 응답: ', '오류');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const withDrawUser = async () => {
     try {

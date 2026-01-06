@@ -1,0 +1,8 @@
+# .eslintignore
+node_modules/
+android/
+ios/
+build/
+dist/
+vendor/
+**/*.bundle.js

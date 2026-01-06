@@ -15,4 +15,5 @@ export interface CocktailDto {
     imageUrl: string;
     flavors: string[];
     moods: string[];
+    isBookmarked: boolean
 }

@@ -37,6 +37,7 @@ const Home = () => {
   }, [vm.newCocktail]);
   return (
     <SafeAreaView style={styles.container}>
+
       {/* 상단 헤더 */}
       <StatusBar barStyle={vm.isScrolled ? 'dark-content' : 'light-content'} backgroundColor={vm.isScrolled ? '#ffffff' : '#000000'} />
       <Appbar.Header style={[styles.header, { backgroundColor: vm.isScrolled ? '#fff' : '#000' }]}>
@@ -77,10 +78,12 @@ const Home = () => {
           </Text>
           <FlatList
             data={vm.bestCocktail}
+            extraData={vm.bestCocktail}
             keyExtractor={item => String(item.id)}
             horizontal
             showsHorizontalScrollIndicator={false}
             renderItem={({ item, index }) => (
+
               <TouchableOpacity
                 activeOpacity={0.8}
                 onPress={() =>
@@ -106,8 +109,8 @@ const Home = () => {
 
                   {/* 북마크 아이콘 */}
                   <IconButton
-                    icon="bookmark-outline"
-                    onPress={() => { }}
+                    icon={item.isBookmarked ? 'bookmark' : 'bookmark-outline'}
+                    onPress={() => { vm.bookmarked(item.id); }}
                     size={28}
                     iconColor="#fff"
                     style={styles.bestBookmarkButton}
@@ -150,8 +153,8 @@ const Home = () => {
                     </View>
 
                     <IconButton
-                      icon={'bookmark-outline'}
-                      onPress={() => { }}
+                      icon={item.isBookmarked ? 'bookmark' : 'bookmark-outline'}
+                      onPress={() => { vm.bookmarked(item.id); }}
                       size={28}
                       iconColor="#000"
                       style={styles.newCocktailBookmark}
@@ -183,6 +186,7 @@ const Home = () => {
         </Text>
         <FlatList
           data={vm.refreshList}
+          extraData={vm.refreshList}
           horizontal
           keyExtractor={item => String(item.id)}
           showsHorizontalScrollIndicator={false}
@@ -192,13 +196,15 @@ const Home = () => {
               name={item.name}
               image={item.image}
               type={item.type}
-              bookmarked={true}
+              bookmarked={item.isBookmarked}
               onPress={() =>
                 navigation.navigate('CocktailDetailScreen', {
                   cocktailId: item.id,
                 })
               }
-              onToggleBookmark={_next => { }}
+              onToggleBookmark={() => {
+                vm.bookmarked(item.id);
+              }}
             />
           )}
         />
@@ -208,6 +214,7 @@ const Home = () => {
         </Text>
         <FlatList
           data={vm.beginnerList}
+          extraData={vm.beginnerList}
           horizontal
           keyExtractor={item => String(item.id)}
           showsHorizontalScrollIndicator={false}
@@ -217,13 +224,15 @@ const Home = () => {
               name={item.name}
               image={item.image}
               type={item.type}
-              bookmarked={true}
+              bookmarked={item.isBookmarked}
               onPress={() =>
                 navigation.navigate('CocktailDetailScreen', {
                   cocktailId: item.id,
                 })
               }
-              onToggleBookmark={_next => { }}
+              onToggleBookmark={() => {
+                vm.bookmarked(item.id);
+              }}
             />
           )}
         />
@@ -233,6 +242,7 @@ const Home = () => {
         </Text>
         <FlatList
           data={vm.intermediateList}
+          extraData={vm.intermediateList}
           horizontal
           keyExtractor={item => String(item.id)}
           showsHorizontalScrollIndicator={false}
@@ -242,13 +252,15 @@ const Home = () => {
               name={item.name}
               image={item.image}
               type={item.type}
-              bookmarked={true}
+              bookmarked={item.isBookmarked}
               onPress={() =>
                 navigation.navigate('CocktailDetailScreen', {
                   cocktailId: item.id,
                 })
               }
-              onToggleBookmark={_next => { }}
+              onToggleBookmark={() => {
+                vm.bookmarked(item.id);
+              }}
             />
           )}
         />
