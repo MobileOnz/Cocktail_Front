@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../../Navigation/Navigation';
-import { widthPercentage, heightPercentage, fontPercentage } from '../../assets/styles/FigmaScreen'; 
+import { widthPercentage, heightPercentage, fontPercentage } from '../../assets/styles/FigmaScreen';
 import ResultViewModel from './ResultViewModel';
 
 type RecommendResultSreenNavigationProp = StackNavigationProp<
@@ -24,7 +24,7 @@ interface Props {
 
 const RecommendResultScreen: React.FC<Props> = ({ navigation, route }) => {
     const { result, answers } = route.params;
-    const { clickCtaRecommendResult } = ResultViewModel()
+    const { clickCtaRecommendResult } = ResultViewModel();
 
     // [버튼] 한잔 더 추천받기
     const resetRecommendation = () => {
@@ -37,14 +37,14 @@ const RecommendResultScreen: React.FC<Props> = ({ navigation, route }) => {
     // 칵테일 상세화면 이동
     const handleCocktailDetail = () => {
         if ( result?.id) {
-          clickCtaRecommendResult(result.id, result.engName, answers)
-          navigation.navigate("GuideDetailScreen", { id: result.id as number, src: result.imageUrl, title: result.korName } );
+          clickCtaRecommendResult(result.id, result.engName, answers);
+          navigation.navigate('GuideDetailScreen', { id: result.id as number, src: result.imageUrl, title: result.korName } );
         }
-    }
+    };
 
     return (
         <View style={styles.container}>
-            
+
             {/* 상단 뷰 */}
             <View style={styles.header}>
                 <TouchableOpacity
@@ -57,7 +57,7 @@ const RecommendResultScreen: React.FC<Props> = ({ navigation, route }) => {
                     style={styles.icon}
                     /> */}
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => 
+                <TouchableOpacity onPress={() =>
                     navigation.reset({
                         index: 0,
                         routes: [
@@ -83,25 +83,25 @@ const RecommendResultScreen: React.FC<Props> = ({ navigation, route }) => {
             {/* 바텀 뷰 */}
             <View style={styles.bottomContainer}>
                 <View style={styles.lastButtonsWrapper}>
-                    <TouchableOpacity 
-                        style={[styles.bottomBtnLeft]} 
+                    <TouchableOpacity
+                        style={[styles.bottomBtnLeft]}
                         onPress={resetRecommendation}
                     >
                     <Text style={[styles.bottomBtnLeftText]}>한 잔 더 추천받기</Text>
 
-                    </TouchableOpacity>  
-                    
-                    <TouchableOpacity 
-                        style={[styles.bottomBtnRight]} 
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                        style={[styles.bottomBtnRight]}
                         onPress={handleCocktailDetail}
                     >
                         <Text style={[styles.bottomBtnRightText]}>이 칵테일 보기</Text>
-                    </TouchableOpacity>  
+                    </TouchableOpacity>
                 </View>
             </View>
         </View>
-    )
-}
+    );
+};
 
 // 결과 화면
 const ResultScreen = ( {data} ) => {
@@ -110,35 +110,35 @@ const ResultScreen = ( {data} ) => {
     MEDIUM: '보통',
     STRONG: '강함',
   };
-  const [isFlipped, setIsFlipped] = useState(false)
-  const flipAnim = useRef(new Animated.Value(0)).current
-  
+  const [isFlipped, setIsFlipped] = useState(false);
+  const flipAnim = useRef(new Animated.Value(0)).current;
+
 
   const flipCard = () => {
     if (isFlipped) {
       Animated.timing(flipAnim, {
         toValue: 0,
         duration: 300,
-        useNativeDriver: true
-      }).start(() => setIsFlipped(false))
+        useNativeDriver: true,
+      }).start(() => setIsFlipped(false));
     } else {
       Animated.timing(flipAnim, {
         toValue: 1,
         duration: 300,
-        useNativeDriver: true
-      }).start(() => setIsFlipped(true))
+        useNativeDriver: true,
+      }).start(() => setIsFlipped(true));
     }
-  }
+  };
 
   const frontRotate = flipAnim.interpolate({
     inputRange: [0, 1],
-    outputRange: ['0deg', '180deg']
-  })
+    outputRange: ['0deg', '180deg'],
+  });
 
   const backRotate = flipAnim.interpolate({
     inputRange: [0, 1],
-    outputRange: ['180deg', '360deg']
-  })
+    outputRange: ['180deg', '360deg'],
+  });
 
   return (
     <View style={{flex:1}}>
@@ -149,7 +149,7 @@ const ResultScreen = ( {data} ) => {
         {/* 뒤집기 아이콘 */}
         <TouchableOpacity onPress={flipCard} style={styles.flipButton}>
           <Image
-            source={require('../../assets/drawable/Flip.png')} 
+            source={require('../../assets/drawable/Flip.png')}
             style={{width: widthPercentage(34), height: heightPercentage(34)}}
           />
         </TouchableOpacity>
@@ -158,12 +158,12 @@ const ResultScreen = ( {data} ) => {
           style={[
             styles.card,
             {
-              transform: [{rotateY: frontRotate}]
-            }
+              transform: [{rotateY: frontRotate}],
+            },
           ]}
         >
           <Image
-            source={ {uri: data.imageUrl }} 
+            source={ {uri: data.imageUrl }}
             style={{width:'100%', height: '85%', resizeMode:'cover', borderRadius: 8}}
           />
           <Text style={styles.resultText}>
@@ -173,7 +173,7 @@ const ResultScreen = ( {data} ) => {
             {data.korName}
           </Text>
         </Animated.View>
-        
+
         <Animated.View
           style={[
             styles.card,
@@ -181,12 +181,12 @@ const ResultScreen = ( {data} ) => {
             {
               transform: [
                 {rotateY: backRotate},
-              ]
-            }
+              ],
+            },
           ]}
         >
           <Image
-            source={ {uri: data.imageUrl }} 
+            source={ {uri: data.imageUrl }}
             style={{width:'100%', height: '85%', resizeMode:'cover', borderRadius: 8, transform: [{scaleX: -1}] }}
             blurRadius={6}
           />
@@ -229,16 +229,16 @@ const styles = StyleSheet.create({
   resultInfoBox: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: heightPercentage(5)
+    paddingVertical: heightPercentage(5),
   },
 
   resultInfoTitleText: {
     flex: 1,
     fontSize: fontPercentage(14),
     color: '#BDBDBD',
-    
+
   },
-  
+
   resultInfoSubText: {
     flex: 4,
     fontSize: fontPercentage(16),
@@ -269,7 +269,7 @@ const styles = StyleSheet.create({
     fontSize: fontPercentage(20),
     color: '#FFFFFF',
     fontWeight: '700',
-    fontStyle: 'italic'
+    fontStyle: 'italic',
   },
 
   resultTitleText: {
@@ -303,7 +303,7 @@ const styles = StyleSheet.create({
     color: '#BDBDBD',
     fontWeight: '500',
     textAlign: 'center',
-    paddingBottom: heightPercentage(20)
+    paddingBottom: heightPercentage(20),
   },
 
   container: {
@@ -323,24 +323,24 @@ const styles = StyleSheet.create({
     height: widthPercentage(24),
     resizeMode: 'contain',
   },
-  
+
   centralContainer: {
     flex: 8,
     paddingVertical: heightPercentage(20),
-    paddingHorizontal: heightPercentage(20),   
+    paddingHorizontal: heightPercentage(20),
   },
 
   bottomContainer: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#fffcf3'
+    backgroundColor: '#fffcf3',
   },
 
   lastButtonsWrapper: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    columnGap: 10
+    columnGap: 10,
   },
 
   bottomBtnLeft: {
@@ -352,7 +352,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: widthPercentage(16),
     marginLeft: widthPercentage(16),
     borderRadius: 8,
-    alignItems: 'center'
+    alignItems: 'center',
   },
 
   bottomBtnRight: {
@@ -362,7 +362,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: widthPercentage(16),
     marginRight: widthPercentage(16),
     borderRadius: 8,
-    alignItems: 'center'
+    alignItems: 'center',
   },
 
   bottomBtnLeftText: {
@@ -375,6 +375,6 @@ const styles = StyleSheet.create({
     fontSize: fontPercentage(14),
     color: '#FFFFFF',
   },
-})
+});
 
 export default RecommendResultScreen;

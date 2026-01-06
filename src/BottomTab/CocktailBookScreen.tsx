@@ -156,7 +156,7 @@ const CocktailBookScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={[styles.safeContainer, {
-      paddingBottom: Platform.OS === 'android' ? 24 : insets.bottom || 24
+      paddingBottom: Platform.OS === 'android' ? 24 : insets.bottom || 24,
     }]}>
       <ScrollView style={styles.container}>
         {/* 상단 로고 & 아이콘 */}

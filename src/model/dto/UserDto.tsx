@@ -6,7 +6,7 @@ export interface UserResponse {
   name: string;
   nickname: string;
   email: string;
-  socialLogin: "KAKAO" | "NAVER" | "GOOGLE";
+  socialLogin: 'KAKAO' | 'NAVER' | 'GOOGLE';
   gender: string | null;
   addr: string | null;
   age: number | null;
