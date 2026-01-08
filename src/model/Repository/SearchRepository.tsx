@@ -74,6 +74,7 @@ export class SearchRepository implements ISearchRepository {
             name: dto.korName,
             type: dto.style,
             image: dto.imageUrl,
+            isBookmarked: dto.isBookmarked
         }));
     }
 
