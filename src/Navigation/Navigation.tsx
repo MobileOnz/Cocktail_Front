@@ -25,6 +25,11 @@ import RecommendResultScreen from '../Screens/Recommend/RecommendResultScreen';
 import { User } from '../model/domain/User';
 import { CocktailDetail } from '../model/domain/CocktailDetail';
 import AllCocktailScreen from '../Screens/AllCocktail/AllCocktailScreen';
+import OnboardingScreen from '../Screens/Onboarding/OnboardingScreen';
+
+interface NavigationProps {
+  isOnboarded: boolean;
+}
 
 export type BottomTabParamList = {
   지도: undefined;
@@ -33,7 +38,7 @@ export type BottomTabParamList = {
   마이페이지: undefined;
 };
 export type RootStackParamList = {
-  Onboarding: undefined;
+  OnboardingScreen: undefined;
   Login: undefined;
   Home: undefined;
   SearchScreen: { initialKeyword?: string };
@@ -61,10 +66,10 @@ export type RootStackParamList = {
     result: CocktailDetail,
     answers: number[]
   };
-  ProfileScreen: { user: User};
+  ProfileScreen: { user: User };
   QuitScreen: undefined;
   RecommendationIntro: undefined;
-  LoadingVideoScreen: { answers: number[]};
+  LoadingVideoScreen: { answers: number[] };
   GuideScreen: undefined;
   GuideDetailScreen: {
     id: number,
@@ -82,13 +87,14 @@ export type RootStackParamList = {
 
 const Stack = createStackNavigator<RootStackParamList>();
 
-const Navigation: React.FC = () => {
+const Navigation: React.FC<NavigationProps> = ({ isOnboarded }) => {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="BottomTabNavigator"
+        initialRouteName={isOnboarded ? "BottomTabNavigator" : "Onboarding"}
         screenOptions={{ headerShown: false }}
       >
+        <Stack.Screen name="Onboarding" component={OnboardingScreen} />
         <Stack.Screen name="TermsAndConditionsScreen" component={TermsAndConditionsScreen} />
         <Stack.Screen name="PrivacyPolicyScreen" component={PrivacyPolicyScreen} />
         <Stack.Screen name="Login" component={LoginScreen} />
