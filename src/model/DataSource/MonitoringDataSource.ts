@@ -8,7 +8,9 @@ export class MonitoriingDataSouce {
             const result = await axios.get(`${API_BASE_URL}/api/v2/monitoring/onboarding/status`, {
                 params: { deviceNumber: deviceId },
             });
-            return result.data.onboardingCompleted;
+            return {
+                isOnboarded: result.data.onboardingCompleted
+            };
         } catch (error) {
             throw error;
         }

@@ -84,38 +84,43 @@ export type RootStackParamList = {
   CocktailBoxScreen: undefined
 
 };
-
 const Stack = createStackNavigator<RootStackParamList>();
 
 const Navigation: React.FC<NavigationProps> = ({ isOnboarded }) => {
   return (
     <NavigationContainer>
-      <Stack.Navigator
-        initialRouteName={isOnboarded ? "BottomTabNavigator" : "Onboarding"}
-        screenOptions={{ headerShown: false }}
-      >
-        <Stack.Screen name="Onboarding" component={OnboardingScreen} />
-        <Stack.Screen name="TermsAndConditionsScreen" component={TermsAndConditionsScreen} />
-        <Stack.Screen name="PrivacyPolicyScreen" component={PrivacyPolicyScreen} />
-        <Stack.Screen name="Login" component={LoginScreen} />
-        <Stack.Screen name="SearchScreen" component={SearchScreen} />
-        <Stack.Screen name="Home" component={Home} />
-        <Stack.Screen name="BottomTabNavigator" component={BottomTabNavigator} />
-        <Stack.Screen name="RecommendationHome" component={RecommendationScreen} />
-        <Stack.Screen name="LoadingScreen" component={LoadingScreen} />
-        <Stack.Screen name="ResultScreen" component={ResultScreen} />
-        <Stack.Screen name="CocktailDetailScreen" component={CocktailDetailScreen} />
-        <Stack.Screen name="GuideScreen" component={GuideScreen} />
-        <Stack.Screen name="GuideDetailScreen" component={GuideDetailScreen} />
-        <Stack.Screen name="RecommendIntroScreen" component={RecommendationIntroScreen} />
-        <Stack.Screen name="SignupScreen" component={SignupScreen} />
-        <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
-        <Stack.Screen name="QuitScreen" component={QuitScreen} />
-        <Stack.Screen name="CocktailBoxScreen" component={CocktailBoxScreen} />
-        <Stack.Screen name="SearchResultScreen" component={SearchResultScreen} />
-        <Stack.Screen name="LoadingVideoScreen" component={LoadingVideoScreen} />
-        <Stack.Screen name="RecommendResultScreen" component={RecommendResultScreen} />
-        <Stack.Screen name="AllCocktailScreen" component={AllCocktailScreen} />
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        {isOnboarded ? (
+          <>
+            <Stack.Screen name="BottomTabNavigator" component={BottomTabNavigator} />
+            <Stack.Screen name="Home" component={Home} />
+            <Stack.Screen name="AllCocktailScreen" component={AllCocktailScreen} />
+            <Stack.Screen name="CocktailDetailScreen" component={CocktailDetailScreen} />
+            <Stack.Screen name="SearchScreen" component={SearchScreen} />
+            <Stack.Screen name="SearchResultScreen" component={SearchResultScreen} />
+            <Stack.Screen name="RecommendationHome" component={RecommendationScreen} />
+            <Stack.Screen name="RecommendIntroScreen" component={RecommendationIntroScreen} />
+            <Stack.Screen name="LoadingVideoScreen" component={LoadingVideoScreen} />
+            <Stack.Screen name="RecommendResultScreen" component={RecommendResultScreen} />
+            <Stack.Screen name="GuideScreen" component={GuideScreen} />
+            <Stack.Screen name="GuideDetailScreen" component={GuideDetailScreen} />
+            <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
+            <Stack.Screen name="QuitScreen" component={QuitScreen} />
+            <Stack.Screen name="CocktailBoxScreen" component={CocktailBoxScreen} />
+            <Stack.Screen name="Login" component={LoginScreen} />
+            <Stack.Screen name="SignupScreen" component={SignupScreen} />
+            <Stack.Screen name="TermsAndConditionsScreen" component={TermsAndConditionsScreen} />
+            <Stack.Screen name="PrivacyPolicyScreen" component={PrivacyPolicyScreen} />
+            <Stack.Screen name='LoadingScreen' component={LoadingScreen} />
+            <Stack.Screen name='ResultScreen' component={ResultScreen} />
+          </>
+        ) : (
+          //  2. 온보딩이 안 된 경우 (인증/온보딩 스택)
+          <>
+            <Stack.Screen name="Onboarding" component={OnboardingScreen} />
+
+          </>
+        )}
       </Stack.Navigator>
     </NavigationContainer>
   );
