@@ -145,18 +145,18 @@ export const useSearchViewModel = ({
         }
 
 
-    }, [])
+    }, [fetchRecentSearches])
     const clearAllRecentSearches = useCallback(async () => {
         try {
             const result = instance.delete(`/api/v2/cocktails/search/history/all`)
             console.log(result);
-            fetchRecentSearches();
+            await fetchRecentSearches();
         } catch (error: any) {
             console.log('문제가 발생했습니다.', error.data)
         }
 
 
-    }, [])
+    }, [fetchRecentSearches])
 
     return {
         // state
