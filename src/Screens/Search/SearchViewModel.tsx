@@ -132,11 +132,7 @@ export const useSearchViewModel = ({
     //개별 삭제 
     const removeRecentSearch = useCallback(async (id: number) => {
         try {
-            const result = await instance.delete(`/api/v2/cocktails/search/history`,
-                {
-                    data: { id: id }
-                }
-            )
+            const result = await instance.delete(`/api/v2/cocktails/search/history/${id}`);
             console.log('삭제 결과:', result.data);
             await fetchRecentSearches();
 

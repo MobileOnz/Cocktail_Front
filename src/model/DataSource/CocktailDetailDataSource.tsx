@@ -10,4 +10,5 @@ export class CocktailDetailDataSource {
         });
         return res.data.data as CocktailDto[];
     }
+    async responseButton
 }
