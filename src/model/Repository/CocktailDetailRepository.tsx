@@ -38,6 +38,7 @@ export class CocktailDetailRepository implements ICocktailDetailRepository {
       imageUrl: dto.imageUrl,
       flavors: dto.flavors,
       moods: dto.moods,
+      isBookmarked: dto.isBookmarked
     };
 
     return detail;
