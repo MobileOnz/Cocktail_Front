@@ -1,5 +1,5 @@
 // App.tsx
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import SplashScreen from 'react-native-splash-screen';
 import Navigation from './src/Navigation/Navigation';
@@ -21,9 +21,11 @@ import { Platform } from 'react-native';
 // import AsyncStorage from '@react-native-async-storage/async-storage';
 // import { getUniqueId } from 'react-native-device-info';
 import Toast from 'react-native-toast-message';
+import { getUniqueId } from 'react-native-device-info';
+import { MonitoringRepository } from './src/model/repository/MonitoringRepository';
 
 
-function AppContent() {
+function AppContent({ isOnboarded }: { isOnboarded: boolean }) {
   const insets = useSafeAreaInsets();
 
 
@@ -33,13 +35,15 @@ function AppContent() {
 
   return (
     <ToastProvider>
-      <Navigation />
+      <Navigation isOnboarded={isOnboarded} />
       <Toast />
     </ToastProvider>
   );
 }
 
 function App(): React.JSX.Element {
+
+  const [isOnboarded, setIsOnboarded] = useState<boolean | null>(null);
 
   const consumerKey = 'ZGxXBBPpRH3V1SuUWME8';
   const consumerSecret = 'joOUHCi6DR';
@@ -85,13 +89,19 @@ function App(): React.JSX.Element {
 
       try {
         // const token = await AsyncStorage.getItem('accessToken');
-        // const deviceId = await getUniqueId();
+        const deviceId = await getUniqueId();
+        const monitoringRepo = new MonitoringRepository();
 
+        const status = await monitoringRepo.checkOnboardingStatus(deviceId);
+        console.log('device :', deviceId);
+        console.log('[Onboarding Status]:', status);
+        setIsOnboarded(status);
         await initDb();                 // 테이블/마이그레이션
         const keywords = await syncKeywordData();    // SQLite 저장
         console.log('[Keyword first item]', keywords?.[0]);
       } catch (error) {
         console.error('bootstrap error: ', error);
+        setIsOnboarded(false);
         // 실패해도 앱은 띄우기
       } finally {
         // 3) 모든 작업 끝난 뒤 스플래시 제거
@@ -113,7 +123,7 @@ function App(): React.JSX.Element {
       <BottomSheetModalProvider>
         <PaperProvider>
           <SafeAreaProvider>
-            <AppContent />
+            <AppContent isOnboarded={isOnboarded} />
           </SafeAreaProvider>
         </PaperProvider>
       </BottomSheetModalProvider>
