@@ -1,11 +1,10 @@
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import axios from 'axios';
-import React, { useCallback, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { getUniqueId } from 'react-native-device-info';
 import Toast from 'react-native-toast-message';
 import { RootStackParamList } from '../../Navigation/Navigation';
-import { API_BASE_URL } from '@env';
+
 import instance from '../../tokenRequest/axios_interceptor';
 
 const UseOnboarindViewModel = () => {
@@ -47,51 +46,34 @@ const UseOnboarindViewModel = () => {
         try {
 
             const deviceId = await getUniqueId();
-            const baseUrl = API_BASE_URL;
-
             const payload = {
                 deviceNumber: deviceId,
                 gender: gender,
                 ageRange: ageRange
             };
 
-            const response = await axios.post(`${baseUrl}/api/v2/monitoring/onboarding`, payload);
-
+            const response = await instance.post(`/api/v2/monitoring/onboarding`, payload);
             if (response.status === 200 || response.status === 201) {
                 handleSuccess();
             }
         } catch (error: any) {
-            if (axios.isAxiosError(error) && error.response?.data?.code === -1) {
-                const errorMsg = error.response.data.data;
+            console.log('--- 온보딩 catch 진입 ---');
+            console.error('Error Object:', error);
 
-                if (errorMsg.includes("이미 회원으로 등록된 기기")) {
-                    try {
-                        const deviceId = await getUniqueId();
-                        const patchResponse = await instance.post(`${API_BASE_URL}/api/v2/members/onboarding`, {
-                            deviceNumber: deviceId,
-                            gender,
-                            ageRange
-                        });
-
-                        if (patchResponse.status === 200 || patchResponse.status === 201) {
-                            handleSuccess();
-                            return;
-                        }
-                    } catch (patchError: any) {
-                        console.error("PATCH 상세 에러:", patchError.response?.data || patchError.message);
-
-                        console.error("Patch Error:", patchError);
-                    }
-                }
+            if (error.response) {
+                // 서버에서 응답을 준 경우 (400, 500 등)
+                console.log('Server Error Data:', error.response.data);
+            } else if (error.request) {
+                // 요청은 보냈으나 응답이 없는 경우 (네트워크 에러)
+                console.log('No Response from Server (Network Error)');
             }
+
 
             Toast.show({
                 type: 'error',
                 text1: '오류 발생',
                 text2: '서버 통신 중 문제가 발생했습니다.'
             });
-        } finally {
-            setIsLoading(false);
         }
     }, [gender, ageRange, navigation]);
 

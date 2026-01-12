@@ -12,8 +12,8 @@ export class MonitoringRepository implements IMonitoringRepository {
     }
 
     async checkOnboardingStatus(deviceId: string): Promise<boolean> {
-        const dtoRaw = await this.dataSource.getUserStatus(deviceId);
+        const data = await this.dataSource.getUserStatus(deviceId);
 
-        return dtoRaw?.isOnboarded ?? false;
+        return data.isOnboarded;
     }
 }

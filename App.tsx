@@ -93,6 +93,7 @@ function App(): React.JSX.Element {
         const monitoringRepo = new MonitoringRepository();
 
         const status = await monitoringRepo.checkOnboardingStatus(deviceId);
+        console.log('device :', deviceId);
         console.log('[Onboarding Status]:', status);
         setIsOnboarded(status);
         await initDb();                 // 테이블/마이그레이션
