@@ -90,12 +90,10 @@ jobs:
           echo "SAFE_NAME=$SAFE_NAME" >> $GITHUB_ENV
           echo " Using artifact name: android-$SAFE_NAME"
 
-      # 12️⃣ 결과물 업로드 (APK/AAB)
-      - name: Upload APK/AAB
-        uses: actions/upload-artifact@v4
+# 13️⃣ Firebase App Distribution에 업로드
+      - name: Upload to Firebase App Distribution
+        uses: w9jds/firebase-action@master
         with:
-          name: android-${{ steps.artifact-name.outputs.safe_name }}
-          path: |
-            android/app/build/outputs/apk/debug/app-debug.apk
-            android/app/build/outputs/apk/release/app-release.apk
-            android/app/build/outputs/bundle/release/app-release.aab
+          args: appdistribution:distribute android/app/build/outputs/apk/debug/app-debug.apk --app ${{ secrets.FIREBASE_APP_ID_ANDROID }} --groups "testers"
+        env:
+          GCP_SA_KEY: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_KEY }}
