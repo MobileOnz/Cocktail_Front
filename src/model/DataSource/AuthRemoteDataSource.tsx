@@ -1,8 +1,8 @@
-import { SignUpRequest } from "../domain/SignupRequest";
-import axios from "axios";
-import { API_BASE_URL } from "@env";
-import { SignUpResponse } from "../domain/SignupResponse";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { SignUpRequest } from '../domain/SignupRequest';
+import axios from 'axios';
+import { API_BASE_URL } from '@env';
+import { SignUpResponse } from '../domain/SignupResponse';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export class AuthRemoteDataSource {
 
@@ -23,8 +23,8 @@ export class AuthRemoteDataSource {
 
   async logOut(): Promise<number> {
     try {
-      const accessToken = await AsyncStorage.getItem("accessToken");
-      console.log(accessToken, accessToken)
+      const accessToken = await AsyncStorage.getItem('accessToken');
+      console.log(accessToken, accessToken);
       const response = await axios.post(
         `${API_BASE_URL}/api/v2/auth/logout`,
         {},
@@ -46,5 +46,5 @@ export class AuthRemoteDataSource {
     }
   }
 
-  
+
 }

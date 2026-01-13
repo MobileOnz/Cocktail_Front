@@ -25,6 +25,7 @@ export const CocktailSchema = z.object({
 
   glassType: z.string(),
   glassImageUrl: z.string().url(),
+  isBookmarked: z.boolean(),
 });
 
 export type CocktailListItem = z.infer<typeof CocktailSchema>;

@@ -46,6 +46,7 @@ export class HomeCocktailRepository implements IHomeCocktailRepository {
             name: dto.korName,
             type: dto.style,
             image: dto.imageUrl,
+            isBookmarked: dto.isBookmarked,
         }));
     }
     // 베스트
@@ -61,6 +62,7 @@ export class HomeCocktailRepository implements IHomeCocktailRepository {
             name: dto.korName,
             type: dto.style,
             image: dto.imageUrl,
+            isBookmarked: dto.isBookmarked,
         }));
     }
 
@@ -77,6 +79,7 @@ export class HomeCocktailRepository implements IHomeCocktailRepository {
             name: dto.korName,
             type: dto.style,
             image: dto.imageUrl,
+            isBookmarked: dto.isBookmarked,
         }));
     }
 
@@ -93,6 +96,7 @@ export class HomeCocktailRepository implements IHomeCocktailRepository {
             name: dto.korName,
             type: dto.style,
             image: dto.imageUrl,
+            isBookmarked: dto.isBookmarked,
         }));
     }
 
@@ -109,6 +113,7 @@ export class HomeCocktailRepository implements IHomeCocktailRepository {
             name: dto.korName,
             type: dto.style,
             image: dto.imageUrl,
+            isBookmarked: dto.isBookmarked,
         }));
     }
 

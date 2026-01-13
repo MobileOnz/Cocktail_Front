@@ -20,8 +20,8 @@ const MyPageScreen = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const {showToast} = useToast();
   const [showSignOutModal, setShowSignOutModal] = useState(false);
-  const [ user, setUser] = useState<User | null>(null)
-  const { loading, profileUri, getMemberInfo, logOut } = MyPageViewModel()
+  const [ user, setUser] = useState<User | null>(null);
+  const { loading, profileUri, getMemberInfo, logOut } = MyPageViewModel();
 
   useEffect(() => {
     const fetch = async () => {
@@ -35,6 +35,7 @@ const MyPageScreen = () => {
     };
 
     fetch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleLogout = async () => {
@@ -140,30 +141,30 @@ const MyPageScreen = () => {
       </View> */}
       { loading ? (
         <ActivityIndicator size="large" color="#000000ff" style={{flex: 1}} />
-      ): (
+      ) : (
         <View>
           <View style={styles.topBar}>
             <Text style={styles.topTitleText}>마이페이지</Text>
           </View>
-    
+
           {/* 광고 이미지 넣기*/}
-          {isLoggedIn && <View style={styles.bannerAd}></View>}
-    
+          {isLoggedIn && <View style={styles.bannerAd} />}
+
           {/* 로그인 O */}
           {isLoggedIn ? (
             <>
               <TouchableOpacity style={styles.profileInfoContainer} onPress={handleLoginPress}>
                 <Image
                   source={
-                    profileUri 
+                    profileUri
                     ? {uri: profileUri}
                     : require('../../assets/drawable/profile.png')}
                   style={styles.profileImage}
                 />
-                <Text style={styles.userNickNmText}>{user?.nickname || "사용자 닉네임"}</Text>
+                <Text style={styles.userNickNmText}>{user?.nickname || '사용자 닉네임'}</Text>
                 <Image source={require('../../assets/drawable/right-chevron.png')} style={styles.profilerightArrow} />
               </TouchableOpacity>
-            
+
               <TouchableOpacity style={styles.cocktailBox}>
                 <Text style={styles.cocktailBoxText}>나의 칵테일 보관함</Text>
                 <Image source={require('../../assets/drawable/bookmark.png')} style={styles.cockTailBookmark} />
@@ -173,15 +174,15 @@ const MyPageScreen = () => {
             <TouchableOpacity style={styles.loginContainer} onPress={handleLoginPress}>
               <Text style={styles.loginText}>
                 {isLoggedIn ? user?.nickname : '로그인・회원가입'}
-              </Text> 
+              </Text>
             </TouchableOpacity>
           )}
-    
+
           {/* 광고 이미지 넣기*/}
-          {!isLoggedIn && <View style={styles.bannerAd}></View>}
-    
-    
-    
+          {!isLoggedIn && <View style={styles.bannerAd} />}
+
+
+
           <Text style={styles.supportTitle}>고객지원</Text>
           <View style={styles.supportSection}>
             {renderSupportItem('버전 정보')}
@@ -192,7 +193,7 @@ const MyPageScreen = () => {
               {renderSupportItem('서비스 리뷰 남기기')}
             </TouchableOpacity>
           </View>
-    
+
           <Text style={styles.supportSecondTitle}>서비스 약관</Text>
           <TouchableOpacity onPress={()=>navigation.navigate('TermsAndConditionsScreen')}>
             {renderSupportItem('이용약관')}
@@ -200,7 +201,7 @@ const MyPageScreen = () => {
           <TouchableOpacity onPress={()=>navigation.navigate('PrivacyPolicyScreen')}>
             {renderSupportItem('개인정보 처리방침')}
           </TouchableOpacity>
-    
+
           {isLoggedIn && (
             <View>
               <TouchableOpacity onPress={() => setShowSignOutModal(true)}>
@@ -208,13 +209,13 @@ const MyPageScreen = () => {
               </TouchableOpacity>
             </View>
           )}
-      
-            
+
+
           <SignOutModal
             visible={showSignOutModal}
             onClose={() => setShowSignOutModal(false)}
             onSignOut={handleLogout}
-          /> 
+          />
         </View>
       )}
 

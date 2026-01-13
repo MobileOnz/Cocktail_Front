@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -6,11 +6,14 @@ import {
   StyleSheet,
   Image,
   ScrollView,
-  FlatList
+  FlatList,
+  ActivityIndicator,
 } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../../Navigation/Navigation';
 import { widthPercentage, heightPercentage, fontPercentage } from '../../assets/styles/FigmaScreen';
+import GuideDetailViewModel from './GuideDetailViewModel';
+import { GuideSummary } from '../../model/domain/GuideSummary';
 
 type GuideSreenNavigationProp = StackNavigationProp<
   RootStackParamList,
@@ -22,36 +25,37 @@ interface Props {
 }
 
 const GuideScreen: React.FC<Props> = ({ navigation }) => {
-  const [viewType, setviewType] = useState(0)  
-  // const [images, setImages] = useState([]);     // 서버에서 받아온 이미지
-  // const [loading, setLoading] = useState(false); // 로딩 상태
-  const [loading] = useState(false); // 로딩 상태
-  
-  // 테스트 이미지
-  const testImages = [
-    { id: 1, src: require('../../assets/drawable/testGuide.jpg'), title: '칵테일이란' },
-    { id: 2, src: require('../../assets/drawable/testGuide.jpg'), title: '칵테일이란' },
-    { id: 3, src: require('../../assets/drawable/testGuide.jpg'), title: '칵테일이란' },
-    { id: 4, src: require('../../assets/drawable/testGuide.jpg'), title: '칵테일이란' },
-    { id: 5, src: require('../../assets/drawable/testGuide.jpg'), title: '칵테일이란' },
-    { id: 6, src: require('../../assets/drawable/testGuide.jpg'), title: '칵테일이란' },
-    { id: 7, src: require('../../assets/drawable/testGuide.jpg'), title: '칵테일이란' },
-    { id: 8, src: require('../../assets/drawable/testGuide.jpg'), title: '칵테일이란' },
-    { id: 9, src: require('../../assets/drawable/testGuide.jpg'), title: '칵테일이란' },
-    { id: 10, src: require('../../assets/drawable/testGuide.jpg'), title: '칵테일이란' },
-  ];
+  const [viewType, setviewType] = useState(0);   // 보기 방식
+  const { guideList, getGuideList, loading } = GuideDetailViewModel();
+
+  useEffect(() => {
+    getGuideList();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [viewType]);
+
+  if (loading) {
+    return (
+      <View style={{
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}>
+        <ActivityIndicator size="large" color="#000" />
+      </View>
+    );
+  }
 
   const handleViewType = () => {
     setviewType(viewType === 0 ? 1 : 0);
-  }
-  console.log(viewType)
+  };
+
   return (
     <View style={styles.rootContainer}>
       {/* 상단 뷰 */}
       <View style={styles.header}>
-        
+
         <Text style={styles.headerTitle}>콘텐츠</Text>
-        
+
         <TouchableOpacity
           onPress={handleViewType}
         >
@@ -67,75 +71,90 @@ const GuideScreen: React.FC<Props> = ({ navigation }) => {
           />
         )}
         </TouchableOpacity>
-      </View>      
-      
+      </View>
+
       <View style={styles.centralContainer}>
         {!loading && (
           viewType === 0 ? (
-            <ListView images={testImages} navigation={navigation} />
+            <ListView data={guideList} navigation={navigation} />
           ) : (
-            <GridView images={testImages} navigation={navigation} />
+            <GridView data={guideList} navigation={navigation} />
           )
         )}
       </View>
-
-
-
-      
     </View>
   );
 
-}
+};
 
-const ListView = ({ images, navigation }) => {
-  
-
+const ListView = ({ data, navigation } : {
+  data: GuideSummary[],
+  navigation: any
+}) => {
   return (
-    <ScrollView style={styles.listRoot}>
-      {images.map(item => (
-        <TouchableOpacity key={item.id} style={styles.listItem}
-          onPress={() => navigation.navigate('GuideDetailScreen', {id: item.id, src: item.src, title: item.title})}
+    <ScrollView
+      style={styles.listRoot}
+      showsVerticalScrollIndicator={false}
+    >
+      {data.map((item: GuideSummary) => (
+        <TouchableOpacity
+          activeOpacity={0.95}
+          key={item.part}
+          style={styles.listItem}
+          onPress={() => navigation.navigate('GuideDetailScreen', {id: item.part, src: item.imageUrl, title: item.title})}
         >
-          <Image source={item.src} style={styles.listImage} />
+          <Image source={{ uri: item.imageUrl}} style={styles.listImage} />
 
           <View style={styles.bottomTextContainer}>
               <View style={styles.tagContainer}>
-                <Text style={styles.listBadge}>Part.{item.id}</Text>
+                <Text style={styles.listBadge}>Part.{getPart(item.part)}</Text>
               </View>
               <Text style={styles.listText}>{item.title}</Text>
           </View>
-        </TouchableOpacity>  
+        </TouchableOpacity>
       ))}
     </ScrollView>
   );
 };
 
-const GridView = ({ images, navigation }) => {
+const GridView = ({ data, navigation }
+  : {
+  data: GuideSummary[],
+  navigation: any
+}) => {
   return (
     <FlatList
-      data={images}
+      data={data}
       numColumns={2}
       style={styles.listRoot}
-      key={"grid"}
-      columnWrapperStyle={{ justifyContent: "space-between" }}
+      key={'grid'}
+      columnWrapperStyle={{ justifyContent: 'space-between' }}
+      showsVerticalScrollIndicator={false}
       renderItem={({ item }) => (
-        
-        <TouchableOpacity key={item.id} style={styles.gridItem}
-          onPress={() => navigation.navigate('GuideDetailScreen', {id: item.id, src: item.src, title: item.title})}
+
+        <TouchableOpacity
+          activeOpacity={0.9}
+          key={item.part}
+          style={styles.gridItem}
+          onPress={() => navigation.navigate('GuideDetailScreen', {id: item.part, src: item.imageUrl, title: item.title})}
         >
-            <Image source={item.src} style={styles.gridImage} />
+            <Image source={{ uri: item.imageUrl}} style={styles.gridImage} />
 
             <View style={styles.bottomGrideTextContainer}>
                 <View style={styles.tagGridContainer}>
-                  <Text style={styles.listGridBadge}>Part.{item.id}</Text>
+                  <Text style={styles.listGridBadge}>Part.{getPart(item.part)}</Text>
                 </View>
                 <Text style={styles.listGridText}>{item.title}</Text>
             </View>
         </TouchableOpacity>
       )}
-      keyExtractor={item => item.id.toString()}
+      keyExtractor={(item: GuideSummary) => item.part.toString()}
     />
   );
+};
+
+const getPart = (value: number) => {
+  return Math.floor(value / 100);
 };
 
 const styles = StyleSheet.create({
@@ -151,12 +170,11 @@ const styles = StyleSheet.create({
     paddingLeft: widthPercentage(16),
     paddingRight: widthPercentage(16),
     paddingBottom: heightPercentage(10),
-    backgroundColor: '#ff0000ff'
   },
   headerTitle: {
     fontSize: fontPercentage(20),
     color: '#1B1B1B',
-    fontWeight: '600'
+    fontWeight: '600',
   },
   icon: {
     width: widthPercentage(24),
@@ -165,48 +183,51 @@ const styles = StyleSheet.create({
   },
   centralContainer: {
     flex: 1,
-    marginBottom: heightPercentage(100)
+    marginBottom: heightPercentage(100),
   },
 
   listRoot: {
-    marginHorizontal: widthPercentage(24), 
-    marginTop: heightPercentage(16)
+    marginHorizontal: widthPercentage(20),
+    marginTop: heightPercentage(16),
   },
+
   listItem: {
     position: 'relative',
     marginBottom: heightPercentage(16),
-    borderRadius: 8
+    borderRadius: 8,
   },
   listImage: {
     width: '100%',
+    height: heightPercentage(436),
     borderRadius: 8,
-    resizeMode: 'cover'
+    resizeMode: 'cover',
   },
 
   bottomTextContainer: {
-    position: "absolute",
+    position: 'absolute',
     left: 16,
     bottom: 24,
   },
   tagContainer: {
-    width: widthPercentage(48),
+    minWidth: widthPercentage(40),
     height: heightPercentage(20),
-    backgroundColor: "#FFFFFF33",
+    backgroundColor: '#FFFFFF33',
     paddingHorizontal: 8,
     paddingVertical: 2,
-    borderRadius: 16,   // 높이보다 충분히 크게 주면 완전 둥근 원
+    borderRadius: 16,
+    alignSelf: 'flex-start',
   },
-  
+
   listBadge: {
     color: '#ffffffff',
     fontSize: fontPercentage(12),
-    fontWeight: '500'
+    fontWeight: '500',
   },
   listText: {
     color: '#ffffffff',
     fontSize: fontPercentage(22),
     fontWeight: '600',
-    marginTop: heightPercentage(10)
+    marginTop: heightPercentage(10),
   },
   // 그리드 UI
   gridItem: {
@@ -219,35 +240,36 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 212,
     borderRadius: 8,
-    resizeMode: 'cover'
+    resizeMode: 'cover',
   },
   bottomGrideTextContainer: {
-    position: "absolute",
+    position: 'absolute',
     left: 8,
     bottom: 16,
   },
   tagGridContainer: {
-    width: widthPercentage(40),
+    minWidth: widthPercentage(40),
     height: heightPercentage(16),
-    backgroundColor: "#FFFFFF33",
+    backgroundColor: '#FFFFFF33',
     paddingHorizontal: 6,
     paddingVertical: 2,
-    borderRadius: 16,   // 높이보다 충분히 크게 주면 완전 둥근 원
+    borderRadius: 16,
+    alignSelf: 'flex-start',
   },
   listGridBadge: {
     color: '#ffffffff',
     fontSize: fontPercentage(10),
-    fontWeight: '500'
+    fontWeight: '500',
   },
   listGridText: {
     color: '#ffffffff',
     fontSize: fontPercentage(14),
     fontWeight: '600',
-    marginTop: heightPercentage(6)
+    marginTop: heightPercentage(6),
   },
 
 
 
-})
+});
 
-export default GuideScreen
+export default GuideScreen;

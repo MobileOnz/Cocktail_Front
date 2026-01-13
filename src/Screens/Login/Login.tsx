@@ -11,23 +11,23 @@ type LoginScreenProps = StackScreenProps<RootStackParamList, 'Login'>;
 
 const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
   const {showToast} = useToast();
-  const { loginWithNaver, loginWithKakao, loginWithGoogle } = AuthViewModel()
+  const { loginWithNaver, loginWithKakao, loginWithGoogle } = AuthViewModel();
 
   const naverLogin = async () => {
     try {
       const result = await loginWithNaver();
 
-      if (result.type === "token") {
-        showToast("로그인하였습니다.");
-        navigation.navigate("BottomTabNavigator", {
-          screen: "지도",
+      if (result.type === 'token') {
+        showToast('로그인하였습니다.');
+        navigation.navigate('BottomTabNavigator', {
+          screen: '지도',
           params: { shouldRefresh: true },
         });
         return;
       }
 
-      if (result.type === "signup") {
-        navigation.navigate("SignupScreen", {
+      if (result.type === 'signup') {
+        navigation.navigate('SignupScreen', {
           code: result.signupCode,
         });
         return;
@@ -37,20 +37,20 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
       if (error instanceof AuthError) {
         switch (error.type) {
           case AuthErrorType.TOKEN_EXPIRED:
-            showToast("로그인이 만료되었습니다.");
+            showToast('로그인이 만료되었습니다.');
             break;
 
           case AuthErrorType.SOCIAL_LOGIN_FAILED:
-            showToast("소셜 로그인에 실패했습니다.");
+            showToast('소셜 로그인에 실패했습니다.');
             break;
 
           default:
-            showToast("로그인에 실패했습니다.");
+            showToast('로그인에 실패했습니다.');
         }
         return;
       }
 
-      showToast("알 수 없는 오류가 발생했습니다.");
+      showToast('알 수 없는 오류가 발생했습니다.');
     }
   };
 
@@ -131,18 +131,18 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
   const googleLogin = async () => {
     try {
       const result = await loginWithGoogle();
-      console.log(JSON.stringify(result))
-      if (result.type === "token") {
-        showToast("로그인하였습니다.");
-        navigation.navigate("BottomTabNavigator", {
-          screen: "지도",
+      console.log(JSON.stringify(result));
+      if (result.type === 'token') {
+        showToast('로그인하였습니다.');
+        navigation.navigate('BottomTabNavigator', {
+          screen: '지도',
           params: { shouldRefresh: true },
         });
         return;
       }
 
-      if (result.type === "signup") {
-        navigation.navigate("SignupScreen", {
+      if (result.type === 'signup') {
+        navigation.navigate('SignupScreen', {
           code: result.signupCode,
         });
         return;
@@ -152,20 +152,20 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
       if (error instanceof AuthError) {
         switch (error.type) {
           case AuthErrorType.TOKEN_EXPIRED:
-            showToast("로그인이 만료되었습니다.");
+            showToast('로그인이 만료되었습니다.');
             break;
 
           case AuthErrorType.SOCIAL_LOGIN_FAILED:
-            showToast("소셜 로그인에 실패했습니다.");
+            showToast('소셜 로그인에 실패했습니다.');
             break;
 
           default:
-            showToast("로그인에 실패했습니다.");
+            showToast('로그인에 실패했습니다.');
         }
         return;
       }
 
-      showToast("알 수 없는 오류가 발생했습니다.");
+      showToast('알 수 없는 오류가 발생했습니다.');
     }
   };
 

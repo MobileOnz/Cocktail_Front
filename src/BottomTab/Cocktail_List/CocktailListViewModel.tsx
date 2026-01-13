@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useState } from 'react';
-import { IHomeCocktailRepository } from '../../model/repository/HomeCocktailRepository';
+import { IHomeCocktailRepository } from '../../model/Repository/HomeCocktailRepository';
 import { di } from '../../DI/Container';
 import { CocktailCard } from '../../model/domain/CocktailCard';
 import { CocktailMain } from '../../model/domain/CocktailMain';
 import { API_BASE_URL } from '@env';
+import instance from '../../tokenRequest/axios_interceptor';
 
 
 type UseSearchResultDeps = {
@@ -20,6 +21,49 @@ export const useHomeViewModel = (deps?: UseSearchResultDeps) => {
   const [beginnerList, setBeginnerList] = useState<CocktailCard[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  const bookmarked = async (cocktailId: number) => {
+
+    //바로 아이템 표시를 위해 낙관적 UI 구조 활용
+    const toggleBookmarkInList = (list: CocktailCard[]) =>
+      list.map(item =>
+        item.id === cocktailId
+          ? { ...item, isBookmarked: !item.isBookmarked }
+          : item
+      );
+
+    setBestCocktail(prev => toggleBookmarkInList(prev));
+    setNewCocktail(prev => toggleBookmarkInList(prev));
+    setRefreshList(prev => toggleBookmarkInList(prev));
+    setBeginnerList(prev => toggleBookmarkInList(prev));
+    setIntermediateList(prev => toggleBookmarkInList(prev));
+
+
+
+    try {
+      await instance.post(`/api/v2/cocktails/${cocktailId}/bookmarks`);
+
+    } catch (error: any) {
+      console.error('북마크 처리 중 에러 발생:', error);
+      console.log('에러 데이터:', error.response.data);
+      console.log('에러 상태코드:', error.response.status);
+      console.log('에러 헤더:', error.response.headers);
+      await fetchHomeData();
+    }
+  };
+
+  const handleScroll = (event: any) => {
+    const offsetY = event.nativeEvent.contentOffset.y;
+
+    const isTop = offsetY <= 10;
+
+    if (!isTop && !isScrolled) {
+      setIsScrolled(true);
+    } else if (isTop && isScrolled) {
+      setIsScrolled(false);
+    }
+  };
 
   const fetchHomeData = useCallback(async () => {
     setLoading(true);
@@ -58,6 +102,7 @@ export const useHomeViewModel = (deps?: UseSearchResultDeps) => {
   }, [fetchHomeData]);
 
   return {
+    bookmarked,
     randomCocktail,
     bestCocktail,
     newCocktail,
@@ -66,5 +111,8 @@ export const useHomeViewModel = (deps?: UseSearchResultDeps) => {
     intermediateList,
     loading,
     error,
+    handleScroll,
+    isScrolled,
+    setIsScrolled,
   };
 };

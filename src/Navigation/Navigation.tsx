@@ -11,15 +11,25 @@ import ResultScreen from '../Screens/ResultScreen';
 import SignupScreen from '../Screens/Login/SignupScreen';
 import ProfileScreen from '../Screens/MyPage/ProfileScreen';
 import TermsAndConditionsScreen from '../Screens/MyPage/TermsAndConditionsScreen';
-import QuitScreen from '../Screens/MyPage/QuitScreen'
-import PrivacyPolicyScreen from '../Screens/MyPage/PrivacyPolicyScreen'
+import QuitScreen from '../Screens/MyPage/QuitScreen';
+import PrivacyPolicyScreen from '../Screens/MyPage/PrivacyPolicyScreen';
 import { CocktailDetailScreen } from '../Components/CocktailDetail/CocktailDetailScreen';
-import RecommendationScreen from '../Screens/Recommend/RecommendationScreen'
-import GuideScreen from '../Screens/Guide/GuideScreen'
+import RecommendationScreen from '../Screens/Recommend/RecommendationScreen';
+import GuideScreen from '../Screens/Guide/GuideScreen';
 import GuideDetailScreen from '../Screens/Guide/GuideDetail';
 import CocktailBoxScreen from '../Screens/CocktailBox/CocktailBoxScreen';
 import SearchResultScreen from '../Screens/SearchResult/SearchResultScreen';
+import RecommendationIntroScreen from '../Screens/Recommend/RecommendationIntroScreen';
+import LoadingVideoScreen from '../Screens/Recommend/LoadingVideoScreen';
+import RecommendResultScreen from '../Screens/Recommend/RecommendResultScreen';
 import { User } from '../model/domain/User';
+import { CocktailDetail } from '../model/domain/CocktailDetail';
+import AllCocktailScreen from '../Screens/AllCocktail/AllCocktailScreen';
+import OnboardingScreen from '../Screens/Onboarding/OnboardingScreen';
+
+interface NavigationProps {
+  isOnboarded: boolean;
+}
 
 export type BottomTabParamList = {
   지도: undefined;
@@ -28,7 +38,7 @@ export type BottomTabParamList = {
   마이페이지: undefined;
 };
 export type RootStackParamList = {
-  Onboarding: undefined;
+  OnboardingScreen: undefined;
   Login: undefined;
   Home: undefined;
   SearchScreen: { initialKeyword?: string };
@@ -38,6 +48,7 @@ export type RootStackParamList = {
       shouldRefresh?: boolean;
     };
   };
+  AllCocktailScreen: undefined;
   RecommendationFlow: undefined;
   LoadingScreen: {
     alcholType: number;
@@ -51,9 +62,14 @@ export type RootStackParamList = {
     cocktailName: string;
     cocktailDescription: string;
   };
-  ProfileScreen: { user: User};
+  RecommendResultScreen: {
+    result: CocktailDetail,
+    answers: number[]
+  };
+  ProfileScreen: { user: User };
   QuitScreen: undefined;
   RecommendationIntro: undefined;
+  LoadingVideoScreen: { answers: number[] };
   GuideScreen: undefined;
   GuideDetailScreen: {
     id: number,
@@ -68,33 +84,43 @@ export type RootStackParamList = {
   CocktailBoxScreen: undefined
 
 };
-
 const Stack = createStackNavigator<RootStackParamList>();
 
-const Navigation: React.FC = () => {
+const Navigation: React.FC<NavigationProps> = ({ isOnboarded }) => {
   return (
     <NavigationContainer>
-      <Stack.Navigator
-        initialRouteName="BottomTabNavigator"
-        screenOptions={{ headerShown: false }}
-      >
-        <Stack.Screen name="TermsAndConditionsScreen" component={TermsAndConditionsScreen} />
-        <Stack.Screen name="PrivacyPolicyScreen" component={PrivacyPolicyScreen} />
-        <Stack.Screen name="Login" component={LoginScreen} />
-        <Stack.Screen name="SearchScreen" component={SearchScreen} />
-        <Stack.Screen name="Home" component={Home} />
-        <Stack.Screen name="BottomTabNavigator" component={BottomTabNavigator} />
-        <Stack.Screen name="RecommendationHome" component={RecommendationScreen} />
-        <Stack.Screen name="LoadingScreen" component={LoadingScreen} />
-        <Stack.Screen name="ResultScreen" component={ResultScreen} />
-        <Stack.Screen name="CocktailDetailScreen" component={CocktailDetailScreen} />
-        <Stack.Screen name="GuideScreen" component={GuideScreen} />
-        <Stack.Screen name="GuideDetailScreen" component={GuideDetailScreen} />
-        <Stack.Screen name="SignupScreen" component={SignupScreen} />
-        <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
-        <Stack.Screen name="QuitScreen" component={QuitScreen} />
-        <Stack.Screen name='CocktailBoxScreen' component={CocktailBoxScreen} />
-        <Stack.Screen name='SearchResultScreen' component={SearchResultScreen} />
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        {isOnboarded ? (
+          <>
+            <Stack.Screen name="BottomTabNavigator" component={BottomTabNavigator} />
+            <Stack.Screen name="Home" component={Home} />
+            <Stack.Screen name="AllCocktailScreen" component={AllCocktailScreen} />
+            <Stack.Screen name="CocktailDetailScreen" component={CocktailDetailScreen} />
+            <Stack.Screen name="SearchScreen" component={SearchScreen} />
+            <Stack.Screen name="SearchResultScreen" component={SearchResultScreen} />
+            <Stack.Screen name="RecommendationHome" component={RecommendationScreen} />
+            <Stack.Screen name="RecommendIntroScreen" component={RecommendationIntroScreen} />
+            <Stack.Screen name="LoadingVideoScreen" component={LoadingVideoScreen} />
+            <Stack.Screen name="RecommendResultScreen" component={RecommendResultScreen} />
+            <Stack.Screen name="GuideScreen" component={GuideScreen} />
+            <Stack.Screen name="GuideDetailScreen" component={GuideDetailScreen} />
+            <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
+            <Stack.Screen name="QuitScreen" component={QuitScreen} />
+            <Stack.Screen name="CocktailBoxScreen" component={CocktailBoxScreen} />
+            <Stack.Screen name="Login" component={LoginScreen} />
+            <Stack.Screen name="SignupScreen" component={SignupScreen} />
+            <Stack.Screen name="TermsAndConditionsScreen" component={TermsAndConditionsScreen} />
+            <Stack.Screen name="PrivacyPolicyScreen" component={PrivacyPolicyScreen} />
+            <Stack.Screen name='LoadingScreen' component={LoadingScreen} />
+            <Stack.Screen name='ResultScreen' component={ResultScreen} />
+          </>
+        ) : (
+          //  2. 온보딩이 안 된 경우 (인증/온보딩 스택)
+          <>
+            <Stack.Screen name="Onboarding" component={OnboardingScreen} />
+
+          </>
+        )}
       </Stack.Navigator>
     </NavigationContainer>
   );

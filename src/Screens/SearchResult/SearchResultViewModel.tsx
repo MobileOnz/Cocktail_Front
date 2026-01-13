@@ -3,6 +3,7 @@ import { CocktailCard } from '../../model/domain/CocktailCard';
 import axios from 'axios';
 import { di } from '../../DI/Container';
 import { ISearchRepository } from '../../model/repository/SearchRepository';
+import { DEFAULT_FILTER, FilterState } from '../../Components/BottomSheet/FilterBottomSheet/FilterBottomSheetViewModel';
 
 type UseSearchResultDeps = {
     repository?: ISearchRepository;
@@ -12,19 +13,32 @@ const useSearchResultViewModel = (keyword: string, deps?: UseSearchResultDeps) =
     const [results, setResults] = useState<CocktailCard[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    // const navigation = useNavigation()
+    const [appliedFilter, setAppliedFilter] = useState<FilterState>(DEFAULT_FILTER);
 
     const repository = deps?.repository ?? di.cocktailSearchRepository;
 
 
-    const fetchResult = useCallback(async () => {
-        const trimmed = keyword.trim();
-        if (!trimmed) { return; }
+    const fetchResult = useCallback(async (filter?: FilterState) => {
         setLoading(true);
         setError(null);
-
+        if (filter) { setAppliedFilter(filter); }
         try {
-            const data = await repository.search(keyword.trim());
+            const targetFilter = filter ?? appliedFilter;
+            const abvParam = targetFilter.degree || undefined;
+            const styleParam = targetFilter.style || undefined;
+            const tasteParam = targetFilter.taste.length > 0 ? targetFilter.taste : undefined;
+            const baseParam = targetFilter.base.length > 0 ? targetFilter.base : undefined;
+            const sortParam = targetFilter.sort;
+
+            const data = await repository.search(
+                keyword?.trim(),
+                abvParam,
+                styleParam,
+                tasteParam,
+                baseParam,
+                sortParam
+            );
+
             setResults(data);
         } catch (error) {
             if (axios.isAxiosError(error)) {
@@ -42,7 +56,7 @@ const useSearchResultViewModel = (keyword: string, deps?: UseSearchResultDeps) =
             setLoading(false);
         }
 
-    }, [keyword, repository]);
+    }, [keyword, repository, appliedFilter]);
 
     useEffect(() => {
         fetchResult();
@@ -53,6 +67,7 @@ const useSearchResultViewModel = (keyword: string, deps?: UseSearchResultDeps) =
         loading,
         error,
         refetch: fetchResult,
+        appliedFilter,
     };
 
 };
