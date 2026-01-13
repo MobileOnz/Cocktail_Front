@@ -2,7 +2,7 @@ import instance from '../../tokenRequest/axios_interceptor';
 import { CocktailDto } from '../dto/CocktailDto';
 
 export class SearchDataSource {
-    async search(keyword?: string, abvBand?: string, style?: string, flavor?: string[], base?: string[], sort?: string): Promise<CocktailDto[]> {
+    async search(keyword?: string, abvBand?: string, style?: string, flavor?: string[], base?: string[], sort?: string, page = 0, size = 10): Promise<CocktailDto[]> {
         if (!sort || sort.trim() === '') {
             sort = 'korName,asc';
         }
@@ -16,8 +16,8 @@ export class SearchDataSource {
             },
             {
                 params: {
-                    page: 0,
-                    size: 10,
+                    page: page,
+                    size: size,
                     sort: sort,
                 },
             }

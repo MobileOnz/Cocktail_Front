@@ -13,15 +13,19 @@ const useAllCocktailViewModel = (keyword?: string, deps?: UseSearchResultDeps) =
     const [results, setResults] = useState<CocktailCard[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [page, setPage] = useState(0);
+    const [isLast, setIsLast] = useState(false);
     const [appliedFilter, setAppliedFilter] = useState<FilterState>(DEFAULT_FILTER);
 
     const repository = deps?.repository ?? di.cocktailSearchRepository;
 
 
-    const fetchResult = useCallback(async (filter?: FilterState) => {
+    const fetchResult = useCallback(async (filter?: FilterState, isNextPage = false) => {
+        if (loading || (isNextPage && isLast)) return;
+
         setLoading(true);
         setError(null);
-
+        const targetPage = isNextPage ? page + 1 : 0;
         if (filter) { setAppliedFilter(filter); }
         try {
             const targetFilter = filter ?? appliedFilter;
@@ -38,10 +42,21 @@ const useAllCocktailViewModel = (keyword?: string, deps?: UseSearchResultDeps) =
                 styleParam,
                 tasteParam,
                 baseParam,
-                sortParam
+                sortParam,
+                targetPage,
+                10,
             );
+            if (isNextPage) {
+                setResults(prev => [...prev, ...data]);
+            } else {
+                setResults(data);
+            }
 
-            setResults(data);
+            if (data.length < 10) {
+                setIsLast(true);
+            } else {
+                setIsLast(false);
+            }
         } catch (error) {
             if (axios.isAxiosError(error)) {
                 console.log(' AxiosError message:', error.message);
@@ -58,18 +73,20 @@ const useAllCocktailViewModel = (keyword?: string, deps?: UseSearchResultDeps) =
             setLoading(false);
         }
 
-    }, [keyword, repository, appliedFilter]);
+    }, [keyword, repository, appliedFilter, page, isLast, loading]);
 
     useEffect(() => {
-        fetchResult();
-    }, [fetchResult]);
+        fetchResult(undefined, false);
+    }, [keyword]);
 
     return {
         results,
         loading,
         error,
         appliedFilter,
-        refetch: fetchResult,
+        isLast,
+        refetch: (filter?: FilterState) => fetchResult(filter, false),
+        loadMore: () => fetchResult(undefined, true),
     };
 
 };
