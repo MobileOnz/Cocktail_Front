@@ -27,7 +27,7 @@ const SORT_MAP: Record<string, string> = {
 };
 
 export interface ISearchRepository {
-    search(keyword?: string, abvBand?: string, style?: string, flavor?: string[], base?: string[], sort?: string): Promise<CocktailCard[]>
+    search(keyword?: string, abvBand?: string, style?: string, flavor?: string[], base?: string[], sort?: string, page?: number, size?: number): Promise<CocktailCard[]>
 }
 
 export class SearchRepository implements ISearchRepository {
@@ -36,7 +36,7 @@ export class SearchRepository implements ISearchRepository {
     constructor(dataSource?: SearchDataSource) {
         this.dataSource = dataSource ?? new SearchDataSource();
     }
-    async search(keyword?: string, abvBand?: string, style?: string, flavor?: string[], base?: string[], sort?: string): Promise<CocktailCard[]> {
+    async search(keyword?: string, abvBand?: string, style?: string, flavor?: string[], base?: string[], sort?: string, page = 0, size = 10): Promise<CocktailCard[]> {
         let result: CocktailDetail[] = [];
         const hasFilter =
             (keyword && keyword.trim() !== '') ||
@@ -56,10 +56,11 @@ export class SearchRepository implements ISearchRepository {
                 keyword?.trim(),
                 mappedAbv,
                 styleParam,
-
                 mappedFlavor,
                 baseParam,
-                mappedSort
+                mappedSort,
+                page,
+                size,
             );
         } else {
             result = await this.dataSource.search();

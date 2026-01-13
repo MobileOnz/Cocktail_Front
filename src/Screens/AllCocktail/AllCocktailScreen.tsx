@@ -25,13 +25,23 @@ const AllCocktailScreen = ({ navigation }: Props) => {
         <SafeAreaView style={styles.safeArea} edges={['top']}>
             <FlatList
                 extraData={vm.loading}
-
-                data={vm.loading || vm.error ? [] : vm.results}
+                onEndReached={() => {
+                    if (!vm.isLast && !vm.loading) {
+                        vm.loadMore();
+                    }
+                }}
+                onEndReachedThreshold={0.5}
+                ListFooterComponent={
+                    vm.loading && vm.results.length > 0 ? (
+                        <ActivityIndicator style={{ marginVertical: 20 }} color="#111" />
+                    ) : null
+                }
+                data={(vm.results.length === 0 && vm.loading) || vm.error ? [] : vm.results}
                 style={{ flex: 1, backgroundColor: theme.background }}
                 numColumns={2}
                 key={2}
                 columnWrapperStyle={styles.row}
-                keyExtractor={(item) => item.id.toString()}
+                keyExtractor={(item, index) => `${item.id}-${index}`}
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={styles.listContent}
 
