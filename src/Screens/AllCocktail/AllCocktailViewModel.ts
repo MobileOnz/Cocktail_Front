@@ -13,7 +13,7 @@ const useAllCocktailViewModel = (keyword?: string, deps?: UseSearchResultDeps) =
     const [results, setResults] = useState<CocktailCard[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [page, setPage] = useState(0);
+    const [page, _setPage] = useState(0);
     const [isLast, setIsLast] = useState(false);
     const [appliedFilter, setAppliedFilter] = useState<FilterState>(DEFAULT_FILTER);
 
@@ -77,7 +77,7 @@ const useAllCocktailViewModel = (keyword?: string, deps?: UseSearchResultDeps) =
 
     useEffect(() => {
         fetchResult(undefined, false);
-    }, [keyword]);
+    }, [keyword, fetchResult]);
 
     return {
         results,
