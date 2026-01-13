@@ -10,5 +10,12 @@ export class CocktailDetailDataSource {
         });
         return res.data.data as CocktailDto[];
     }
-    async responseButton
+    async responseButton(id: number): Promise<string> {
+        const res = await instance.get(`api/v2/cocktails/${id}/reactions`);
+        return res.data.myReaction ?? 'NONE';
+    }
+
+    async postButton(id: number, body: { reactionType: 'RECOMMEND' | 'HARD' | 'NONE' }) {
+        await instance.post(`/api/v2/cocktails/${id}/reactions`, body);
+    }
 }

@@ -35,7 +35,7 @@ export function CocktailDetailScreen({ route }: Props) {
   const { cocktailId } = route.params;
   const navigation = useNavigation();
 
-  const { detail, loading, error } = useCocktailDetailViewModel(cocktailId);
+  const { toggleReaction, detail, loading, error } = useCocktailDetailViewModel(cocktailId);
 
   //  로딩 상태
   if (loading) {
@@ -134,11 +134,37 @@ export function CocktailDetailScreen({ route }: Props) {
 
       <Text style={styles.valueText}>   이 칵테일, 입문자도 즐길 수 있을까요?</Text>
       <View style={styles.buttonContainer}>
-        <Pressable style={[styles.button, { marginRight: widthPercentage(10) }]} onPress={() => { }}>
-          <Text style={styles.text}>추천해요 🍸</Text>
+        {/* 추천해요 버튼 */}
+        <Pressable
+          style={[
+            styles.button,
+            { marginRight: widthPercentage(10) },
+            detail.isReactioned === 'RECOMMEND' && styles.activeButton
+          ]}
+          onPress={() => toggleReaction('RECOMMEND')}
+        >
+          <Text style={[
+            styles.text,
+            detail.isReactioned === 'RECOMMEND' && styles.activeText
+          ]}>
+            추천해요 🍸
+          </Text>
         </Pressable>
-        <Pressable style={styles.button} onPress={() => { }}>
-          <Text style={styles.text}>조금 어려워요🤔</Text>
+
+        {/* 조금 어려워요 버튼 */}
+        <Pressable
+          style={[
+            styles.button,
+            detail.isReactioned === 'HARD' && styles.activeButton
+          ]}
+          onPress={() => toggleReaction('HARD')}
+        >
+          <Text style={[
+            styles.text,
+            detail.isReactioned === 'HARD' && styles.activeText
+          ]}>
+            조금 어려워요🤔
+          </Text>
         </Pressable>
       </View>
     </ScrollView>
@@ -296,5 +322,13 @@ const styles = StyleSheet.create({
   footerBox: {
     marginTop: 16,
     marginBottom: 24,
+  },
+
+  activeButton: {
+    backgroundColor: '#333333',
+    borderColor: '#333333',
+  },
+  activeText: {
+    color: '#FFFFFF',
   },
 });
