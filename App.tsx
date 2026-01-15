@@ -90,6 +90,7 @@ function App(): React.JSX.Element {
       try {
         // const token = await AsyncStorage.getItem('accessToken');
         const deviceId = await getUniqueId();
+        console.log('Device ID:', deviceId);
         const monitoringRepo = new MonitoringRepository();
 
         const status = await monitoringRepo.checkOnboardingStatus(deviceId);
