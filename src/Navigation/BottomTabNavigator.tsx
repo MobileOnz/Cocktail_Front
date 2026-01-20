@@ -1,6 +1,5 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { BlurView } from '@react-native-community/blur';
 // import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -13,19 +12,20 @@ import { BottomTabParamList } from './Navigation';
 import GuideScreen from '../Screens/Guide/GuideScreen';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import MyPageScreen from '../Screens/MyPage/MyPageScreen';
+import { heightPercentage } from '../assets/styles/FigmaScreen';
 
 const Tab = createBottomTabNavigator<BottomTabParamList>();
 
 const TabBarBackground = () => {
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <BlurView
         style={styles.absolute}
         blurType="light"
         blurAmount={10}
         reducedTransparencyFallbackColor="transparent"
       />
-    </SafeAreaView>
+    </View>
   );
 };
 
@@ -42,15 +42,16 @@ const BottomTabNavigator = () => {
             position: 'absolute',
             left: 10,
             right: 10,
-            bottom: 50,
+            bottom: 30,
             backgroundColor: 'transparent',
             borderTopWidth: 0,
             elevation: 0,
-            height: '6%',
+            height: heightPercentage(50),
             borderRadius: 999,
             overflow: 'hidden',
           },
           tabBarItemStyle: {
+            height: heightPercentage(50),
             justifyContent: 'center',
             alignItems: 'center',
             paddingTop: 0,
