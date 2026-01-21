@@ -1,9 +1,6 @@
-import { useNavigation } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
 import { useCallback, useState } from 'react';
 import { getUniqueId } from 'react-native-device-info';
 import Toast from 'react-native-toast-message';
-import { RootStackParamList } from '../../Navigation/Navigation';
 
 import instance from '../../tokenRequest/axios_interceptor';
 
