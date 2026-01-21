@@ -15,7 +15,6 @@ const UseOnboarindViewModel = ({ onComplete }: UseOnboardingProps) => {
     const [gender, setGender] = useState<string>(''); // 'female', 'male', 'none'
     const [ageRange, setAgeRange] = useState<string>(''); // '19이하', '20-24세' 등
     const [isLoading, setIsLoading] = useState<boolean>(false);
-    const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
     const ageOptions = [
         { label: '19세 이하', value: '19_under' }, // 서버 규격에 맞춰 '19_under' 등 확인 필요
         { label: '20-24세', value: '20_24' },
