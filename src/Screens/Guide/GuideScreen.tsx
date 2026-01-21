@@ -94,6 +94,7 @@ const ListView = ({ data, navigation } : {
   return (
     <ScrollView
       style={styles.listRoot}
+      contentContainerStyle={{paddingBottom: heightPercentage(100)}}
       showsVerticalScrollIndicator={false}
     >
       {data.map((item: GuideSummary) => (
@@ -160,7 +161,7 @@ const getPart = (value: number) => {
 const styles = StyleSheet.create({
   rootContainer: {
     flex: 1,
-    backgroundColor: '#fffcf3',
+    backgroundColor: '#FFFFFF',
   },
   header: {
     flexDirection: 'row',
@@ -182,8 +183,7 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
   },
   centralContainer: {
-    flex: 1,
-    marginBottom: heightPercentage(100),
+    flex: 1
   },
 
   listRoot: {
@@ -206,6 +206,7 @@ const styles = StyleSheet.create({
   bottomTextContainer: {
     position: 'absolute',
     left: 16,
+    right: 16,
     bottom: 24,
   },
   tagContainer: {
@@ -245,6 +246,7 @@ const styles = StyleSheet.create({
   bottomGrideTextContainer: {
     position: 'absolute',
     left: 8,
+    right: 8,
     bottom: 16,
   },
   tagGridContainer: {
