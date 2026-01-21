@@ -4,8 +4,8 @@ import { Text, Button, RadioButton } from 'react-native-paper';
 import theme from '../../assets/styles/theme';
 import UseOnboarindViewModel from './OnboarindViewModel';
 
-const OnboardingScreen = () => {
-    const vm = UseOnboarindViewModel();
+const OnboardingScreen = ({ setIsOnboarded }: any) => {
+    const vm = UseOnboarindViewModel({ onComplete: () => setIsOnboarded(true) });
 
     // 모든 정보가 입력되었는지 확인 (버튼 활성화 조건)
     const isFormValid = useMemo(() => {
@@ -19,7 +19,7 @@ const OnboardingScreen = () => {
                 <View style={styles.header}>
                     <Text style={styles.titleText}>몇 가지만 알려주세요 😊</Text>
                     <Text style={styles.subText}>
-                        더 나은 서비스 경험을 제공하는 데 필요한 정보예요.{"\n"}
+                        더 나은 서비스 경험을 제공하는 데 필요한 정보예요.{'\n'}
                         누구인지 알 수 있는 정보는 수집하지 않아요.
                     </Text>
                 </View>
@@ -69,13 +69,13 @@ const OnboardingScreen = () => {
                                 key={option.value}
                                 style={[
                                     styles.chip,
-                                    vm.ageRange === option.value && styles.selectedChip
+                                    vm.ageRange === option.value && styles.selectedChip,
                                 ]}
                                 onPress={() => vm.setAgeRange(option.value)}
                             >
                                 <Text style={[
                                     styles.chipText,
-                                    vm.ageRange === option.value && styles.selectedChipText
+                                    vm.ageRange === option.value && styles.selectedChipText,
                                 ]}>
                                     {option.label}
                                 </Text>
@@ -93,7 +93,7 @@ const OnboardingScreen = () => {
                     disabled={!isFormValid || vm.isLoading}
                     style={[
                         styles.startButton,
-                        isFormValid ? styles.buttonActive : styles.buttonDisabled
+                        isFormValid ? styles.buttonActive : styles.buttonDisabled,
                     ]}
                     labelStyle={styles.buttonLabel}
                     onPress={vm.postUserInfo}
