@@ -3,7 +3,7 @@ import React from 'react';
 import { View, Image, Text, StyleSheet, Pressable } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import PillStyleStatus from '../Components/PillStyleStatus';
-import { heightPercentage, widthPercentage } from '../assets/styles/FigmaScreen';
+import { fontPercentage, heightPercentage, widthPercentage } from '../assets/styles/FigmaScreen';
 
 type Props = {
   id: number;
@@ -92,9 +92,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   title: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#1A1A1A',
+    fontFamily: 'Pretendard-SemiBold',
+    fontSize: fontPercentage(16),
+    fontWeight: '500',
+    color: '#1B1B1B',
     paddingHorizontal: 10,
     paddingVertical: 10,
     alignSelf: 'flex-start',

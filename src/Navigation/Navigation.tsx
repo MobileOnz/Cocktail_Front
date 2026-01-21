@@ -1,5 +1,5 @@
 // Navigation.tsx
-import React from 'react';
+import React, { memo } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import LoginScreen from '../Screens/Login/Login';
@@ -86,7 +86,7 @@ export type RootStackParamList = {
 };
 const Stack = createStackNavigator<RootStackParamList>();
 
-const Navigation: React.FC<NavigationProps> = ({ isOnboarded }) => {
+const Navigation: React.FC<NavigationProps> = memo(({ isOnboarded }) => {
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
@@ -111,8 +111,8 @@ const Navigation: React.FC<NavigationProps> = ({ isOnboarded }) => {
             <Stack.Screen name="SignupScreen" component={SignupScreen} />
             <Stack.Screen name="TermsAndConditionsScreen" component={TermsAndConditionsScreen} />
             <Stack.Screen name="PrivacyPolicyScreen" component={PrivacyPolicyScreen} />
-            <Stack.Screen name='LoadingScreen' component={LoadingScreen} />
-            <Stack.Screen name='ResultScreen' component={ResultScreen} />
+            <Stack.Screen name="LoadingScreen" component={LoadingScreen} />
+            <Stack.Screen name="ResultScreen" component={ResultScreen} />
           </>
         ) : (
           //  2. 온보딩이 안 된 경우 (인증/온보딩 스택)
@@ -124,6 +124,6 @@ const Navigation: React.FC<NavigationProps> = ({ isOnboarded }) => {
       </Stack.Navigator>
     </NavigationContainer>
   );
-};
+});
 
 export default Navigation;
