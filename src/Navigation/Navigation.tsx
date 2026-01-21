@@ -32,13 +32,13 @@ interface NavigationProps {
 }
 
 export type BottomTabParamList = {
-  지도: undefined;
+  홈: undefined;
   '칵테일 백과': undefined;
   '맞춤 추천': undefined;
   마이페이지: undefined;
 };
 export type RootStackParamList = {
-  OnboardingScreen: undefined;
+  Onboarding: undefined;
   Login: undefined;
   Home: undefined;
   SearchScreen: { initialKeyword?: string };
@@ -86,10 +86,14 @@ export type RootStackParamList = {
 };
 const Stack = createStackNavigator<RootStackParamList>();
 
-const Navigation: React.FC<NavigationProps> = ({ isOnboarded }) => {
+const Navigation: React.FC<NavigationProps> = ({ isOnboarded, setIsOnboarded }) => {
   return (
     <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Navigator
+        screenOptions={{ headerShown: false }}
+        // 초기 경로를 명시적으로 설정하여 엔진이 길을 잃지 않게 합니다.
+        initialRouteName={isOnboarded ? 'BottomTabNavigator' : 'Onboarding'}
+      >
         {isOnboarded ? (
           <>
             <Stack.Screen name="BottomTabNavigator" component={BottomTabNavigator} />
@@ -111,14 +115,15 @@ const Navigation: React.FC<NavigationProps> = ({ isOnboarded }) => {
             <Stack.Screen name="SignupScreen" component={SignupScreen} />
             <Stack.Screen name="TermsAndConditionsScreen" component={TermsAndConditionsScreen} />
             <Stack.Screen name="PrivacyPolicyScreen" component={PrivacyPolicyScreen} />
-            <Stack.Screen name='LoadingScreen' component={LoadingScreen} />
-            <Stack.Screen name='ResultScreen' component={ResultScreen} />
+            <Stack.Screen name="LoadingScreen" component={LoadingScreen} />
+            <Stack.Screen name="ResultScreen" component={ResultScreen} />
           </>
         ) : (
           //  2. 온보딩이 안 된 경우 (인증/온보딩 스택)
           <>
-            <Stack.Screen name="Onboarding" component={OnboardingScreen} />
-
+            <Stack.Screen name="Onboarding">
+              {(props) => <OnboardingScreen {...props} setIsOnboarded={setIsOnboarded} />}
+            </Stack.Screen>
           </>
         )}
       </Stack.Navigator>
