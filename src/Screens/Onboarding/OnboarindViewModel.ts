@@ -89,7 +89,7 @@ const UseOnboarindViewModel = ({ onComplete }: UseOnboardingProps) => {
                 visibilityTime: 4000, // 정보가 기니까 조금 더 오래 띄웁니다.
             });
         }
-    }, [gender, ageRange, navigation, onComplete]);
+    }, [gender, ageRange, onComplete]);
 
 
     return {
