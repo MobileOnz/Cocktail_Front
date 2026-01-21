@@ -25,9 +25,14 @@ import { getUniqueId } from 'react-native-device-info';
 import { MonitoringRepository } from './src/model/repository/MonitoringRepository';
 
 
-function AppContent({ isOnboarded }: { isOnboarded: boolean }) {
+function AppContent({
+  isOnboarded,
+  setIsOnboarded,
+}: {
+  isOnboarded: boolean;
+  setIsOnboarded: (val: boolean) => void
+}) {
   const insets = useSafeAreaInsets();
-
 
   useEffect(() => {
     setGlobalInsets(insets);
@@ -35,7 +40,7 @@ function AppContent({ isOnboarded }: { isOnboarded: boolean }) {
 
   return (
     <ToastProvider>
-      <Navigation isOnboarded={isOnboarded} />
+      <Navigation isOnboarded={isOnboarded} setIsOnboarded={setIsOnboarded} />
       <Toast />
     </ToastProvider>
   );
@@ -118,13 +123,14 @@ function App(): React.JSX.Element {
   }, []);
 
 
+  if (isOnboarded === null) { return <></>; }
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <BottomSheetModalProvider>
         <PaperProvider>
           <SafeAreaProvider>
-            <AppContent isOnboarded={isOnboarded} />
+            <AppContent isOnboarded={isOnboarded} setIsOnboarded={setIsOnboarded} />
           </SafeAreaProvider>
         </PaperProvider>
       </BottomSheetModalProvider>
