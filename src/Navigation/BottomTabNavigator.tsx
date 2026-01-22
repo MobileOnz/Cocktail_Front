@@ -6,24 +6,54 @@ import { BlurView } from '@react-native-community/blur';
 import Home from '../BottomTab/Cocktail_List/CocktailListScreen';
 import RecommendationIntroScreen from '../Screens/Recommend/RecommendationIntroScreen';
 import theme from '../assets/styles/theme';
+import LinearGradient from 'react-native-linear-gradient';
 
 // import { isTokenExpired } from '../tokenRequest/Token';
 import { BottomTabParamList } from './Navigation';
 import GuideScreen from '../Screens/Guide/GuideScreen';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import HomeIcon from '../assets/drawable/Home.svg';
+import RecommendIcon from '../assets/drawable/Cocktail.svg';
+import GuideIcon from '../assets/drawable/Guide.svg';
+import MyPageIcon from '../assets/drawable/MyPage.svg';
 import MyPageScreen from '../Screens/MyPage/MyPageScreen';
 import { heightPercentage } from '../assets/styles/FigmaScreen';
+import { useNavigationState } from '@react-navigation/native';
 
 const Tab = createBottomTabNavigator<BottomTabParamList>();
+export const ICON_PATH = {
+  홈: HomeIcon,
+  '맞춤 추천': RecommendIcon,
+  가이드: GuideIcon,
+  마이페이지: MyPageIcon,
+} as const;
 
 const TabBarBackground = () => {
+  const state = useNavigationState(state => state);
+  const currentRouteName = state?.routes[state.index]?.name;
+  const isMyPage = currentRouteName === '마이페이지';
   return (
     <View style={styles.container}>
       <BlurView
-        style={styles.absolute}
-        blurType="light"
-        blurAmount={10}
+        blurType={isMyPage ? 'light' : 'dark'}
+        blurAmount={isMyPage ? 10 : 1}
         reducedTransparencyFallbackColor="transparent"
+      />
+      <View
+        style={[
+          StyleSheet.absoluteFill,
+          { backgroundColor: isMyPage ? 'rgba(255, 255, 255, 0.8)' : 'rgba(0, 0, 0, 0.2)' },
+        ]}
+      />
+
+      <LinearGradient
+        style={StyleSheet.absoluteFill}
+        colors={[
+          'rgba(255, 255, 255, 0.15)',
+          'transparent',
+          'rgba(255, 255, 255, 0.15)',
+        ]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 0 }}
       />
     </View>
   );
@@ -40,11 +70,16 @@ const BottomTabNavigator = () => {
           tabBarBackground: () => <TabBarBackground />,
           tabBarStyle: {
             position: 'absolute',
-            left: 10,
-            right: 10,
+            left: 15,
+            right: 15,
             bottom: 30,
+            width: '90%',
             backgroundColor: 'transparent',
             borderTopWidth: 0,
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 10 },
+            shadowOpacity: 0.25,
+            shadowRadius: 15,
             elevation: 0,
             height: heightPercentage(50),
             borderRadius: 999,
@@ -58,22 +93,22 @@ const BottomTabNavigator = () => {
             paddingBottom: 0,
           },
           tabBarIcon: ({ focused }) => {
-            let iconSource = 'home';
-            if (route.name === '홈') {
-              iconSource = 'home';
-            } else if (route.name === '맞춤 추천') {
-              iconSource = 'glass-cocktail';
-            } else if (route.name === '가이드') {
-              iconSource = 'food-takeout-box';
-            } else if (route.name === '마이페이지') {
-              iconSource = 'account-circle';
+
+            const IconComponent =
+              ICON_PATH[route.name as keyof typeof ICON_PATH] ?? ICON_PATH['홈'];
+            let c = focused ? '#FFFFFF' : 'rgba(255, 255, 255, 0.4)';
+            if (route.name === '마이페이지' && focused) {
+              c = '#000000';
             }
 
-            return <Icon name={iconSource} color={
-              focused ? '#FFF'
-                : theme.bottomTextColor} size={20} />;
+            return (
+              <IconComponent
+                width={40}
+                height={40}
+                color={c}
+              />
+            );
           },
-
         })}
       >
         <Tab.Screen name="홈" component={Home} options={{ headerShown: false }} />
@@ -112,8 +147,13 @@ export default BottomTabNavigator;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    borderRadius: 30,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: 'rgba(245, 245, 245, 1)',
   },
   absolute: {
     ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(255,255,255,0.4)',
   },
 });
