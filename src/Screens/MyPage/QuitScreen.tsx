@@ -8,14 +8,12 @@ import {
   Text,
 } from 'react-native';
 import { widthPercentage, heightPercentage, fontPercentage } from '../../assets/styles/FigmaScreen';
-import WithdrawBottomSheet from '../../BottomSheet/WithdrawBottomSheet';
-import { useState } from 'react';
 import MyPageViewModel from './MyPageViewModel';
 import { useToast } from '../../Components/ToastContext';
 
 const QuitScreen: React.FC = () => {
   const navigation = useNavigation();
-  const [showWithdrawModal, setShowWithdrawModal] = useState(false);
+  // const [showWithdrawModal, setShowWithdrawModal] = useState(false);
   const {showToast} = useToast();
 
   const { withDrawUser, setUser, setNickname, setProfileUri } = MyPageViewModel();
@@ -90,17 +88,18 @@ const QuitScreen: React.FC = () => {
 
             </View>
         </View>
-
-        <WithdrawBottomSheet
+        
+        {/* 회원 탈퇴 모달 삭제 */}
+        {/* <WithdrawBottomSheet
           isVisible={showWithdrawModal}
           onClose={() => setShowWithdrawModal(false)}
           onWithdraw={handleWithdraw}
-        />
+        /> */}
 
 
         <TouchableOpacity
           style={styles.quitBtn}
-          onPress={() => setShowWithdrawModal(true)}
+          onPress={handleWithdraw}
         >
             <Text style={styles.quitText}>탈퇴하기</Text>
         </TouchableOpacity>
