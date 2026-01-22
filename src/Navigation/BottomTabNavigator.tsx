@@ -5,7 +5,6 @@ import { BlurView } from '@react-native-community/blur';
 // import AsyncStorage from '@react-native-async-storage/async-storage';
 import Home from '../BottomTab/Cocktail_List/CocktailListScreen';
 import RecommendationIntroScreen from '../Screens/Recommend/RecommendationIntroScreen';
-import theme from '../assets/styles/theme';
 import LinearGradient from 'react-native-linear-gradient';
 
 // import { isTokenExpired } from '../tokenRequest/Token';
