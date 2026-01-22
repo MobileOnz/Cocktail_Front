@@ -69,10 +69,9 @@ const BottomTabNavigator = () => {
           tabBarBackground: () => <TabBarBackground />,
           tabBarStyle: {
             position: 'absolute',
-            left: 15,
-            right: 15,
+            left: 25,
+            right: 25,
             bottom: 30,
-            width: '90%',
             backgroundColor: 'transparent',
             borderTopWidth: 0,
             shadowColor: '#000',
@@ -83,21 +82,30 @@ const BottomTabNavigator = () => {
             height: heightPercentage(50),
             borderRadius: 999,
             overflow: 'hidden',
+            paddingBottom: 0,
+            paddingTop: 0,
+          },
+          tabBarIconStyle: {
+            marginBottom: 0,
+            marginTop: 0,
           },
           tabBarItemStyle: {
             height: heightPercentage(50),
+            flexDirection: 'column',
             justifyContent: 'center',
             alignItems: 'center',
-            paddingTop: 0,
-            paddingBottom: 0,
           },
           tabBarIcon: ({ focused }) => {
 
             const IconComponent =
               ICON_PATH[route.name as keyof typeof ICON_PATH] ?? ICON_PATH['홈'];
-            let c = focused ? '#FFFFFF' : 'rgba(255, 255, 255, 0.4)';
-            if (route.name === '마이페이지' && focused) {
-              c = '#000000';
+            const isMyPageTab = route.name === '마이페이지';
+
+            let c;
+            if (isMyPageTab) {
+              c = focused ? '#000000' : '#E0E0E0';
+            } else {
+              c = focused ? '#FFFFFF' : '#E0E0E0';
             }
 
             return (
