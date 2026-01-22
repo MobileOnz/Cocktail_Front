@@ -245,7 +245,7 @@ export default MyPageScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fffcf3',
+    backgroundColor: '#ffffff',
   },
   topBar: {
     width: '100%',
