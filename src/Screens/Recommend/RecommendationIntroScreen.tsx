@@ -16,9 +16,7 @@ import {
   fontPercentage,
 } from '../../assets/styles/FigmaScreen';
 // import LottieView from 'lottie-react-native';
-import { Martini, Wine, GlassWater, BottleWine } from 'lucide-react-native';
 import { LinearGradient } from 'react-native-linear-gradient';
-import { fill } from 'lodash';
 
 // 4가지 칵테일 잔 아이콘
 const icons = [
