@@ -181,10 +181,10 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
         {/* X 버튼 (닫기) */}
         <TouchableOpacity
           style={styles.closeButton}
-          onPress={() => navigation.navigate('SignupScreen')}
+          onPress={() => navigation.goBack()}
         >
           <Image
-            source={require('../../assets/drawable/close.png')}
+            source={require('../../assets/drawable/CloseCircle.png')}
             style={styles.closeIcon}
           />
         </TouchableOpacity>
