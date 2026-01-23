@@ -109,15 +109,36 @@ const styles = StyleSheet.create({
     container: { flex: 1, backgroundColor: theme.background },
     content: { paddingHorizontal: 24, paddingTop: 40 },
     header: { marginBottom: 40 },
-    titleText: { fontSize: 24, fontWeight: '700', marginBottom: 12, color: '#000' },
-    subText: { fontSize: 14, color: '#666', lineHeight: 20 },
+    titleText: {
+        fontFamily: 'Pretendard-Medium',
+        fontSize: 24,
+        fontWeight: '700',
+        marginBottom: 12,
+        color: '#000',
+    },
+    subText: {
+        fontFamily: 'Pretendard-Medium',
+        fontSize: 14,
+        color: '#666',
+        lineHeight: 20,
+    },
     section: { marginBottom: 32 },
-    sectionTitle: { fontSize: 16, fontWeight: '600', marginBottom: 16, color: '#000' },
+    sectionTitle: {
+        fontFamily: 'Pretendard-Medium',
+        fontSize: 16,
+        fontWeight: '600',
+        marginBottom: 16,
+        color: '#000',
+    },
 
     // 라디오 버튼 스타일
     radioGroup: { flexDirection: 'row', alignItems: 'center', gap: 10 },
     radioItem: { flexDirection: 'row', alignItems: 'center', marginRight: 8 },
-    radioLabel: { fontSize: 15, color: '#333' },
+    radioLabel: {
+        fontFamily: 'Pretendard-Medium',
+        fontSize: 15,
+        color: '#333',
+    },
 
     // 연령대 칩 스타일
     chipContainer: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
@@ -132,15 +153,28 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     selectedChip: { backgroundColor: '#333', borderColor: '#333' },
-    chipText: { fontSize: 14, color: '#333' },
-    selectedChipText: { color: '#fff', fontWeight: '600' },
+    chipText: {
+        fontFamily: 'Pretendard-Medium',
+        fontSize: 14,
+        color: '#333',
+    },
+    selectedChipText: {
+        fontFamily: 'Pretendard-Medium',
+        color: '#fff',
+        fontWeight: '600',
+    },
 
     // 하단 버튼 스타일
     footer: { padding: 20, backgroundColor: '#fff' },
     startButton: { borderRadius: 12, height: 56, justifyContent: 'center' },
     buttonActive: { backgroundColor: '#333' },
     buttonDisabled: { backgroundColor: '#E0E0E0' },
-    buttonLabel: { fontSize: 16, fontWeight: '700', color: '#fff' },
+    buttonLabel: {
+        fontFamily: 'Pretendard-Medium',
+        fontSize: 16,
+        fontWeight: '700',
+        color: '#fff',
+    },
 });
 
 export default OnboardingScreen;
