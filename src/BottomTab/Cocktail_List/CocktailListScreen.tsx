@@ -1,11 +1,10 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   View,
   StyleSheet,
   Image,
   ScrollView,
   FlatList,
-  SafeAreaView,
   Dimensions,
   TouchableOpacity,
   StatusBar,
@@ -13,7 +12,7 @@ import {
 import { Appbar, Divider, IconButton, Text } from 'react-native-paper';
 import theme from '../../assets/styles/theme';
 import { fontPercentage, heightPercentage, widthPercentage } from '../../assets/styles/FigmaScreen';
-import PuzzlePiece from '../../configs/CurvedImage';
+
 import { truncate } from 'lodash';
 import PillStyleStatus from '../../Components/PillStyleStatus';
 import PagerView from 'react-native-pager-view';
@@ -21,12 +20,20 @@ import CocktailCard from '../../Components/CocktailCard';
 import { useNavigation } from '@react-navigation/native';
 import { useHomeViewModel } from './CocktailListViewModel';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import PuzzlePiece from '../../configs/CurvedImage';
 const Home = () => {
 
   const [pageIndex, setPageIndex] = useState(0);
   const navigation = useNavigation<any>();
 
   const vm = useHomeViewModel();
+  useEffect(() => {
+    if (vm.bestCocktail && vm.bestCocktail.length > 0) {
+      vm.bestCocktail.forEach(item => {
+        if (item.image) { Image.prefetch(item.image); }
+      });
+    }
+  }, [vm.bestCocktail]);
 
   const pages = useMemo(() => {
     const result = [];
@@ -36,11 +43,11 @@ const Home = () => {
     return result;
   }, [vm.newCocktail]);
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
 
       {/* 상단 헤더 */}
       <StatusBar barStyle={vm.isScrolled ? 'dark-content' : 'light-content'} backgroundColor={vm.isScrolled ? '#ffffff' : '#000000'} />
-      <Appbar.Header style={[styles.header, { backgroundColor: vm.isScrolled ? '#fff' : '#000' }]}>
+      <Appbar.Header style={[, { backgroundColor: vm.isScrolled ? '#fff' : '#000' }]}>
         {/* 왼쪽 로고 */}
         <Image
           source={
@@ -66,7 +73,17 @@ const Home = () => {
       >
         {/* 메인 사진 */}
         <View style={styles.randomWrapper}>
-          <Image source={{ uri: vm.randomCocktail?.image }} style={styles.mainImage} />
+          <View style={styles.mainImageShadow}>
+
+            <View style={styles.mainImageClip}>
+              <Image
+                source={{ uri: vm.randomCocktail?.image }}
+                style={styles.mainImage}
+                resizeMode="cover"
+              />
+            </View>
+          </View>
+
           <Text style={styles.bannerKoText}>{vm.randomCocktail?.korName}</Text>
           <Text style={styles.bannerEnText}>{vm.randomCocktail?.engName}</Text>
         </View>
@@ -79,12 +96,15 @@ const Home = () => {
           <FlatList
             data={vm.bestCocktail}
             extraData={vm.bestCocktail}
+            removeClippedSubviews={false}
             keyExtractor={item => String(item.id)}
+            windowSize={3}
             horizontal
             showsHorizontalScrollIndicator={false}
             renderItem={({ item, index }) => (
 
               <TouchableOpacity
+                key={item.id}
                 activeOpacity={0.8}
                 onPress={() =>
                   navigation.navigate('CocktailDetailScreen', {
@@ -93,7 +113,7 @@ const Home = () => {
                 }
               >
                 <View style={styles.card}>
-                  <PuzzlePiece source={{ uri: item.image }} size={210} toothR={100} />
+                  <PuzzlePiece uri={item.image} size={210} />
 
                   {/* 랭크 */}
                   <View style={styles.bestRankWrapper}>
@@ -149,7 +169,7 @@ const Home = () => {
                     <Image source={{ uri: item.image }} style={styles.newCocktailImage} />
                     <View style={styles.newCocktailTextWrapper}>
                       <PillStyleStatus tone={item.type} />
-                      <Text>{item.name}</Text>
+                      <Text style={styles.newCocktailName}>{item.name}</Text>
                     </View>
 
                     <IconButton
@@ -266,7 +286,7 @@ const Home = () => {
         />
       </ScrollView>
 
-    </SafeAreaView>
+    </View>
   );
 };
 
@@ -276,7 +296,11 @@ const styles = StyleSheet.create({
     backgroundColor: theme.background,
 
   },
-  header: {},
+  newCocktailName: {
+    fontSize: fontPercentage(16),
+    fontWeight: '500',
+    fontFamily: 'Pretendard-Medium',
+  },
   randomWrapper: {
     position: 'relative',
     alignItems: 'center',
@@ -285,9 +309,34 @@ const styles = StyleSheet.create({
     width: '20%',
     height: heightPercentage(40),
   },
+  mainImageShadow: {
+    width: '100%',
+    backgroundColor: 'white',
+    borderBottomLeftRadius: 32,
+    borderBottomRightRadius: 32,
+
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 6,
+    },
+    shadowOpacity: 0.15,
+    shadowRadius: 10,
+
+    elevation: 10,
+  },
+
+  mainImageClip: {
+    width: '100%',
+    height: heightPercentage(457),
+    borderBottomLeftRadius: 32,
+    borderBottomRightRadius: 32,
+    overflow: 'hidden',
+  },
   bannerKoText: {
+    fontFamily: 'Pretendard-SemiBold',
     position: 'absolute',
-    bottom: 100,
+    bottom: 90,
     left: 24,
     right: 24,
     textAlign: 'center',
@@ -297,16 +346,18 @@ const styles = StyleSheet.create({
   },
   bannerEnText: {
     position: 'absolute',
+    fontStyle: 'italic',
+    fontFamily: 'NotoSerif-BoldItalic',
     bottom: 60,
     left: 24,
     right: 24,
     color: '#fff',
     textAlign: 'center',
     fontSize: fontPercentage(20),
-    fontWeight: '600',
   },
   mainText: {
-    fontWeight: '700',
+    fontFamily: 'Pretendard-SemiBold',
+    fontWeight: '600',
     paddingVertical: 10,
     paddingLeft: 10,
   },
@@ -352,9 +403,20 @@ const styles = StyleSheet.create({
     height: heightPercentage(457),
     borderBottomLeftRadius: 32,
     borderBottomRightRadius: 32,
+    backgroundColor: '#000',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 6,
+    },
+    shadowOpacity: 0.12,
+    shadowRadius: 12,
+
+    elevation: 10,
   },
   bestSectionWrapper: {
     alignItems: 'flex-start',
+    paddingVertical: heightPercentage(20),
   },
   card: {
     width: widthPercentage(160),

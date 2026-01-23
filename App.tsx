@@ -1,5 +1,5 @@
 // App.tsx
-import React, { useEffect, useState } from 'react';
+import React, { memo, useEffect, useState } from 'react';
 
 import SplashScreen from 'react-native-splash-screen';
 import Navigation from './src/Navigation/Navigation';
@@ -25,13 +25,7 @@ import { getUniqueId } from 'react-native-device-info';
 import { MonitoringRepository } from './src/model/repository/MonitoringRepository';
 
 
-function AppContent({
-  isOnboarded,
-  setIsOnboarded,
-}: {
-  isOnboarded: boolean;
-  setIsOnboarded: (val: boolean) => void
-}) {
+const AppContent = memo(({ isOnboarded }: { isOnboarded: boolean | null }) => {
   const insets = useSafeAreaInsets();
 
   useEffect(() => {
@@ -44,7 +38,7 @@ function AppContent({
       <Toast />
     </ToastProvider>
   );
-}
+});
 
 function App(): React.JSX.Element {
 

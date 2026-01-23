@@ -3,7 +3,6 @@ import { IHomeCocktailRepository } from '../../model/Repository/HomeCocktailRepo
 import { di } from '../../DI/Container';
 import { CocktailCard } from '../../model/domain/CocktailCard';
 import { CocktailMain } from '../../model/domain/CocktailMain';
-import { API_BASE_URL } from '@env';
 import instance from '../../tokenRequest/axios_interceptor';
 
 
@@ -66,11 +65,10 @@ export const useHomeViewModel = (deps?: UseSearchResultDeps) => {
   };
 
   const fetchHomeData = useCallback(async () => {
+
     setLoading(true);
     setError(null);
-
     try {
-      console.log(API_BASE_URL);
       const [randomCocktailData, newCocktailData, bestCocktailData, refreshData, intermediateData, beginnerData] = await Promise.all([
         repository.random(),
         repository.newCocktail(),
@@ -85,22 +83,18 @@ export const useHomeViewModel = (deps?: UseSearchResultDeps) => {
       setRefreshList(refreshData);
       setIntermediateList(intermediateData);
       setBeginnerList(beginnerData);
-
     } catch (e) {
       console.log(e);
       setError('데이터 로딩 중 오류가 발생했습니다.');
     } finally {
       setLoading(false);
     }
-
-
   }, [repository]);
 
+  // 2. 마운트 시점에 한 번만 실행
   useEffect(() => {
     fetchHomeData();
-
   }, [fetchHomeData]);
-
   return {
     bookmarked,
     randomCocktail,
