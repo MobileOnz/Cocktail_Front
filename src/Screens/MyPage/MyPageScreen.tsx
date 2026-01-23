@@ -18,9 +18,9 @@ type NavigationProp = StackNavigationProp<RootStackParamList>;
 const MyPageScreen = () => {
   const navigation = useNavigation<NavigationProp>();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const {showToast} = useToast();
+  const { showToast } = useToast();
   const [showSignOutModal, setShowSignOutModal] = useState(false);
-  const [ user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const { loading, profileUri, getMemberInfo, logOut } = MyPageViewModel();
 
   useEffect(() => {
@@ -139,8 +139,8 @@ const MyPageScreen = () => {
             }}
           />
       </View> */}
-      { loading ? (
-        <ActivityIndicator size="large" color="#000000ff" style={{flex: 1}} />
+      {loading ? (
+        <ActivityIndicator size="large" color="#000000ff" style={{ flex: 1 }} />
       ) : (
         <View>
           <View style={styles.topBar}>
@@ -157,17 +157,17 @@ const MyPageScreen = () => {
                 <Image
                   source={
                     profileUri
-                    ? {uri: profileUri}
-                    : require('../../assets/drawable/profile.png')}
+                      ? { uri: profileUri }
+                      : require('../../assets/drawable/profile.png')}
                   style={styles.profileImage}
                 />
                 <Text style={styles.userNickNmText}>{user?.nickname || '사용자 닉네임'}</Text>
                 <Image source={require('../../assets/drawable/right-chevron.png')} style={styles.profilerightArrow} />
               </TouchableOpacity>
 
-              <TouchableOpacity style={styles.cocktailBox}>
+              <TouchableOpacity style={styles.cocktailBox} onPress={() => {navigation.navigate('CocktailBoxScreen' as never)}}>
                 <Text style={styles.cocktailBoxText}>나의 칵테일 보관함</Text>
-                <Image source={require('../../assets/drawable/bookmark.png')} style={styles.cockTailBookmark} />
+                <Image source={require('../../assets/drawable/bookmarkCircle.png')} style={styles.cockTailBookmark} />
               </TouchableOpacity>
             </>
           ) : (
@@ -195,10 +195,10 @@ const MyPageScreen = () => {
           </View>
 
           <Text style={styles.supportSecondTitle}>서비스 약관</Text>
-          <TouchableOpacity onPress={()=>navigation.navigate('TermsAndConditionsScreen')}>
+          <TouchableOpacity onPress={() => navigation.navigate('TermsAndConditionsScreen')}>
             {renderSupportItem('이용약관')}
           </TouchableOpacity>
-          <TouchableOpacity onPress={()=>navigation.navigate('PrivacyPolicyScreen')}>
+          <TouchableOpacity onPress={() => navigation.navigate('PrivacyPolicyScreen')}>
             {renderSupportItem('개인정보 처리방침')}
           </TouchableOpacity>
 
@@ -245,7 +245,7 @@ export default MyPageScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fffcf3',
+    backgroundColor: '#ffffff',
   },
   topBar: {
     width: '100%',
