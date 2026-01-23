@@ -1,18 +1,17 @@
-import { useNavigation } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { useCallback, useState } from 'react'
+import { useCallback, useState } from 'react';
 import { getUniqueId } from 'react-native-device-info';
 import Toast from 'react-native-toast-message';
-import { RootStackParamList } from '../../Navigation/Navigation';
 
 import instance from '../../tokenRequest/axios_interceptor';
 
-const UseOnboarindViewModel = () => {
+interface UseOnboardingProps {
+    onComplete: () => void;
+}
 
+const UseOnboarindViewModel = ({ onComplete }: UseOnboardingProps) => {
     const [gender, setGender] = useState<string>(''); // 'female', 'male', 'none'
     const [ageRange, setAgeRange] = useState<string>(''); // '19이하', '20-24세' 등
     const [isLoading, setIsLoading] = useState<boolean>(false);
-    const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
     const ageOptions = [
         { label: '19세 이하', value: '19_under' }, // 서버 규격에 맞춰 '19_under' 등 확인 필요
         { label: '20-24세', value: '20_24' },
@@ -27,7 +26,7 @@ const UseOnboarindViewModel = () => {
             Toast.show({
                 type: 'error',
                 text1: '선택 미완료',
-                text2: '성별과 연령대를 모두 선택해주세요.'
+                text2: '성별과 연령대를 모두 선택해주세요.',
             });
             return;
         }
@@ -36,9 +35,9 @@ const UseOnboarindViewModel = () => {
             Toast.show({
                 type: 'success',
                 text1: '등록 완료',
-                text2: '정보가 성공적으로 저장되었습니다.'
+                text2: '정보가 성공적으로 저장되었습니다.',
             });
-            navigation.navigate('BottomTabNavigator', { screen: '홈' });
+            onComplete();
         };
 
         setIsLoading(true);
@@ -49,33 +48,44 @@ const UseOnboarindViewModel = () => {
             const payload = {
                 deviceNumber: deviceId,
                 gender: gender,
-                ageRange: ageRange
+                ageRange: ageRange,
             };
 
-            const response = await instance.post(`/api/v2/monitoring/onboarding`, payload);
+            const response = await instance.post('/api/v2/monitoring/onboarding', payload);
             if (response.status === 200 || response.status === 201) {
                 handleSuccess();
             }
         } catch (error: any) {
             console.log('--- 온보딩 catch 진입 ---');
-            console.error('Error Object:', error);
+            setIsLoading(false);
+
+            let errorMessage = '서버 통신 중 문제가 발생했습니다.';
 
             if (error.response) {
-                // 서버에서 응답을 준 경우 (400, 500 등)
+                // 1. 서버가 응답을 준 경우 (400, 500 등)
+                const statusCode = error.response.status;
+                // 서버 응답 구조에 따라 error.response.data.message 혹은 .error 등을 확인해야 합니다.
+                const serverDetail = error.response.data?.message || error.response.data?.error || JSON.stringify(error.response.data);
+
+                errorMessage = `[${statusCode}] ${serverDetail}`;
                 console.log('Server Error Data:', error.response.data);
             } else if (error.request) {
-                // 요청은 보냈으나 응답이 없는 경우 (네트워크 에러)
+                // 2. 요청은 보냈으나 응답이 없는 경우 (네트워크 에러, 타임아웃)
+                errorMessage = '서버로부터 응답이 없습니다. 네트워크 상태를 확인해주세요.';
                 console.log('No Response from Server (Network Error)');
+            } else {
+                // 3. 요청 설정 중 에러 발생 등 기타 에러
+                errorMessage = error.message;
             }
-
 
             Toast.show({
                 type: 'error',
-                text1: '오류 발생',
-                text2: '서버 통신 중 문제가 발생했습니다.'
+                text1: '오류 상세 정보',
+                text2: errorMessage, // 실제 오류 내용이 토스트에 찍힙니다.
+                visibilityTime: 4000, // 정보가 기니까 조금 더 오래 띄웁니다.
             });
         }
-    }, [gender, ageRange, navigation]);
+    }, [gender, ageRange, onComplete]);
 
 
     return {
@@ -85,8 +95,8 @@ const UseOnboarindViewModel = () => {
         setAgeRange,
         ageOptions,
         postUserInfo,
-        isLoading
-    }
-}
+        isLoading,
+    };
+};
 
-export default UseOnboarindViewModel
+export default UseOnboarindViewModel;

@@ -12,6 +12,7 @@ import { RootStackParamList } from '../../Navigation/Navigation';
 import { widthPercentage, heightPercentage, fontPercentage } from '../../assets/styles/FigmaScreen';
 import PagerView from 'react-native-pager-view';
 import GuideDetailViewModel from './GuideDetailViewModel';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 type GuideDetailSreenNavigationProp = StackNavigationProp<
   RootStackParamList,
@@ -66,67 +67,67 @@ const GuideDetailScreen: React.FC<Props> = ({ navigation, route}) => {
     }
 
     return (
-        <View style={styles.rootContainer}>
-            {/* 상단 뷰 */}
-            <View style={styles.header}>
-                <TouchableOpacity
-                    onPress={ () => {
-                        navigation.goBack();
-                    }}
-                >
-                    <Image
-                        source={require('../../assets/drawable/left-chevron.png')}
-                        style={styles.icon}
-                    />
-                </TouchableOpacity>
-                <Text style={styles.headerTitle}>{title}</Text>
-                <TouchableOpacity
-                    onPress={handleSharePress}
-                >
-                    <Image
-                        source={require('../../assets/drawable/share.png')}
-                        style={styles.icon}
-                    />
-                </TouchableOpacity>
-            </View>
-
-            <PagerView
-                style = { styles.centralContainer }
-                initialPage={0}
-                orientation={'horizontal'}
-                onPageSelected={(e) => setCurrentPage(e.nativeEvent.position)}
+      <SafeAreaView edges={['top']} style={styles.rootContainer} >
+        {/* 상단 뷰 */}
+        <View style={styles.header}>
+            <TouchableOpacity
+                onPress={ () => {
+                    navigation.goBack();
+                }}
             >
-                {guideDetail?.details.map((page, index) => (
-                    <View key={index}>
-                        <Image
-                            source={{ uri: page.imageUrl }}
-                            style={styles.itemImage}
-                        />
-                        <View
-                            style={{
-                                paddingHorizontal: widthPercentage(16),
-                                paddingTop: heightPercentage(20),
-                            }}
-                        >
-                            <Text style={styles.titleText}>{page.subtitle}</Text>
-                            <Text style={styles.subText}>{page.description}</Text>
-                        </View>
-                    </View>
-                ))}
-            </PagerView>
-            {/* 하단 인디케이터 */}
-            <View style={styles.indicatorContainer}>
-                {guideDetail?.details.map((_, idx) => (
-                    <View
-                        key={idx}
-                        style={[
-                            styles.indicator,
-                            currentPage === idx && styles.indicatorActive,
-                        ]}
-                    />
-                ))}
-            </View>
+                <Image
+                    source={require('../../assets/drawable/left-chevron.png')}
+                    style={styles.icon}
+                />
+            </TouchableOpacity>
+            <Text style={styles.headerTitle}>{title}</Text>
+            <TouchableOpacity
+                onPress={handleSharePress}
+            >
+                <Image
+                    source={require('../../assets/drawable/share.png')}
+                    style={styles.icon}
+                />
+            </TouchableOpacity>
         </View>
+
+        <PagerView
+            style = { styles.centralContainer }
+            initialPage={0}
+            orientation={'horizontal'}
+            onPageSelected={(e) => setCurrentPage(e.nativeEvent.position)}
+        >
+            {guideDetail?.details.map((page, index) => (
+                <View key={index}>
+                    <Image
+                        source={{ uri: page.imageUrl }}
+                        style={styles.itemImage}
+                    />
+                    <View
+                        style={{
+                            paddingHorizontal: widthPercentage(16),
+                            paddingTop: heightPercentage(20),
+                        }}
+                    >
+                        <Text style={styles.titleText}>{page.subtitle}</Text>
+                        <Text style={styles.subText}>{page.description}</Text>
+                    </View>
+                </View>
+            ))}
+        </PagerView>
+        {/* 하단 인디케이터 */}
+        <View style={styles.indicatorContainer}>
+            {guideDetail?.details.map((_, idx) => (
+                <View
+                    key={idx}
+                    style={[
+                        styles.indicator,
+                        currentPage === idx && styles.indicatorActive,
+                    ]}
+                />
+            ))}
+        </View>
+      </SafeAreaView>
     );
 };
 
@@ -135,7 +136,7 @@ export default GuideDetailScreen;
 const styles = StyleSheet.create({
   rootContainer: {
     flex: 1,
-    backgroundColor: '#fffcf3',
+    backgroundColor: '#FFFFFF',
   },
   header: {
     flexDirection: 'row',
@@ -145,6 +146,7 @@ const styles = StyleSheet.create({
     paddingLeft: widthPercentage(16),
     paddingRight: widthPercentage(16),
     paddingBottom: heightPercentage(10),
+    backgroundColor: '#FFFFFF'
   },
   headerTitle: {
     fontSize: fontPercentage(20),
@@ -158,6 +160,7 @@ const styles = StyleSheet.create({
   },
   centralContainer: {
     flex: 1,
+    backgroundColor: '#FFFFFF'
   },
   itemImage: {
     width: '100%',

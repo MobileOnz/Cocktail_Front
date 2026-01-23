@@ -16,6 +16,7 @@ import { widthPercentage, heightPercentage, fontPercentage } from '../../assets/
 import { RouteProp, useNavigation } from '@react-navigation/native';
 import { RootStackParamList } from '../../Navigation/Navigation';
 import MyPageViewModel from './MyPageViewModel';
+import { SafeAreaView } from 'react-native-safe-area-context';
 type ProfileScreenRouteProp = RouteProp<RootStackParamList, 'ProfileScreen'>;
 
 interface Props {
@@ -202,7 +203,7 @@ const ProfileScreen: React.FC<Props> = ({ route }: Props) => {
 
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView edges={['top']} style={styles.container} >
       {loading ? (
         <ActivityIndicator size="large" color="#000000ff" style={{ flex: 1 }} />
       ) : (
@@ -223,11 +224,11 @@ const ProfileScreen: React.FC<Props> = ({ route }: Props) => {
                 source={
                   profileUri
                     ? { uri: profileUri }
-                    : require('../../assets/drawable/default_profile.png')
+                    : require('../../assets/drawable/profile.png')
                 }
                 style={styles.profileImage}
               />
-              <Image source={require('../../assets/drawable/edit_icon.png')} style={styles.editIcon} />
+              {/* <Image source={require('../../assets/drawable/edit_icon.png')} style={styles.editIcon} /> */}
             </TouchableOpacity>
           </View>
 
@@ -324,7 +325,9 @@ const ProfileScreen: React.FC<Props> = ({ route }: Props) => {
           저장하기
         </Text>
       </TouchableOpacity> */}
-    </View>
+
+      
+    </SafeAreaView>
   );
 };
 
@@ -346,11 +349,11 @@ const renderAccountItem = (text: string, iconUrl: string) => {
 const getSocialIcon = (socialLogin?: string) => {
   switch (socialLogin) {
     case 'KAKAO':
-      return require('../../assets/drawable/kakao_button.png');
+      return require('../../assets/drawable/kakao.png');
     case 'NAVER':
-      return require('../../assets/drawable/naver_button.png');
+      return require('../../assets/drawable/Naver.png');
     case 'GOOGLE':
-      return require('../../assets/drawable/google_button.png');
+      return require('../../assets/drawable/Google.png');
     default:
       return require('../../assets/drawable/kakao_button.png');
   }
@@ -450,7 +453,7 @@ const styles = StyleSheet.create({
     height: heightPercentage(52),
     backgroundColor: '#F5F5F5',
     paddingVertical: heightPercentage(14),
-    marginHorizontal: widthPercentage(12),
+    marginHorizontal: widthPercentage(20),
     paddingHorizontal: widthPercentage(12),
     borderRadius: 8,
   },
@@ -460,7 +463,7 @@ const styles = StyleSheet.create({
     height: heightPercentage(52),
     backgroundColor: '#F5F5F5',
     paddingVertical: heightPercentage(14),
-    marginHorizontal: widthPercentage(12),
+    marginHorizontal: widthPercentage(20),
     paddingLeft: widthPercentage(12),
     paddingRight: widthPercentage(8),
     borderRadius: 8,
@@ -501,7 +504,7 @@ const styles = StyleSheet.create({
   },
   accountText: {
     fontSize: fontPercentage(13),
-    color: '#000000',
+    color: '#616161',
     fontWeight: '400',
     marginLeft: widthPercentage(8),
   },

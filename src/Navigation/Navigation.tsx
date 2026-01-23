@@ -32,13 +32,13 @@ interface NavigationProps {
 }
 
 export type BottomTabParamList = {
-  지도: undefined;
+  홈: undefined;
   '칵테일 백과': undefined;
   '맞춤 추천': undefined;
   마이페이지: undefined;
 };
 export type RootStackParamList = {
-  OnboardingScreen: undefined;
+  Onboarding: undefined;
   Login: undefined;
   Home: undefined;
   SearchScreen: { initialKeyword?: string };
@@ -89,7 +89,11 @@ const Stack = createStackNavigator<RootStackParamList>();
 const Navigation: React.FC<NavigationProps> = memo(({ isOnboarded }) => {
   return (
     <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Navigator
+        screenOptions={{ headerShown: false }}
+        // 초기 경로를 명시적으로 설정하여 엔진이 길을 잃지 않게 합니다.
+        initialRouteName={isOnboarded ? 'BottomTabNavigator' : 'Onboarding'}
+      >
         {isOnboarded ? (
           <>
             <Stack.Screen name="BottomTabNavigator" component={BottomTabNavigator} />
@@ -117,8 +121,9 @@ const Navigation: React.FC<NavigationProps> = memo(({ isOnboarded }) => {
         ) : (
           //  2. 온보딩이 안 된 경우 (인증/온보딩 스택)
           <>
-            <Stack.Screen name="Onboarding" component={OnboardingScreen} />
-
+            <Stack.Screen name="Onboarding">
+              {(props) => <OnboardingScreen {...props} setIsOnboarded={setIsOnboarded} />}
+            </Stack.Screen>
           </>
         )}
       </Stack.Navigator>

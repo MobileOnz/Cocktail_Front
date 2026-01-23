@@ -28,14 +28,13 @@ import { MonitoringRepository } from './src/model/repository/MonitoringRepositor
 const AppContent = memo(({ isOnboarded }: { isOnboarded: boolean | null }) => {
   const insets = useSafeAreaInsets();
 
-
   useEffect(() => {
     setGlobalInsets(insets);
   }, [insets]);
 
   return (
     <ToastProvider>
-      <Navigation isOnboarded={isOnboarded} />
+      <Navigation isOnboarded={isOnboarded} setIsOnboarded={setIsOnboarded} />
       <Toast />
     </ToastProvider>
   );
@@ -118,13 +117,14 @@ function App(): React.JSX.Element {
   }, []);
 
 
+  if (isOnboarded === null) { return <></>; }
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <BottomSheetModalProvider>
         <PaperProvider>
           <SafeAreaProvider>
-            <AppContent isOnboarded={isOnboarded} />
+            <AppContent isOnboarded={isOnboarded} setIsOnboarded={setIsOnboarded} />
           </SafeAreaProvider>
         </PaperProvider>
       </BottomSheetModalProvider>
