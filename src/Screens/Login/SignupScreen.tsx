@@ -24,6 +24,7 @@ import SignUpViewModel from './SignUpViewModel';
 import { SignUpRequest } from '../../model/domain/SignupRequest';
 import DeviceInfo from 'react-native-device-info';
 import { useToast } from '../../Components/ToastContext';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 // const server = API_BASE_URL;
 type SignupScreenRouteProp = RouteProp<RootStackParamList, 'SignupScreen'>;
@@ -62,6 +63,8 @@ const SignupScreen: React.FC<SignupScreenProps> = ({ navigation }) => {
       navigation.navigate('BottomTabNavigator' as never);
     } catch (error: any) {
       showToast('알 수 없는 오류가 발생했습니다.');
+    } finally {
+      setModalVisible(false);
     }
   };
 
@@ -129,7 +132,7 @@ const SignupScreen: React.FC<SignupScreenProps> = ({ navigation }) => {
   const isNickDisabled = (nickname != '');
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView edges={['top']} style={styles.container} >
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Image source={require('../../assets/drawable/left-chevron.png')} style={styles.backIcon} />
@@ -140,17 +143,17 @@ const SignupScreen: React.FC<SignupScreenProps> = ({ navigation }) => {
 
       <View style={styles.contentContainer}>
 
-        <Text style={styles.welcomeTitle}>닉네임 설정하기</Text>
+        <Text style={styles.welcomeTitle}>어서오세요 👋</Text>
         <Text style={styles.description}>
-          어서오세요! 온즈에서 사용할 닉네임을 설정해 주세요.
+          온즈에서 사용할 닉네임을 설정해 주세요.
         </Text>
 
         {/* 닉네임 입력 */}
         <View style={styles.inputContainer}>
           <TextInput
             style={styles.input}
-            placeholder="닉네임을 입력하세요"
-            placeholderTextColor="#E4DFD8"
+            placeholder="닉네임을 입력해 주세요"
+            placeholderTextColor="#BDBDBD"
             value={nickname}
             onChangeText={setNickname}
           />
@@ -271,7 +274,7 @@ const SignupScreen: React.FC<SignupScreenProps> = ({ navigation }) => {
         </View>
       </Modal>
 
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -282,7 +285,7 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     flex: 1,
-    paddingHorizontal: widthPercentage(16),
+    paddingHorizontal: widthPercentage(20),
   },
   header: {
     flexDirection: 'row',
@@ -318,7 +321,7 @@ const styles = StyleSheet.create({
     fontSize: fontPercentage(16),
     fontWeight: '500',
     color: '#616161',
-    marginTop: heightPercentage(4),
+    marginTop: heightPercentage(4),    
   },
 
   inputContainer: {
@@ -327,7 +330,7 @@ const styles = StyleSheet.create({
     height: heightPercentage(52),
     backgroundColor: '#F5F5F5',
     borderRadius: 8,
-    paddingHorizontal: widthPercentage(8),
+    paddingHorizontal: widthPercentage(12),
     marginTop: heightPercentage(28),
   },
   input: {

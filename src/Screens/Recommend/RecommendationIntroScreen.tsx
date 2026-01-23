@@ -16,15 +16,16 @@ import {
   fontPercentage,
 } from '../../assets/styles/FigmaScreen';
 // import LottieView from 'lottie-react-native';
-import { Martini, Wine, GlassWater, BottleWine } from 'lucide-react-native';
 import { LinearGradient } from 'react-native-linear-gradient';
 
 // 4가지 칵테일 잔 아이콘
 const icons = [
-  Martini,      // 마티니 - V자형 잔
-  BottleWine,        // 쿠페 - 낮고 둥근 잔 (와인 글래스 변형)
-  Wine,         // 와인 - 볼이 넓은 와인 잔
-  GlassWater,   // 하이볼 - 세로로 긴 잔
+  require('../../assets/drawable/coupe.png'),
+  require('../../assets/drawable/flute.png'),
+  require('../../assets/drawable/hurricane.png'),
+  require('../../assets/drawable/magarita.png'),
+  require('../../assets/drawable/martini.png'),
+  require('../../assets/drawable/wine.png'),
 ];
 
 type RecommendationIntroScreenNavigationProp = StackNavigationProp<
@@ -64,9 +65,6 @@ const RecommendationIntroScreen: React.FC<Props> = ({ navigation }) => {
   };
     animate();
   }, [opacity]);
-
-
-  const IconComponent = icons[currentIndex];
 
   const handlePress = () => { //버튼 애니메이션 (누르면 움츠려들었다가 펴지는거)
       Animated.sequence([
@@ -129,9 +127,16 @@ const RecommendationIntroScreen: React.FC<Props> = ({ navigation }) => {
           />
         </TouchableOpacity>
 
-        <Animated.View style={{opacity}}>
-          <IconComponent style = {{width: '100%', marginBottom: 50}} size={400} color="#FFFFFF" strokeWidth={1} fill="#FFFFFF" />
-        </Animated.View>
+        <Animated.Image
+          source={icons[currentIndex]}
+          resizeMode="contain"
+          style={{
+            opacity,
+            width: '100%',
+            height: heightPercentage(400),
+            marginBottom: heightPercentage(50),
+          }}
+        />
 
         {/* 설명 텍스트 (페이드인 애니메이션) */}
         <Animated.View style={{ opacity: fadeAnim}}>
@@ -213,7 +218,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: heightPercentage(20),
     paddingVertical: heightPercentage(4),
     paddingHorizontal: widthPercentage(16),
   },
