@@ -1,5 +1,5 @@
 // Navigation.tsx
-import React from 'react';
+import React, { memo } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import LoginScreen from '../Screens/Login/Login';
@@ -86,7 +86,7 @@ export type RootStackParamList = {
 };
 const Stack = createStackNavigator<RootStackParamList>();
 
-const Navigation: React.FC<NavigationProps> = ({ isOnboarded, setIsOnboarded }) => {
+const Navigation: React.FC<NavigationProps> = memo(({ isOnboarded }) => {
   return (
     <NavigationContainer>
       <Stack.Navigator
@@ -129,6 +129,6 @@ const Navigation: React.FC<NavigationProps> = ({ isOnboarded, setIsOnboarded }) 
       </Stack.Navigator>
     </NavigationContainer>
   );
-};
+});
 
 export default Navigation;
