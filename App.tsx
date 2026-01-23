@@ -25,7 +25,13 @@ import { getUniqueId } from 'react-native-device-info';
 import { MonitoringRepository } from './src/model/repository/MonitoringRepository';
 
 
-const AppContent = memo(({ isOnboarded }: { isOnboarded: boolean | null }) => {
+const AppContent = memo(({
+  isOnboarded,
+  setIsOnboarded,
+}: {
+  isOnboarded: boolean;
+  setIsOnboarded: (val: boolean) => void
+}) => {
   const insets = useSafeAreaInsets();
 
   useEffect(() => {

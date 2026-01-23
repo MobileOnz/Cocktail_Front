@@ -29,6 +29,7 @@ import OnboardingScreen from '../Screens/Onboarding/OnboardingScreen';
 
 interface NavigationProps {
   isOnboarded: boolean;
+  setIsOnboarded: (val: boolean) => void;
 }
 
 export type BottomTabParamList = {
@@ -86,7 +87,7 @@ export type RootStackParamList = {
 };
 const Stack = createStackNavigator<RootStackParamList>();
 
-const Navigation: React.FC<NavigationProps> = memo(({ isOnboarded }) => {
+const Navigation: React.FC<NavigationProps> = memo(({ isOnboarded, setIsOnboarded }) => {
   return (
     <NavigationContainer>
       <Stack.Navigator

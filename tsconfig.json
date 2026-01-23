@@ -2,7 +2,8 @@
   "extends": "@react-native/typescript-config/tsconfig.json",
   "include": [
     "src",
-    "src/configs/env.d.ts"
-, "react-native.config.js"  ]
-
+    "src/configs/env.d.ts",
+    "src/types/svg.d.ts",
+    "react-native.config.js"
+  ]
 }
