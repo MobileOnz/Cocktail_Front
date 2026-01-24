@@ -50,8 +50,6 @@ const useCocktailDetailViewModel = (id: number, deps?: UseCocktailDetailDeps) =>
             ]);
             console.log('서버에서 온 상세 데이터:', detailData);
             setDetail(detailData);
-
-            console.log('서버에서 받아온 리액션 값:', reactionRes);
             if (reactionRes) {
                 setMyReaction(reactionRes as ReactionType);
             } else {
@@ -84,7 +82,11 @@ const useCocktailDetailViewModel = (id: number, deps?: UseCocktailDetailDeps) =>
         try {
 
             const res = await repository.postCocktailRecommendation(id.toString(), type);
-            console.log(`[Reaction 성공] 타입: ${type}`, res);
+            console.log('[Reaction 성공] 전체 데이터:', res.data);
+
+            // 2. 특정 값만 찍어보고 싶을 때
+            console.log('[Reaction 성공] 추천수:', res.data.recommendCount);
+            console.log('[Reaction 성공] hardCount:', res.data.hardCount);
         } catch (e) {
             setMyReaction(prev);
             Toast.show({

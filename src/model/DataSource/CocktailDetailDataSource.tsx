@@ -39,7 +39,7 @@ export class CocktailDetailDataSource {
         try {
 
             const res = await instance.get(`/api/v2/cocktails/${cocktailId}/reactions`);
-            return res.data?.data?.myReaction ?? null;
+            return res.data?.myReaction ?? null;
         } catch (error) {
             console.error('칵테일 추천 API 에러:', error);
             throw error;
@@ -49,7 +49,7 @@ export class CocktailDetailDataSource {
 
     async postCocktailReaction(cocktailId: string, reactionType: string) {
         try {
-            await instance.post(`/api/v2/cocktails/${cocktailId}/reactions`,
+            return await instance.post(`/api/v2/cocktails/${cocktailId}/reactions`,
                 {
                     reactionType: reactionType,
                 },
