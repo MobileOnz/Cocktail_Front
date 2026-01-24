@@ -2,12 +2,13 @@ import { CocktailDetail } from '../domain/CocktailDetail';
 import { CocktailDetailDataSource } from '../DataSource/CocktailDetailDataSource';
 import { CocktailSchema } from '../Schema/CocktailSchema';
 import { CocktailCard } from '../domain/CocktailCard';
+import { AxiosResponse } from 'axios';
 
 export interface ICocktailDetailRepository {
   getDetailData(id: number): Promise<CocktailDetail>;
   recommendCocktails(style: string): Promise<CocktailCard[]>;
   fetchCocktailRecommendations(cocktailId: string): Promise<string>;
-  postCocktailRecommendation(cocktailId: string, reactionType: string): Promise<void>;
+  postCocktailRecommendation(cocktailId: string, reactionType: string): Promise<AxiosResponse<any>>;
 }
 
 export class CocktailDetailRepository implements ICocktailDetailRepository {

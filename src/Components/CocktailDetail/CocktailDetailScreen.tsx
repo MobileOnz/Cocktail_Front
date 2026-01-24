@@ -154,7 +154,7 @@ export function CocktailDetailScreen({ route }: Props) {
             추천해요 🍸</Text>
         </Pressable>
         <Pressable style={[styles.button,
-        vm.myReaction === 'RECOMMEND' && { backgroundColor: '#333' }]}
+        vm.myReaction === 'HARD' && { backgroundColor: '#333' }]}
           onPress={() => { vm.handleReaction('HARD'); }}>
           <Text style={[styles.text, vm.myReaction === 'HARD' && { color: '#FFF' }]}>
             조금 어려워요🤔</Text>
