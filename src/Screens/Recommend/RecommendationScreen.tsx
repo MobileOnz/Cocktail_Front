@@ -92,13 +92,13 @@ const RecommendationScreen: React.FC<Props> = ({ navigation }) => {
       <ProgressBar currentStep={currentStep + 1} totalSteps={6} />
 
       {/* 중앙 뷰 */}
-      <View style={styles.centralContainer}>
+      <ScrollView style={styles.centralContainer}>
         {currentStep === 0 && (<Question1 currentStep={currentStep} selectedAnswers={selectedAnswers} onSelectQuestion={(answerId)=> handleAnswerSelect(answerId)}  />) }
         {currentStep === 1 && (<Question2 currentStep={currentStep} selectedAnswers={selectedAnswers} onSelectQuestion={(answerId)=> handleAnswerSelect(answerId)}  />) }
         {currentStep === 2 && (<Question3 currentStep={currentStep} selectedAnswers={selectedAnswers} onSelectQuestion={(answerId)=> handleAnswerSelect(answerId)}  />) }
         {currentStep === 3 && (<Question4 currentStep={currentStep} selectedAnswers={selectedAnswers} onSelectQuestion={(answerId)=> handleAnswerSelect(answerId)}  />) }
         {currentStep === 4 && (<Question5 currentStep={currentStep} selectedAnswers={selectedAnswers} onSelectQuestion={(answerId)=> handleAnswerSelect(answerId)}  />) }
-      </View>
+      </ScrollView>
 
 
 
@@ -162,7 +162,6 @@ const Question1 = ({ currentStep, selectedAnswers, onSelectQuestion}) => {
       title: '허브 ∙ 프레시',
       icon: require('../../assets/drawable/questionHerbal.png'),
     },
-
   ];
 
   return (
@@ -170,22 +169,17 @@ const Question1 = ({ currentStep, selectedAnswers, onSelectQuestion}) => {
       <Text style={styles.titleIntroduceText}>오늘은 어떤 맛의 칵테일이 끌리세요?</Text>
       <Text style={styles.description}>한 가지만 선택할 수 있어요.</Text>
 
-      <ScrollView
-        contentContainerStyle={styles.questionContainer}
-        showsVerticalScrollIndicator={false}
-      >
-        {questions.map((question) => (
-          <QuestionBox
-            key={question.id}
-            id={question.id}
-            currentId={selectedAnswers}
-            icon={question.icon}
-            title={question.title}
-            step={currentStep}
-            onPress={() => onSelectQuestion(question.id)}
-          />
-        ))}
-      </ScrollView>
+      {questions.map((question) => (
+        <QuestionBox
+          key={question.id}
+          id={question.id}
+          currentId={selectedAnswers}
+          icon={question.icon}
+          title={question.title}
+          step={currentStep}
+          onPress={() => onSelectQuestion(question.id)}
+        />
+      ))}
     </View>
   );
 };
@@ -231,22 +225,17 @@ const Question2 = ({ currentStep, selectedAnswers, onSelectQuestion}) => {
       <Text style={styles.titleIntroduceText}>어떤 순간에 어울리는 칵테일이 좋을까요?</Text>
       <Text style={styles.description}>한 가지만 선택할 수 있어요.</Text>
 
-      <ScrollView
-        contentContainerStyle={styles.questionContainer}
-        showsVerticalScrollIndicator={false}
-      >
-        {questions.map((question) => (
-          <QuestionBox
-            key={question.id}
-            id={question.id}
-            currentId={selectedAnswers}
-            icon={question.icon}
-            title={question.title}
-            step={currentStep}
-            onPress={() => onSelectQuestion(question.id)}
-          />
-        ))}
-      </ScrollView>
+      {questions.map((question) => (
+        <QuestionBox
+          key={question.id}
+          id={question.id}
+          currentId={selectedAnswers}
+          icon={question.icon}
+          title={question.title}
+          step={currentStep}
+          onPress={() => onSelectQuestion(question.id)}
+        />
+      ))}
     </View>
   );
 };
@@ -286,25 +275,17 @@ const Question3 = ({ currentStep, selectedAnswers, onSelectQuestion}) => {
       <Text style={styles.titleIntroduceText}>계절도 함께 반영해드릴까요?</Text>
       <Text style={styles.description}>한 가지만 선택할 수 있어요.</Text>
 
-      <ScrollView
-        contentContainerStyle={styles.questionContainer}
-        showsVerticalScrollIndicator={false}
-      >
-
-        {questions.map((question) => (
-          <QuestionBox
-            key={question.id}
-            id={question.id}
-            currentId={selectedAnswers}
-            icon={question.icon}
-            title={question.title}
-            step={currentStep}
-            onPress={() => onSelectQuestion(question.id)}
-          />
-        ))}
-
-
-      </ScrollView>
+      {questions.map((question) => (
+        <QuestionBox
+          key={question.id}
+          id={question.id}
+          currentId={selectedAnswers}
+          icon={question.icon}
+          title={question.title}
+          step={currentStep}
+          onPress={() => onSelectQuestion(question.id)}
+        />
+      ))}
 
 
     </View>
@@ -352,24 +333,18 @@ const Question4 = ({ currentStep, selectedAnswers, onSelectQuestion}) => {
       <Text style={styles.titleIntroduceText}>어떤 스타일을 시도해보고 싶으세요?</Text>
       <Text style={styles.description}>한 가지만 선택할 수 있어요.</Text>
 
-      <ScrollView
-        contentContainerStyle={styles.questionContainer}
-        showsVerticalScrollIndicator={false}
-      >
-
-        {questions.map((question) => (
-          <QuestionBox
-            key={question.id}
-            id={question.id}
-            currentId={selectedAnswers}
-            icon={question.icon}
-            title={question.title}
-            subTitle={question.subTitle}
-            step={currentStep}
-            onPress={() => onSelectQuestion(question.id)}
-          />
-        ))}
-      </ScrollView>
+      {questions.map((question) => (
+        <QuestionBox
+          key={question.id}
+          id={question.id}
+          currentId={selectedAnswers}
+          icon={question.icon}
+          title={question.title}
+          subTitle={question.subTitle}
+          step={currentStep}
+          onPress={() => onSelectQuestion(question.id)}
+        />
+      ))}
     </View>
   );
 };
@@ -402,23 +377,18 @@ const Question5 = ({ currentStep, selectedAnswers, onSelectQuestion}) => {
     <View>
       <Text style={styles.titleIntroduceText}>마지막으로, 어느 정도 도수가 좋으세요?</Text>
       <Text style={styles.description}>한 가지만 선택할 수 있어요.</Text>
-      <ScrollView
-        contentContainerStyle={styles.questionContainer}
-        showsVerticalScrollIndicator={false}
-      >
-        {questions.map((question) => (
-          <QuestionBox
-            key={question.id}
-            id={question.id}
-            currentId={selectedAnswers}
-            icon={question.icon}
-            title={question.title}
-            subTitle={question.subTitle}
-            step={currentStep}
-            onPress={() => onSelectQuestion(question.id)}
-          />
-        ))}
-      </ScrollView>
+      {questions.map((question) => (
+        <QuestionBox
+          key={question.id}
+          id={question.id}
+          currentId={selectedAnswers}
+          icon={question.icon}
+          title={question.title}
+          subTitle={question.subTitle}
+          step={currentStep}
+          onPress={() => onSelectQuestion(question.id)}
+        />
+      ))}
     </View>
   );
 };
@@ -482,7 +452,7 @@ const ProgressBar = ({ currentStep, totalSteps }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fffcf3',
+    backgroundColor: '#ffffff',
   },
   header: {
     flexDirection: 'row',
@@ -499,9 +469,8 @@ const styles = StyleSheet.create({
   },
 
   centralContainer: {
-    flex: 8,
-    paddingVertical: heightPercentage(20),
     paddingHorizontal: heightPercentage(20),
+    marginBottom: heightPercentage(120)
   },
 
   question: {
@@ -548,10 +517,12 @@ const styles = StyleSheet.create({
   },
 
   bottomContainer: {
-    flex: 1,
+    position: 'absolute',
+    width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#fffcf3',
+    bottom: 52
   },
 
   titleIntroduceText: {
@@ -605,8 +576,8 @@ const styles = StyleSheet.create({
   },
 
   questionContainer: {
-    marginTop: heightPercentage(20),
-    paddingBottom: heightPercentage(80),
+    // marginTop: heightPercentage(20),
+    // paddingBottom: heightPercentage(120),
   },
 
   progressContainer: {
