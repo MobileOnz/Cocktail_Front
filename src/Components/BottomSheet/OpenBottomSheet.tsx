@@ -15,7 +15,8 @@ import BottomSheet, {
 } from '@gorhom/bottom-sheet';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import theme from '../../assets/styles/theme';
-
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 type OpenBottomSheetProps = {
     children: React.ReactNode;
     snapPoints?: (string | number)[];
@@ -31,8 +32,9 @@ const OpenBottomSheet = forwardRef<OpenBottomSheetHandle, OpenBottomSheetProps>(
     ({ children, snapPoints, footer }, ref) => {
         const bottomSheetRef = useRef<BottomSheet>(null);
         const insets = useSafeAreaInsets();
+        const FOOTER_GAP = 90 + insets.bottom;
 
-        const [footerHeight, setFooterHeight] = useState(0);
+        const [footerHeight, setFooterHeight] = useState(100);
 
         const _snapPoints = useMemo(() => snapPoints ?? ['80%'], [snapPoints]);
 
@@ -59,11 +61,7 @@ const OpenBottomSheet = forwardRef<OpenBottomSheetHandle, OpenBottomSheetProps>(
 
                 return (
                     <BottomSheetFooter {...props} bottomInset={0}>
-                        <SafeAreaView
-                            edges={['bottom']}
-                            onLayout={(e) => setFooterHeight(e.nativeEvent.layout.height)}
-                            style={{ backgroundColor: theme.background }}
-                        >
+                        <SafeAreaView edges={['bottom']} style={{ backgroundColor: theme.background }}>
                             {footer}
                         </SafeAreaView>
                     </BottomSheetFooter>
@@ -78,7 +76,7 @@ const OpenBottomSheet = forwardRef<OpenBottomSheetHandle, OpenBottomSheetProps>(
                 index={-1}
                 snapPoints={_snapPoints}
                 backdropComponent={renderBackdrop}
-                bottomInset={insets.bottom}
+                bottomInset={0}
                 footerComponent={renderFooter}
                 enablePanDownToClose={false}
                 enableOverDrag={false}
@@ -87,10 +85,18 @@ const OpenBottomSheet = forwardRef<OpenBottomSheetHandle, OpenBottomSheetProps>(
                 backgroundStyle={{ backgroundColor: theme.background }}
                 handleIndicatorStyle={{ backgroundColor: theme.background }}
             >
+                <View style={styles.fixedHeader}>
+                    <TouchableOpacity
+                        onPress={() => bottomSheetRef.current?.close()}
+                        style={styles.closeButton}
+                    >
+                        <MaterialIcons name="close" size={26} color="#000" />
+                    </TouchableOpacity>
+                </View>
                 <BottomSheetScrollView
                     showsVerticalScrollIndicator={false}
                     contentContainerStyle={{
-                        paddingBottom: footer ? footerHeight + insets.bottom : insets.bottom,
+                        paddingBottom: footer ? FOOTER_GAP : insets.bottom + 20,
                     }}
                 >
                     {children}
@@ -99,5 +105,16 @@ const OpenBottomSheet = forwardRef<OpenBottomSheetHandle, OpenBottomSheetProps>(
         );
     },
 );
+const styles = StyleSheet.create({
+    fixedHeader: {
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
+        paddingHorizontal: 16,
+        zIndex: 999,
+    },
+    closeButton: {
+        padding: 8,
+    },
+});
 
 export default OpenBottomSheet;
