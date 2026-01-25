@@ -1,5 +1,5 @@
 // App.tsx
-import React, { useEffect, useState } from 'react';
+import React, { memo, useEffect, useState } from 'react';
 
 import SplashScreen from 'react-native-splash-screen';
 import Navigation from './src/Navigation/Navigation';
@@ -25,9 +25,14 @@ import { getUniqueId } from 'react-native-device-info';
 import { MonitoringRepository } from './src/model/repository/MonitoringRepository';
 
 
-function AppContent({ isOnboarded }: { isOnboarded: boolean }) {
+const AppContent = memo(({
+  isOnboarded,
+  setIsOnboarded,
+}: {
+  isOnboarded: boolean;
+  setIsOnboarded: (val: boolean) => void
+}) => {
   const insets = useSafeAreaInsets();
-
 
   useEffect(() => {
     setGlobalInsets(insets);
@@ -35,11 +40,11 @@ function AppContent({ isOnboarded }: { isOnboarded: boolean }) {
 
   return (
     <ToastProvider>
-      <Navigation isOnboarded={isOnboarded} />
+      <Navigation isOnboarded={isOnboarded} setIsOnboarded={setIsOnboarded} />
       <Toast />
     </ToastProvider>
   );
-}
+});
 
 function App(): React.JSX.Element {
 
@@ -90,6 +95,7 @@ function App(): React.JSX.Element {
       try {
         // const token = await AsyncStorage.getItem('accessToken');
         const deviceId = await getUniqueId();
+        console.log('Device ID:', deviceId);
         const monitoringRepo = new MonitoringRepository();
 
         const status = await monitoringRepo.checkOnboardingStatus(deviceId);
@@ -117,13 +123,14 @@ function App(): React.JSX.Element {
   }, []);
 
 
+  if (isOnboarded === null) { return <></>; }
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <BottomSheetModalProvider>
         <PaperProvider>
           <SafeAreaProvider>
-            <AppContent isOnboarded={isOnboarded} />
+            <AppContent isOnboarded={isOnboarded} setIsOnboarded={setIsOnboarded} />
           </SafeAreaProvider>
         </PaperProvider>
       </BottomSheetModalProvider>

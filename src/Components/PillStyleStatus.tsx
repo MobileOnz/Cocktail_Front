@@ -38,13 +38,13 @@ const styles = StyleSheet.create({
   base: {
     borderRadius: 999,
     paddingHorizontal: widthPercentage(8),
-    paddingVertical: heightPercentage(5),
+    paddingVertical: heightPercentage(3),
     alignSelf: 'flex-start',
   },
   label: {
+    fontFamily: 'Pretendard-SemiBold',
     color: '#fff',
-    fontWeight: '700',
-    fontSize: fontPercentage(12),
-    letterSpacing: 1,
+    fontWeight: '600',
+    fontSize: fontPercentage(10),
   },
 });

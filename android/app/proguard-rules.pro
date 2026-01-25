@@ -15,3 +15,8 @@
 -keep class com.nhn.android.naverlogin.** { *; }
 -keep interface com.nhn.android.naverlogin.** { *; }
 -dontwarn com.nhn.android.naverlogin.**
+
+# React Native Reanimated
+-keep class com.swmansion.reanimated.** { *; }
+-keep class com.facebook.react.turbomodule.core.** { *; }
+-dontwarn com.facebook.react.turbomodule.core.**

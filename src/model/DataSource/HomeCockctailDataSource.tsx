@@ -12,9 +12,13 @@ export class HomeCocktailListDataSource {
 
     // 베스트
     async bestCocktailData(): Promise<CocktailDto[]> {
-        const res = await instance.get('/api/v2/cocktails/best');
-
-        return res.data.data as CocktailDto[];
+        try {
+            const res = await instance.get('/api/v2/cocktails/best');
+            return res.data?.data ?? [];
+        } catch (error) {
+            console.error('Best Cocktail API Error:', error);
+            return [];
+        }
     }
     // 새로 업데이트 된
     async newCOcktailData(): Promise<CocktailDto[]> {
