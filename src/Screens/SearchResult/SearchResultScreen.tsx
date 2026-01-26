@@ -11,9 +11,9 @@ import useSearchResultViewModel from './SearchResultViewModel';
 import OpenBottomSheet, { OpenBottomSheetHandle } from '../../Components/BottomSheet/OpenBottomSheet';
 import MIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import FIcon from 'react-native-vector-icons/Feather';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import FilterBottomSheet, { FilterBottomSheetRef } from '../../Components/BottomSheet/FilterBottomSheet/FilterBottomSheet';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+
 type Props = NativeStackScreenProps<RootStackParamList, 'SearchResultScreen'>;
 
 
@@ -22,7 +22,7 @@ const SearchResultScreen = ({ navigation, route }: Props) => {
   const bottomSheetRef = useRef<OpenBottomSheetHandle>(null);
   const filterRef = useRef<FilterBottomSheetRef>(null);
   const vm = useSearchResultViewModel(keyword);
-  const insets = useSafeAreaInsets();
+
 
   return (
     <SafeAreaView edges={['top']} style={styles.container}>

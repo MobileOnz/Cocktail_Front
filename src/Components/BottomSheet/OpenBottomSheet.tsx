@@ -4,7 +4,6 @@ import React, {
     forwardRef,
     useImperativeHandle,
     useCallback,
-    useState,
 } from 'react';
 import BottomSheet, {
     BottomSheetBackdrop,
@@ -32,9 +31,8 @@ const OpenBottomSheet = forwardRef<OpenBottomSheetHandle, OpenBottomSheetProps>(
     ({ children, snapPoints, footer }, ref) => {
         const bottomSheetRef = useRef<BottomSheet>(null);
         const insets = useSafeAreaInsets();
-        const FOOTER_GAP = 90 + insets.bottom;
+        const FOOTER_GAP = 220 + insets.bottom;
 
-        const [footerHeight, setFooterHeight] = useState(100);
 
         const _snapPoints = useMemo(() => snapPoints ?? ['80%'], [snapPoints]);
 

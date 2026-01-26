@@ -6,9 +6,6 @@ import {
   TouchableOpacity,
   Pressable,
 } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-
-import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 
 import { FilterState, useFilterBottomSheetViewModel } from './FilterBottomSheetViewModel';
 import theme from '../../../assets/styles/theme';
