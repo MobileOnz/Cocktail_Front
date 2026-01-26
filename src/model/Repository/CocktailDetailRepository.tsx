@@ -1,9 +1,14 @@
 import { CocktailDetail } from '../domain/CocktailDetail';
 import { CocktailDetailDataSource } from '../DataSource/CocktailDetailDataSource';
 import { CocktailSchema } from '../Schema/CocktailSchema';
+import { CocktailCard } from '../domain/CocktailCard';
+import { AxiosResponse } from 'axios';
 
 export interface ICocktailDetailRepository {
   getDetailData(id: number): Promise<CocktailDetail>;
+  recommendCocktails(style: string): Promise<CocktailCard[]>;
+  fetchCocktailRecommendations(cocktailId: string): Promise<string>;
+  postCocktailRecommendation(cocktailId: string, reactionType: string): Promise<AxiosResponse<any>>;
 }
 
 export class CocktailDetailRepository implements ICocktailDetailRepository {
@@ -38,10 +43,35 @@ export class CocktailDetailRepository implements ICocktailDetailRepository {
       imageUrl: dto.imageUrl,
       flavors: dto.flavors,
       moods: dto.moods,
-      isBookmarked: dto.isBookmarked
+      isBookmarked: dto.isBookmarked,
     };
 
     return detail;
   }
+
+  async recommendCocktails(style: string): Promise<CocktailCard[]> {
+    const dto = await this.dataSource.recommendCocktails(style);
+
+    const validSchema = dto.map((item) => {
+      return CocktailSchema.parse(item);
+    });
+
+    return validSchema.map(dto => ({
+      id: dto.id,
+      name: dto.korName,
+      type: dto.style,
+      image: dto.imageUrl,
+      isBookmarked: dto.isBookmarked,
+    }));
+  }
+
+  async fetchCocktailRecommendations(cocktailId: string) {
+    return this.dataSource.fetchCocktailReaction(cocktailId);
+  }
+
+  async postCocktailRecommendation(cocktailId: string, reactionType: string) {
+    return this.dataSource.postCocktailReaction(cocktailId, reactionType);
+  }
+
 }
 
