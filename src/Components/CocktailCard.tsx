@@ -64,8 +64,7 @@ const styles = StyleSheet.create({
     marginVertical: heightPercentage(15),
   },
   card: {
-
-    borderRadius: 20,
+    borderRadius: 8,
     overflow: 'hidden',
   },
   imageWrap: {
