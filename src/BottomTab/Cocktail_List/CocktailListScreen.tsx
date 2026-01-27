@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -8,6 +8,7 @@ import {
   Dimensions,
   TouchableOpacity,
   StatusBar,
+  Animated,
 } from 'react-native';
 import { Appbar, Divider, IconButton, Text } from 'react-native-paper';
 import theme from '../../assets/styles/theme';
@@ -24,10 +25,27 @@ import PuzzlePiece from '../../configs/CurvedImage';
 import { he } from 'zod/v4/locales';
 const Home = () => {
 
+
+
+
   const [pageIndex, setPageIndex] = useState(0);
   const navigation = useNavigation<any>();
 
   const vm = useHomeViewModel();
+
+
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const animatedColor = fadeAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['#ffffff', '#000000'],
+  });
+  useEffect(() => {
+    Animated.timing(fadeAnim, {
+      toValue: vm.isScrolled ? 1 : 0,
+      duration: 200,
+      useNativeDriver: false,
+    }).start();
+  }, [vm.isScrolled]);
   useEffect(() => {
     if (vm.bestCocktail && vm.bestCocktail.length > 0) {
       vm.bestCocktail.forEach(item => {
@@ -48,7 +66,7 @@ const Home = () => {
 
       {/* 상단 헤더 */}
       <StatusBar barStyle={vm.isScrolled ? 'dark-content' : 'light-content'} backgroundColor={vm.isScrolled ? '#ffffff' : '#000000'} />
-      <Appbar.Header style={[, { backgroundColor: vm.isScrolled ? '#fff' : '#000' }]}>
+      <Appbar.Header style={[, { marginLeft: widthPercentage(16), backgroundColor: vm.isScrolled ? '#fff' : '#000' }]}>
         {/* 왼쪽 로고 */}
         <Image
           source={
@@ -60,18 +78,42 @@ const Home = () => {
         <Appbar.Content title="" />
 
         {/* 오른쪽 아이콘 */}
-        <Appbar.Action icon={({ size }) => (
-          <Image
-            source={require('../../assets/drawable/SharpSearch.png')}
-            style={{
-              width: 28,
-              height: 28,
-              tintColor: vm.isScrolled ? '#000' : '#fff'
-            }}
-            resizeMode="contain"
-          />
-        )} onPress={() => { navigation.navigate('SearchScreen' as never); }} />
-        <Appbar.Action icon="bookmark-outline" color={vm.isScrolled ? '#000' : '#fff'} onPress={() => { navigation.navigate('CocktailBoxScreen' as never); }} />
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: widthPercentage(8) }}>
+
+          {/* 검색 버튼 */}
+          <TouchableOpacity
+            onPress={() => navigation.navigate('SearchScreen')}
+            style={styles.customIconButton}
+            activeOpacity={0.7}
+          >
+            <Animated.Image
+              source={require('../../assets/drawable/SharpSearch.png')}
+              style={{
+                width: 22,
+                height: 22,
+                tintColor: animatedColor, // 💡 애니메이션되는 tintColor 적용
+              }}
+              resizeMode="contain"
+            />
+          </TouchableOpacity>
+
+          {/* 저장 버튼 */}
+          <TouchableOpacity
+            onPress={() => navigation.navigate('CocktailBoxScreen')}
+            style={styles.customIconButton}
+            activeOpacity={0.7}
+          >
+            <Animated.Image
+              source={require('../../assets/drawable/save.png')}
+              style={{
+                width: 15,
+                height: 19,
+                tintColor: animatedColor, // 💡 동일한 애니메이션 값 공유
+              }}
+              resizeMode="contain"
+            />
+          </TouchableOpacity>
+        </View>
       </Appbar.Header>
 
 
@@ -95,80 +137,101 @@ const Home = () => {
             </View>
           </View>
 
-          <Text style={styles.bannerKoText}>{vm.randomCocktail?.korName}</Text>
+          <Text style={styles.bannerKoText}>오늘의 칵테일</Text>
           <Text style={styles.bannerEnText}>{vm.randomCocktail?.engName}</Text>
         </View>
 
         {/* Best 입문자용 칵테일 */}
-        <View style={{ marginLeft: widthPercentage(16), }}>
-          <View style={styles.bestSectionWrapper}>
-            <Text variant="bodyLarge" style={styles.mainText}>
-              Best 입문자용 칵테일
-            </Text>
-            <FlatList
-              data={vm.bestCocktail}
-              extraData={vm.bestCocktail}
-              removeClippedSubviews={false}
-              keyExtractor={item => String(item.id)}
-              windowSize={3}
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              renderItem={({ item, index }) => (
 
-                <TouchableOpacity
-                  key={item.id}
-                  activeOpacity={0.8}
-                  onPress={() =>
-                    navigation.navigate('CocktailDetailScreen', {
-                      cocktailId: item.id,
-                    })
-                  }
-                >
-                  <View style={styles.card}>
-                    <PuzzlePiece uri={item.image} size={210} />
+        <View style={styles.bestSectionWrapper}>
+          <Text variant="bodyLarge" style={[styles.mainText, { marginLeft: widthPercentage(16), marginBottom: heightPercentage(16) }]}>
+            Best 입문자용 칵테일
+          </Text>
+          <FlatList
+            data={vm.bestCocktail}
+            extraData={vm.bestCocktail}
+            removeClippedSubviews={false}
+            ItemSeparatorComponent={() => <View style={{ width: widthPercentage(10) }} />}
+            contentContainerStyle={{ paddingHorizontal: 16 }}
 
-                    {/* 랭크 */}
-                    <View style={styles.bestRankWrapper}>
-                      <Text style={styles.bestRankText}>{index + 1}</Text>
-                    </View>
+            keyExtractor={item => String(item.id)}
+            windowSize={3}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            renderItem={({ item, index }) => (
 
-                    {/* 제목 */}
-                    <View style={styles.bestTitleWrapper}>
-                      <Text style={styles.bestTitleText}>
-                        {truncate(item.name, { length: 7, omission: '...' })}
-                      </Text>
-                    </View>
+              <TouchableOpacity
+                key={item.id}
+                activeOpacity={0.8}
+                onPress={() =>
+                  navigation.navigate('CocktailDetailScreen', {
+                    cocktailId: item.id,
+                  })
+                }
+              >
+                <View style={styles.card}>
+                  <PuzzlePiece uri={item.image} size={210} />
 
-                    {/* 북마크 아이콘 */}
-                    <IconButton
-                      icon={item.isBookmarked ? 'bookmark' : 'bookmark-outline'}
-                      onPress={() => { vm.bookmarked(item.id); }}
-                      size={28}
-                      iconColor="#fff"
-                      style={styles.bestBookmarkButton}
-                      accessibilityLabel="즐겨찾기"
-                    />
+                  {/* 랭크 */}
+                  <View style={styles.bestRankWrapper}>
+                    <Text style={styles.bestRankText}>{index + 1}</Text>
                   </View>
-                </TouchableOpacity>
-              )}
-            />
-          </View>
+
+                  {/* 제목 */}
+                  <View style={styles.bestTitleWrapper}>
+                    <Text style={styles.bestTitleText}>
+                      {truncate(item.name, { length: 7, omission: '...' })}
+                    </Text>
+                  </View>
+
+                  {/* 북마크 아이콘 */}
+                  <IconButton
+                    icon={item.isBookmarked ? 'bookmark' : 'bookmark-outline'}
+                    onPress={() => { vm.bookmarked(item.id); }}
+                    size={28}
+                    iconColor="#fff"
+                    style={styles.bestBookmarkButton}
+                    accessibilityLabel="즐겨찾기"
+                  />
+                </View>
+              </TouchableOpacity>
+            )}
+          />
         </View>
 
         {/* 새로 업데이트 된 칵테일 리스트 */}
         <View>
-          <View style={{ justifyContent: 'space-between', flexDirection: 'row', paddingHorizontal: widthPercentage(16) }}>
-            <Text variant="bodyLarge" style={styles.mainText}>
+          <View style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            paddingTop: heightPercentage(48),
+            paddingHorizontal: widthPercentage(16),
+            paddingBottom: heightPercentage(16),
+          }}>
+            <Text variant="bodyLarge" style={[styles.mainText, { paddingTop: 0 }]}>
               새로 업데이트 된 칵테일
             </Text>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <TouchableOpacity onPress={() => { navigation.navigate('AllCocktailScreen' as never); }}>
-                <Text variant="bodyLarge" style={{ color: '#616161', fontSize: fontPercentage(14), fontWeight: '500' }}>
-                  더보기
-                </Text>
-              </TouchableOpacity>
-              <MaterialIcons name="chevron-right" size={20} style={{ paddingLeft: 4 }} />
-            </View>
+
+            <TouchableOpacity
+              onPress={() => { navigation.navigate('AllCocktailScreen' as never); }}
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+
+              }}
+            >
+              <Text style={{
+                color: '#616161',
+                fontSize: fontPercentage(14),
+                includeFontPadding: false,
+                textAlignVertical: 'center',
+                fontWeight: '500'
+              }}>
+                더보기
+              </Text>
+              <MaterialIcons name="chevron-right" color="#616161" size={20} />
+            </TouchableOpacity>
           </View>
           <PagerView
             style={styles.pagerView}
@@ -214,7 +277,7 @@ const Home = () => {
 
         <Divider style={styles.sectionDivider} />
 
-        <Text variant="bodyLarge" style={styles.mainText}>
+        <Text variant="bodyLarge" style={[styles.mainText, { marginTop: heightPercentage(48), marginLeft: widthPercentage(16), marginBottom: heightPercentage(16) }]}>
           기분 전환이 필요할 땐 상큼한 한 잔 🍋
         </Text>
         <FlatList
@@ -244,7 +307,7 @@ const Home = () => {
           )}
         />
 
-        <Text variant="bodyLarge" style={styles.mainText}>
+        <Text variant="bodyLarge" style={[styles.mainText, { marginTop: heightPercentage(48), marginLeft: widthPercentage(16), marginBottom: heightPercentage(16) }]}>
           부담 없이 편하게 시도할 수 있는 맛 🧃
         </Text>
         <FlatList
@@ -274,7 +337,7 @@ const Home = () => {
           )}
         />
 
-        <Text variant="bodyLarge" style={styles.mainText}>
+        <Text variant="bodyLarge" style={[styles.mainText, { marginTop: heightPercentage(48), marginLeft: widthPercentage(16), marginBottom: heightPercentage(16) }]}>
           중급자로 거듭나보고 싶다면? 🥃
         </Text>
         <FlatList
@@ -366,9 +429,7 @@ const styles = StyleSheet.create({
   },
   bannerEnText: {
     position: 'absolute',
-    fontStyle: 'italic',
     fontFamily: 'NotoSerif-BoldItalic',
-    fontWeight: '700',
     bottom: 60,
     left: 24,
     right: 24,
@@ -379,9 +440,6 @@ const styles = StyleSheet.create({
   mainText: {
     fontFamily: 'Pretendard-SemiBold',
     fontWeight: '600',
-    paddingTop: heightPercentage(42),
-    paddingBottom: heightPercentage(16),
-    paddingLeft: widthPercentage(16),
   },
   filterView: {
     flexDirection: 'row',
@@ -436,16 +494,22 @@ const styles = StyleSheet.create({
 
     elevation: 10,
   },
+  customIconButton: {
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: 4,
+  },
   bestSectionWrapper: {
     alignItems: 'flex-start',
-    paddingTop: heightPercentage(50),
+    paddingTop: heightPercentage(51),
   },
   card: {
     width: widthPercentage(160),
     borderRadius: 20,
     overflow: 'hidden',
     marginRight: widthPercentage(10),
-    marginBottom: 100,
   },
   bestRankWrapper: {
     position: 'absolute',
@@ -468,8 +532,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   bestTitleText: {
+    fontFamily: 'Pretendard-SemiBold',
     fontSize: fontPercentage(16),
-    fontWeight: 'bold',
     color: '#FFF',
   },
   bestBookmarkButton: {

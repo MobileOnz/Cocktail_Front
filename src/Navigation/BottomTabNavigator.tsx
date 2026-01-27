@@ -69,8 +69,7 @@ const BottomTabNavigator = () => {
           tabBarBackground: () => <TabBarBackground />,
           tabBarStyle: {
             position: 'absolute',
-            left: 25,
-            right: 25,
+            marginHorizontal: 10,
             bottom: 30,
             backgroundColor: 'transparent',
             borderTopWidth: 0,

@@ -25,6 +25,24 @@
 		DD73C4E7A4BF4C28A0066D76 /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A78D87AEA022441E94C9B27D /* Colors.xcassets */; };
 		DEF3AA3A78F64E89B2ED58F5 /* Pretendard-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = F866DCCE292E452389D5AB25 /* Pretendard-Bold.otf */; };
 		F41739710EDA495DA680693F /* Pretendard-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = 752665F5FDF74F5AA7026A33 /* Pretendard-Medium.otf */; };
+		5753026755374D52B926F421 /* NotoSerif-ExtraLightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = FB01DFB47D0249A19243E474 /* NotoSerif-ExtraLightItalic.ttf */; };
+		97E34A4D5F53475EA7DD351A /* NotoSerif-LightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AD2D4873E80E4FB2B35BA11E /* NotoSerif-LightItalic.ttf */; };
+		9CCA5985DDDF45BCB830D923 /* NotoSerif-SemiBoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6048D0557D254646A30D3AD8 /* NotoSerif-SemiBoldItalic.ttf */; };
+		24C96DB4B79D43A39378B048 /* NotoSerif-MediumItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = FEC1217172374670B0F34FDF /* NotoSerif-MediumItalic.ttf */; };
+		85EACA94D31B441E997AA1EF /* NotoSerif-BoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 76DAC08FD29E4FA8B0042B4B /* NotoSerif-BoldItalic.ttf */; };
+		C10446BD7D1F4117889BF552 /* NotoSerif-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EF3464E5DD024AB0968AD2F1 /* NotoSerif-Regular.ttf */; };
+		488BE56518D94BE1894D7E25 /* NotoSerif-ThinItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1A605D8C7DA14E7C917C8FA1 /* NotoSerif-ThinItalic.ttf */; };
+		59EEF8169A334DB6AE0F908B /* NotoSerif-ExtraLight.ttf in Resources */ = {isa = PBXBuildFile; fileRef = FF88D3EA1B69455E97836490 /* NotoSerif-ExtraLight.ttf */; };
+		3F94FAD844704501A137A606 /* NotoSerif-Black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 055FFA9FF9C342048C45940E /* NotoSerif-Black.ttf */; };
+		AA1041AB22174753932A7F77 /* NotoSerif-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 97D036DE60BB4643B4A2C23E /* NotoSerif-Medium.ttf */; };
+		24E50C15075A41BCA013E2CA /* NotoSerif-BlackItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6B1002F86043455CA8E9D9EB /* NotoSerif-BlackItalic.ttf */; };
+		62F827774A784E1A8D880A3E /* NotoSerif-ExtraBoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2EF018AE15454E85AFCA500F /* NotoSerif-ExtraBoldItalic.ttf */; };
+		906DED08C48C4FD8B3758165 /* NotoSerif-Thin.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 008AF87E3F5C4D7AA6C1306D /* NotoSerif-Thin.ttf */; };
+		15F508A222D64DE6A74341C3 /* NotoSerif-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9374B476B87847AFAB01CAFC /* NotoSerif-SemiBold.ttf */; };
+		115AA1AB936D4F03AFD9C4C5 /* NotoSerif-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6B8B1F50BC0A41B7B43A1E7D /* NotoSerif-Italic.ttf */; };
+		FB07E91175224F2F994BEA06 /* NotoSerif-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5FE45DFD4E364C34B3BFF1EE /* NotoSerif-Light.ttf */; };
+		6348A25875CD46B383957361 /* NotoSerif-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3F76F320AA5540B58A80885F /* NotoSerif-Bold.ttf */; };
+		6F9DDC521C4F401E8916B078 /* NotoSerif-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D994935B49F74EB59D1C36F0 /* NotoSerif-ExtraBold.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -51,6 +69,24 @@
 		D86038D49A5B4DE7BC854310 /* Pretendard-Black.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Pretendard-Black.otf"; path = "../src/assets/fonts/Pretendard-Black.otf"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		F866DCCE292E452389D5AB25 /* Pretendard-Bold.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Pretendard-Bold.otf"; path = "../src/assets/fonts/Pretendard-Bold.otf"; sourceTree = "<group>"; };
+		FB01DFB47D0249A19243E474 /* NotoSerif-ExtraLightItalic.ttf */ = {isa = PBXFileReference; name = "NotoSerif-ExtraLightItalic.ttf"; path = "../src/assets/fonts/NotoSerif-ExtraLightItalic.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		AD2D4873E80E4FB2B35BA11E /* NotoSerif-LightItalic.ttf */ = {isa = PBXFileReference; name = "NotoSerif-LightItalic.ttf"; path = "../src/assets/fonts/NotoSerif-LightItalic.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		6048D0557D254646A30D3AD8 /* NotoSerif-SemiBoldItalic.ttf */ = {isa = PBXFileReference; name = "NotoSerif-SemiBoldItalic.ttf"; path = "../src/assets/fonts/NotoSerif-SemiBoldItalic.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		FEC1217172374670B0F34FDF /* NotoSerif-MediumItalic.ttf */ = {isa = PBXFileReference; name = "NotoSerif-MediumItalic.ttf"; path = "../src/assets/fonts/NotoSerif-MediumItalic.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		76DAC08FD29E4FA8B0042B4B /* NotoSerif-BoldItalic.ttf */ = {isa = PBXFileReference; name = "NotoSerif-BoldItalic.ttf"; path = "../src/assets/fonts/NotoSerif-BoldItalic.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		EF3464E5DD024AB0968AD2F1 /* NotoSerif-Regular.ttf */ = {isa = PBXFileReference; name = "NotoSerif-Regular.ttf"; path = "../src/assets/fonts/NotoSerif-Regular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		1A605D8C7DA14E7C917C8FA1 /* NotoSerif-ThinItalic.ttf */ = {isa = PBXFileReference; name = "NotoSerif-ThinItalic.ttf"; path = "../src/assets/fonts/NotoSerif-ThinItalic.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		FF88D3EA1B69455E97836490 /* NotoSerif-ExtraLight.ttf */ = {isa = PBXFileReference; name = "NotoSerif-ExtraLight.ttf"; path = "../src/assets/fonts/NotoSerif-ExtraLight.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		055FFA9FF9C342048C45940E /* NotoSerif-Black.ttf */ = {isa = PBXFileReference; name = "NotoSerif-Black.ttf"; path = "../src/assets/fonts/NotoSerif-Black.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		97D036DE60BB4643B4A2C23E /* NotoSerif-Medium.ttf */ = {isa = PBXFileReference; name = "NotoSerif-Medium.ttf"; path = "../src/assets/fonts/NotoSerif-Medium.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		6B1002F86043455CA8E9D9EB /* NotoSerif-BlackItalic.ttf */ = {isa = PBXFileReference; name = "NotoSerif-BlackItalic.ttf"; path = "../src/assets/fonts/NotoSerif-BlackItalic.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		2EF018AE15454E85AFCA500F /* NotoSerif-ExtraBoldItalic.ttf */ = {isa = PBXFileReference; name = "NotoSerif-ExtraBoldItalic.ttf"; path = "../src/assets/fonts/NotoSerif-ExtraBoldItalic.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		008AF87E3F5C4D7AA6C1306D /* NotoSerif-Thin.ttf */ = {isa = PBXFileReference; name = "NotoSerif-Thin.ttf"; path = "../src/assets/fonts/NotoSerif-Thin.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		9374B476B87847AFAB01CAFC /* NotoSerif-SemiBold.ttf */ = {isa = PBXFileReference; name = "NotoSerif-SemiBold.ttf"; path = "../src/assets/fonts/NotoSerif-SemiBold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		6B8B1F50BC0A41B7B43A1E7D /* NotoSerif-Italic.ttf */ = {isa = PBXFileReference; name = "NotoSerif-Italic.ttf"; path = "../src/assets/fonts/NotoSerif-Italic.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		5FE45DFD4E364C34B3BFF1EE /* NotoSerif-Light.ttf */ = {isa = PBXFileReference; name = "NotoSerif-Light.ttf"; path = "../src/assets/fonts/NotoSerif-Light.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		3F76F320AA5540B58A80885F /* NotoSerif-Bold.ttf */ = {isa = PBXFileReference; name = "NotoSerif-Bold.ttf"; path = "../src/assets/fonts/NotoSerif-Bold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		D994935B49F74EB59D1C36F0 /* NotoSerif-ExtraBold.ttf */ = {isa = PBXFileReference; name = "NotoSerif-ExtraBold.ttf"; path = "../src/assets/fonts/NotoSerif-ExtraBold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -141,6 +177,24 @@
 				626FAA4CAF6441E194F6D6B3 /* Pretendard-Regular.otf */,
 				58DC3848AD7948B5935BE941 /* Pretendard-SemiBold.otf */,
 				A513322CF0EE44F49238F82A /* Pretendard-Thin.otf */,
+				FB01DFB47D0249A19243E474 /* NotoSerif-ExtraLightItalic.ttf */,
+				AD2D4873E80E4FB2B35BA11E /* NotoSerif-LightItalic.ttf */,
+				6048D0557D254646A30D3AD8 /* NotoSerif-SemiBoldItalic.ttf */,
+				FEC1217172374670B0F34FDF /* NotoSerif-MediumItalic.ttf */,
+				76DAC08FD29E4FA8B0042B4B /* NotoSerif-BoldItalic.ttf */,
+				EF3464E5DD024AB0968AD2F1 /* NotoSerif-Regular.ttf */,
+				1A605D8C7DA14E7C917C8FA1 /* NotoSerif-ThinItalic.ttf */,
+				FF88D3EA1B69455E97836490 /* NotoSerif-ExtraLight.ttf */,
+				055FFA9FF9C342048C45940E /* NotoSerif-Black.ttf */,
+				97D036DE60BB4643B4A2C23E /* NotoSerif-Medium.ttf */,
+				6B1002F86043455CA8E9D9EB /* NotoSerif-BlackItalic.ttf */,
+				2EF018AE15454E85AFCA500F /* NotoSerif-ExtraBoldItalic.ttf */,
+				008AF87E3F5C4D7AA6C1306D /* NotoSerif-Thin.ttf */,
+				9374B476B87847AFAB01CAFC /* NotoSerif-SemiBold.ttf */,
+				6B8B1F50BC0A41B7B43A1E7D /* NotoSerif-Italic.ttf */,
+				5FE45DFD4E364C34B3BFF1EE /* NotoSerif-Light.ttf */,
+				3F76F320AA5540B58A80885F /* NotoSerif-Bold.ttf */,
+				D994935B49F74EB59D1C36F0 /* NotoSerif-ExtraBold.ttf */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -221,6 +275,24 @@
 				B1EBF3FEA7A448CAA8BF662F /* Pretendard-Thin.otf in Resources */,
 				6852161CE8A045A9AB50412F /* BootSplash.storyboard in Resources */,
 				DD73C4E7A4BF4C28A0066D76 /* Colors.xcassets in Resources */,
+				5753026755374D52B926F421 /* NotoSerif-ExtraLightItalic.ttf in Resources */,
+				97E34A4D5F53475EA7DD351A /* NotoSerif-LightItalic.ttf in Resources */,
+				9CCA5985DDDF45BCB830D923 /* NotoSerif-SemiBoldItalic.ttf in Resources */,
+				24C96DB4B79D43A39378B048 /* NotoSerif-MediumItalic.ttf in Resources */,
+				85EACA94D31B441E997AA1EF /* NotoSerif-BoldItalic.ttf in Resources */,
+				C10446BD7D1F4117889BF552 /* NotoSerif-Regular.ttf in Resources */,
+				488BE56518D94BE1894D7E25 /* NotoSerif-ThinItalic.ttf in Resources */,
+				59EEF8169A334DB6AE0F908B /* NotoSerif-ExtraLight.ttf in Resources */,
+				3F94FAD844704501A137A606 /* NotoSerif-Black.ttf in Resources */,
+				AA1041AB22174753932A7F77 /* NotoSerif-Medium.ttf in Resources */,
+				24E50C15075A41BCA013E2CA /* NotoSerif-BlackItalic.ttf in Resources */,
+				62F827774A784E1A8D880A3E /* NotoSerif-ExtraBoldItalic.ttf in Resources */,
+				906DED08C48C4FD8B3758165 /* NotoSerif-Thin.ttf in Resources */,
+				15F508A222D64DE6A74341C3 /* NotoSerif-SemiBold.ttf in Resources */,
+				115AA1AB936D4F03AFD9C4C5 /* NotoSerif-Italic.ttf in Resources */,
+				FB07E91175224F2F994BEA06 /* NotoSerif-Light.ttf in Resources */,
+				6348A25875CD46B383957361 /* NotoSerif-Bold.ttf in Resources */,
+				6F9DDC521C4F401E8916B078 /* NotoSerif-ExtraBold.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
