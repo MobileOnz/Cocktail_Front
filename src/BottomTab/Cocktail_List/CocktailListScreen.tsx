@@ -432,8 +432,10 @@ const styles = StyleSheet.create({
     right: 0,
   },
   bestRankText: {
+    fontFamily: 'NotoSerif-BoldItalic',
+    fontStyle: 'italic',
     fontSize: fontPercentage(24),
-    fontWeight: 'bold',
+    fontWeight: '700',
     color: '#000',
   },
   bestTitleWrapper: {
