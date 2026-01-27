@@ -60,11 +60,8 @@ const styles = StyleSheet.create({
   container: {
     width: 160,
     alignItems: 'center',
-    marginHorizontal: widthPercentage(15),
-    marginVertical: heightPercentage(15),
   },
   card: {
-    borderRadius: 8,
     overflow: 'hidden',
   },
   imageWrap: {
@@ -72,6 +69,7 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   image: {
+    borderRadius: 8,
     width: widthPercentage(160),
     height: heightPercentage(220),
     resizeMode: 'contain',
@@ -91,7 +89,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   title: {
-    fontFamily: 'Pretendard-SemiBold',
+    fontFamily: 'Pretendard-Medium',
     fontSize: fontPercentage(16),
     fontWeight: '500',
     color: '#1B1B1B',
