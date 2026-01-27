@@ -2,40 +2,112 @@
   "migIndex": 1,
   "data": [
     {
-      "path": "src/assets/fonts/Pretendard-Black.otf",
-      "sha1": "b9162985d25a21b393185c6139d283fba46fd739"
+      "path": "src/assets/fonts/NotoSerif-ExtraLightItalic.ttf",
+      "sha1": "d5d908e6fd714085408e1d48df4a2a3515100dc9"
     },
     {
-      "path": "src/assets/fonts/Pretendard-Bold.otf",
-      "sha1": "bd4ac82cc26cf93c89cfbfbbba8825c5198b5b99"
+      "path": "src/assets/fonts/NotoSerif-LightItalic.ttf",
+      "sha1": "1a288873ebdba7756349220eeaa8790045fbd526"
     },
     {
-      "path": "src/assets/fonts/Pretendard-ExtraBold.otf",
-      "sha1": "ea07e7375c62c8386f77431f0f62a2cbdea34618"
+      "path": "src/assets/fonts/NotoSerif-SemiBoldItalic.ttf",
+      "sha1": "6f84592224d2dc151f9556ad845e0a4bf5ea9828"
     },
     {
-      "path": "src/assets/fonts/Pretendard-ExtraLight.otf",
-      "sha1": "4cc979a7edca4de7b9c392529493cdd0409d9dd1"
+      "path": "src/assets/fonts/NotoSerif-MediumItalic.ttf",
+      "sha1": "96071259f49485b077a4a2a395eddc265c97d153"
     },
     {
-      "path": "src/assets/fonts/Pretendard-Light.otf",
-      "sha1": "207a94ca77a34bba0b6cec41286bde3cbeecb7f1"
+      "path": "src/assets/fonts/NotoSerif-BoldItalic.ttf",
+      "sha1": "742aae2c3de8da25b04fa95c1cda0e5b35430b0c"
     },
     {
-      "path": "src/assets/fonts/Pretendard-Medium.otf",
-      "sha1": "eba1a37734a9c4fe3d84f540ce8d812d366b2b22"
+      "path": "src/assets/fonts/NotoSerif-Regular.ttf",
+      "sha1": "c8fe04e5bb2d530b93b46b60ec50a6c1ed2da150"
     },
     {
       "path": "src/assets/fonts/Pretendard-Regular.otf",
       "sha1": "e205ef0a314d9da4e1a9382e0e65a25900a9ac7b"
     },
     {
-      "path": "src/assets/fonts/Pretendard-SemiBold.otf",
-      "sha1": "916a62152b7fd08ff43d239de04303a465521fe6"
+      "path": "src/assets/fonts/NotoSerif-ThinItalic.ttf",
+      "sha1": "13b329c70e3082645be3b28f3cdb1a14c22775b0"
+    },
+    {
+      "path": "src/assets/fonts/NotoSerif-ExtraLight.ttf",
+      "sha1": "8ecc138e5b5da5a339838628465dc003656fc11a"
+    },
+    {
+      "path": "src/assets/fonts/NotoSerif-Black.ttf",
+      "sha1": "d1e09203b0537640d6d118b827bfe354668a8ffe"
+    },
+    {
+      "path": "src/assets/fonts/NotoSerif-Medium.ttf",
+      "sha1": "7e2a2aee376652d50db141435285e2173e71374d"
+    },
+    {
+      "path": "src/assets/fonts/Pretendard-Black.otf",
+      "sha1": "b9162985d25a21b393185c6139d283fba46fd739"
+    },
+    {
+      "path": "src/assets/fonts/NotoSerif-BlackItalic.ttf",
+      "sha1": "0205b993d6f011ce07e2bb30f3a599cb45bcf1d7"
+    },
+    {
+      "path": "src/assets/fonts/NotoSerif-ExtraBoldItalic.ttf",
+      "sha1": "9be5b24369bbfe7de69dabb0f558f1484d7c69e7"
+    },
+    {
+      "path": "src/assets/fonts/Pretendard-Medium.otf",
+      "sha1": "eba1a37734a9c4fe3d84f540ce8d812d366b2b22"
+    },
+    {
+      "path": "src/assets/fonts/NotoSerif-Thin.ttf",
+      "sha1": "69c3b1a8041648e8fd1a6e49b19c4dd97fd68c20"
+    },
+    {
+      "path": "src/assets/fonts/NotoSerif-SemiBold.ttf",
+      "sha1": "4396db2cedb7e75162497d9bf5b7588d43a29aa0"
+    },
+    {
+      "path": "src/assets/fonts/NotoSerif-Italic.ttf",
+      "sha1": "25dbfc263c234cca3034ac3615ea96e95edc2f2a"
+    },
+    {
+      "path": "src/assets/fonts/NotoSerif-Light.ttf",
+      "sha1": "123ef8512e84577faa2be894589a411c0bd8d977"
+    },
+    {
+      "path": "src/assets/fonts/NotoSerif-Bold.ttf",
+      "sha1": "aebe3595f50e4a74b35ae0356b29eec989014455"
+    },
+    {
+      "path": "src/assets/fonts/NotoSerif-ExtraBold.ttf",
+      "sha1": "47a718c0edfe38809e5c83ce50e70732933b44b9"
+    },
+    {
+      "path": "src/assets/fonts/Pretendard-Light.otf",
+      "sha1": "207a94ca77a34bba0b6cec41286bde3cbeecb7f1"
+    },
+    {
+      "path": "src/assets/fonts/Pretendard-ExtraBold.otf",
+      "sha1": "ea07e7375c62c8386f77431f0f62a2cbdea34618"
+    },
+    {
+      "path": "src/assets/fonts/Pretendard-Bold.otf",
+      "sha1": "bd4ac82cc26cf93c89cfbfbbba8825c5198b5b99"
     },
     {
       "path": "src/assets/fonts/Pretendard-Thin.otf",
       "sha1": "72cf55b4d2ea4adc75123f33ca839c10cabfaab4"
+    },
+    {
+      "path": "src/assets/fonts/Pretendard-ExtraLight.otf",
+      "sha1": "4cc979a7edca4de7b9c392529493cdd0409d9dd1"
+    },
+    {
+      "path": "src/assets/fonts/Pretendard-SemiBold.otf",
+      "sha1": "916a62152b7fd08ff43d239de04303a465521fe6"
     }
   ]
 }
