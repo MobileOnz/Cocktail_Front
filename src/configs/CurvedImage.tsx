@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image } from 'react-native';
+import { Image, View } from 'react-native';
 import MaskedView from '@react-native-masked-view/masked-view';
 import Svg, { Path } from 'react-native-svg';
 
@@ -9,8 +9,8 @@ type Props = {
 };
 
 export default function PuzzlePiece({ uri, size = 200 }: Props) {
-  const w = size;
-  const h = size;
+  const baseWidth = 200;
+  const baseHeight = 210;
 
   const puzzlePath = `
     M0,0
@@ -24,19 +24,33 @@ export default function PuzzlePiece({ uri, size = 200 }: Props) {
   `;
 
   return (
-    <MaskedView
-      style={{ width: w, height: h }}
-      maskElement={
-        <Svg width={w} height={h} viewBox={`0 0 ${w} ${h}`}>
-          <Path d={puzzlePath} fill="black" />
-        </Svg>
-      }
-    >
-      <Image
-        source={{ uri }}
-        style={{ width: w, height: h }}
-        resizeMode="cover"
-      />
-    </MaskedView>
+    <View style={{ width: size, height: size, overflow: 'hidden' }}>
+      <MaskedView
+        style={{ flex: 1 }}
+        maskElement={
+          <Svg
+            width="100%"
+            height="100%"
+            viewBox={`0 0 ${baseWidth} ${baseHeight}`}
+            preserveAspectRatio="xMidYMid slice"
+          >
+            <Path d={puzzlePath} fill="black" />
+          </Svg>
+        }
+      >
+        <Image
+          source={{ uri }}
+          style={{
+            width: '100%',
+            height: '120%',
+            position: 'absolute',
+            top: '-5%',
+            left: '-10%',
+          }}
+          resizeMode="contain"
+
+        />
+      </MaskedView>
+    </View>
   );
 }
