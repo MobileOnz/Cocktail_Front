@@ -12,7 +12,6 @@ import {
 import { Appbar, Divider, IconButton, Text } from 'react-native-paper';
 import theme from '../../assets/styles/theme';
 import { fontPercentage, heightPercentage, widthPercentage } from '../../assets/styles/FigmaScreen';
-
 import { truncate } from 'lodash';
 import PillStyleStatus from '../../Components/PillStyleStatus';
 import PagerView from 'react-native-pager-view';
@@ -25,6 +24,7 @@ const Home = () => {
 
   const [pageIndex, setPageIndex] = useState(0);
   const navigation = useNavigation<any>();
+
 
   const vm = useHomeViewModel();
   useEffect(() => {
@@ -60,7 +60,7 @@ const Home = () => {
 
         {/* 오른쪽 아이콘 */}
         <Appbar.Action icon="magnify" color={vm.isScrolled ? '#000' : '#fff'} onPress={() => { navigation.navigate('SearchScreen' as never); }} />
-        <Appbar.Action icon="bookmark-outline" color={vm.isScrolled ? '#000' : '#fff'} onPress={() => { navigation.navigate('CocktailBoxScreen' as never); }} />
+        <Appbar.Action icon="bookmark-outline" color={vm.isScrolled ? '#000' : '#fff'} onPress={() => { vm.goToCocktailBox(); }} />
       </Appbar.Header>
 
 

@@ -19,7 +19,7 @@ import { useSearchViewModel } from '../Search/SearchViewModel';
 import MIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import FIcon from 'react-native-vector-icons/Feather';
 import { TextInput } from 'react-native-paper';
-
+import Ionicons from 'react-native-vector-icons/Ionicons';
 type SearchScreenProps = StackScreenProps<RootStackParamList, 'SearchScreen'>;
 
 const SearchScreen: React.FC<SearchScreenProps> = ({ navigation, route }) => {
@@ -60,7 +60,14 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation, route }) => {
           value={searchText}
           onChangeText={handleSearchTextChange}
           onSubmitEditing={handleSubmitSearch}
-          left={<TextInput.Icon icon="magnify" color="#BCBCBC" size={24} />}
+          left={
+            <TextInput.Icon
+              icon={({ size, color }) => (
+                <Ionicons name="search-outline" size={20} color="#BCBCBC" />
+              )}
+              forceTextInputFocus={false} // 아이콘 클릭 시 키보드 튐 방지
+            />
+          }
           right={
             searchText.length > 0 ? (
               <TextInput.Icon
@@ -116,7 +123,7 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation, route }) => {
               onPress={() => navigateToMap(item.name)}
               key={index}
             >
-              <MIcon name="magnify" size={20} color="#313131" />
+              <Ionicons name="search-outline" size={20} color="#313131" />
               <Text style={styles.suggestionText}>{item.name}</Text>
             </TouchableOpacity>
           ))}

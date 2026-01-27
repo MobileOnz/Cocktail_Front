@@ -4,6 +4,9 @@ import { di } from '../../DI/Container';
 import { CocktailCard } from '../../model/domain/CocktailCard';
 import { CocktailMain } from '../../model/domain/CocktailMain';
 import instance from '../../tokenRequest/axios_interceptor';
+import { useNavigation } from '@react-navigation/native';
+import { getToken } from '../../tokenRequest/Token';
+import Toast from 'react-native-toast-message';
 
 
 type UseSearchResultDeps = {
@@ -21,6 +24,20 @@ export const useHomeViewModel = (deps?: UseSearchResultDeps) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isScrolled, setIsScrolled] = useState(false);
+  const navigation = useNavigation();
+
+  const goToCocktailBox = async () => {
+    const token = await getToken();
+    if (token) {
+      navigation.navigate('CocktailBoxScreen' as never);
+    } else {
+      Toast.show({
+        type: 'info',
+        text1: '로그인이 필요한 서비스입니다.',
+      }
+      )
+    }
+  }
 
   const bookmarked = async (cocktailId: number) => {
 
@@ -126,5 +143,6 @@ export const useHomeViewModel = (deps?: UseSearchResultDeps) => {
     handleScroll,
     isScrolled,
     setIsScrolled,
+    goToCocktailBox,
   };
 };
