@@ -22,7 +22,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useHomeViewModel } from './CocktailListViewModel';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import PuzzlePiece from '../../configs/CurvedImage';
-import { he } from 'zod/v4/locales';
+import LinearGradient from 'react-native-linear-gradient';
 const Home = () => {
 
 
@@ -91,7 +91,7 @@ const Home = () => {
               style={{
                 width: 22,
                 height: 22,
-                tintColor: animatedColor, // 💡 애니메이션되는 tintColor 적용
+                tintColor: animatedColor,
               }}
               resizeMode="contain"
             />
@@ -108,7 +108,7 @@ const Home = () => {
               style={{
                 width: 15,
                 height: 19,
-                tintColor: animatedColor, // 💡 동일한 애니메이션 값 공유
+                tintColor: animatedColor,
               }}
               resizeMode="contain"
             />
@@ -134,7 +134,12 @@ const Home = () => {
                 style={styles.mainImage}
                 resizeMode="cover"
               />
+              <LinearGradient
+                colors={['transparent', 'rgba(0,0,0,0.8)']}
+                style={styles.gradientOverlay}
+              />
             </View>
+
           </View>
 
           <Text style={styles.bannerKoText}>오늘의 칵테일</Text>
@@ -226,7 +231,7 @@ const Home = () => {
                 fontSize: fontPercentage(14),
                 includeFontPadding: false,
                 textAlignVertical: 'center',
-                fontWeight: '500'
+                fontWeight: '500',
               }}>
                 더보기
               </Text>
@@ -384,6 +389,13 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     fontFamily: 'Pretendard-Medium',
   },
+  gradientOverlay: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: heightPercentage(150),
+  },
   randomWrapper: {
     position: 'relative',
     alignItems: 'center',
@@ -527,14 +539,15 @@ const styles = StyleSheet.create({
   bestTitleWrapper: {
     position: 'absolute',
     bottom: 20,
-    left: 30,
+    left: 65,
     right: 0,
-    alignItems: 'center',
+    alignItems: 'flex-start',
   },
   bestTitleText: {
     fontFamily: 'Pretendard-SemiBold',
     fontSize: fontPercentage(16),
     color: '#FFF',
+    textAlign: 'left',
   },
   bestBookmarkButton: {
     width: 32,
