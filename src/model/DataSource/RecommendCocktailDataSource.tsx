@@ -2,7 +2,6 @@ import { API_BASE_URL } from '@env';
 import instance from '../../tokenRequest/axios_interceptor';
 import { CocktailQuest } from '../domain/CocktailRec';
 import { CocktailDetail } from '../domain/CocktailDetail';
-import { isNull } from 'lodash';
 
 export class RecommendCocktailDataSource {
     async recommend(data: CocktailQuest): Promise<CocktailDetail | null> {
