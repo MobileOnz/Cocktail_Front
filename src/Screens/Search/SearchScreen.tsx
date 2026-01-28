@@ -16,7 +16,8 @@ import {
 } from '../../assets/styles/FigmaScreen';
 import { RootStackParamList } from '../../Navigation/Navigation';
 import { useSearchViewModel } from '../Search/SearchViewModel';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import MIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+import FIcon from 'react-native-vector-icons/Feather';
 import { TextInput } from 'react-native-paper';
 
 type SearchScreenProps = StackScreenProps<RootStackParamList, 'SearchScreen'>;
@@ -35,7 +36,7 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation, route }) => {
     recentSearches,
     removeRecentSearch,
     clearAllRecentSearches,
-    handleRecentSearchPress
+    handleRecentSearchPress,
   } = useSearchViewModel({
     navigation,
     initialKeyword,
@@ -48,7 +49,7 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation, route }) => {
       {/* 상단 검색 바 영역 */}
       <View style={styles.header}>
         <TouchableOpacity style={styles.backButton} onPress={handleGoBack}>
-          <Icon name="chevron-left" size={30} color="#000" />
+          <FIcon name="chevron-left" size={24} color="#000" />
         </TouchableOpacity>
 
         <TextInput
@@ -64,7 +65,7 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation, route }) => {
             searchText.length > 0 ? (
               <TextInput.Icon
                 icon="close-circle"
-                color="#868686"
+                color="#BDBDBD"
                 onPress={handleClearText}
               />
             ) : null
@@ -98,7 +99,7 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation, route }) => {
                   <Text style={styles.recentText}>{item.queryText}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => removeRecentSearch(item.id)}>
-                  <Icon name="close" size={20} color="#333" />
+                  <FIcon name="close" size={20} color="#333" />
                 </TouchableOpacity>
               </View>
             )}
@@ -115,7 +116,7 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation, route }) => {
               onPress={() => navigateToMap(item.name)}
               key={index}
             >
-              <Icon name="magnify" size={20} color="#313131" />
+              <MIcon name="magnify" size={20} color="#313131" />
               <Text style={styles.suggestionText}>{item.name}</Text>
             </TouchableOpacity>
           ))}
