@@ -4,6 +4,8 @@ import { CocktailCard } from '../../model/domain/CocktailCard';
 import { di } from '../../DI/Container';
 import axios from 'axios';
 import { DEFAULT_FILTER, FilterState } from '../../Components/BottomSheet/FilterBottomSheet/FilterBottomSheetViewModel';
+import instance from '../../tokenRequest/axios_interceptor';
+import Toast from 'react-native-toast-message';
 
 type UseSearchResultDeps = {
     repository?: ISearchRepository;
@@ -19,9 +21,29 @@ const useAllCocktailViewModel = (keyword?: string, deps?: UseSearchResultDeps) =
 
     const repository = deps?.repository ?? di.cocktailSearchRepository;
 
+    const bookmarked = async (cocktailId: number) => {
+        setResults(prev =>
+            prev.map(item =>
+                item.id === cocktailId
+                    ? { ...item, isBookmarked: !item.isBookmarked }
+                    : item
+            )
+        );
+
+        try {
+            await instance.post(`/api/v2/cocktails/${cocktailId}/bookmarks`);
+        } catch (error: any) {
+            Toast.show({
+                type: 'error',
+                text1: '로그인 후 북마크 사용이 가능합니다.',
+            });
+            fetchResult(undefined, false);
+        }
+    };
+
 
     const fetchResult = useCallback(async (filter?: FilterState, isNextPage = false) => {
-        if (loading || (isNextPage && isLast)) return;
+        if (loading || (isNextPage && isLast)) { return; }
 
         setLoading(true);
         setError(null);
@@ -87,6 +109,7 @@ const useAllCocktailViewModel = (keyword?: string, deps?: UseSearchResultDeps) =
         isLast,
         refetch: (filter?: FilterState) => fetchResult(filter, false),
         loadMore: () => fetchResult(undefined, true),
+        bookmarked,
     };
 
 };

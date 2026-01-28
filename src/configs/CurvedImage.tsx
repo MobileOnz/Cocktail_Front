@@ -1,7 +1,8 @@
 import React from 'react';
-import { Image } from 'react-native';
+import { Image, StyleSheet } from 'react-native';
 import MaskedView from '@react-native-masked-view/masked-view';
 import Svg, { Path } from 'react-native-svg';
+import LinearGradient from 'react-native-linear-gradient';
 
 type Props = {
   uri: string;
@@ -25,17 +26,35 @@ export default function PuzzlePiece({ uri, size = 200 }: Props) {
 
   return (
     <MaskedView
-      style={{ width: w, height: h }}
+      style={{
+        width: w,
+        height: h,
+
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.08,
+        shadowRadius: 8,
+      }}
       maskElement={
         <Svg width={w} height={h} viewBox={`0 0 ${w} ${h}`}>
           <Path d={puzzlePath} fill="black" />
         </Svg>
       }
     >
+
       <Image
         source={{ uri }}
         style={{ width: w, height: h }}
         resizeMode="cover"
+      />
+
+
+      <LinearGradient
+
+        colors={['transparent', 'rgba(0,0,0,0.0)', 'rgba(0,0,0,0.6)', 'rgba(0,0,0,0.85)']}
+
+        locations={[0, 0.7, 0.85, 1]}
+        style={StyleSheet.absoluteFill}
       />
     </MaskedView>
   );

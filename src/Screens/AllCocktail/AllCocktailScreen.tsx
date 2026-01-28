@@ -1,6 +1,8 @@
+// AllCocktailScreen.tsx
+
 import React, { useRef } from 'react';
-import { StyleSheet, View, Pressable, ScrollView } from 'react-native';
-import { ActivityIndicator, Appbar, Button, Text } from 'react-native-paper';
+import { StyleSheet, View, Pressable, ScrollView, TouchableOpacity } from 'react-native';
+import { ActivityIndicator, Button, Text } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { fontPercentage, heightPercentage, widthPercentage } from '../../assets/styles/FigmaScreen';
 import { FlatList } from 'react-native-gesture-handler';
@@ -11,20 +13,19 @@ import FilterBottomSheet, { FilterBottomSheetRef } from '../../Components/Bottom
 import useAllCocktailViewModel from './AllCocktailViewModel';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../Navigation/Navigation';
-
+import MIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'AllCocktailScreen'>;
 
 const AllCocktailScreen = ({ navigation }: Props) => {
     const vm = useAllCocktailViewModel();
-
     const filterRef = useRef<FilterBottomSheetRef>(null);
     const bottomSheetRef = useRef<OpenBottomSheetHandle>(null);
 
     return (
         <SafeAreaView style={styles.safeArea} edges={['top']}>
             <FlatList
-                extraData={vm.loading}
+                extraData={[vm.loading, vm.appliedFilter]}
                 onEndReached={() => {
                     if (!vm.isLast && !vm.loading) {
                         vm.loadMore();
@@ -37,26 +38,24 @@ const AllCocktailScreen = ({ navigation }: Props) => {
                     ) : null
                 }
                 data={(vm.results.length === 0 && vm.loading) || vm.error ? [] : vm.results}
-                style={{ flex: 1, backgroundColor: theme.background }}
+                style={{ flex: 1 }}
                 numColumns={2}
-                key={2}
                 columnWrapperStyle={styles.row}
                 keyExtractor={(item, index) => `${item.id}-${index}`}
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={styles.listContent}
-
-
                 ListHeaderComponent={
                     <View>
-                        <Appbar.Header style={styles.header}>
-                            <Appbar.Action icon="chevron-left" onPress={() => navigation.goBack()} />
-                            <Appbar.Content
-                                titleStyle={styles.titleText}
-                                title="칵테일 리스트"
-                                style={styles.contentCenter}
-                            />
-                        </Appbar.Header>
-
+                        {/* SearchResultScreen과 동일한 헤더 디자인 */}
+                        <View style={styles.header}>
+                            <TouchableOpacity onPress={() => navigation.goBack()}>
+                                <MIcon name="chevron-left" size={24} color="#000" />
+                            </TouchableOpacity>
+                            <View style={styles.titleContainer}>
+                                <Text style={styles.titleText}>칵테일 리스트</Text>
+                            </View>
+                            <View style={{ width: 24 }} />
+                        </View>
                         <ScrollView
                             horizontal
                             showsHorizontalScrollIndicator={false}
@@ -64,7 +63,6 @@ const AllCocktailScreen = ({ navigation }: Props) => {
                         >
                             {['최신순', '도수', '스타일', '맛', '베이스'].map((label, idx) => {
                                 const filter = vm.appliedFilter;
-                                // 1. 각 버튼별로 데이터가 있는지 확인
                                 const isSelected =
                                     (label === '최신순' && filter.sort !== '최신순') ||
                                     (label === '도수' && filter.degree) ||
@@ -75,16 +73,14 @@ const AllCocktailScreen = ({ navigation }: Props) => {
                                 return (
                                     <Button
                                         key={idx}
-                                        mode={isSelected ? 'contained' : 'outlined'} // 강조를 위해 mode 변경 가능
+                                        mode={isSelected ? 'contained' : 'outlined'}
                                         icon={label === '최신순' ? undefined : 'chevron-down'}
                                         compact
                                         contentStyle={styles.filterButtonContent}
-
                                         style={[
                                             styles.chip,
                                             isSelected ? styles.chipSelected : styles.chipUnselected,
                                         ]}
-
                                         labelStyle={[
                                             styles.chipLabel,
                                             isSelected && styles.chipLabelSelected,
@@ -96,15 +92,14 @@ const AllCocktailScreen = ({ navigation }: Props) => {
                                 );
                             })}
                         </ScrollView>
+
+
                     </View>
                 }
-
-
                 ListEmptyComponent={
                     <View style={styles.emptyContainer}>
                         {vm.loading && <ActivityIndicator size="large" />}
-                        {!vm.loading && vm.error && <Text style={styles.text}>{vm.error}</Text>}
-                        {!vm.loading && !vm.error && vm.results?.length === 0 && (
+                        {!vm.loading && (
                             <>
                                 <Text style={styles.text}>아직 준비된 칵테일이 없네요.</Text>
                                 <Text style={styles.text}>다른 필터를 선택해보시겠어요?</Text>
@@ -112,7 +107,6 @@ const AllCocktailScreen = ({ navigation }: Props) => {
                         )}
                     </View>
                 }
-
                 renderItem={({ item }) => (
                     <View style={styles.cardWrapper}>
                         <CocktailCard
@@ -120,18 +114,25 @@ const AllCocktailScreen = ({ navigation }: Props) => {
                             name={item.name}
                             type={item.type}
                             image={item.image}
-                            onPress={() => { navigation.navigate('CocktailDetailScreen', { cocktailId: item.id }); }}
+                            onPress={() =>
+                                navigation.navigate('CocktailDetailScreen', {
+                                    cocktailId: item.id,
+                                })
+                            }
+                            onToggleBookmark={() => {
+                                vm.bookmarked(item.id);
+                            }}
                         />
                     </View>
                 )}
             />
 
-            {/* 바텀시트 설정 */}
             <OpenBottomSheet
                 ref={bottomSheetRef}
                 footer={
                     <View style={styles.footer}>
                         <Pressable style={styles.resetButton} onPress={() => filterRef.current?.reset()}>
+                            <MIcon name="refresh" size={20} color="#444" style={styles.resetIcon} />
                             <Text style={styles.resetText}>초기화</Text>
                         </Pressable>
 
@@ -150,6 +151,7 @@ const AllCocktailScreen = ({ navigation }: Props) => {
                 <FilterBottomSheet
                     ref={filterRef}
                     onApply={(filterValue) => vm.refetch(filterValue)}
+                    onClose={() => bottomSheetRef.current?.close()}
                 />
             </OpenBottomSheet>
         </SafeAreaView>
@@ -164,20 +166,18 @@ const styles = StyleSheet.create({
         backgroundColor: theme.background,
     },
     header: {
-        backgroundColor: theme.background,
-        position: 'relative',
+        padding: 10,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
     },
-    contentCenter: {
-        position: 'absolute',
-        left: 0,
-        right: 0,
-        top: 0,
-        bottom: 0,
-        justifyContent: 'center',
+    titleContainer: {
+        flex: 1,
         alignItems: 'center',
     },
     titleText: {
-        fontSize: fontPercentage(20),
+        fontFamily: 'Pretendard-Medium',
+        fontSize: fontPercentage(18),
         fontWeight: '600',
         color: '#000',
     },
@@ -187,29 +187,20 @@ const styles = StyleSheet.create({
         paddingHorizontal: widthPercentage(8),
         paddingVertical: 4,
         gap: 8,
-
-    },
-    listContent: {
-        paddingBottom: 24,
-        backgroundColor: theme.background,
-        flexGrow: 1,
-    },
-    row: {
-        justifyContent: 'flex-start',
-        marginBottom: 16,
     },
     filterButtonContent: {
+        flexDirection: 'row-reverse',
         alignItems: 'center',
         justifyContent: 'center',
-        flexDirection: 'row-reverse',
-        height: 30,
-        paddingHorizontal: 10,
     },
     chip: {
         borderRadius: 100,
         borderWidth: 1,
-        minHeight: 0,
-        marginBottom: 0,
+        // 2. 고정 높이보다는 최소 높이를 지정하거나 패딩으로 조절하세요.
+        minHeight: 32,
+        justifyContent: 'center',
+        alignItems: 'center',
+        elevation: 0, // 버튼 그림자 제거 (필요시)
     },
     chipUnselected: {
         backgroundColor: theme.background,
@@ -220,14 +211,30 @@ const styles = StyleSheet.create({
         borderColor: '#E0E0E0',
     },
     chipLabel: {
-        fontSize: 10,
-        lineHeight: 11,
-        color: '#333333',
+        fontFamily: 'Pretendard-Medium',
+        fontSize: fontPercentage(14),
+        color: '#616161',
+        includeFontPadding: false,
+        lineHeight: fontPercentage(18),
+        textAlignVertical: 'center',
+        marginVertical: heightPercentage(4),
+        marginHorizontal: widthPercentage(10),
     },
     chipLabelSelected: {
-        fontSize: 10,
-        lineHeight: 11,
+        fontFamily: 'Pretendard-Medium',
+        fontSize: fontPercentage(14),
         color: '#FFFFFF',
+    },
+    listContent: {
+        paddingBottom: 24,
+    },
+    row: {
+        justifyContent: 'flex-start',
+        marginBottom: 16,
+    },
+    cardWrapper: {
+        width: '50%',
+        alignItems: 'center',
     },
     emptyContainer: {
         flex: 1,
@@ -235,12 +242,9 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         paddingVertical: 40,
     },
-    cardWrapper: {
-        width: '50%',
-        alignItems: 'center',
-    },
     text: {
         color: '#BDBDBD',
+        fontFamily: 'Pretendard-Medium',
         fontSize: fontPercentage(16),
         fontWeight: '600',
     },
@@ -251,32 +255,37 @@ const styles = StyleSheet.create({
         paddingVertical: 12,
         backgroundColor: theme.background,
         borderTopWidth: 1,
-        borderTopColor: '#eee',
+        borderTopColor: '#EEE',
     },
     resetButton: {
         flex: 1,
+        flexDirection: 'row',
         height: heightPercentage(50),
-        borderRadius: 10,
+        borderRadius: 12,
         borderWidth: 1,
         borderColor: '#D0D0D0',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: theme.background,
+    },
+    resetIcon: {
+        marginRight: 4,
+        transform: [{ scaleX: -1 }],
     },
     applyButton: {
-        flex: 1,
+        flex: 2,
         height: heightPercentage(50),
-        borderRadius: 10,
+        borderRadius: 12,
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#111111',
+        backgroundColor: '#313131',
     },
     resetText: {
+        fontFamily: 'Pretendard-Medium',
         fontSize: 14,
         color: '#444444',
-        fontWeight: '500',
     },
     applyText: {
+        fontFamily: 'Pretendard-Medium',
         fontSize: 14,
         color: '#FFFFFF',
         fontWeight: '600',

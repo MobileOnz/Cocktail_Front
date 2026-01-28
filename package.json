@@ -9,7 +9,8 @@
     "start": "react-native start",
     "test": "jest",
     "postinstall": "patch-package",
-    "deploy:android": "taskkill /F /IM node.exe /T /FI \"status eq running\" >nul 2>&1 & cd android && gradlew clean && cd .. && cd android && gradlew assembleRelease && cd .. && firebase appdistribution:distribute android/app/build/outputs/apk/release/app-release.apk --app \"1:513269758316:android:8f3b11afa11de306391b49\" --groups \"testers\""
+    "deploy:android": "taskkill /F /IM node.exe /T /FI \"status eq running\" >nul 2>&1 & cd android && gradlew clean && cd .. && cd android && gradlew assembleRelease && cd .. && firebase appdistribution:distribute android/app/build/outputs/apk/release/app-release.apk --app \"1:513269758316:android:8f3b11afa11de306391b49\" --groups \"testers\"",
+    "deploy:androidMac": "cd android && ./gradlew clean && ./gradlew assembleRelease && cd .. && firebase appdistribution:distribute android/app/build/outputs/apk/release/app-release.apk --app \"1:513269758316:android:8f3b11afa11de306391b49\" --groups \"testers\""
   },
   "dependencies": {
     "@amplitude/analytics-react-native": "^1.5.32",
