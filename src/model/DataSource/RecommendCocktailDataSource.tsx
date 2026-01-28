@@ -2,16 +2,20 @@ import { API_BASE_URL } from '@env';
 import instance from '../../tokenRequest/axios_interceptor';
 import { CocktailQuest } from '../domain/CocktailRec';
 import { CocktailDetail } from '../domain/CocktailDetail';
+import { isNull } from 'lodash';
 
 export class RecommendCocktailDataSource {
-    async recommend(data: CocktailQuest): Promise<CocktailDetail> {
+    async recommend(data: CocktailQuest): Promise<CocktailDetail | null> {
         console.log('요청 Data: ', data);
         const res = await instance.get(`${API_BASE_URL}/api/v2/cocktails/recommendation`,
             { params: data }
         );
 
-        const dto = res.data.data;
+        const dto = res.data?.data;
         console.log('RecommendCocktailDataSource 응답: ', JSON.stringify(res.data));
+        if (dto === null) {
+            return null;
+        }
         return {
             id: dto.id,
             korName: dto.korName,

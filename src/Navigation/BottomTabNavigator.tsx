@@ -17,6 +17,7 @@ import MyPageIcon from '../assets/drawable/MyPage.svg';
 import MyPageScreen from '../Screens/MyPage/MyPageScreen';
 import { heightPercentage } from '../assets/styles/FigmaScreen';
 import { useNavigationState } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Tab = createBottomTabNavigator<BottomTabParamList>();
 export const ICON_PATH = {
@@ -126,10 +127,21 @@ const BottomTabNavigator = () => {
             headerShown: false,
           }}
           listeners={({ navigation }) => ({
-            tabPress: e => {
+            tabPress: async e => {
               e.preventDefault(); // ❗ 탭 전환 막기
+              
+              // 로그인 시에만 접근 가능하게 하기
+              const loggedIn = await AsyncStorage.getItem('accessToken');
+              console.log(loggedIn)
+              if (!loggedIn) {
+                navigation.navigate('Login', {
+                  redirect: 1
+                });
+                return;
+              }
+              
               navigation.getParent()?.navigate('RecommendIntroScreen');
-            },
+            }    
           })}
         />
 
