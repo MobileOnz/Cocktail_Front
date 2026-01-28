@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   View,
   Text,
@@ -24,7 +24,7 @@ interface Props {
 
 const RecommendResultScreen: React.FC<Props> = ({ navigation, route }) => {
     const { result, answers } = route.params;
-    const { clickCtaRecommendResult, getMemberInfo, loading, user } = ResultViewModel();
+    const { clickCtaRecommendResult, user } = ResultViewModel();
 
     // [버튼] 한잔 더 추천받기
     const resetRecommendation = () => {
