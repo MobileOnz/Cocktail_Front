@@ -76,7 +76,7 @@ const LoadingVideoScreen: React.FC<Props> = ({navigation, route}) => {
             const result = await recommend(answers);
             if (!result) {
               setTimeout( () => {
-                showToast('칵테일 추천에 실패했어요');
+                showToast('조건에 맞는 칵테일을 찾지 못했어요');
                 navigation.reset({
                   index: 0,
                   routes: [
@@ -93,7 +93,7 @@ const LoadingVideoScreen: React.FC<Props> = ({navigation, route}) => {
             } else {
               viewPageRecommendation(answers);
               setTimeout( () => {
-                  navigation.navigate('RecommendResultScreen', { result, answers });
+                  navigation.replace('RecommendResultScreen', { result, answers });
               }, 4500);
             }
         };

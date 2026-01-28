@@ -7,7 +7,7 @@ export class CocktailRecommendRepository  {
         private cocktailDataSource: RecommendCocktailDataSource,
     ) {}
 
-    recommend(data: CocktailQuest): Promise<CocktailDetail> {
+    recommend(data: CocktailQuest): Promise<CocktailDetail | null> {
         return this.cocktailDataSource.recommend(data);
     }
 
