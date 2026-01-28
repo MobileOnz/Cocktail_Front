@@ -40,7 +40,7 @@ export type BottomTabParamList = {
 };
 export type RootStackParamList = {
   Onboarding: undefined;
-  Login: undefined;
+  Login: { redirect?: number } | undefined ;
   Home: undefined;
   SearchScreen: { initialKeyword?: string };
   BottomTabNavigator: {

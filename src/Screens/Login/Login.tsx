@@ -9,7 +9,8 @@ import { AuthError, AuthErrorType } from '../../model/domain/AuthError';
 
 type LoginScreenProps = StackScreenProps<RootStackParamList, 'Login'>;
 
-const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
+const LoginScreen: React.FC<LoginScreenProps> = ({ navigation, route }) => {
+  let redirectTo = route.params?.redirect
   const {showToast} = useToast();
   const { loginWithNaver, loginWithKakao, loginWithGoogle } = AuthViewModel();
 
@@ -19,6 +20,22 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
 
       if (result.type === 'token') {
         showToast('로그인하였습니다.');
+
+        if (redirectTo === 1) {
+          navigation.reset({
+            index: 0,
+            routes: [
+              {
+                  name: 'BottomTabNavigator',
+                  params: {
+                    screen: '홈',
+                  },
+                },
+              { name: 'RecommendIntroScreen' }],
+          });
+          return;
+        }
+
         navigation.navigate('BottomTabNavigator', {
           screen: '지도',
           params: { shouldRefresh: true },
@@ -60,6 +77,22 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
       console.log(JSON.stringify(result));
       if (result.type === 'token') {
         showToast('로그인하였습니다.');
+
+        if (redirectTo === 1) {
+          navigation.reset({
+            index: 0,
+            routes: [
+              {
+                  name: 'BottomTabNavigator',
+                  params: {
+                    screen: '홈',
+                  },
+                },
+              { name: 'RecommendIntroScreen' }],
+          });
+          return;
+        }
+
         navigation.navigate('BottomTabNavigator', {
           screen: '지도',
           params: { shouldRefresh: true },
@@ -134,6 +167,22 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
       console.log(JSON.stringify(result));
       if (result.type === 'token') {
         showToast('로그인하였습니다.');
+
+        if (redirectTo === 1) {
+          navigation.reset({
+            index: 0,
+            routes: [
+              {
+                  name: 'BottomTabNavigator',
+                  params: {
+                    screen: '홈',
+                  },
+                },
+              { name: 'RecommendIntroScreen' }],
+          });
+          return;
+        }
+        
         navigation.navigate('BottomTabNavigator', {
           screen: '지도',
           params: { shouldRefresh: true },
