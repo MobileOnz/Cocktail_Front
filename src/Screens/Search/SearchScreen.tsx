@@ -6,6 +6,7 @@ import {
   StatusBar,
   Text,
   FlatList,
+  Image,
 } from 'react-native';
 import { StackScreenProps } from '@react-navigation/stack';
 import theme from '../../assets/styles/theme';
@@ -16,9 +17,10 @@ import {
 } from '../../assets/styles/FigmaScreen';
 import { RootStackParamList } from '../../Navigation/Navigation';
 import { useSearchViewModel } from '../Search/SearchViewModel';
-import MIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import FIcon from 'react-native-vector-icons/Feather';
+import Icon from 'react-native-vector-icons/Ionicons';
 import { TextInput } from 'react-native-paper';
+import Animated from 'react-native-reanimated';
 
 type SearchScreenProps = StackScreenProps<RootStackParamList, 'SearchScreen'>;
 
@@ -49,20 +51,38 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation, route }) => {
       {/* 상단 검색 바 영역 */}
       <View style={styles.header}>
         <TouchableOpacity style={styles.backButton} onPress={handleGoBack}>
-          <FIcon name="chevron-left" size={24} color="#000" />
+          <Icon name="chevron-back-sharp" size={24} color="#000" />
         </TouchableOpacity>
 
         <TextInput
           style={styles.searchInput}
           mode="outlined"
           placeholder="칵테일을 검색해보세요"
-          placeholderTextColor="#BCBCBC"
+          placeholderTextColor="#D9D9D9"
           value={searchText}
           onChangeText={handleSearchTextChange}
           onSubmitEditing={handleSubmitSearch}
-          left={<TextInput.Icon icon="magnify" color="#BCBCBC" size={24} />}
+          left={
+            <TextInput.Icon
+              forceTextInputFocus={false}
+              icon={() => (
+                <Animated.Image
+                  source={require('../../assets/drawable/SharpSearch.png')}
+                  style={{
+                    width: 24,
+                    height: 24,
+                    tintColor: '#D9D9D9',
+                  }}
+                  resizeMode="contain"
+                />
+              )}
+
+            />
+
+          }
           right={
             searchText.length > 0 ? (
+
               <TextInput.Icon
                 icon="close-circle"
                 color="#BDBDBD"
@@ -72,7 +92,7 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation, route }) => {
           }
           outlineStyle={{ borderRadius: 8, borderWidth: 0 }}
           activeOutlineColor="transparent"
-          contentStyle={{ paddingLeft: 0 }}
+          contentStyle={{ paddingLeft: 0, marginLeft: -8 }}
         />
       </View>
 
@@ -116,7 +136,15 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation, route }) => {
               onPress={() => navigateToMap(item.name)}
               key={index}
             >
-              <MIcon name="magnify" size={20} color="#313131" />
+              <Image
+                source={require('../../assets/drawable/SharpSearch.png')}
+                style={{
+                  width: 20,
+                  height: 20,
+                  tintColor: '#313131',
+                }}
+                resizeMode="contain"
+              />
               <Text style={styles.suggestionText}>{item.name}</Text>
             </TouchableOpacity>
           ))}
@@ -145,7 +173,8 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     flex: 1,
-    height: heightPercentage(44),
+    fontFamily: 'Pretendard-Medium',
+    height: heightPercentage(42),
     backgroundColor: '#F5F5F5', // 연한 회색 배경
     fontSize: fontPercentage(16),
   },
@@ -160,11 +189,12 @@ const styles = StyleSheet.create({
     marginBottom: heightPercentage(20),
   },
   recentTitle: {
+    fontFamily: 'Pretendard-SemiBold',
     fontSize: fontPercentage(18),
-    fontWeight: 'bold',
     color: '#000',
   },
   clearAllText: {
+    fontFamily: 'Pretendard-Medium',
     fontSize: fontPercentage(12),
     color: '#868686',
   },
@@ -175,6 +205,7 @@ const styles = StyleSheet.create({
     paddingVertical: heightPercentage(12),
   },
   recentText: {
+    fontFamily: 'Pretendard-Medium',
     fontSize: fontPercentage(16),
     color: '#616161',
   },
