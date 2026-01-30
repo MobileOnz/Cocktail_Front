@@ -22,7 +22,6 @@ import { useNavigation } from '@react-navigation/native';
 import { useHomeViewModel } from './CocktailListViewModel';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import PuzzlePiece from '../../configs/CurvedImage';
-import { he } from 'zod/v4/locales';
 const Home = () => {
 
 
@@ -99,7 +98,7 @@ const Home = () => {
 
           {/* 저장 버튼 */}
           <TouchableOpacity
-            onPress={() => navigation.navigate('CocktailBoxScreen')}
+            onPress={() => vm.bookMarkCheck()}
             style={styles.customIconButton}
             activeOpacity={0.7}
           >
@@ -437,7 +436,7 @@ const styles = StyleSheet.create({
   bannerKoText: {
     fontFamily: 'Pretendard-SemiBold',
     position: 'absolute',
-    bottom: 90,
+    bottom: 95,
     left: 24,
     right: 24,
     textAlign: 'center',
