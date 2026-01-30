@@ -91,7 +91,7 @@ const Home = () => {
               style={{
                 width: 28,
                 height: 28,
-                tintColor: animatedColor, // 💡 애니메이션되는 tintColor 적용
+                tintColor: animatedColor,
               }}
               resizeMode="contain"
             />
