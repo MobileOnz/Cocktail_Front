@@ -29,6 +29,7 @@ export class RecommendCocktailDataSource {
             imageUrl: dto.imageUrl,
             flavors: dto.flavors,
             moods: dto.moods,
+            isBookmarked: dto.isBookmarked
         };
 
     }

@@ -10,7 +10,7 @@ import { AuthError, AuthErrorType } from '../../model/domain/AuthError';
 type LoginScreenProps = StackScreenProps<RootStackParamList, 'Login'>;
 
 const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
-  const {showToast} = useToast();
+  const { showToast } = useToast();
   const { loginWithNaver, loginWithKakao, loginWithGoogle } = AuthViewModel();
 
   const naverLogin = async () => {
@@ -127,7 +127,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
 
 
 
-      //구글 로그인
+  //구글 로그인
   const googleLogin = async () => {
     try {
       const result = await loginWithGoogle();
@@ -214,7 +214,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
           <TouchableOpacity
             style={styles.loginButton}
             onPress={googleLogin}
-            >
+          >
             <Image
               source={require('../../assets/drawable/google_button.png')}
               style={styles.buttonImage}
