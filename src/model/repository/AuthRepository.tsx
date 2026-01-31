@@ -8,8 +8,9 @@ export class AuthRepository {
     private naverDataSource: ISocialAuthDataSource,
     private googleDataSource: ISocialAuthDataSource,
     private kakaoDataSource: ISocialAuthDataSource,
+    private appleDataSource: ISocialAuthDataSource,
     private authRemoteDataSource: AuthRemoteDataSource
-  ) {}
+  ) { }
 
   naverLogin(): Promise<AuthResult> {
     return this.naverDataSource.login();
@@ -21,6 +22,9 @@ export class AuthRepository {
 
   googleLogin(): Promise<AuthResult> {
     return this.googleDataSource.login();
+  }
+  appleLogin(): Promise<AuthResult> {
+    return this.appleDataSource.login();
   }
 
   signUp(req: SignUpRequest) {

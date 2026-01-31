@@ -1,17 +1,17 @@
-import { View, Text, StyleSheet, TouchableOpacity, Image, ImageBackground } from 'react-native';
+
+import React from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Image, ImageBackground, Platform } from 'react-native';
 import { StackScreenProps } from '@react-navigation/stack';
 import { heightPercentage, widthPercentage, fontPercentage } from '../../assets/styles/FigmaScreen';
 import { RootStackParamList } from '../../Navigation/Navigation';
-
 import { useToast } from '../../Components/ToastContext';
 import AuthViewModel from './AuthViewModel';
 import { AuthError, AuthErrorType } from '../../model/domain/AuthError';
-
 type LoginScreenProps = StackScreenProps<RootStackParamList, 'Login'>;
 
 const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
   const { showToast } = useToast();
-  const { loginWithNaver, loginWithKakao, loginWithGoogle } = AuthViewModel();
+  const { loginWithNaver, loginWithKakao, loginWithGoogle, loginWithApple } = AuthViewModel();
 
   const naverLogin = async () => {
     try {
@@ -130,14 +130,9 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
   //구글 로그인
   const googleLogin = async () => {
     try {
-      console.log('--- [UI] 구글 로그인 버튼 클릭됨 ---');
       const result = await loginWithGoogle();
-
-      // 1. 백엔드에서 넘어온 최종 결과값 확인
-      console.log('--- [UI] loginWithGoogle 결과:', JSON.stringify(result));
-
+      console.log(JSON.stringify(result));
       if (result.type === 'token') {
-        console.log('--- [UI] 로그인 성공: 메인으로 이동 ---');
         showToast('로그인하였습니다.');
         navigation.navigate('BottomTabNavigator', {
           screen: '지도',
@@ -147,38 +142,71 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
       }
 
       if (result.type === 'signup') {
-        console.log('--- [UI] 신규 가입: 가입 페이지로 이동 ---');
         navigation.navigate('SignupScreen', {
           code: result.signupCode,
         });
         return;
       }
 
-      // 만약 여기까지 내려온다면 result.type이 이상한 것
-      console.warn('--- [UI] 경고: 알 수 없는 result.type:', result.type);
-
-    } catch (error: any) {
-      // 2. 에러의 상세 내용 출력
-      console.error('--- [UI] 구글 로그인 에러 발생 ---');
-      console.error('에러 상세:', error);
-
+    } catch (error) {
       if (error instanceof AuthError) {
-        console.log('AuthError 타입:', error.type);
         switch (error.type) {
           case AuthErrorType.TOKEN_EXPIRED:
             showToast('로그인이 만료되었습니다.');
             break;
+
           case AuthErrorType.SOCIAL_LOGIN_FAILED:
             showToast('소셜 로그인에 실패했습니다.');
             break;
+
           default:
             showToast('로그인에 실패했습니다.');
         }
         return;
       }
 
-      // 3. AuthError가 아닌 일반 에러일 경우 메시지 확인
-      showToast(`오류: ${error.message || '알 수 없는 오류'}`);
+      showToast('알 수 없는 오류가 발생했습니다.');
+    }
+  };
+
+  const appleLogin = async () => {
+    try {
+      const result = await loginWithApple();
+      console.log(JSON.stringify(result));
+      if (result.type === 'token') {
+        showToast('로그인하였습니다.');
+        navigation.navigate('BottomTabNavigator', {
+          screen: '지도',
+          params: { shouldRefresh: true },
+        });
+        return;
+      }
+
+      if (result.type === 'signup') {
+        navigation.navigate('SignupScreen', {
+          code: result.signupCode,
+        });
+        return;
+      }
+
+    } catch (error) {
+      if (error instanceof AuthError) {
+        switch (error.type) {
+          case AuthErrorType.TOKEN_EXPIRED:
+            showToast('로그인이 만료되었습니다.');
+            break;
+
+          case AuthErrorType.SOCIAL_LOGIN_FAILED:
+            showToast('소셜 로그인에 실패했습니다.');
+            break;
+
+          default:
+            showToast('로그인에 실패했습니다.');
+        }
+        return;
+      }
+
+      showToast('알 수 없는 오류가 발생했습니다.');
     }
   };
 
@@ -224,15 +252,32 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
           </TouchableOpacity>
 
           {/* google로그인 버튼 */}
-          <TouchableOpacity
-            style={styles.loginButton}
-            onPress={googleLogin}
-          >
-            <Image
-              source={require('../../assets/drawable/google_button.png')}
-              style={styles.buttonImage}
-            />
-          </TouchableOpacity>
+          {Platform.OS === 'android' && (
+
+            <TouchableOpacity
+              style={styles.loginButton}
+              onPress={googleLogin}
+            >
+              <Image
+                source={require('../../assets/drawable/google_button.png')}
+                style={styles.buttonImage}
+              />
+            </TouchableOpacity>
+          )}
+
+          {/* Apple 버튼 */}
+          {Platform.OS === 'ios' && (
+            <TouchableOpacity
+              style={styles.loginButton}
+              onPress={appleLogin}
+            >
+              <Image
+                source={require('../../assets/drawable/Apple_login.png')}
+                style={styles.buttonImage}
+              />
+            </TouchableOpacity>
+          )}
+
         </View>
       </View>
     </ImageBackground>
