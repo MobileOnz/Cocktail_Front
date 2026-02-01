@@ -15,7 +15,7 @@ const useAllCocktailViewModel = (keyword?: string, deps?: UseSearchResultDeps) =
     const [results, setResults] = useState<CocktailCard[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [page, _setPage] = useState(0);
+    const [page, setPage] = useState(0);
     const [isLast, setIsLast] = useState(false);
     const [appliedFilter, setAppliedFilter] = useState<FilterState>(DEFAULT_FILTER);
 
@@ -43,13 +43,13 @@ const useAllCocktailViewModel = (keyword?: string, deps?: UseSearchResultDeps) =
 
 
     const fetchResult = useCallback(async (filter?: FilterState, isNextPage = false) => {
-        if (loading || (isNextPage && isLast)) { return; }
 
+        if (loading || (isNextPage && isLast)) { return; }
         setLoading(true);
-        setError(null);
-        const targetPage = isNextPage ? page + 1 : 0;
-        if (filter) { setAppliedFilter(filter); }
+
+
         try {
+            const targetPage = isNextPage ? page + 1 : 0;
             const targetFilter = filter ?? appliedFilter;
             const abvParam = targetFilter.degree || undefined;
             const styleParam = targetFilter.style || undefined;
@@ -70,8 +70,11 @@ const useAllCocktailViewModel = (keyword?: string, deps?: UseSearchResultDeps) =
             );
             if (isNextPage) {
                 setResults(prev => [...prev, ...data]);
+                setPage(targetPage);
             } else {
                 setResults(data);
+                setPage(0);
+                setIsLast(false);
             }
 
             if (data.length < 10) {
@@ -95,11 +98,12 @@ const useAllCocktailViewModel = (keyword?: string, deps?: UseSearchResultDeps) =
             setLoading(false);
         }
 
-    }, [keyword, repository, appliedFilter, page, isLast, loading]);
+    }, [keyword, repository, appliedFilter, page, loading, isLast]);
 
     useEffect(() => {
         fetchResult(undefined, false);
-    }, [keyword, fetchResult]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [keyword, appliedFilter]);
 
     return {
         results,

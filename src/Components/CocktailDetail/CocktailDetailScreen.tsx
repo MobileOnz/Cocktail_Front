@@ -1,7 +1,7 @@
 // CocktailDetailScreen.tsx
 import React from 'react';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { Image, ScrollView, Text, View, StyleSheet, Pressable } from 'react-native';
+import { Image, ScrollView, Text, View, StyleSheet, Pressable, TouchableOpacity } from 'react-native';
 import { ActivityIndicator, Divider, IconButton } from 'react-native-paper';
 
 import PillStyleStatus from '../PillStyleStatus';
@@ -12,7 +12,7 @@ import useCocktailDetailViewModel from './CocktailDetailViewModel';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { FlatList } from 'react-native-gesture-handler';
 import CocktailCard from '../CocktailCard';
-
+import Icon from 'react-native-vector-icons/Ionicons';
 type Props = NativeStackScreenProps<RootStackParamList, 'CocktailDetailScreen'>;
 
 const DetailRow = ({
@@ -71,24 +71,39 @@ export function CocktailDetailScreen({ route }: Props) {
         {/* 상단 바 전체를 한 View에 묶기 */}
         <View style={[styles.imageHeader, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
           {/* 왼쪽: 뒤로가기 */}
-          <IconButton
-            icon="chevron-left"
-            size={30}
-            iconColor="#fff"
-            onPress={() => navigation.goBack()}
-          />
+          <TouchableOpacity onPress={() => navigation.goBack()}
+          >
+            <Icon name="chevron-back-sharp" size={24} color="#fff" style={{ marginRight: widthPercentage(30) }} />
+          </TouchableOpacity>
+
 
           {/* 오른쪽: 북마크 + 공유 */}
           <View style={styles.imageHeaderRight}>
-            <IconButton
-              icon={vm.detail?.isBookmarked ? 'bookmark' : 'bookmark-outline'}
-              iconColor="#fff"
+            <TouchableOpacity
+
               onPress={() => {
                 if (vm.detail?.id) {
-                  vm.bookmarked(Number(vm.detail.id)); // Integer 대신 Number 사용
+                  vm.bookmarked(Number(vm.detail.id));
                 }
-              }} />
-            <IconButton icon="share-outline" size={24} iconColor="#fff" onPress={() => { }} />
+              }}
+            >
+              <Image
+                source={
+                  vm.detail?.isBookmarked
+                    ? require('../../assets/drawable/full_save.png')
+                    : require('../../assets/drawable/save.png')
+                }
+                style={vm.detail?.isBookmarked ?
+                  { width: 20, height: 20, tintColor: '#FFF' }
+                  : { width: 20, height: 20 }}
+                resizeMode="contain"
+              />
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={() => { }}>
+              <Icon name="share-social-outline" size={24} color={'#fff'} />
+            </TouchableOpacity>
+
           </View>
         </View>
         <Text style={styles.korText}>{vm.detail.korName}</Text>
