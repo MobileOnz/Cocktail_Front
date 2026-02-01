@@ -31,13 +31,14 @@ const AllCocktailScreen = ({ navigation }: Props) => {
                         vm.loadMore();
                     }
                 }}
+
                 onEndReachedThreshold={0.5}
                 ListFooterComponent={
                     vm.loading && vm.results.length > 0 ? (
                         <ActivityIndicator style={{ marginVertical: 20 }} color="#111" />
                     ) : null
                 }
-                data={(vm.results.length === 0 && vm.loading) || vm.error ? [] : vm.results}
+                data={vm.results}
                 style={{ flex: 1 }}
                 numColumns={2}
                 columnWrapperStyle={styles.row}
