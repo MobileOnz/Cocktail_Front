@@ -23,88 +23,90 @@ interface Props {
 }
 
 const RecommendResultScreen: React.FC<Props> = ({ navigation, route }) => {
-    const { result, answers } = route.params;
-    const { clickCtaRecommendResult } = ResultViewModel();
+  const { result, answers } = route.params;
+  const { clickCtaRecommendResult } = ResultViewModel();
 
-    // [버튼] 한잔 더 추천받기
-    const resetRecommendation = () => {
-        navigation.reset({
-          index: 0,
-          routes: [{ name: 'RecommendIntroScreen' }],
-        });
-    };
+  // [버튼] 한잔 더 추천받기
+  const resetRecommendation = () => {
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'RecommendIntroScreen' }],
+    });
+  };
 
-    // 칵테일 상세화면 이동
-    const handleCocktailDetail = () => {
-        if ( result?.id) {
-          clickCtaRecommendResult(result.id, result.engName, answers);
-          navigation.navigate('GuideDetailScreen', { id: result.id as number, src: result.imageUrl, title: result.korName } );
-        }
-    };
+  // 칵테일 상세화면 이동
+  const handleCocktailDetail = () => {
+    if (result?.id) {
+      clickCtaRecommendResult(result.id, result.engName, answers);
+      navigation.navigate('CocktailDetailScreen', {
+        cocktailId: result.id,
+      });
+    }
+  };
 
-    return (
-        <View style={styles.container}>
+  return (
+    <View style={styles.container}>
 
-            {/* 상단 뷰 */}
-            <View style={styles.header}>
-                <TouchableOpacity
-                    onPress={() => {}}
-                    style={styles.icon}
-                    hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }} // 터치 영역 확장
-                >
-                    {/* <Image
+      {/* 상단 뷰 */}
+      <View style={styles.header}>
+        <TouchableOpacity
+          onPress={() => { }}
+          style={styles.icon}
+          hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }} // 터치 영역 확장
+        >
+          {/* <Image
                     source={require('../../assets/drawable/left-chevron.png')}
                     style={styles.icon}
                     /> */}
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() =>
-                    navigation.reset({
-                        index: 0,
-                        routes: [
-                            {
-                            name: 'BottomTabNavigator',
-                            params: {
-                                screen: '홈',
-                            },
-                            },
-                        ],
-                    })
-                }>
-                    <Image source={require('../../assets/drawable/close.png')}
-                    style={styles.icon} />
-                </TouchableOpacity>
-            </View>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() =>
+          navigation.reset({
+            index: 0,
+            routes: [
+              {
+                name: 'BottomTabNavigator',
+                params: {
+                  screen: '홈',
+                },
+              },
+            ],
+          })
+        }>
+          <Image source={require('../../assets/drawable/close.png')}
+            style={styles.icon} />
+        </TouchableOpacity>
+      </View>
 
-            {/* 중앙 뷰 */}
-            <View style={styles.centralContainer}>
-                <ResultScreen data = {result}/>
-            </View>
+      {/* 중앙 뷰 */}
+      <View style={styles.centralContainer}>
+        <ResultScreen data={result} />
+      </View>
 
-            {/* 바텀 뷰 */}
-            <View style={styles.bottomContainer}>
-                <View style={styles.lastButtonsWrapper}>
-                    <TouchableOpacity
-                        style={[styles.bottomBtnLeft]}
-                        onPress={resetRecommendation}
-                    >
-                    <Text style={[styles.bottomBtnLeftText]}>한 잔 더 추천받기</Text>
+      {/* 바텀 뷰 */}
+      <View style={styles.bottomContainer}>
+        <View style={styles.lastButtonsWrapper}>
+          <TouchableOpacity
+            style={[styles.bottomBtnLeft]}
+            onPress={resetRecommendation}
+          >
+            <Text style={[styles.bottomBtnLeftText]}>한 잔 더 추천받기</Text>
 
-                    </TouchableOpacity>
+          </TouchableOpacity>
 
-                    <TouchableOpacity
-                        style={[styles.bottomBtnRight]}
-                        onPress={handleCocktailDetail}
-                    >
-                        <Text style={[styles.bottomBtnRightText]}>이 칵테일 보기</Text>
-                    </TouchableOpacity>
-                </View>
-            </View>
+          <TouchableOpacity
+            style={[styles.bottomBtnRight]}
+            onPress={handleCocktailDetail}
+          >
+            <Text style={[styles.bottomBtnRightText]}>이 칵테일 보기</Text>
+          </TouchableOpacity>
         </View>
-    );
+      </View>
+    </View>
+  );
 };
 
 // 결과 화면
-const ResultScreen = ( {data} ) => {
+const ResultScreen = ({ data }) => {
   const ABV_LABEL: Record<string, string> = {
     WEAK: '약함',
     MEDIUM: '보통',
@@ -141,16 +143,16 @@ const ResultScreen = ( {data} ) => {
   });
 
   return (
-    <View style={{flex:1}}>
+    <View style={{ flex: 1 }}>
       <Text style={styles.titleIntroduceText}>(닉네임)님, 오늘은 이 한 잔이 좋겠네요.</Text>
       <Text style={styles.description}>기분에 따라, 편하게 즐겨보세요</Text>
 
-      <View style={{flex:1}}>
+      <View style={{ flex: 1 }}>
         {/* 뒤집기 아이콘 */}
         <TouchableOpacity onPress={flipCard} style={styles.flipButton}>
           <Image
             source={require('../../assets/drawable/Flip.png')}
-            style={{width: widthPercentage(34), height: heightPercentage(34)}}
+            style={{ width: widthPercentage(34), height: heightPercentage(34) }}
           />
         </TouchableOpacity>
 
@@ -158,13 +160,13 @@ const ResultScreen = ( {data} ) => {
           style={[
             styles.card,
             {
-              transform: [{rotateY: frontRotate}],
+              transform: [{ rotateY: frontRotate }],
             },
           ]}
         >
           <Image
-            source={ {uri: data.imageUrl }}
-            style={{width:'100%', height: '85%', resizeMode:'cover', borderRadius: 8}}
+            source={{ uri: data.imageUrl }}
+            style={{ width: '100%', height: '85%', resizeMode: 'cover', borderRadius: 8 }}
           />
           <Text style={styles.resultText}>
             {data.engName}
@@ -180,14 +182,14 @@ const ResultScreen = ( {data} ) => {
             styles.cardBack,
             {
               transform: [
-                {rotateY: backRotate},
+                { rotateY: backRotate },
               ],
             },
           ]}
         >
           <Image
-            source={ {uri: data.imageUrl }}
-            style={{width:'100%', height: '85%', resizeMode:'cover', borderRadius: 8, transform: [{scaleX: -1}] }}
+            source={{ uri: data.imageUrl }}
+            style={{ width: '100%', height: '85%', resizeMode: 'cover', borderRadius: 8, transform: [{ scaleX: -1 }] }}
             blurRadius={6}
           />
 
