@@ -8,14 +8,20 @@ import { GoogleSignin } from '@react-native-google-signin/google-signin';
 export class GoogleAuthDataSource implements ISocialAuthDataSource {
   async login(): Promise<AuthResult> {
     try {
+      await GoogleSignin.hasPlayServices();
+
+      try { await GoogleSignin.signOut(); } catch (e) { }
+
+      const userInfo = await GoogleSignin.signIn();
+      await new Promise(resolve => setTimeout(() => resolve(null), 1000));
+
       const auth = await GoogleSignin.getTokens();
-      console.log(JSON.stringify(auth), {API_BASE_URL});
       const accessToken = auth.accessToken;
 
       if (!accessToken) {
         throw new AuthError(
           AuthErrorType.TOKEN_EXPIRED,
-            '구글 액세스 토큰 만료'
+          '구글 액세스 토큰 만료'
         );
       }
       console.log('accessToken', accessToken);

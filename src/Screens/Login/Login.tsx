@@ -160,7 +160,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation, route }) => {
 
 
 
-      //구글 로그인
+  //구글 로그인
   const googleLogin = async () => {
     try {
       const result = await loginWithGoogle();
@@ -263,7 +263,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation, route }) => {
           <TouchableOpacity
             style={styles.loginButton}
             onPress={googleLogin}
-            >
+          >
             <Image
               source={require('../../assets/drawable/google_button.png')}
               style={styles.buttonImage}
