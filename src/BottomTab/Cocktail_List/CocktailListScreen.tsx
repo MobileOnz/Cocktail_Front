@@ -10,7 +10,7 @@ import {
   StatusBar,
   Animated,
 } from 'react-native';
-import { Appbar, Divider, IconButton, Text } from 'react-native-paper';
+import { Appbar, Divider, Text } from 'react-native-paper';
 import theme from '../../assets/styles/theme';
 import { fontPercentage, heightPercentage, widthPercentage } from '../../assets/styles/FigmaScreen';
 
@@ -45,6 +45,7 @@ const Home = () => {
       duration: 200,
       useNativeDriver: false,
     }).start();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [vm.isScrolled]);
   useEffect(() => {
     if (vm.bestCocktail && vm.bestCocktail.length > 0) {
@@ -52,6 +53,7 @@ const Home = () => {
         if (item.image) { Image.prefetch(item.image); }
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [vm.bestCocktail]);
 
   const pages = useMemo(() => {
@@ -60,6 +62,7 @@ const Home = () => {
       result.push(vm.newCocktail.slice(i, i + 3));
     }
     return result;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [vm.newCocktail]);
   return (
     <View style={styles.container}>
