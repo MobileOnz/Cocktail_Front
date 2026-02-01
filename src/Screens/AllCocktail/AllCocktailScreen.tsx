@@ -1,7 +1,7 @@
 // AllCocktailScreen.tsx
 
 import React, { useRef } from 'react';
-import { StyleSheet, View, Pressable, ScrollView, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Pressable, ScrollView, TouchableOpacity, Platform } from 'react-native';
 import { ActivityIndicator, Button, Text } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { fontPercentage, heightPercentage, widthPercentage } from '../../assets/styles/FigmaScreen';
@@ -14,7 +14,7 @@ import useAllCocktailViewModel from './AllCocktailViewModel';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../Navigation/Navigation';
 import MIcon from 'react-native-vector-icons/MaterialCommunityIcons';
-
+import Icon from 'react-native-vector-icons/Ionicons';
 type Props = NativeStackScreenProps<RootStackParamList, 'AllCocktailScreen'>;
 
 const AllCocktailScreen = ({ navigation }: Props) => {
@@ -49,7 +49,12 @@ const AllCocktailScreen = ({ navigation }: Props) => {
                         {/* SearchResultScreen과 동일한 헤더 디자인 */}
                         <View style={styles.header}>
                             <TouchableOpacity onPress={() => navigation.goBack()}>
-                                <MIcon name="chevron-left" size={24} color="#000" />
+                                <Icon
+                                    name="chevron-back-sharp"
+                                    size={24}
+                                    color="#000"
+                                    style={{ marginRight: widthPercentage(8) }}
+                                />
                             </TouchableOpacity>
                             <View style={styles.titleContainer}>
                                 <Text style={styles.titleText}>칵테일 리스트</Text>
@@ -177,8 +182,7 @@ const styles = StyleSheet.create({
     },
     titleText: {
         fontFamily: 'Pretendard-Medium',
-        fontSize: fontPercentage(18),
-        fontWeight: '600',
+        fontSize: fontPercentage(16),
         color: '#000',
     },
     filterView: {
@@ -187,6 +191,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: widthPercentage(8),
         paddingVertical: 4,
         gap: 8,
+        paddingBottom: 20,
     },
     filterButtonContent: {
         flexDirection: 'row-reverse',
@@ -196,11 +201,11 @@ const styles = StyleSheet.create({
     chip: {
         borderRadius: 100,
         borderWidth: 1,
-        // 2. 고정 높이보다는 최소 높이를 지정하거나 패딩으로 조절하세요.
+
         minHeight: 32,
         justifyContent: 'center',
         alignItems: 'center',
-        elevation: 0, // 버튼 그림자 제거 (필요시)
+        elevation: 0,
     },
     chipUnselected: {
         backgroundColor: theme.background,
@@ -229,11 +234,13 @@ const styles = StyleSheet.create({
         paddingBottom: 24,
     },
     row: {
-        justifyContent: 'flex-start',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        gap: widthPercentage(12),
         marginBottom: 16,
     },
     cardWrapper: {
-        width: '50%',
+        width: widthPercentage(160),
         alignItems: 'center',
     },
     emptyContainer: {
@@ -256,6 +263,21 @@ const styles = StyleSheet.create({
         backgroundColor: theme.background,
         borderTopWidth: 1,
         borderTopColor: '#EEE',
+        ...Platform.select({
+            ios: {
+                shadowColor: '#000000',
+                shadowOffset: {
+                    width: 0,
+                    height: -2,
+                },
+                shadowOpacity: 0.08,
+                shadowRadius: 4,
+            },
+            android: {
+
+                elevation: 5,
+            },
+        }),
     },
     resetButton: {
         flex: 1,

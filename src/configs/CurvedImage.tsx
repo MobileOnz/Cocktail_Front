@@ -27,9 +27,9 @@ export default function PuzzlePiece({ uri, size = 200 }: Props) {
   return (
     <MaskedView
       style={{
-        width: w,
+        width: w + 10,
         height: h,
-
+        left: -10,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.08,

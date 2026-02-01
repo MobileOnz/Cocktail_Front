@@ -103,7 +103,7 @@ export function CocktailDetailScreen({ route }: Props) {
         </DetailRow>
 
         <DetailRow label="유래·역사">
-          <Text style={styles.valueText}>{vm.detail.originText}</Text>
+          <Text style={[styles.valueText, { letterSpacing: 0.57 }]}>{vm.detail.originText}</Text>
         </DetailRow>
 
         <Divider style={styles.sectionDivider} />
@@ -167,6 +167,12 @@ export function CocktailDetailScreen({ route }: Props) {
         horizontal
         showsHorizontalScrollIndicator={false}
         keyExtractor={(item) => `recommended-${item.id}`}
+        style={{ marginTop: heightPercentage(16) }}
+        contentContainerStyle={{
+          paddingLeft: widthPercentage(16),
+          paddingRight: widthPercentage(16),
+        }}
+        ItemSeparatorComponent={() => <View style={{ width: 8 }} />}
         renderItem={({ item }) => (
           <CocktailCard
             id={item.id}
@@ -185,6 +191,7 @@ export function CocktailDetailScreen({ route }: Props) {
           />
         )}
       />
+      <View style={{ height: heightPercentage(100) }} />
     </ScrollView>
   );
 }
@@ -196,7 +203,9 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    margin: 10,
+    marginHorizontal: widthPercentage(10),
+    marginTop: heightPercentage(21),
+    marginBottom: heightPercentage(52),
   },
   button: {
     paddingHorizontal: 16,
@@ -229,6 +238,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-start',
     paddingVertical: heightPercentage(10),
+    paddingLeft: widthPercentage(16),
+    paddingRight: widthPercentage(10),
   },
   valueWrapper: {
     flex: 1,
@@ -248,7 +259,7 @@ const styles = StyleSheet.create({
     color: '#616161',
   },
   contentWrapper: {
-    marginHorizontal: widthPercentage(10),
+
     marginVertical: heightPercentage(15),
   },
   centerContainer: {
@@ -287,12 +298,10 @@ const styles = StyleSheet.create({
     color: '#FFF',
   },
   engText: {
-    fontStyle: 'italic',
     fontFamily: 'NotoSerif-BoldItalic',
     position: 'absolute',
     left: 20,
-    bottom: 70,
-    fontWeight: '700',
+    bottom: 75,
     fontSize: fontPercentage(20),
     color: '#FFF',
   },

@@ -200,7 +200,9 @@ const Home = () => {
                           ? require('../../assets/drawable/full_save.png') // 채워진 이미지
                           : require('../../assets/drawable/save.png')      // 비어있는 이미지
                       }
-                      style={{ width: 20, height: 20 }}
+                      style={item.isBookmarked ?
+                        { width: 20, height: 20, tintColor: '#FFF' }
+                        : { width: 20, height: 20 }}
                       resizeMode="contain"
                     />
                   </TouchableOpacity>
@@ -544,7 +546,7 @@ const styles = StyleSheet.create({
   bestRankWrapper: {
     position: 'absolute',
     bottom: 20,
-    left: 15,
+    left: 10,
     right: 0,
   },
   bestRankText: {
