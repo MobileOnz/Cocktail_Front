@@ -174,7 +174,7 @@ export const FilterBottomSheet = forwardRef<FilterBottomSheetRef, Props>(
         </View>
 
         {/* 베이스 */}
-        <View style={[styles.section, { marginBottom: 20 }]}>
+        <View style={[styles.section, { marginBottom: 60 }]}>
           <Text style={styles.sectionTitle}>베이스</Text>
           <View style={styles.tagGroup}>
             {baseOptions.map(option => (
@@ -209,8 +209,8 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   sectionTitle: {
+    fontFamily: 'Pretendard-Medium',
     fontSize: 15,
-    fontWeight: '600',
     color: '#1B1B1B',
     marginBottom: 10,
   },
@@ -242,6 +242,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#111111',
   },
   radioLabel: {
+    fontFamily: 'Pretendard-Medium',
     fontSize: 14,
     color: '#1B1B1B',
   },
@@ -263,6 +264,7 @@ const styles = StyleSheet.create({
     borderColor: '#111111',
   },
   tagText: {
+    fontFamily: 'Pretendard-Medium',
     fontSize: 13,
     color: '#333333',
   },
@@ -298,13 +300,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#111111',
   },
   resetText: {
+    fontFamily: 'Pretendard-Medium',
     fontSize: 14,
     color: '#444444',
-    fontWeight: '500',
+
   },
   applyText: {
+    fontFamily: 'Pretendard-Medium',
     fontSize: 14,
     color: '#FFFFFF',
-    fontWeight: '600',
+
   },
 });

@@ -55,13 +55,15 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation, route }) => {
         </TouchableOpacity>
 
         <TextInput
-          style={styles.searchInput}
+          style={[styles.searchInput, { paddingLeft: 0 }]}
           mode="outlined"
           placeholder="칵테일을 검색해보세요"
           placeholderTextColor="#D9D9D9"
           value={searchText}
           onChangeText={handleSearchTextChange}
           onSubmitEditing={handleSubmitSearch}
+
+          contentStyle={{ marginLeft: 45, paddingLeft: 0 }}
           left={
             <TextInput.Icon
               forceTextInputFocus={false}
@@ -92,7 +94,7 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation, route }) => {
           }
           outlineStyle={{ borderRadius: 8, borderWidth: 0 }}
           activeOutlineColor="transparent"
-          contentStyle={{ paddingLeft: 0, marginLeft: -8 }}
+
         />
       </View>
 
