@@ -99,7 +99,7 @@ const Home = () => {
 
           {/* 저장 버튼 */}
           <TouchableOpacity
-            onPress={() => navigation.navigate('CocktailBoxScreen')}
+            onPress={() => vm.bookMarkCheck()}
             style={styles.customIconButton}
             activeOpacity={0.7}
           >
@@ -190,14 +190,20 @@ const Home = () => {
                   </View>
 
                   {/* 북마크 아이콘 */}
-                  <IconButton
-                    icon={item.isBookmarked ? 'bookmark' : 'bookmark-outline'}
-                    onPress={() => { vm.bookmarked(item.id); }}
-                    size={28}
-                    iconColor="#fff"
+                  <TouchableOpacity
                     style={styles.bestBookmarkButton}
-                    accessibilityLabel="즐겨찾기"
-                  />
+                    onPress={() => vm.bookmarked(item.id)}
+                  >
+                    <Image
+                      source={
+                        item.isBookmarked
+                          ? require('../../assets/drawable/full_save.png') // 채워진 이미지
+                          : require('../../assets/drawable/save.png')      // 비어있는 이미지
+                      }
+                      style={{ width: 20, height: 20 }}
+                      resizeMode="contain"
+                    />
+                  </TouchableOpacity>
                 </View>
               </TouchableOpacity>
             )}
@@ -253,13 +259,25 @@ const Home = () => {
                       <Text style={styles.newCocktailName}>{item.name}</Text>
                     </View>
 
-                    <IconButton
-                      icon={item.isBookmarked ? 'bookmark' : 'bookmark-outline'}
-                      onPress={() => { vm.bookmarked(item.id); }}
-                      size={28}
-                      iconColor="#000"
+                    <TouchableOpacity
                       style={styles.newCocktailBookmark}
-                    />
+                      onPress={() => vm.bookmarked(item.id)}
+                    >
+                      <Image
+                        source={
+                          item.isBookmarked
+                            ? require('../../assets/drawable/full_save.png')
+                            : require('../../assets/drawable/save.png')
+                        }
+                        style={{
+                          width: 15,
+                          height: 19,
+                          // 리스트 배경이 밝으므로 검정/회색 계열로 처리
+                          tintColor: '#000',
+                        }}
+                        resizeMode="contain"
+                      />
+                    </TouchableOpacity>
                   </View>
                 ))}
               </View>
@@ -431,7 +449,7 @@ const styles = StyleSheet.create({
   bannerKoText: {
     fontFamily: 'Pretendard-SemiBold',
     position: 'absolute',
-    bottom: 90,
+    bottom: 95,
     left: 24,
     right: 24,
     textAlign: 'center',
@@ -526,7 +544,7 @@ const styles = StyleSheet.create({
   bestRankWrapper: {
     position: 'absolute',
     bottom: 20,
-    left: 20,
+    left: 15,
     right: 0,
   },
   bestRankText: {
@@ -554,7 +572,8 @@ const styles = StyleSheet.create({
     height: 32,
     borderRadius: 16,
     position: 'absolute',
-    right: 1,
+    right: 5,
+    top: 15,
   },
   pagerView: {
     width: Dimensions.get('window').width,
@@ -568,6 +587,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     marginBottom: 12,
     paddingHorizontal: 16,
+    marginRight: 10,
   },
   newCocktailImage: {
     width: 60,

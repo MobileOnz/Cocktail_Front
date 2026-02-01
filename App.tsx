@@ -69,7 +69,7 @@ function App(): React.JSX.Element {
     GoogleSignin.configure({
       offlineAccess: true,
       webClientId:
-        '1058340377075-vt8u6qabph0f0van79eqhkt9j2f1jkbe.apps.googleusercontent.com',
+        '513269758316-igsea78n7g0jq292f4u22pobqr0k47fd.apps.googleusercontent.com',
       iosClientId:
         '1058340377075-an8fq49j4mg29fq9rm88qpi253dd2vts.apps.googleusercontent.com',
     });
