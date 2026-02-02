@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Image,
   Easing,
+  Platform,
 } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../../Navigation/Navigation';
@@ -17,6 +18,7 @@ import {
 } from '../../assets/styles/FigmaScreen';
 // import LottieView from 'lottie-react-native';
 import { LinearGradient } from 'react-native-linear-gradient';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 // 4가지 칵테일 잔 아이콘
 const icons = [
@@ -38,52 +40,61 @@ interface Props {
 }
 
 const RecommendationIntroScreen: React.FC<Props> = ({ navigation }) => {
+
+
+  const insets = useSafeAreaInsets();
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const buttonScale = useRef(new Animated.Value(1)).current;
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const opacity = useRef(new Animated.Value(0)).current;
+  const getBottomMargin = () => {
+    if (Platform.OS === 'ios') {
 
+      return insets.bottom > 0 ? insets.bottom + 30 : 32;
+    }
+    return 40;
+  };
   useEffect(() => {
     const animate = () => {
-    Animated.timing(opacity, {
-      toValue: 1,
-      duration: 400,
-      useNativeDriver: true,
-    }).start(() => {
-      setTimeout(() => {
-        Animated.timing(opacity, {
-          toValue: 0,
-          duration: 400,
-          useNativeDriver: true,
-        }).start(() => {
-          setCurrentIndex((prev) => (prev + 1) % icons.length);
-          animate();
-        });
-      }, 800);
-    });
-  };
+      Animated.timing(opacity, {
+        toValue: 1,
+        duration: 400,
+        useNativeDriver: true,
+      }).start(() => {
+        setTimeout(() => {
+          Animated.timing(opacity, {
+            toValue: 0,
+            duration: 400,
+            useNativeDriver: true,
+          }).start(() => {
+            setCurrentIndex((prev) => (prev + 1) % icons.length);
+            animate();
+          });
+        }, 800);
+      });
+    };
     animate();
   }, [opacity]);
 
   const handlePress = () => { //버튼 애니메이션 (누르면 움츠려들었다가 펴지는거)
-      Animated.sequence([
-        Animated.timing(buttonScale, {
-          toValue: 0.9, // 버튼 축소
-          duration: 100,
-          easing: Easing.out(Easing.ease),
-          useNativeDriver: true,
-        }),
-        Animated.timing(buttonScale, {
-          toValue: 1,
-          duration: 100,
-          easing: Easing.out(Easing.ease),
-          useNativeDriver: true,
-        }),
-      ]).start(() => {
-        navigation.navigate('RecommendationHome');
-      });
-    };
+    Animated.sequence([
+      Animated.timing(buttonScale, {
+        toValue: 0.9, // 버튼 축소
+        duration: 100,
+        easing: Easing.out(Easing.ease),
+        useNativeDriver: true,
+      }),
+      Animated.timing(buttonScale, {
+        toValue: 1,
+        duration: 100,
+        easing: Easing.out(Easing.ease),
+        useNativeDriver: true,
+      }),
+    ]).start(() => {
+      navigation.navigate('RecommendationHome');
+    });
+  };
 
   useEffect(() => {
     Animated.timing(fadeAnim, {
@@ -103,7 +114,7 @@ const RecommendationIntroScreen: React.FC<Props> = ({ navigation }) => {
       style={{ flex: 1 }}
     >
       {/* 화면 내용 */}
-      <View style={styles.container}>
+      <View style={[styles.container, { paddingTop: insets.top }]}>
         {/* 뒤로가기 버튼 */}
         <TouchableOpacity
           onPress={() => {
@@ -139,7 +150,7 @@ const RecommendationIntroScreen: React.FC<Props> = ({ navigation }) => {
         />
 
         {/* 설명 텍스트 (페이드인 애니메이션) */}
-        <Animated.View style={{ opacity: fadeAnim}}>
+        <Animated.View style={{ opacity: fadeAnim }}>
           <Text style={styles.descriptionFirst}>
             당신의 취향, 한 잔으로 알아볼까요?
           </Text>
@@ -151,8 +162,11 @@ const RecommendationIntroScreen: React.FC<Props> = ({ navigation }) => {
 
         {/* 버튼 */}
         <Animated.View style={[
-          { transform: [{ scale: buttonScale }] },
           styles.confirmButtonContainer,
+          {
+            bottom: getBottomMargin(),
+            transform: [{ scale: buttonScale }],
+          },
         ]}>
 
           <TouchableOpacity
@@ -180,7 +194,7 @@ const styles = StyleSheet.create({
   backButton: {
     position: 'absolute',
     top: heightPercentage(50),
-    left: widthPercentage(15),
+    left: widthPercentage(10),
     alignItems: 'center',
     justifyContent: 'center',
     width: widthPercentage(40),
@@ -193,15 +207,15 @@ const styles = StyleSheet.create({
 
   },
   descriptionFirst: {
+    fontFamily: 'Pretendard-SemiBold',
     fontSize: fontPercentage(20),
     color: '#1B1B1B',
-    fontWeight: '600',
     textAlign: 'center',
   },
   descriptionSecond: {
     fontSize: fontPercentage(14),
     lineHeight: fontPercentage(20),
-    fontWeight: 'medium',
+    fontFamily: 'Pretendard-Medium',
     textAlign: 'center',
     color: '#BDBDBD',
     marginTop: heightPercentage(8),
@@ -224,7 +238,7 @@ const styles = StyleSheet.create({
   confirmButtonText: {
     fontSize: fontPercentage(16),
     color: '#FFFFFF',
-    fontWeight: '500',
+    fontFamily: 'Pretendard-Medium',
   },
   confirmButtonContainer: {
     position: 'absolute',

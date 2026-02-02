@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import React from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ActivityIndicator, Appbar } from 'react-native-paper';
@@ -7,7 +7,7 @@ import { fontPercentage, heightPercentage, widthPercentage } from '../../assets/
 import useCocktailBoxViewModel from './CocktailBoxViewModel';
 import { FlatList } from 'react-native-gesture-handler';
 import CocktailCard from '../../Components/CocktailCard';
-
+import Icon from 'react-native-vector-icons/Ionicons';
 const CocktailBoxScreen = () => {
     const navigation = useNavigation<any>();
     const vm = useCocktailBoxViewModel();
@@ -25,9 +25,17 @@ const CocktailBoxScreen = () => {
                 ListHeaderComponent={
                     <SafeAreaView style={styles.container}>
                         <Appbar.Header style={{ backgroundColor: '#FFF' }}>
-                            <Appbar.Action icon="chevron-left" onPress={() => { navigation.goBack(); }} />
+                            <TouchableOpacity style={{ paddingLeft: 20 }}
+                                onPress={() => navigation.goBack()}>
+                                <Icon
+                                    name="chevron-back-sharp"
+                                    size={24}
+                                    color="#000"
+                                    style={{ marginRight: widthPercentage(8) }}
+                                />
+                            </TouchableOpacity>
                             <View style={{ flex: 0.8, alignItems: 'center' }}>
-                                <Text style={{ fontSize: fontPercentage(20), fontWeight: '600', color: '#1B1B1B' }}>칵테일 보관함</Text>
+                                <Text style={{ fontSize: fontPercentage(16), fontFamily: 'Pretendard-SemiBold', color: '#1B1B1B' }}>칵테일 보관함</Text>
                             </View>
 
                         </Appbar.Header>

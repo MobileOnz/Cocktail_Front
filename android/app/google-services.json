@@ -14,6 +14,22 @@
       },
       "oauth_client": [
         {
+          "client_id": "513269758316-939mvm7f3kl63pc3ajc45ihnsr18ejag.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.cocktail_front",
+            "certificate_hash": "03a4667b35f767e5eaea47df394d26233657bbbe"
+          }
+        },
+        {
+          "client_id": "513269758316-ohahoph1dfvjgvsaj2fe8n79qtg986vr.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.cocktail_front",
+            "certificate_hash": "7c957bfb406a4f8e90f2c56ff304773e4275d47b"
+          }
+        },
+        {
           "client_id": "513269758316-igsea78n7g0jq292f4u22pobqr0k47fd.apps.googleusercontent.com",
           "client_type": 3
         }

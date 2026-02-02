@@ -1,18 +1,18 @@
-import { View, Text, StyleSheet, TouchableOpacity, Image, ImageBackground } from 'react-native';
+
+import React from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Image, ImageBackground, Platform } from 'react-native';
 import { StackScreenProps } from '@react-navigation/stack';
 import { heightPercentage, widthPercentage, fontPercentage } from '../../assets/styles/FigmaScreen';
 import { RootStackParamList } from '../../Navigation/Navigation';
-
 import { useToast } from '../../Components/ToastContext';
 import AuthViewModel from './AuthViewModel';
 import { AuthError, AuthErrorType } from '../../model/domain/AuthError';
-
 type LoginScreenProps = StackScreenProps<RootStackParamList, 'Login'>;
 
 const LoginScreen: React.FC<LoginScreenProps> = ({ navigation, route }) => {
-  let redirectTo = route.params?.redirect
-  const {showToast} = useToast();
-  const { loginWithNaver, loginWithKakao, loginWithGoogle } = AuthViewModel();
+  let redirectTo = route.params?.redirect;
+  const { showToast } = useToast();
+  const { loginWithNaver, loginWithKakao, loginWithGoogle, loginWithApple } = AuthViewModel();
 
   const naverLogin = async () => {
     try {
@@ -26,14 +26,15 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation, route }) => {
             index: 0,
             routes: [
               {
-                  name: 'BottomTabNavigator',
-                  params: {
-                    screen: '홈',
-                  },
+                name: 'BottomTabNavigator',
+                params: {
+                  screen: '홈',
                 },
+              },
               { name: 'RecommendIntroScreen' }],
           });
           return;
+
         }
 
         navigation.navigate('BottomTabNavigator', {
@@ -83,11 +84,11 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation, route }) => {
             index: 0,
             routes: [
               {
-                  name: 'BottomTabNavigator',
-                  params: {
-                    screen: '홈',
-                  },
+                name: 'BottomTabNavigator',
+                params: {
+                  screen: '홈',
                 },
+              },
               { name: 'RecommendIntroScreen' }],
           });
           return;
@@ -173,16 +174,57 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation, route }) => {
             index: 0,
             routes: [
               {
-                  name: 'BottomTabNavigator',
-                  params: {
-                    screen: '홈',
-                  },
+                name: 'BottomTabNavigator',
+                params: {
+                  screen: '홈',
                 },
+              },
               { name: 'RecommendIntroScreen' }],
           });
           return;
         }
-        
+
+        navigation.navigate('BottomTabNavigator', {
+          screen: '지도',
+          params: { shouldRefresh: true },
+        });
+        return;
+      }
+
+      if (result.type === 'signup') {
+        navigation.navigate('SignupScreen', {
+          code: result.signupCode,
+        });
+        return;
+      }
+
+    } catch (error) {
+      if (error instanceof AuthError) {
+        switch (error.type) {
+          case AuthErrorType.TOKEN_EXPIRED:
+            showToast('로그인이 만료되었습니다.');
+            break;
+
+          case AuthErrorType.SOCIAL_LOGIN_FAILED:
+            showToast('소셜 로그인에 실패했습니다.');
+            break;
+
+          default:
+            showToast('로그인에 실패했습니다.');
+        }
+        return;
+      }
+
+      showToast('알 수 없는 오류가 발생했습니다.');
+    }
+  };
+
+  const appleLogin = async () => {
+    try {
+      const result = await loginWithApple();
+      console.log(JSON.stringify(result));
+      if (result.type === 'token') {
+        showToast('로그인하였습니다.');
         navigation.navigate('BottomTabNavigator', {
           screen: '지도',
           params: { shouldRefresh: true },
@@ -260,15 +302,32 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation, route }) => {
           </TouchableOpacity>
 
           {/* google로그인 버튼 */}
-          <TouchableOpacity
-            style={styles.loginButton}
-            onPress={googleLogin}
-          >
-            <Image
-              source={require('../../assets/drawable/google_button.png')}
-              style={styles.buttonImage}
-            />
-          </TouchableOpacity>
+          {Platform.OS === 'android' && (
+
+            <TouchableOpacity
+              style={styles.loginButton}
+              onPress={googleLogin}
+            >
+              <Image
+                source={require('../../assets/drawable/google_button.png')}
+                style={styles.buttonImage}
+              />
+            </TouchableOpacity>
+          )}
+
+          {/* Apple 버튼 */}
+          {Platform.OS === 'ios' && (
+            <TouchableOpacity
+              style={styles.loginButton}
+              onPress={appleLogin}
+            >
+              <Image
+                source={require('../../assets/drawable/Apple_login.png')}
+                style={styles.buttonImage}
+              />
+            </TouchableOpacity>
+          )}
+
         </View>
       </View>
     </ImageBackground>

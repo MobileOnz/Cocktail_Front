@@ -71,6 +71,7 @@ const OpenBottomSheet = forwardRef<OpenBottomSheetHandle, OpenBottomSheetProps>(
         return (
             <BottomSheet
                 ref={bottomSheetRef}
+                handleComponent={null}
                 index={-1}
                 snapPoints={_snapPoints}
                 backdropComponent={renderBackdrop}
@@ -111,7 +112,8 @@ const styles = StyleSheet.create({
         zIndex: 999,
     },
     closeButton: {
-        padding: 8,
+        paddingTop: 20,
+        paddingRight: 8,
     },
 });
 

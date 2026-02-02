@@ -1,8 +1,8 @@
 // CocktailDetailScreen.tsx
 import React from 'react';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { Image, ScrollView, Text, View, StyleSheet, Pressable } from 'react-native';
-import { ActivityIndicator, Divider, IconButton } from 'react-native-paper';
+import { Image, ScrollView, Text, View, StyleSheet, Pressable, TouchableOpacity } from 'react-native';
+import { ActivityIndicator, Divider } from 'react-native-paper';
 
 import PillStyleStatus from '../PillStyleStatus';
 import { RootStackParamList } from '../../Navigation/Navigation';
@@ -12,7 +12,7 @@ import useCocktailDetailViewModel from './CocktailDetailViewModel';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { FlatList } from 'react-native-gesture-handler';
 import CocktailCard from '../CocktailCard';
-
+import Icon from 'react-native-vector-icons/Ionicons';
 type Props = NativeStackScreenProps<RootStackParamList, 'CocktailDetailScreen'>;
 
 const DetailRow = ({
@@ -71,24 +71,39 @@ export function CocktailDetailScreen({ route }: Props) {
         {/* 상단 바 전체를 한 View에 묶기 */}
         <View style={[styles.imageHeader, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
           {/* 왼쪽: 뒤로가기 */}
-          <IconButton
-            icon="chevron-left"
-            size={30}
-            iconColor="#fff"
-            onPress={() => navigation.goBack()}
-          />
+          <TouchableOpacity onPress={() => navigation.goBack()}
+          >
+            <Icon name="chevron-back-sharp" size={24} color="#fff" style={{ marginRight: widthPercentage(30) }} />
+          </TouchableOpacity>
+
 
           {/* 오른쪽: 북마크 + 공유 */}
           <View style={styles.imageHeaderRight}>
-            <IconButton
-              icon={vm.detail?.isBookmarked ? 'bookmark' : 'bookmark-outline'}
-              iconColor="#fff"
+            <TouchableOpacity
+
               onPress={() => {
                 if (vm.detail?.id) {
-                  vm.bookmarked(Number(vm.detail.id)); // Integer 대신 Number 사용
+                  vm.bookmarked(Number(vm.detail.id));
                 }
-              }} />
-            <IconButton icon="share-outline" size={24} iconColor="#fff" onPress={() => { }} />
+              }}
+            >
+              <Image
+                source={
+                  vm.detail?.isBookmarked
+                    ? require('../../assets/drawable/full_save.png')
+                    : require('../../assets/drawable/save.png')
+                }
+                style={[{ marginRight: 20 }, vm.detail?.isBookmarked ?
+                  { width: 20, height: 20, tintColor: '#FFF' }
+                  : { width: 20, height: 20 }]}
+                resizeMode="contain"
+              />
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={() => { }} style={{ marginRight: 10 }}>
+              <Icon name="share-social-outline" size={24} color={'#fff'} />
+            </TouchableOpacity>
+
           </View>
         </View>
         <Text style={styles.korText}>{vm.detail.korName}</Text>
@@ -103,7 +118,7 @@ export function CocktailDetailScreen({ route }: Props) {
         </DetailRow>
 
         <DetailRow label="유래·역사">
-          <Text style={styles.valueText}>{vm.detail.originText}</Text>
+          <Text style={[styles.valueText, { letterSpacing: 0.57 }]}>{vm.detail.originText}</Text>
         </DetailRow>
 
         <Divider style={styles.sectionDivider} />
@@ -167,6 +182,12 @@ export function CocktailDetailScreen({ route }: Props) {
         horizontal
         showsHorizontalScrollIndicator={false}
         keyExtractor={(item) => `recommended-${item.id}`}
+        style={{ marginTop: heightPercentage(16) }}
+        contentContainerStyle={{
+          paddingLeft: widthPercentage(16),
+          paddingRight: widthPercentage(16),
+        }}
+        ItemSeparatorComponent={() => <View style={{ width: 8 }} />}
         renderItem={({ item }) => (
           <CocktailCard
             id={item.id}
@@ -185,6 +206,7 @@ export function CocktailDetailScreen({ route }: Props) {
           />
         )}
       />
+      <View style={{ height: heightPercentage(100) }} />
     </ScrollView>
   );
 }
@@ -196,7 +218,9 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    margin: 10,
+    marginHorizontal: widthPercentage(10),
+    marginTop: heightPercentage(21),
+    marginBottom: heightPercentage(52),
   },
   button: {
     paddingHorizontal: 16,
@@ -229,6 +253,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-start',
     paddingVertical: heightPercentage(10),
+    paddingLeft: widthPercentage(16),
+    paddingRight: widthPercentage(10),
   },
   valueWrapper: {
     flex: 1,
@@ -248,7 +274,7 @@ const styles = StyleSheet.create({
     color: '#616161',
   },
   contentWrapper: {
-    marginHorizontal: widthPercentage(10),
+
     marginVertical: heightPercentage(15),
   },
   centerContainer: {
@@ -287,12 +313,10 @@ const styles = StyleSheet.create({
     color: '#FFF',
   },
   engText: {
-    fontStyle: 'italic',
     fontFamily: 'NotoSerif-BoldItalic',
     position: 'absolute',
     left: 20,
-    bottom: 70,
-    fontWeight: '700',
+    bottom: 75,
     fontSize: fontPercentage(20),
     color: '#FFF',
   },
