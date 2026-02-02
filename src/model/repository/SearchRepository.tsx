@@ -63,7 +63,11 @@ export class SearchRepository implements ISearchRepository {
                 size,
             );
         } else {
-            result = await this.dataSource.search();
+            result = await this.dataSource.search(
+                undefined, undefined, undefined, undefined, undefined, undefined,
+                page,
+                size
+            );
         }
 
         const validSchema = result.map((item) => {
@@ -75,7 +79,7 @@ export class SearchRepository implements ISearchRepository {
             name: dto.korName,
             type: dto.style,
             image: dto.imageUrl,
-            isBookmarked: dto.isBookmarked
+            isBookmarked: dto.isBookmarked,
         }));
     }
 

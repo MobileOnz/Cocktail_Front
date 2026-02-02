@@ -45,15 +45,14 @@ const Home = () => {
       duration: 200,
       useNativeDriver: false,
     }).start();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [vm.isScrolled]);
+  }, [fadeAnim, vm.isScrolled]);
   useEffect(() => {
     if (vm.bestCocktail && vm.bestCocktail.length > 0) {
       vm.bestCocktail.forEach(item => {
         if (item.image) { Image.prefetch(item.image); }
       });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
   }, [vm.bestCocktail]);
 
   const pages = useMemo(() => {
@@ -62,7 +61,7 @@ const Home = () => {
       result.push(vm.newCocktail.slice(i, i + 3));
     }
     return result;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
   }, [vm.newCocktail]);
   return (
     <View style={styles.container}>
@@ -92,9 +91,10 @@ const Home = () => {
             <Animated.Image
               source={require('../../assets/drawable/SharpSearch.png')}
               style={{
-                width: 22,
-                height: 22,
+                width: 28,
+                height: 28,
                 tintColor: animatedColor,
+
               }}
               resizeMode="contain"
             />
@@ -203,7 +203,9 @@ const Home = () => {
                           ? require('../../assets/drawable/full_save.png') // 채워진 이미지
                           : require('../../assets/drawable/save.png')      // 비어있는 이미지
                       }
-                      style={{ width: 20, height: 20 }}
+                      style={item.isBookmarked ?
+                        { width: 20, height: 20, tintColor: '#FFF' }
+                        : { width: 20, height: 20 }}
                       resizeMode="contain"
                     />
                   </TouchableOpacity>
@@ -256,12 +258,16 @@ const Home = () => {
               <View key={p} style={styles.pagerPage}>
                 {items.map(item => (
                   <View key={item.id} style={styles.newCocktailRow}>
+
                     <Image source={{ uri: item.image }} style={styles.newCocktailImage} />
-                    <View style={styles.newCocktailTextWrapper}>
+
+                    <TouchableOpacity style={styles.newCocktailTextWrapper}
+                      onPress={() => navigation.navigate('CocktailDetailScreen', {
+                        cocktailId: item.id,
+                      })}>
                       <PillStyleStatus tone={item.type} />
                       <Text style={styles.newCocktailName}>{item.name}</Text>
-                    </View>
-
+                    </TouchableOpacity>
                     <TouchableOpacity
                       style={styles.newCocktailBookmark}
                       onPress={() => vm.bookmarked(item.id)}
@@ -275,7 +281,6 @@ const Home = () => {
                         style={{
                           width: 15,
                           height: 19,
-                          // 리스트 배경이 밝으므로 검정/회색 계열로 처리
                           tintColor: '#000',
                         }}
                         resizeMode="contain"
@@ -547,7 +552,7 @@ const styles = StyleSheet.create({
   bestRankWrapper: {
     position: 'absolute',
     bottom: 20,
-    left: 15,
+    left: 10,
     right: 0,
   },
   bestRankText: {

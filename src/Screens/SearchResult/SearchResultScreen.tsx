@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { Image, Platform, StyleSheet, Text, View } from 'react-native';
 import React, { useRef } from 'react';
 import { FlatList, Pressable, ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
 import { ActivityIndicator, Button } from 'react-native-paper';
@@ -10,10 +10,10 @@ import CocktailCard from '../../Components/CocktailCard';
 import useSearchResultViewModel from './SearchResultViewModel';
 import OpenBottomSheet, { OpenBottomSheetHandle } from '../../Components/BottomSheet/OpenBottomSheet';
 import MIcon from 'react-native-vector-icons/MaterialCommunityIcons';
-import FIcon from 'react-native-vector-icons/Feather';
+import EIcon from 'react-native-vector-icons/EvilIcons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import FilterBottomSheet, { FilterBottomSheetRef } from '../../Components/BottomSheet/FilterBottomSheet/FilterBottomSheet';
-
+import Icon from 'react-native-vector-icons/Ionicons';
 type Props = NativeStackScreenProps<RootStackParamList, 'SearchResultScreen'>;
 
 
@@ -34,8 +34,7 @@ const SearchResultScreen = ({ navigation, route }: Props) => {
         columnWrapperStyle={styles.row}
         keyExtractor={(item) => item.id.toString()}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.listContent}
-
+        contentContainerStyle={[styles.listContent, { flexGrow: 1 }]}
         ListHeaderComponent={
           <View>
             {/* 상단 검색바 */}
@@ -43,15 +42,23 @@ const SearchResultScreen = ({ navigation, route }: Props) => {
               <TouchableOpacity onPress={() => navigation.navigate('BottomTabNavigator', {
                 screen: '홈',
               })}>
-                <FIcon name="chevron-left" size={24} color="#000" style={{ marginRight: widthPercentage(14) }} />
+                <Icon name="chevron-back-sharp" size={24} color="#000" style={{ marginRight: widthPercentage(8) }} />
               </TouchableOpacity>
 
               <View style={styles.search}>
-                <MIcon name="magnify" size={24} color="#BDBDBD" />
+                <Image
+                  source={require('../../assets/drawable/SharpSearch.png')}
+                  style={{
+                    width: 24,
+                    height: 24,
+                    tintColor: '#D9D9D9',
+                  }}
+                  resizeMode="contain"
+                />
                 <Text style={styles.searchText}>{keyword}</Text>
               </View>
               <TouchableOpacity onPress={() => navigation.goBack()}>
-                <FIcon name="x" size={30} color="#000" style={{ marginLeft: widthPercentage(14) }} />
+                <EIcon name="close" size={24} color="#000" style={{ marginLeft: widthPercentage(14) }} />
               </TouchableOpacity>
             </View>
 
@@ -105,10 +112,10 @@ const SearchResultScreen = ({ navigation, route }: Props) => {
               <Text style={styles.text}>{vm.error}</Text>
             )}
             {!vm.loading && !vm.error && vm.results?.length === 0 && (
-              <>
+              <View style={{ alignItems: 'center' }}>
                 <Text style={styles.text}>아직 준비된 칵테일이 없네요.</Text>
                 <Text style={styles.text}>다른 키워드로 다시 검색해보시겠어요?</Text>
-              </>
+              </View>
             )}
           </View>
         }
@@ -166,35 +173,38 @@ const styles = StyleSheet.create({
   },
   searchText: {
     fontFamily: 'Pretendard-Medium',
-    marginLeft: 8,
-    fontWeight: '500',
     fontSize: fontPercentage(16),
-    color: 'black',
+    color: '#000',
+    marginLeft: 8,
   },
   text: {
     color: '#BDBDBD',
     fontFamily: 'Pretendard-Medium',
     fontSize: fontPercentage(16),
-    fontWeight: '600',
+    fontWeight: '600'
+    , textAlign: 'center',
   },
   searchContainer: {
-    padding: 10,
+
+    paddingHorizontal: widthPercentage(16),
     flexDirection: 'row',
     alignItems: 'center',
+    marginTop: heightPercentage(50),
+    paddingBottom: heightPercentage(10),
   },
   resetIcon: {
     marginRight: 4,
-    transform: [{ scaleX: -1 }],
+
   },
   search: {
-    padding: 10,
-    borderRadius: 8,
-    backgroundColor: '#F5F5F5',
-    width: '75%',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
+    flex: 1,
     flexDirection: 'row',
-    height: heightPercentage(48),
+    alignItems: 'center',
+    backgroundColor: '#F5F5F5',
+    height: heightPercentage(42),
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    justifyContent: 'flex-start',
   },
 
   filterView: {
@@ -203,6 +213,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: widthPercentage(8),
     paddingVertical: 4,
     gap: 8,
+    paddingBottom: heightPercentage(24),
   },
   filterButtonContent: {
     // 3. 버튼 내부 레이아웃 설정
@@ -246,11 +257,14 @@ const styles = StyleSheet.create({
     paddingBottom: 24,
   },
   row: {
+    flexDirection: 'row',
     justifyContent: 'flex-start',
+    paddingHorizontal: widthPercentage(16),
     marginBottom: 16,
+    gap: 15,
   },
   cardWrapper: {
-    width: '50%',
+    width: widthPercentage(160),
     alignItems: 'center',
   },
 
@@ -266,8 +280,27 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
     backgroundColor: theme.background,
+
+
     borderTopWidth: 1,
     borderTopColor: '#FFF',
+
+
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000000',
+        shadowOffset: {
+          width: 0,
+          height: -2,
+        },
+        shadowOpacity: 0.08,
+        shadowRadius: 4,
+      },
+      android: {
+
+        elevation: 5,
+      },
+    }),
   },
   resetButton: {
     flex: 1,
