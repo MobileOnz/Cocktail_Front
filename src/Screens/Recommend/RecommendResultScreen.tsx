@@ -24,13 +24,21 @@ interface Props {
 
 const RecommendResultScreen: React.FC<Props> = ({ navigation, route }) => {
   const { result, answers } = route.params;
-  const { clickCtaRecommendResult } = ResultViewModel();
+  const { clickCtaRecommendResult, user } = ResultViewModel();
 
   // [버튼] 한잔 더 추천받기
   const resetRecommendation = () => {
     navigation.reset({
       index: 0,
-      routes: [{ name: 'RecommendIntroScreen' }],
+      routes: [
+        {
+          name: 'BottomTabNavigator',
+          params: {
+            screen: '홈',
+          },
+        },
+        { name: 'RecommendIntroScreen' },
+      ],
     });
   };
 
@@ -50,26 +58,24 @@ const RecommendResultScreen: React.FC<Props> = ({ navigation, route }) => {
       {/* 상단 뷰 */}
       <View style={styles.header}>
         <TouchableOpacity
-          onPress={() => { }}
+          onPress={() =>
+            navigation.reset({
+              index: 0,
+              routes: [{ name: 'BottomTabNavigator' }],
+            })
+          }
           style={styles.icon}
           hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }} // 터치 영역 확장
         >
-          {/* <Image
-                    source={require('../../assets/drawable/left-chevron.png')}
-                    style={styles.icon}
-                    /> */}
+          <Image
+            source={require('../../assets/drawable/left-chevron.png')}
+            style={styles.icon}
+          />
         </TouchableOpacity>
         <TouchableOpacity onPress={() =>
           navigation.reset({
             index: 0,
-            routes: [
-              {
-                name: 'BottomTabNavigator',
-                params: {
-                  screen: '홈',
-                },
-              },
-            ],
+            routes: [{ name: 'BottomTabNavigator' }],
           })
         }>
           <Image source={require('../../assets/drawable/close.png')}
@@ -79,7 +85,7 @@ const RecommendResultScreen: React.FC<Props> = ({ navigation, route }) => {
 
       {/* 중앙 뷰 */}
       <View style={styles.centralContainer}>
-        <ResultScreen data={result} />
+        <ResultScreen data={result} user={user} />
       </View>
 
       {/* 바텀 뷰 */}
@@ -106,7 +112,7 @@ const RecommendResultScreen: React.FC<Props> = ({ navigation, route }) => {
 };
 
 // 결과 화면
-const ResultScreen = ({ data }) => {
+const ResultScreen = ({ data, user }) => {
   const ABV_LABEL: Record<string, string> = {
     WEAK: '약함',
     MEDIUM: '보통',
@@ -144,7 +150,7 @@ const ResultScreen = ({ data }) => {
 
   return (
     <View style={{ flex: 1 }}>
-      <Text style={styles.titleIntroduceText}>(닉네임)님, 오늘은 이 한 잔이 좋겠네요.</Text>
+      <Text style={styles.titleIntroduceText}> {user?.nickname}님, 오늘은 이 한 잔이 좋겠네요.</Text>
       <Text style={styles.description}>기분에 따라, 편하게 즐겨보세요</Text>
 
       <View style={{ flex: 1 }}>
@@ -164,16 +170,23 @@ const ResultScreen = ({ data }) => {
             },
           ]}
         >
-          <Image
-            source={{ uri: data.imageUrl }}
-            style={{ width: '100%', height: '85%', resizeMode: 'cover', borderRadius: 8 }}
-          />
-          <Text style={styles.resultText}>
-            {data.engName}
-          </Text>
-          <Text style={styles.resultTitleText}>
-            {data.korName}
-          </Text>
+          <View style={styles.shadowBox}>
+            <Image
+              source={{ uri: data.imageUrl }}
+              style={{ width: '100%', height: '100%', resizeMode: 'cover', borderRadius: 8 }}
+            />
+          </View>
+          <View style={{ position: 'absolute', height: '85%' }}>
+            <View style={{ flex: 1 }} />
+            <View style={{ bottom: 32 }}>
+              <Text style={styles.resultText}>
+                {data.engName}
+              </Text>
+              <Text style={styles.resultTitleText}>
+                {data.korName}
+              </Text>
+            </View>
+          </View>
         </Animated.View>
 
         <Animated.View
@@ -187,12 +200,12 @@ const ResultScreen = ({ data }) => {
             },
           ]}
         >
-          <Image
-            source={{ uri: data.imageUrl }}
-            style={{ width: '100%', height: '85%', resizeMode: 'cover', borderRadius: 8, transform: [{ scaleX: -1 }] }}
-            blurRadius={6}
-          />
-
+          <View style={styles.shadowBox}>
+            <Image
+              source={{ uri: data.imageUrl }}
+              style={{ width: '100%', height: '100%', resizeMode: 'cover', borderRadius: 8, transform: [{ scaleX: -1 }] }}
+            />
+          </View>
           <View style={styles.resultInfoContainer}>
             <View style={styles.resultInfoBox}>
               <Text style={styles.resultInfoTitleText}>도수</Text>
@@ -221,6 +234,18 @@ const ResultScreen = ({ data }) => {
 };
 
 const styles = StyleSheet.create({
+  shadowBox: {
+    width: '100%',
+    height: '85%',
+    borderRadius: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.08,
+    shadowRadius: 16,
+    elevation: 6,
+    backgroundColor: 'white',
+  },
+
   resultInfoContainer: {
     position: 'absolute',
     left: widthPercentage(20),
@@ -244,7 +269,7 @@ const styles = StyleSheet.create({
   resultInfoSubText: {
     flex: 4,
     fontSize: fontPercentage(16),
-    fontWeight: '500',
+    fontFamily: 'Pretandard-Medium',
     color: '#FFFFFF',
     textAlign: 'left',
     flexWrap: 'wrap',
@@ -255,6 +280,11 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     position: 'absolute',
+    shadowColor: '#000',
+    elevation: 8, // Android
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.25,
+    shadowRadius: 12,
   },
 
   cardBack: {
@@ -265,28 +295,27 @@ const styles = StyleSheet.create({
   },
 
   resultText: {
-    position: 'absolute',
-    marginTop: heightPercentage(345),
+    // position: 'absolute',
+    // marginTop: heightPercentage(345),
     marginLeft: widthPercentage(20),
     fontSize: fontPercentage(20),
     color: '#FFFFFF',
-    fontWeight: '700',
-    fontStyle: 'italic',
+    fontFamily: 'NotoSerif-SemiBoldItalic',
   },
 
   resultTitleText: {
-    position: 'absolute',
-    marginTop: heightPercentage(378),
+    // position: 'absolute',
+    // marginTop: heightPercentage(378),
     marginLeft: widthPercentage(20),
     fontSize: fontPercentage(20),
     color: '#FFFFFF',
-    fontWeight: '700',
+    fontFamily: 'Pretandard-SemiBold',
   },
 
   titleIntroduceText: {
     fontSize: fontPercentage(20),
     color: '#1B1B1B',
-    fontWeight: '600',
+    fontFamily: 'Pretandard-SemiBold',
     textAlign: 'center',
   },
 
@@ -303,14 +332,14 @@ const styles = StyleSheet.create({
   description: {
     fontSize: fontPercentage(14),
     color: '#BDBDBD',
-    fontWeight: '500',
+    fontFamily: 'Pretandard-Medium',
     textAlign: 'center',
     paddingBottom: heightPercentage(20),
   },
 
   container: {
     flex: 1,
-    backgroundColor: '#fffcf3',
+    backgroundColor: '#FFFFFF',
   },
   header: {
     flexDirection: 'row',
@@ -336,7 +365,8 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#fffcf3',
+    backgroundColor: '#FFFFFF',
+    bottom: 52,
   },
 
   lastButtonsWrapper: {
@@ -368,12 +398,12 @@ const styles = StyleSheet.create({
   },
 
   bottomBtnLeftText: {
-    fontWeight: '600',
+    fontFamily: 'Pretandard-SemiBold',
     fontSize: fontPercentage(14),
     color: '#1B1B1B',
   },
   bottomBtnRightText: {
-    fontWeight: '600',
+    fontFamily: 'Pretandard-SemiBold',
     fontSize: fontPercentage(14),
     color: '#FFFFFF',
   },

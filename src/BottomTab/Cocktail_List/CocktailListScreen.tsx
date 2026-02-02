@@ -52,6 +52,7 @@ const Home = () => {
         if (item.image) { Image.prefetch(item.image); }
       });
     }
+
   }, [vm.bestCocktail]);
 
   const pages = useMemo(() => {
@@ -60,6 +61,7 @@ const Home = () => {
       result.push(vm.newCocktail.slice(i, i + 3));
     }
     return result;
+
   }, [vm.newCocktail]);
   return (
     <View style={styles.container}>
@@ -92,6 +94,7 @@ const Home = () => {
                 width: 28,
                 height: 28,
                 tintColor: animatedColor,
+
               }}
               resizeMode="contain"
             />

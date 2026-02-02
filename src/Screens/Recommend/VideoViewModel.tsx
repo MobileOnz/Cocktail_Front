@@ -30,6 +30,7 @@ const VideoViewModel = () => {
                 abvBand: ABV_OPTIONS[answers[4]! - 1],
             };
             const respond = await repository.recommend(request);
+            console.log(respond)
             return respond;
 
         } catch (e) {
