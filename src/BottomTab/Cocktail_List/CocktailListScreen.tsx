@@ -45,7 +45,7 @@ const Home = () => {
       duration: 200,
       useNativeDriver: false,
     }).start();
-  }, [vm.isScrolled]);
+  }, [fadeAnim, vm.isScrolled]);
   useEffect(() => {
     if (vm.bestCocktail && vm.bestCocktail.length > 0) {
       vm.bestCocktail.forEach(item => {

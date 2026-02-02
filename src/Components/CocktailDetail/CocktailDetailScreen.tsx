@@ -2,7 +2,7 @@
 import React from 'react';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Image, ScrollView, Text, View, StyleSheet, Pressable, TouchableOpacity } from 'react-native';
-import { ActivityIndicator, Divider, IconButton } from 'react-native-paper';
+import { ActivityIndicator, Divider } from 'react-native-paper';
 
 import PillStyleStatus from '../PillStyleStatus';
 import { RootStackParamList } from '../../Navigation/Navigation';

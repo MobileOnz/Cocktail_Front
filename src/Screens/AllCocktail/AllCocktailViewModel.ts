@@ -17,7 +17,7 @@ const useAllCocktailViewModel = (keyword?: string, deps?: UseSearchResultDeps) =
     const [error, setError] = useState<string | null>(null);
     const [page, setPage] = useState(0);
     const [isLast, setIsLast] = useState(false);
-    const [appliedFilter, setAppliedFilter] = useState<FilterState>(DEFAULT_FILTER);
+    const [appliedFilter, _setAppliedFilter] = useState<FilterState>(DEFAULT_FILTER);
 
     const repository = deps?.repository ?? di.cocktailSearchRepository;
 
@@ -83,6 +83,7 @@ const useAllCocktailViewModel = (keyword?: string, deps?: UseSearchResultDeps) =
                 setIsLast(false);
             }
         } catch (error) {
+            setError('에러가 발생했습니다.');
             if (axios.isAxiosError(error)) {
                 console.log(' AxiosError message:', error.message);
                 console.log(' AxiosError code:', error.code);

@@ -1,7 +1,6 @@
 // components/CocktailCard.tsx
 import React from 'react';
 import { View, Image, Text, StyleSheet, Pressable } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import PillStyleStatus from '../Components/PillStyleStatus';
 import { fontPercentage, heightPercentage, widthPercentage } from '../assets/styles/FigmaScreen';
 
