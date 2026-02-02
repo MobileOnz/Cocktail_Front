@@ -10,7 +10,7 @@ import CocktailCard from '../../Components/CocktailCard';
 import useSearchResultViewModel from './SearchResultViewModel';
 import OpenBottomSheet, { OpenBottomSheetHandle } from '../../Components/BottomSheet/OpenBottomSheet';
 import MIcon from 'react-native-vector-icons/MaterialCommunityIcons';
-import IIcon from 'react-native-vector-icons/Ionicons';
+import EIcon from 'react-native-vector-icons/EvilIcons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import FilterBottomSheet, { FilterBottomSheetRef } from '../../Components/BottomSheet/FilterBottomSheet/FilterBottomSheet';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -58,7 +58,7 @@ const SearchResultScreen = ({ navigation, route }: Props) => {
                 <Text style={styles.searchText}>{keyword}</Text>
               </View>
               <TouchableOpacity onPress={() => navigation.goBack()}>
-                <IIcon name="close-sharp" size={30} color="#000" style={{ marginLeft: widthPercentage(14) }} />
+                <EIcon name="close" size={24} color="#000" style={{ marginLeft: widthPercentage(14) }} />
               </TouchableOpacity>
             </View>
 
@@ -258,9 +258,10 @@ const styles = StyleSheet.create({
   },
   row: {
     flexDirection: 'row',
-    justifyContent: 'center',
-    gap: widthPercentage(12),
+    justifyContent: 'flex-start',
+    paddingHorizontal: widthPercentage(16),
     marginBottom: 16,
+    gap: 15,
   },
   cardWrapper: {
     width: widthPercentage(160),

@@ -93,14 +93,14 @@ export function CocktailDetailScreen({ route }: Props) {
                     ? require('../../assets/drawable/full_save.png')
                     : require('../../assets/drawable/save.png')
                 }
-                style={vm.detail?.isBookmarked ?
+                style={[{ marginRight: 20 }, vm.detail?.isBookmarked ?
                   { width: 20, height: 20, tintColor: '#FFF' }
-                  : { width: 20, height: 20 }}
+                  : { width: 20, height: 20 }]}
                 resizeMode="contain"
               />
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={() => { }}>
+            <TouchableOpacity onPress={() => { }} style={{ marginRight: 10 }}>
               <Icon name="share-social-outline" size={24} color={'#fff'} />
             </TouchableOpacity>
 

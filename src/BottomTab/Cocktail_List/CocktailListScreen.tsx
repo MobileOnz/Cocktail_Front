@@ -255,12 +255,16 @@ const Home = () => {
               <View key={p} style={styles.pagerPage}>
                 {items.map(item => (
                   <View key={item.id} style={styles.newCocktailRow}>
+
                     <Image source={{ uri: item.image }} style={styles.newCocktailImage} />
-                    <View style={styles.newCocktailTextWrapper}>
+
+                    <TouchableOpacity style={styles.newCocktailTextWrapper}
+                      onPress={() => navigation.navigate('CocktailDetailScreen', {
+                        cocktailId: item.id,
+                      })}>
                       <PillStyleStatus tone={item.type} />
                       <Text style={styles.newCocktailName}>{item.name}</Text>
-                    </View>
-
+                    </TouchableOpacity>
                     <TouchableOpacity
                       style={styles.newCocktailBookmark}
                       onPress={() => vm.bookmarked(item.id)}
@@ -274,7 +278,6 @@ const Home = () => {
                         style={{
                           width: 15,
                           height: 19,
-                          // 리스트 배경이 밝으므로 검정/회색 계열로 처리
                           tintColor: '#000',
                         }}
                         resizeMode="contain"
