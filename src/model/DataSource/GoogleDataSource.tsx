@@ -12,7 +12,6 @@ export class GoogleAuthDataSource implements ISocialAuthDataSource {
 
       try { await GoogleSignin.signOut(); } catch (e) { }
 
-      const userInfo = await GoogleSignin.signIn();
       await new Promise(resolve => setTimeout(() => resolve(null), 1000));
 
       const auth = await GoogleSignin.getTokens();

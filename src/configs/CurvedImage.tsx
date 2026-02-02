@@ -1,7 +1,8 @@
 import React from 'react';
-import { Image, View } from 'react-native';
+import { Image, StyleSheet } from 'react-native';
 import MaskedView from '@react-native-masked-view/masked-view';
 import Svg, { Path } from 'react-native-svg';
+import LinearGradient from 'react-native-linear-gradient';
 
 type Props = {
   uri: string;
@@ -9,8 +10,8 @@ type Props = {
 };
 
 export default function PuzzlePiece({ uri, size = 200 }: Props) {
-  const baseWidth = 200;
-  const baseHeight = 210;
+  const w = size;
+  const h = size;
 
   const puzzlePath = `
     M0,0
@@ -24,33 +25,37 @@ export default function PuzzlePiece({ uri, size = 200 }: Props) {
   `;
 
   return (
-    <View style={{ width: size, height: size, overflow: 'hidden' }}>
-      <MaskedView
-        style={{ flex: 1 }}
-        maskElement={
-          <Svg
-            width="100%"
-            height="100%"
-            viewBox={`0 0 ${baseWidth} ${baseHeight}`}
-            preserveAspectRatio="xMidYMid slice"
-          >
-            <Path d={puzzlePath} fill="black" />
-          </Svg>
-        }
-      >
-        <Image
-          source={{ uri }}
-          style={{
-            width: '100%',
-            height: '120%',
-            position: 'absolute',
-            top: '-5%',
-            left: '-10%',
-          }}
-          resizeMode="contain"
+    <MaskedView
+      style={{
+        width: w,
+        height: h,
 
-        />
-      </MaskedView>
-    </View>
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.08,
+        shadowRadius: 8,
+      }}
+      maskElement={
+        <Svg width={w} height={h} viewBox={`0 0 ${w} ${h}`}>
+          <Path d={puzzlePath} fill="black" />
+        </Svg>
+      }
+    >
+
+      <Image
+        source={{ uri }}
+        style={{ width: w, height: h }}
+        resizeMode="cover"
+      />
+
+
+      <LinearGradient
+
+        colors={['transparent', 'rgba(0,0,0,0.0)', 'rgba(0,0,0,0.6)', 'rgba(0,0,0,0.85)']}
+
+        locations={[0, 0.7, 0.85, 1]}
+        style={StyleSheet.absoluteFill}
+      />
+    </MaskedView>
   );
 }
