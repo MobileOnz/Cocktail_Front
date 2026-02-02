@@ -4,6 +4,8 @@ import { CocktailCard } from '../../model/domain/CocktailCard';
 import { di } from '../../DI/Container';
 import axios from 'axios';
 import { DEFAULT_FILTER, FilterState } from '../../Components/BottomSheet/FilterBottomSheet/FilterBottomSheetViewModel';
+import instance from '../../tokenRequest/axios_interceptor';
+import Toast from 'react-native-toast-message';
 
 type UseSearchResultDeps = {
     repository?: ISearchRepository;
@@ -13,21 +15,41 @@ const useAllCocktailViewModel = (keyword?: string, deps?: UseSearchResultDeps) =
     const [results, setResults] = useState<CocktailCard[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [page, _setPage] = useState(0);
+    const [page, setPage] = useState(0);
     const [isLast, setIsLast] = useState(false);
-    const [appliedFilter, setAppliedFilter] = useState<FilterState>(DEFAULT_FILTER);
+    const [appliedFilter, _setAppliedFilter] = useState<FilterState>(DEFAULT_FILTER);
 
     const repository = deps?.repository ?? di.cocktailSearchRepository;
 
+    const bookmarked = async (cocktailId: number) => {
+        setResults(prev =>
+            prev.map(item =>
+                item.id === cocktailId
+                    ? { ...item, isBookmarked: !item.isBookmarked }
+                    : item
+            )
+        );
+
+        try {
+            await instance.post(`/api/v2/cocktails/${cocktailId}/bookmarks`);
+        } catch (error: any) {
+            Toast.show({
+                type: 'error',
+                text1: '로그인 후 북마크 사용이 가능합니다.',
+            });
+            fetchResult(undefined, false);
+        }
+    };
+
 
     const fetchResult = useCallback(async (filter?: FilterState, isNextPage = false) => {
-        if (loading || (isNextPage && isLast)) return;
 
+        if (loading || (isNextPage && isLast)) { return; }
         setLoading(true);
-        setError(null);
-        const targetPage = isNextPage ? page + 1 : 0;
-        if (filter) { setAppliedFilter(filter); }
+
+
         try {
+            const targetPage = isNextPage ? page + 1 : 0;
             const targetFilter = filter ?? appliedFilter;
             const abvParam = targetFilter.degree || undefined;
             const styleParam = targetFilter.style || undefined;
@@ -48,8 +70,11 @@ const useAllCocktailViewModel = (keyword?: string, deps?: UseSearchResultDeps) =
             );
             if (isNextPage) {
                 setResults(prev => [...prev, ...data]);
+                setPage(targetPage);
             } else {
                 setResults(data);
+                setPage(0);
+                setIsLast(false);
             }
 
             if (data.length < 10) {
@@ -58,6 +83,7 @@ const useAllCocktailViewModel = (keyword?: string, deps?: UseSearchResultDeps) =
                 setIsLast(false);
             }
         } catch (error) {
+            setError('에러가 발생했습니다.');
             if (axios.isAxiosError(error)) {
                 console.log(' AxiosError message:', error.message);
                 console.log(' AxiosError code:', error.code);
@@ -73,11 +99,12 @@ const useAllCocktailViewModel = (keyword?: string, deps?: UseSearchResultDeps) =
             setLoading(false);
         }
 
-    }, [keyword, repository, appliedFilter, page, isLast, loading]);
+    }, [keyword, repository, appliedFilter, page, loading, isLast]);
 
     useEffect(() => {
         fetchResult(undefined, false);
-    }, [keyword, fetchResult]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [keyword, appliedFilter]);
 
     return {
         results,
@@ -87,6 +114,7 @@ const useAllCocktailViewModel = (keyword?: string, deps?: UseSearchResultDeps) =
         isLast,
         refetch: (filter?: FilterState) => fetchResult(filter, false),
         loadMore: () => fetchResult(undefined, true),
+        bookmarked,
     };
 
 };

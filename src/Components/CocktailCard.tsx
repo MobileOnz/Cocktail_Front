@@ -1,7 +1,6 @@
 // components/CocktailCard.tsx
 import React from 'react';
 import { View, Image, Text, StyleSheet, Pressable } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import PillStyleStatus from '../Components/PillStyleStatus';
 import { fontPercentage, heightPercentage, widthPercentage } from '../assets/styles/FigmaScreen';
 
@@ -43,7 +42,17 @@ export default function CocktailCard({
             style={styles.bookmarkBtn}
             accessibilityLabel="즐겨찾기"
           >
-            <Icon name={bookmarked ? 'bookmark' : 'bookmark-outline'} size={22} color="#FFF" />
+            <Image
+              source={
+                bookmarked
+                  ? require('../assets/drawable/full_save.png') // 채워진 이미지
+                  : require('../assets/drawable/save.png')      // 비어있는 이미지
+              }
+              style={bookmarked ?
+                { width: 20, height: 20, tintColor: '#FFF' }
+                : { width: 20, height: 20 }}
+              resizeMode="contain"
+            />
           </Pressable>
         </View>
       </Pressable>
@@ -60,12 +69,8 @@ const styles = StyleSheet.create({
   container: {
     width: 160,
     alignItems: 'center',
-    marginHorizontal: widthPercentage(15),
-    marginVertical: heightPercentage(15),
   },
   card: {
-
-    borderRadius: 20,
     overflow: 'hidden',
   },
   imageWrap: {
@@ -73,6 +78,7 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   image: {
+    borderRadius: 8,
     width: widthPercentage(160),
     height: heightPercentage(220),
     resizeMode: 'contain',
@@ -92,7 +98,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   title: {
-    fontFamily: 'Pretendard-SemiBold',
+    fontFamily: 'Pretendard-Medium',
     fontSize: fontPercentage(16),
     fontWeight: '500',
     color: '#1B1B1B',

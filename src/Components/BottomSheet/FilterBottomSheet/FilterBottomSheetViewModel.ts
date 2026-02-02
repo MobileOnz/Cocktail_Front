@@ -20,9 +20,10 @@ export const DEFAULT_FILTER: FilterState = {
 type Params = {
     initialValue?: FilterState;
     onApply?: (value: FilterState) => void;
+    onClose?: () => void;
 };
 
-export const useFilterBottomSheetViewModel = ({ initialValue, onApply }: Params) => {
+export const useFilterBottomSheetViewModel = ({ initialValue, onApply, onClose }: Params) => {
 
     const init = initialValue ?? DEFAULT_FILTER;
 
@@ -54,7 +55,8 @@ export const useFilterBottomSheetViewModel = ({ initialValue, onApply }: Params)
 
     const apply = useCallback(() => {
         onApply?.(value);
-    }, [onApply, value]);
+        onClose?.();
+    }, [onApply, value, onClose]);
 
     return {
         selectedSort,
@@ -70,6 +72,7 @@ export const useFilterBottomSheetViewModel = ({ initialValue, onApply }: Params)
 
         reset,
         apply,
+        onClose,
 
 
         value,

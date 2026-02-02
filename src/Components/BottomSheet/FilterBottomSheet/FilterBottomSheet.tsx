@@ -6,10 +6,7 @@ import {
   TouchableOpacity,
   Pressable,
 } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { FilterState, useFilterBottomSheetViewModel } from './FilterBottomSheetViewModel';
 import theme from '../../../assets/styles/theme';
 import { heightPercentage } from '../../../assets/styles/FigmaScreen';
@@ -65,10 +62,8 @@ export const FilterBottomSheet = forwardRef<FilterBottomSheetRef, Props>(
       reset: vm.reset,
       apply: vm.apply,
       getValue: () => vm.value,
-    }));
 
-    const insets = useSafeAreaInsets();
-    const FOOTER_HEIGHT = heightPercentage(50) + 12 + 12; // 버튼높이+위아래패딩(대충)
+    }));
 
     const toggleValue = (list: string[], value: string, setter: (v: string[]) => void) => {
       if (list.includes(value)) {
@@ -105,6 +100,7 @@ export const FilterBottomSheet = forwardRef<FilterBottomSheetRef, Props>(
       label: string;
       selected: boolean;
       onPress: () => void;
+      onclose?: () => void;
     }) => (
       <Pressable style={styles.radioRow} onPress={onPress}>
         <View style={[styles.radioOuter, selected && styles.radioOuterSelected]}>
@@ -115,97 +111,85 @@ export const FilterBottomSheet = forwardRef<FilterBottomSheetRef, Props>(
     );
 
     return (
-      <SafeAreaView style={styles.container}>
 
-        <BottomSheetScrollView
-          contentContainerStyle={[
-            styles.scrollContent,
-            { paddingBottom: FOOTER_HEIGHT + insets.bottom + 16 },
-          ]}
-          showsVerticalScrollIndicator={false}
-        >
-          {/* 정렬 */}
-          <View style={styles.section}>
-            <Pressable onPress={() => { }}>
-              <MaterialIcons name="close" size={24} style={{ alignSelf: 'flex-end', padding: 10 }} />
-            </Pressable>
-            <Text style={styles.sectionTitle}>정렬</Text>
-            <View style={styles.radioGroup}>
-              {sortOptions.map(option => (
-                <Radio
-                  key={option}
-                  label={option}
-                  selected={vm.selectedSort === option}
-                  onPress={() => vm.setSelectedSort(option)}
-                />
-              ))}
-            </View>
+      <View style={{ paddingHorizontal: 20, paddingTop: 16 }}>
+        {/* 정렬 */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>정렬</Text>
+          <View style={styles.radioGroup}>
+            {sortOptions.map(option => (
+              <Radio
+                key={option}
+                label={option}
+                selected={vm.selectedSort === option}
+                onPress={() => vm.setSelectedSort(option)}
+              />
+            ))}
           </View>
+        </View>
 
-          {/* 도수 */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>도수</Text>
-            <View style={styles.tagGroup}>
-              {degreeOptions.map(option => (
-                <Tag
-                  key={option}
-                  label={option}
-                  selected={vm.selectedDegree === option}
-                  onPress={() => vm.setSelectedDegree(option)}
-                />
-              ))}
-            </View>
+        {/* 도수 */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>도수</Text>
+          <View style={styles.tagGroup}>
+            {degreeOptions.map(option => (
+              <Tag
+                key={option}
+                label={option}
+                selected={vm.selectedDegree === option}
+                onPress={() => vm.setSelectedDegree(option)}
+              />
+            ))}
           </View>
+        </View>
 
-          {/* 스타일 */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>스타일</Text>
-            <View style={styles.tagGroup}>
-              {styleOptions.map(option => (
-                <Tag
-                  key={option}
-                  label={option}
-                  selected={vm.selectedStyle === option}
-                  onPress={() => vm.setSelectedStyle(option)}
-                />
-              ))}
-            </View>
+        {/* 스타일 */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>스타일</Text>
+          <View style={styles.tagGroup}>
+            {styleOptions.map(option => (
+              <Tag
+                key={option}
+                label={option}
+                selected={vm.selectedStyle === option}
+                onPress={() => vm.setSelectedStyle(option)}
+              />
+            ))}
           </View>
+        </View>
 
-          {/* 맛 */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>맛</Text>
-            <View style={styles.tagGroup}>
-              {tasteOptions.map(option => (
-                <Tag
-                  key={option}
-                  label={option}
-                  selected={vm.selectedTaste.includes(option)}
-                  onPress={() => toggleValue(vm.selectedTaste, option, vm.setSelectedTaste)}
-                />
-              ))}
-            </View>
+        {/* 맛 */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>맛</Text>
+          <View style={styles.tagGroup}>
+            {tasteOptions.map(option => (
+              <Tag
+                key={option}
+                label={option}
+                selected={vm.selectedTaste.includes(option)}
+                onPress={() => toggleValue(vm.selectedTaste, option, vm.setSelectedTaste)}
+              />
+            ))}
           </View>
+        </View>
 
-          {/* 베이스 */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>베이스</Text>
-            <View style={styles.tagGroup}>
-              {baseOptions.map(option => (
-                <Tag
-                  key={option}
-                  label={option}
-                  selected={vm.selectedBase.includes(option)}
-                  onPress={() => toggleValue(vm.selectedBase, option, vm.setSelectedBase)}
-                />
-              ))}
-            </View>
+        {/* 베이스 */}
+        <View style={[styles.section, { marginBottom: 60 }]}>
+          <Text style={styles.sectionTitle}>베이스</Text>
+          <View style={styles.tagGroup}>
+            {baseOptions.map(option => (
+              <Tag
+                key={option}
+                label={option}
+                selected={vm.selectedBase.includes(option)}
+                onPress={() => toggleValue(vm.selectedBase, option, vm.setSelectedBase)}
+              />
+            ))}
           </View>
+        </View>
 
-        </BottomSheetScrollView>
+      </View>
 
-
-      </SafeAreaView>
     );
   }
 );
@@ -225,8 +209,8 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   sectionTitle: {
+    fontFamily: 'Pretendard-Medium',
     fontSize: 15,
-    fontWeight: '600',
     color: '#1B1B1B',
     marginBottom: 10,
   },
@@ -258,6 +242,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#111111',
   },
   radioLabel: {
+    fontFamily: 'Pretendard-Medium',
     fontSize: 14,
     color: '#1B1B1B',
   },
@@ -279,6 +264,7 @@ const styles = StyleSheet.create({
     borderColor: '#111111',
   },
   tagText: {
+    fontFamily: 'Pretendard-Medium',
     fontSize: 13,
     color: '#333333',
   },
@@ -314,13 +300,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#111111',
   },
   resetText: {
+    fontFamily: 'Pretendard-Medium',
     fontSize: 14,
     color: '#444444',
-    fontWeight: '500',
+
   },
   applyText: {
+    fontFamily: 'Pretendard-Medium',
     fontSize: 14,
     color: '#FFFFFF',
-    fontWeight: '600',
+
   },
 });

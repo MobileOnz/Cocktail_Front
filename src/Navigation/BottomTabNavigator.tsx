@@ -17,6 +17,7 @@ import MyPageIcon from '../assets/drawable/MyPage.svg';
 import MyPageScreen from '../Screens/MyPage/MyPageScreen';
 import { heightPercentage } from '../assets/styles/FigmaScreen';
 import { useNavigationState } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Tab = createBottomTabNavigator<BottomTabParamList>();
 export const ICON_PATH = {
@@ -69,8 +70,7 @@ const BottomTabNavigator = () => {
           tabBarBackground: () => <TabBarBackground />,
           tabBarStyle: {
             position: 'absolute',
-            left: 25,
-            right: 25,
+            marginHorizontal: 10,
             bottom: 30,
             backgroundColor: 'transparent',
             borderTopWidth: 0,
@@ -79,18 +79,20 @@ const BottomTabNavigator = () => {
             shadowOpacity: 0.25,
             shadowRadius: 15,
             elevation: 0,
-            height: heightPercentage(50),
+            height: heightPercentage(58),
             borderRadius: 999,
             overflow: 'hidden',
             paddingBottom: 0,
             paddingTop: 0,
           },
           tabBarIconStyle: {
+            width: '100%',
+            height: '100%',
             marginBottom: 0,
             marginTop: 0,
           },
           tabBarItemStyle: {
-            height: heightPercentage(50),
+            height: heightPercentage(58),
             flexDirection: 'column',
             justifyContent: 'center',
             alignItems: 'center',
@@ -126,10 +128,21 @@ const BottomTabNavigator = () => {
             headerShown: false,
           }}
           listeners={({ navigation }) => ({
-            tabPress: e => {
+            tabPress: async e => {
               e.preventDefault(); // ❗ 탭 전환 막기
+              
+              // 로그인 시에만 접근 가능하게 하기
+              const loggedIn = await AsyncStorage.getItem('accessToken');
+              console.log(loggedIn)
+              if (!loggedIn) {
+                navigation.navigate('Login', {
+                  redirect: 1
+                });
+                return;
+              }
+              
               navigation.getParent()?.navigate('RecommendIntroScreen');
-            },
+            }    
           })}
         />
 

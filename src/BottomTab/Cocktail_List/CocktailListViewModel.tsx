@@ -4,6 +4,9 @@ import { di } from '../../DI/Container';
 import { CocktailCard } from '../../model/domain/CocktailCard';
 import { CocktailMain } from '../../model/domain/CocktailMain';
 import instance from '../../tokenRequest/axios_interceptor';
+import { useNavigation } from '@react-navigation/native';
+import { getToken } from '../../tokenRequest/Token';
+import Toast from 'react-native-toast-message';
 
 
 type UseSearchResultDeps = {
@@ -21,6 +24,20 @@ export const useHomeViewModel = (deps?: UseSearchResultDeps) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isScrolled, setIsScrolled] = useState(false);
+  const navigation = useNavigation<any>();
+
+  const bookMarkCheck = async () => {
+    const token = await getToken();
+    if (!token) {
+      Toast.show({
+        type: 'error',
+        text1: '로그인이 필요한 서비스 입니다.',
+      });
+      return;
+    }
+
+    navigation.navigate('CocktailBoxScreen');
+  }
 
   const bookmarked = async (cocktailId: number) => {
 
@@ -77,6 +94,24 @@ export const useHomeViewModel = (deps?: UseSearchResultDeps) => {
         repository.intermediate(),
         repository.beginner(),
       ]);
+      if (refreshData && refreshData.length > 0) {
+        console.log('--- [Refresh 리스트 전체 북마크 체크] ---');
+
+        refreshData.forEach((item: any, index: number) => {
+          console.log(`[${index}] 아이템명: ${item.name || '이름없음'}`);
+          console.log(`    - ID: ${item.id}`);
+          console.log(`    - isBookmarked 값: ${item.isBookmarked}`);
+
+          // 만약 isBookmarked가 undefined라면, 다른 비슷한 필드가 있는지 전체 출력
+          if (item.isBookmarked === undefined) {
+            console.log('    - [경고] isBookmarked가 없습니다! 실제 데이터 구조:', JSON.stringify(item));
+          }
+        });
+
+        console.log('---------------------------------------');
+      } else {
+        console.log('--- [Refresh 리스트] 데이터가 비어있습니다. ---');
+      }
       setRandomCocktail(randomCocktailData);
       setNewCocktail(newCocktailData);
       setBestCocktail(bestCocktailData);
@@ -108,5 +143,6 @@ export const useHomeViewModel = (deps?: UseSearchResultDeps) => {
     handleScroll,
     isScrolled,
     setIsScrolled,
+    bookMarkCheck
   };
 };

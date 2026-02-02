@@ -1,7 +1,7 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { Image, Platform, StyleSheet, Text, View } from 'react-native';
 import React, { useRef } from 'react';
-import { FlatList, Pressable, ScrollView } from 'react-native-gesture-handler';
-import { ActivityIndicator, Button, Icon, IconButton } from 'react-native-paper';
+import { FlatList, Pressable, ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
+import { ActivityIndicator, Button } from 'react-native-paper';
 import { fontPercentage, heightPercentage, widthPercentage } from '../../assets/styles/FigmaScreen';
 import theme from '../../assets/styles/theme';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -9,10 +9,11 @@ import { RootStackParamList } from '../../Navigation/Navigation';
 import CocktailCard from '../../Components/CocktailCard';
 import useSearchResultViewModel from './SearchResultViewModel';
 import OpenBottomSheet, { OpenBottomSheetHandle } from '../../Components/BottomSheet/OpenBottomSheet';
-
+import MIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+import EIcon from 'react-native-vector-icons/EvilIcons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import FilterBottomSheet, { FilterBottomSheetRef } from '../../Components/BottomSheet/FilterBottomSheet/FilterBottomSheet';
-
+import Icon from 'react-native-vector-icons/Ionicons';
 type Props = NativeStackScreenProps<RootStackParamList, 'SearchResultScreen'>;
 
 
@@ -21,6 +22,7 @@ const SearchResultScreen = ({ navigation, route }: Props) => {
   const bottomSheetRef = useRef<OpenBottomSheetHandle>(null);
   const filterRef = useRef<FilterBottomSheetRef>(null);
   const vm = useSearchResultViewModel(keyword);
+
 
   return (
     <SafeAreaView edges={['top']} style={styles.container}>
@@ -32,25 +34,32 @@ const SearchResultScreen = ({ navigation, route }: Props) => {
         columnWrapperStyle={styles.row}
         keyExtractor={(item) => item.id.toString()}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.listContent}
-
+        contentContainerStyle={[styles.listContent, { flexGrow: 1 }]}
         ListHeaderComponent={
           <View>
             {/* 상단 검색바 */}
             <View style={styles.searchContainer}>
-              <IconButton
-                icon="chevron-left"
-                size={30}
-                onPress={() => navigation.navigate('BottomTabNavigator', {
-                  screen: '홈',
-                })}
-              />
+              <TouchableOpacity onPress={() => navigation.navigate('BottomTabNavigator', {
+                screen: '홈',
+              })}>
+                <Icon name="chevron-back-sharp" size={24} color="#000" style={{ marginRight: widthPercentage(8) }} />
+              </TouchableOpacity>
+
               <View style={styles.search}>
-                <Icon source="magnify" size={24} color="#BDBDBD" />
+                <Image
+                  source={require('../../assets/drawable/SharpSearch.png')}
+                  style={{
+                    width: 24,
+                    height: 24,
+                    tintColor: '#D9D9D9',
+                  }}
+                  resizeMode="contain"
+                />
                 <Text style={styles.searchText}>{keyword}</Text>
               </View>
-              <IconButton icon="close" size={30}
-                onPress={() => navigation.goBack()} />
+              <TouchableOpacity onPress={() => navigation.goBack()}>
+                <EIcon name="close" size={24} color="#000" style={{ marginLeft: widthPercentage(14) }} />
+              </TouchableOpacity>
             </View>
 
             {/* 필터 뷰 */}
@@ -75,7 +84,7 @@ const SearchResultScreen = ({ navigation, route }: Props) => {
                     mode={isSelected ? 'contained' : 'outlined'}
                     icon={label === '최신순' ? undefined : 'chevron-down'}
                     compact
-                    contentStyle={styles.filterButtonContent}
+                    contentStyle={[styles.filterButtonContent, { height: 'auto', paddingVertical: 4 }]}
 
                     style={[
                       styles.chip,
@@ -103,10 +112,10 @@ const SearchResultScreen = ({ navigation, route }: Props) => {
               <Text style={styles.text}>{vm.error}</Text>
             )}
             {!vm.loading && !vm.error && vm.results?.length === 0 && (
-              <>
+              <View style={{ alignItems: 'center' }}>
                 <Text style={styles.text}>아직 준비된 칵테일이 없네요.</Text>
                 <Text style={styles.text}>다른 키워드로 다시 검색해보시겠어요?</Text>
-              </>
+              </View>
             )}
           </View>
         }
@@ -127,7 +136,8 @@ const SearchResultScreen = ({ navigation, route }: Props) => {
         ref={bottomSheetRef}
         footer={
           <View style={styles.footer}>
-            <Pressable style={styles.resetButton} onPress={() => { filterRef.current?.reset(); }} >
+            <Pressable style={[styles.resetButton]} onPress={() => { filterRef.current?.reset(); }} >
+              <MIcon name="refresh" size={20} color="#444" style={styles.resetIcon} />
               <Text style={styles.resetText}>초기화</Text>
             </Pressable>
 
@@ -141,9 +151,11 @@ const SearchResultScreen = ({ navigation, route }: Props) => {
           </View>
         }
       >
+
         <FilterBottomSheet
           ref={filterRef}
           onApply={(filterValue) => vm.refetch(filterValue)}
+          onClose={() => bottomSheetRef.current?.close()}
         />
       </OpenBottomSheet>
     </SafeAreaView>
@@ -156,31 +168,43 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: theme.background,
   },
+  closeButton: {
+    padding: 10,
+  },
   searchText: {
-    marginLeft: 8,
-    fontWeight: '500',
+    fontFamily: 'Pretendard-Medium',
     fontSize: fontPercentage(16),
-    color: 'black',
+    color: '#000',
+    marginLeft: 8,
   },
   text: {
     color: '#BDBDBD',
+    fontFamily: 'Pretendard-Medium',
     fontSize: fontPercentage(16),
-    fontWeight: '600',
+    fontWeight: '600'
+    , textAlign: 'center',
   },
   searchContainer: {
-    padding: 10,
+
+    paddingHorizontal: widthPercentage(16),
     flexDirection: 'row',
     alignItems: 'center',
+    marginTop: heightPercentage(50),
+    paddingBottom: heightPercentage(10),
+  },
+  resetIcon: {
+    marginRight: 4,
+
   },
   search: {
-    padding: 10,
-    borderRadius: 8,
-    backgroundColor: '#E0E0E0',
-    width: '70%',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
+    flex: 1,
     flexDirection: 'row',
-    height: heightPercentage(48),
+    alignItems: 'center',
+    backgroundColor: '#F5F5F5',
+    height: heightPercentage(42),
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    justifyContent: 'flex-start',
   },
 
   filterView: {
@@ -189,19 +213,22 @@ const styles = StyleSheet.create({
     paddingHorizontal: widthPercentage(8),
     paddingVertical: 4,
     gap: 8,
+    paddingBottom: heightPercentage(24),
   },
   filterButtonContent: {
+    // 3. 버튼 내부 레이아웃 설정
+    flexDirection: 'row-reverse',
     alignItems: 'center',
     justifyContent: 'center',
-    flexDirection: 'row-reverse',
-    height: 30,
-    paddingHorizontal: 10,
   },
   chip: {
     borderRadius: 100,
     borderWidth: 1,
-    minHeight: 0,
-    marginBottom: 0,
+    // 2. 고정 높이보다는 최소 높이를 지정하거나 패딩으로 조절하세요.
+    minHeight: 32,
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 0, // 버튼 그림자 제거 (필요시)
   },
   chipUnselected: {
     backgroundColor: theme.background,
@@ -212,24 +239,32 @@ const styles = StyleSheet.create({
     borderColor: '#E0E0E0',
   },
   chipLabel: {
-    fontSize: 10,
-    lineHeight: 11,
-    color: '#333333',
+    fontFamily: 'Pretendard-Medium',
+    fontSize: fontPercentage(14),
+    color: '#616161',
+    includeFontPadding: false,
+    lineHeight: fontPercentage(18),
+    textAlignVertical: 'center',
+    marginVertical: heightPercentage(4),
+    marginHorizontal: widthPercentage(10),
   },
   chipLabelSelected: {
-    fontSize: 10,
-    lineHeight: 11,
+    fontFamily: 'Pretendard-Medium',
+    fontSize: fontPercentage(14),
     color: '#FFFFFF',
   },
   listContent: {
     paddingBottom: 24,
   },
   row: {
+    flexDirection: 'row',
     justifyContent: 'flex-start',
+    paddingHorizontal: widthPercentage(16),
     marginBottom: 16,
+    gap: 15,
   },
   cardWrapper: {
-    width: '50%',
+    width: widthPercentage(160),
     alignItems: 'center',
   },
 
@@ -245,13 +280,33 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
     backgroundColor: theme.background,
+
+
     borderTopWidth: 1,
-    borderTopColor: '#eee',
+    borderTopColor: '#FFF',
+
+
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000000',
+        shadowOffset: {
+          width: 0,
+          height: -2,
+        },
+        shadowOpacity: 0.08,
+        shadowRadius: 4,
+      },
+      android: {
+
+        elevation: 5,
+      },
+    }),
   },
   resetButton: {
     flex: 1,
+    flexDirection: 'row',
     height: heightPercentage(50),
-    borderRadius: 10,
+    borderRadius: 12,
     borderWidth: 1,
     borderColor: '#D0D0D0',
     alignItems: 'center',
@@ -259,19 +314,21 @@ const styles = StyleSheet.create({
     backgroundColor: theme.background,
   },
   applyButton: {
-    flex: 1,
+    flex: 2,
     height: heightPercentage(50),
-    borderRadius: 10,
+    borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#111111',
+    backgroundColor: '#313131',
   },
   resetText: {
+    fontFamily: 'Pretendard-Medium',
     fontSize: 14,
     color: '#444444',
     fontWeight: '500',
   },
   applyText: {
+    fontFamily: 'Pretendard-Medium',
     fontSize: 14,
     color: '#FFFFFF',
     fontWeight: '600',

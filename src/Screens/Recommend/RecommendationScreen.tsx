@@ -25,16 +25,16 @@ interface Props {
 
 
 const RecommendationScreen: React.FC<Props> = ({ navigation }) => {
-  const { currentStep, setCurrentStep, selectedAnswers, setSelectedAnswers, submitAmplifyRecommend} = RecommendationViewModel();
+  const { currentStep, setCurrentStep, selectedAnswers, setSelectedAnswers, submitAmplifyRecommend } = RecommendationViewModel();
 
   // [버튼] 다음 단계 이동
-  const handleConfirmBtn = async() => {
+  const handleConfirmBtn = async () => {
     if (currentStep < 4) {
       submitAmplifyRecommend();
       setCurrentStep(currentStep + 1);
     }
     if (currentStep == 4) {
-      navigation.navigate('LoadingVideoScreen', { answers: selectedAnswers});
+      navigation.navigate('LoadingVideoScreen', { answers: selectedAnswers });
     }
   };
 
@@ -48,7 +48,7 @@ const RecommendationScreen: React.FC<Props> = ({ navigation }) => {
     }
   };
 
-   const handleAnswerSelect = (answerId: number) => {
+  const handleAnswerSelect = (answerId: number) => {
     setSelectedAnswers(prev => {
       const updated = [...prev];
       updated[currentStep] = answerId;   // 해당 단계 위치에 저장
@@ -75,16 +75,16 @@ const RecommendationScreen: React.FC<Props> = ({ navigation }) => {
           navigation.reset({
             index: 0,
             routes: [
-                {
+              {
                 name: 'BottomTabNavigator',
                 params: {
-                    screen: '홈',
+                  screen: '홈',
                 },
-                },
+              },
             ],
           })
         }>
-            <Image source={require('../../assets/drawable/close.png')}
+          <Image source={require('../../assets/drawable/close.png')}
             style={styles.icon} />
         </TouchableOpacity>
       </View>
@@ -93,11 +93,11 @@ const RecommendationScreen: React.FC<Props> = ({ navigation }) => {
 
       {/* 중앙 뷰 */}
       <ScrollView style={styles.centralContainer}>
-        {currentStep === 0 && (<Question1 currentStep={currentStep} selectedAnswers={selectedAnswers} onSelectQuestion={(answerId)=> handleAnswerSelect(answerId)}  />) }
-        {currentStep === 1 && (<Question2 currentStep={currentStep} selectedAnswers={selectedAnswers} onSelectQuestion={(answerId)=> handleAnswerSelect(answerId)}  />) }
-        {currentStep === 2 && (<Question3 currentStep={currentStep} selectedAnswers={selectedAnswers} onSelectQuestion={(answerId)=> handleAnswerSelect(answerId)}  />) }
-        {currentStep === 3 && (<Question4 currentStep={currentStep} selectedAnswers={selectedAnswers} onSelectQuestion={(answerId)=> handleAnswerSelect(answerId)}  />) }
-        {currentStep === 4 && (<Question5 currentStep={currentStep} selectedAnswers={selectedAnswers} onSelectQuestion={(answerId)=> handleAnswerSelect(answerId)}  />) }
+        {currentStep === 0 && (<Question1 currentStep={currentStep} selectedAnswers={selectedAnswers} onSelectQuestion={(answerId) => handleAnswerSelect(answerId)} />)}
+        {currentStep === 1 && (<Question2 currentStep={currentStep} selectedAnswers={selectedAnswers} onSelectQuestion={(answerId) => handleAnswerSelect(answerId)} />)}
+        {currentStep === 2 && (<Question3 currentStep={currentStep} selectedAnswers={selectedAnswers} onSelectQuestion={(answerId) => handleAnswerSelect(answerId)} />)}
+        {currentStep === 3 && (<Question4 currentStep={currentStep} selectedAnswers={selectedAnswers} onSelectQuestion={(answerId) => handleAnswerSelect(answerId)} />)}
+        {currentStep === 4 && (<Question5 currentStep={currentStep} selectedAnswers={selectedAnswers} onSelectQuestion={(answerId) => handleAnswerSelect(answerId)} />)}
       </ScrollView>
 
 
@@ -112,9 +112,9 @@ const RecommendationScreen: React.FC<Props> = ({ navigation }) => {
           onPress={handleConfirmBtn}
           disabled={selectedAnswers[currentStep] ? false : true}
         >
-            <Text style={[
-              styles.confirmButtonText,
-            ]}>다음으로</Text>
+          <Text style={[
+            styles.confirmButtonText,
+          ]}>다음으로</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -124,41 +124,41 @@ const RecommendationScreen: React.FC<Props> = ({ navigation }) => {
 export default RecommendationScreen;
 
 // 1단계 질문
-const Question1 = ({ currentStep, selectedAnswers, onSelectQuestion}) => {
+const Question1 = ({ currentStep, selectedAnswers, onSelectQuestion }) => {
 
   const questions = [
     {
-      id : 1,
+      id: 1,
       title: '달콤한 맛',
       icon: require('../../assets/drawable/sweet.png'),
     },
     {
-      id : 2,
+      id: 2,
       title: '청량 ∙ 스파클링',
       icon: require('../../assets/drawable/questionSparkle.png'),
     },
     {
-      id : 3,
+      id: 3,
       title: '상큼 ∙ 시트러스',
       icon: require('../../assets/drawable/questionCitrus.png'),
     },
     {
-      id : 4,
+      id: 4,
       title: '과일향 ∙ 트로피컬',
       icon: require('../../assets/drawable/questionTropical.png'),
     },
     {
-      id : 5,
+      id: 5,
       title: '쌉싸름 ∙ 비터',
       icon: require('../../assets/drawable/questionBitter.png'),
     },
     {
-      id : 6,
+      id: 6,
       title: '스파이시 ∙ 따뜻한',
       icon: require('../../assets/drawable/questionSpicy.png'),
     },
     {
-      id : 7,
+      id: 7,
       title: '허브 ∙ 프레시',
       icon: require('../../assets/drawable/questionHerbal.png'),
     },
@@ -166,6 +166,7 @@ const Question1 = ({ currentStep, selectedAnswers, onSelectQuestion}) => {
 
   return (
     <View>
+      <View style={{ height: heightPercentage(28) }} />
       <Text style={styles.titleIntroduceText}>오늘은 어떤 맛의 칵테일이 끌리세요?</Text>
       <Text style={styles.description}>한 가지만 선택할 수 있어요.</Text>
 
@@ -185,36 +186,36 @@ const Question1 = ({ currentStep, selectedAnswers, onSelectQuestion}) => {
 };
 
 // 2단계 질문
-const Question2 = ({ currentStep, selectedAnswers, onSelectQuestion}) => {
+const Question2 = ({ currentStep, selectedAnswers, onSelectQuestion }) => {
 
   const questions = [
     {
-      id : 1,
+      id: 1,
       title: '식전 ∙ 식후',
       icon: require('../../assets/drawable/Dining.png'),
     },
     {
-      id : 2,
+      id: 2,
       title: '데이트 ∙ 로맨틱',
       icon: require('../../assets/drawable/Romantic.png'),
     },
     {
-      id : 3,
+      id: 3,
       title: '파티 ∙ 여럿이',
       icon: require('../../assets/drawable/Together.png'),
     },
     {
-      id : 4,
+      id: 4,
       title: '집에서 간단히',
       icon: require('../../assets/drawable/Casual.png'),
     },
     {
-      id : 5,
+      id: 5,
       title: '세련된 ∙ 모던',
       icon: require('../../assets/drawable/Modern.png'),
     },
     {
-      id : 6,
+      id: 6,
       title: '클래식 ∙ 전통',
       icon: require('../../assets/drawable/Tradition.png'),
     },
@@ -222,6 +223,7 @@ const Question2 = ({ currentStep, selectedAnswers, onSelectQuestion}) => {
 
   return (
     <View>
+      <View style={{ height: heightPercentage(28) }} />
       <Text style={styles.titleIntroduceText}>어떤 순간에 어울리는 칵테일이 좋을까요?</Text>
       <Text style={styles.description}>한 가지만 선택할 수 있어요.</Text>
 
@@ -241,30 +243,30 @@ const Question2 = ({ currentStep, selectedAnswers, onSelectQuestion}) => {
 };
 
 // 3단계 질문
-const Question3 = ({ currentStep, selectedAnswers, onSelectQuestion}) => {
+const Question3 = ({ currentStep, selectedAnswers, onSelectQuestion }) => {
   const questions = [
     {
-      id : 1,
+      id: 1,
       title: '봄',
       icon: require('../../assets/drawable/Spring.png'),
     },
     {
-      id : 2,
+      id: 2,
       title: '여름',
       icon: require('../../assets/drawable/hotWeather.png'),
     },
     {
-      id : 3,
+      id: 3,
       title: '가을',
       icon: require('../../assets/drawable/Autumn.png'),
     },
     {
-      id : 4,
+      id: 4,
       title: '겨울',
       icon: require('../../assets/drawable/Winter.png'),
     },
     {
-      id : 5,
+      id: 5,
       title: '계절은 상관없어요',
       icon: require('../../assets/drawable/None.png'),
     },
@@ -272,6 +274,7 @@ const Question3 = ({ currentStep, selectedAnswers, onSelectQuestion}) => {
 
   return (
     <View>
+      <View style={{ height: heightPercentage(28) }} />
       <Text style={styles.titleIntroduceText}>계절도 함께 반영해드릴까요?</Text>
       <Text style={styles.description}>한 가지만 선택할 수 있어요.</Text>
 
@@ -293,35 +296,35 @@ const Question3 = ({ currentStep, selectedAnswers, onSelectQuestion}) => {
 };
 
 // 4단계 질문
-const Question4 = ({ currentStep, selectedAnswers, onSelectQuestion}) => {
+const Question4 = ({ currentStep, selectedAnswers, onSelectQuestion }) => {
 
   const questions = [
     {
-      id : 1,
+      id: 1,
       title: '라이트',
       subTitle: '달콤하고 가볍게 누구나 즐길 수 있는 칵테일',
       icon: require('../../assets/drawable/lightCocktail.png'),
     },
     {
-      id : 2,
+      id: 2,
       title: '스탠다드',
       subTitle: '기본에 충실해 언제 마셔도 무난한 칵테일',
       icon: require('../../assets/drawable/StandardCocktail.png'),
     },
     {
-      id : 3,
+      id: 3,
       title: '스페셜',
       subTitle: '조금 색다른 조합으로 매력적인 칵테일',
       icon: require('../../assets/drawable/SpecialCocktail.png'),
     },
     {
-      id : 4,
+      id: 4,
       title: '스트롱',
       subTitle: '강렬한 맛과 향이 깊은 여운을 남기는 칵테일',
       icon: require('../../assets/drawable/StrongCocktail.png'),
     },
     {
-      id : 5,
+      id: 5,
       title: '클래식',
       subTitle: '시간이 지나도 사랑받는 정통 스타일의 칵테일',
       icon: require('../../assets/drawable/ClassicCocktail.png'),
@@ -330,6 +333,7 @@ const Question4 = ({ currentStep, selectedAnswers, onSelectQuestion}) => {
 
   return (
     <View>
+      <View style={{ height: heightPercentage(28) }} />
       <Text style={styles.titleIntroduceText}>어떤 스타일을 시도해보고 싶으세요?</Text>
       <Text style={styles.description}>한 가지만 선택할 수 있어요.</Text>
 
@@ -350,23 +354,23 @@ const Question4 = ({ currentStep, selectedAnswers, onSelectQuestion}) => {
 };
 
 // 5단계 질문
-const Question5 = ({ currentStep, selectedAnswers, onSelectQuestion}) => {
+const Question5 = ({ currentStep, selectedAnswers, onSelectQuestion }) => {
 
   const questions = [
     {
-      id : 1,
+      id: 1,
       title: '약함 (ABV 5-12%)',
       subTitle: '와인·스프리츠 계열, 부담 없는 도수',
       icon: require('../../assets/drawable/weakWine.png'),
     },
     {
-      id : 2,
+      id: 2,
       title: '보통 (ABV 13-25%)',
       subTitle: '하이볼·진토닉, 가장 대중적인 도수',
       icon: require('../../assets/drawable/normalWine.png'),
     },
     {
-      id : 3,
+      id: 3,
       title: '강함 (ABV 26% 이상)',
       subTitle: '조위스키·진 베이스의 클래식 칵테일',
       icon: require('../../assets/drawable/strongWine.png'),
@@ -375,6 +379,7 @@ const Question5 = ({ currentStep, selectedAnswers, onSelectQuestion}) => {
 
   return (
     <View>
+      <View style={{ height: heightPercentage(28) }} />
       <Text style={styles.titleIntroduceText}>마지막으로, 어느 정도 도수가 좋으세요?</Text>
       <Text style={styles.description}>한 가지만 선택할 수 있어요.</Text>
       {questions.map((question) => (
@@ -394,7 +399,7 @@ const Question5 = ({ currentStep, selectedAnswers, onSelectQuestion}) => {
 };
 
 
-const QuestionBox = ({id, currentId, icon, title, subTitle, step, onPress }) => {
+const QuestionBox = ({ id, currentId, icon, title, subTitle, step, onPress }) => {
 
   let boxStyle = styles.commonInnerBox;
 
@@ -409,12 +414,12 @@ const QuestionBox = ({id, currentId, icon, title, subTitle, step, onPress }) => 
 
         <Image source={icon} style={styles.icon} />
 
-          <View>
-            <Text style={styles.question}>{title}</Text>
-            {subTitle !== '' && subTitle !== undefined && subTitle !== null && (
-              <Text style={styles.subquestion}>{subTitle}</Text>
-            )}
-          </View>
+        <View>
+          <Text style={styles.question}>{title}</Text>
+          {subTitle !== '' && subTitle !== undefined && subTitle !== null && (
+            <Text style={styles.subquestion}>{subTitle}</Text>
+          )}
+        </View>
 
       </View>
     </TouchableOpacity>
@@ -470,19 +475,19 @@ const styles = StyleSheet.create({
 
   centralContainer: {
     paddingHorizontal: heightPercentage(20),
-    marginBottom: heightPercentage(120)
+    marginBottom: heightPercentage(120),
   },
 
   question: {
+    fontFamily: 'Pretandard-SemiBold',
     fontSize: fontPercentage(16),
-    fontWeight: '500',
     color: '#1B1B1B',
     marginLeft: widthPercentage(12),
   },
 
   subquestion: {
     fontSize: fontPercentage(12),
-    fontWeight: '300',
+    fontFamily: 'Pretandard-SemiBold',
     color: '#616161',
     marginLeft: widthPercentage(12),
   },
@@ -512,7 +517,7 @@ const styles = StyleSheet.create({
   confirmButtonText: {
     fontSize: fontPercentage(16),
     color: '#FFFFFF',
-    fontWeight: '500',
+    fontFamily: 'Pretandard-SemiBold',
     textAlign: 'center',
   },
 
@@ -521,21 +526,22 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#fffcf3',
-    bottom: 52
+    backgroundColor: '#FFFFFF',
+    bottom: 40,
   },
 
   titleIntroduceText: {
+
     fontSize: fontPercentage(20),
     color: '#1B1B1B',
-    fontWeight: '600',
+    fontFamily: 'Pretandard-SemiBold',
     textAlign: 'center',
   },
 
   description: {
     fontSize: fontPercentage(14),
     color: '#BDBDBD',
-    fontWeight: '500',
+    fontFamily: 'Pretandard-SemiBold',
     textAlign: 'center',
     paddingBottom: heightPercentage(20),
   },
