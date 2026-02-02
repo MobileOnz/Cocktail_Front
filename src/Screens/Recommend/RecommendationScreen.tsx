@@ -526,7 +526,7 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#fffcf3',
+    backgroundColor: '#FFFFFF',
     bottom: 40,
   },
 

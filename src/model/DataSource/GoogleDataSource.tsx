@@ -13,8 +13,8 @@ export class GoogleAuthDataSource implements ISocialAuthDataSource {
 
       try { await GoogleSignin.signOut(); } catch (e) { }
 
-      const userInfo = await GoogleSignin.signIn();
-      console.log('1. 구글 유저 정보 획득 성공:', userInfo.user.email);
+      await GoogleSignin.signIn();
+
 
       const auth = await GoogleSignin.getTokens();
       const accessToken = auth.accessToken;
