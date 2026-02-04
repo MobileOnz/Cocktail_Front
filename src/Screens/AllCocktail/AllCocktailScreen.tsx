@@ -120,6 +120,7 @@ const AllCocktailScreen = ({ navigation }: Props) => {
                             name={item.name}
                             type={item.type}
                             image={item.image}
+                            bookmarked={item.isBookmarked}
                             onPress={() =>
                                 navigation.navigate('CocktailDetailScreen', {
                                     cocktailId: item.id,

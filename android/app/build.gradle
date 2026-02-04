@@ -87,8 +87,8 @@ android {
         applicationId "com.cocktail_front"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 3
-        versionName "1.0"
+        versionCode 5
+        versionName "2.0"
          manifestPlaceholders = [
         appAuthRedirectScheme: "com.googleusercontent.apps.1058340377075-vt8u6qabph0f0van79eqhkt9j2f1jkbe"
     ]
@@ -100,6 +100,13 @@ android {
             keyAlias 'androiddebugkey'
             keyPassword 'android'
         }
+        release {
+      
+        storeFile file('my-release-key.jks') 
+        storePassword 'zkzkqp7799!!'
+        keyAlias 'my-key-alias'
+        keyPassword 'zkzkqp7799!!'
+    }
     }
     buildTypes {
         debug {
@@ -109,12 +116,13 @@ android {
         ]
         }
         release {
+            
              manifestPlaceholders = [
             appAuthRedirectScheme: "com.googleusercontent.apps.1058340377075-vt8u6qabph0f0van79eqhkt9j2f1jkbe"
         ]
             // Caution! In production, you need to generate your own keystore file.
             // see https://reactnative.dev/docs/signed-apk-android.
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.release
             minifyEnabled true
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }

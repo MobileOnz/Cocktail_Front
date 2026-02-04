@@ -7,6 +7,7 @@ import { AuthError, AuthErrorType } from '../../model/domain/AuthError';
 import { AuthRemoteDataSource } from '../../model/DataSource/AuthRemoteDataSource';
 import { SignUpRequest } from '../../model/domain/SignupRequest';
 import { AuthRepository } from '../../model/repository/AuthRepository';
+import { AppleDataSource } from '../../model/DataSource/AppleDataSource';
 
 const SignUpViewModel = () => {
   const repository = useMemo(
@@ -15,7 +16,9 @@ const SignUpViewModel = () => {
         new NaverAuthDataSource(),
         new GoogleAuthDataSource(),
         new KakaoAuthDataSource(),
+        new AppleDataSource(),
         new AuthRemoteDataSource(),
+
       ),
     []
   );

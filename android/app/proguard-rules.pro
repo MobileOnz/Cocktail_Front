@@ -9,11 +9,19 @@
 
 -keep public class com.navercorp.nid.** { *; }
 
+-keepattributes Signature, EnclosingMethod, AnnotationDefault, InnerClasses
+-keep class com.google.gson.** { *; }
 
+
+-keep class com.kakao.sdk.**.model.** { <fields>; }
+-keep class com.kakao.sdk.**.entity.** { *; }
+-keep interface com.kakao.sdk.** { *; }
+-dontwarn com.kakao.sdk.**
 # Add any project specific keep options here:
 
+-keep class com.navercorp.nid.** { *; }
 -keep class com.nhn.android.naverlogin.** { *; }
--keep interface com.nhn.android.naverlogin.** { *; }
+-dontwarn com.navercorp.nid.**
 -dontwarn com.nhn.android.naverlogin.**
 
 # React Native Reanimated
