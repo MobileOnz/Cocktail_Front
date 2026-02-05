@@ -68,6 +68,7 @@ const SignupScreen: React.FC<SignupScreenProps> = ({ navigation }) => {
     }
   };
 
+  
   //필수만 bold 처리
   const textBoldChange = (text: string) => {
     const boldText = text.slice(0, 4);
