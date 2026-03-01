@@ -1,7 +1,6 @@
 import UIKit
 import React
 import React_RCTAppDelegate
-import ReactAppDependencyProvider
 import GoogleMaps
 import FirebaseCore
 import NaverThirdPartyLogin // ✅ 네이버 SDK import
@@ -16,7 +15,6 @@ class AppDelegate: RCTAppDelegate {
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil
   ) -> Bool {
     self.moduleName = "Cocktail_Front"
-    self.dependencyProvider = RCTAppDependencyProvider()
 
     GMSServices.provideAPIKey("AIzaSyDeVQ2wHr3QIavBa4RGYwZly8h0sNTfLmQ")
     self.initialProps = [:]
