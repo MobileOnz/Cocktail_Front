@@ -3,7 +3,7 @@ import { CocktailGuideRepository } from '../../model/repository/CocktailGuideRep
 import { CocktailGuideDataSource } from '../../model/DataSource/CocktailGuideDataSource';
 import { GuideSummary } from '../../model/domain/GuideSummary';
 import { Guide } from '../../model/domain/GuideDetail';
-import { stay3sViewGuidedetail, viewPageGuidedetail } from '../../analytics/eventProperty';
+import { stay3sViewGuidedetail, viewPageGuidedetail, completePageGuidedetail } from '../../analytics/eventProperty';
 
 const GuideDetailViewModel = () => {
     const repository = useMemo(
@@ -63,12 +63,21 @@ const GuideDetailViewModel = () => {
         });
     };
 
+    const completePageGuideDetail = (guide: Guide) => {
+        completePageGuidedetail({
+            guideId: guide?.part!,
+            guideTitle: guide?.title!,
+            guideType: `part${getPart(guide?.part!)}`,
+            entryOrigin: 'guide_home',
+        });
+    };
+
     const getPart = (value: number) => {
         return Math.floor(value / 100);
     };
 
     return {
-        guideList, getGuideList, loading, getGuideDetail, guideDetail, stay3sViewGuideDetail,
+        guideList, getGuideList, loading, getGuideDetail, guideDetail, stay3sViewGuideDetail, completePageGuideDetail,
     };
 };
 

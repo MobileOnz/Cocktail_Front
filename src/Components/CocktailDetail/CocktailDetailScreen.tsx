@@ -1,5 +1,5 @@
 // CocktailDetailScreen.tsx
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Image, ScrollView, Text, View, StyleSheet, Pressable, TouchableOpacity } from 'react-native';
 import { ActivityIndicator, Divider } from 'react-native-paper';
@@ -42,6 +42,18 @@ export function CocktailDetailScreen({ route }: Props) {
   const navigation = useNavigation<any>();
 
   const vm = useCocktailDetailViewModel(cocktailId);
+  const stay10sTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    if (!vm.detail) {return;}
+    stay10sTimerRef.current = setTimeout(() => {
+      vm.trackStay10s('cocktail_detail');
+    }, 10000);
+    return () => {
+      if (stay10sTimerRef.current) {clearTimeout(stay10sTimerRef.current);}
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [vm.detail]);
 
   //  로딩 상태
   if (vm.loading) {
