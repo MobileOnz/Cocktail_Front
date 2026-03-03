@@ -1,13 +1,13 @@
 import { useMemo } from 'react';
-import { NaverAuthDataSource } from '../../model/DataSource/NaverDataSource';
-import { GoogleAuthDataSource } from '../../model/DataSource/GoogleDataSource';
-import { KakaoAuthDataSource } from '../../model/DataSource/KakaoDataSource';
+import { NaverAuthDataSource } from '../../../model/DataSource/NaverDataSource';
+import { GoogleAuthDataSource } from '../../../model/DataSource/GoogleDataSource';
+import { KakaoAuthDataSource } from '../../../model/DataSource/KakaoDataSource';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { AuthError, AuthErrorType } from '../../model/domain/AuthError';
-import { AuthRemoteDataSource } from '../../model/DataSource/AuthRemoteDataSource';
-import { SignUpRequest } from '../../model/domain/SignupRequest';
-import { AuthRepository } from '../../model/repository/AuthRepository';
-import { AppleDataSource } from '../../model/DataSource/AppleDataSource';
+import { AuthError, AuthErrorType } from '../../../model/domain/AuthError';
+import { AuthRemoteDataSource } from '../../../model/DataSource/AuthRemoteDataSource';
+import { SignUpRequest } from '../../../model/domain/SignupRequest';
+import { AuthRepository } from '../../../model/repository/AuthRepository';
+import { AppleDataSource } from '../../../model/DataSource/AppleDataSource';
 
 const SignUpViewModel = () => {
   const repository = useMemo(

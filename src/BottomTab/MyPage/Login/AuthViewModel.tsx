@@ -1,12 +1,12 @@
 import { useMemo } from 'react';
-import { AuthRepository } from '../../model/repository/AuthRepository';
-import { NaverAuthDataSource } from '../../model/DataSource/NaverDataSource';
-import { GoogleAuthDataSource } from '../../model/DataSource/GoogleDataSource';
-import { KakaoAuthDataSource } from '../../model/DataSource/KakaoDataSource';
+import { AuthRepository } from '../../../model/repository/AuthRepository';
+import { NaverAuthDataSource } from '../../../model/DataSource/NaverDataSource';
+import { GoogleAuthDataSource } from '../../../model/DataSource/GoogleDataSource';
+import { KakaoAuthDataSource } from '../../../model/DataSource/KakaoDataSource';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { AuthError, AuthErrorType } from '../../model/domain/AuthError';
-import { AuthRemoteDataSource } from '../../model/DataSource/AuthRemoteDataSource';
-import { AppleDataSource } from '../../model/DataSource/AppleDataSource';
+import { AuthError, AuthErrorType } from '../../../model/domain/AuthError';
+import { AuthRemoteDataSource } from '../../../model/DataSource/AuthRemoteDataSource';
+import { AppleDataSource } from '../../../model/DataSource/AppleDataSource';
 
 const AuthViewModel = () => {
   const repository = useMemo(

@@ -67,7 +67,7 @@ export default function CocktailCard({
 
 const styles = StyleSheet.create({
   container: {
-    width: 160,
+    width: widthPercentage(160),
     alignItems: 'center',
   },
   card: {
