@@ -2,11 +2,11 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, ImageBackground, Platform } from 'react-native';
 import { StackScreenProps } from '@react-navigation/stack';
-import { heightPercentage, widthPercentage, fontPercentage } from '../../assets/styles/FigmaScreen';
-import { RootStackParamList } from '../../Navigation/Navigation';
-import { useToast } from '../../Components/ToastContext';
+import { heightPercentage, widthPercentage, fontPercentage } from '../../../assets/styles/FigmaScreen';
+import { RootStackParamList } from '../../../Navigation/Navigation';
+import { useToast } from '../../../Components/ToastContext';
 import AuthViewModel from './AuthViewModel';
-import { AuthError, AuthErrorType } from '../../model/domain/AuthError';
+import { AuthError, AuthErrorType } from '../../../model/domain/AuthError';
 type LoginScreenProps = StackScreenProps<RootStackParamList, 'Login'>;
 
 const LoginScreen: React.FC<LoginScreenProps> = ({ navigation, route }) => {
@@ -264,7 +264,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation, route }) => {
 
   return (
     <ImageBackground
-      source={require('../../assets/drawable/mainBg.png')}
+      source={require('../../../assets/drawable/mainBg.png')}
       style={styles.background}
       resizeMode="cover"
     >
@@ -275,7 +275,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation, route }) => {
           onPress={() => navigation.goBack()}
         >
           <Image
-            source={require('../../assets/drawable/CloseCircle.png')}
+            source={require('../../../assets/drawable/CloseCircle.png')}
             style={styles.closeIcon}
           />
         </TouchableOpacity>
@@ -289,14 +289,14 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation, route }) => {
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.loginButton} onPress={kakaoLogin}>
             <Image
-              source={require('../../assets/drawable/kakao_button.png')}
+              source={require('../../../assets/drawable/kakao_button.png')}
               style={styles.buttonImage}
             />
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.loginButton} onPress={naverLogin}>
             <Image
-              source={require('../../assets/drawable/naver_button.png')}
+              source={require('../../../assets/drawable/naver_button.png')}
               style={styles.buttonImage}
             />
           </TouchableOpacity>
@@ -309,7 +309,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation, route }) => {
               onPress={googleLogin}
             >
               <Image
-                source={require('../../assets/drawable/google_button.png')}
+                source={require('../../../assets/drawable/google_button.png')}
                 style={styles.buttonImage}
               />
             </TouchableOpacity>
@@ -322,7 +322,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation, route }) => {
               onPress={appleLogin}
             >
               <Image
-                source={require('../../assets/drawable/Apple_login.png')}
+                source={require('../../../assets/drawable/Apple_login.png')}
                 style={styles.buttonImage}
               />
             </TouchableOpacity>

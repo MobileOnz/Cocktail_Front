@@ -12,18 +12,18 @@ import {
   heightPercentage,
   widthPercentage,
   fontPercentage,
-} from '../../assets/styles/FigmaScreen';
+} from '../../../assets/styles/FigmaScreen';
 // import { RouteProp, useRoute } from '@react-navigation/native';
-import { RootStackParamList } from '../../Navigation/Navigation';
+import { RootStackParamList } from '../../../Navigation/Navigation';
 // import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StackScreenProps } from '@react-navigation/stack';
 // import instance from '../../tokenRequest/axios_interceptor';
 import { Divider } from 'react-native-paper';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import SignUpViewModel from './SignUpViewModel';
-import { SignUpRequest } from '../../model/domain/SignupRequest';
+import { SignUpRequest } from '../../../model/domain/SignupRequest';
 import DeviceInfo from 'react-native-device-info';
-import { useToast } from '../../Components/ToastContext';
+import { useToast } from '../../../Components/ToastContext';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 // const server = API_BASE_URL;
@@ -135,7 +135,7 @@ const SignupScreen: React.FC<SignupScreenProps> = ({ navigation }) => {
     <SafeAreaView edges={['top']} style={styles.container} >
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Image source={require('../../assets/drawable/left-chevron.png')} style={styles.backIcon} />
+          <Image source={require('../../../assets/drawable/left-chevron.png')} style={styles.backIcon} />
         </TouchableOpacity>
         <View style={styles.backIcon} />
       </View>
@@ -160,7 +160,7 @@ const SignupScreen: React.FC<SignupScreenProps> = ({ navigation }) => {
           {nickname.length > 0 && (
             <TouchableOpacity onPress={() => setNickname('')}>
               <Image
-                source={require('../../assets/drawable/close.png')}
+                source={require('../../../assets/drawable/close.png')}
                 style={styles.clearIcon}
               />
             </TouchableOpacity>
@@ -195,7 +195,7 @@ const SignupScreen: React.FC<SignupScreenProps> = ({ navigation }) => {
 
             <View style={styles.modalHeader}>
               <TouchableOpacity onPress={() => setModalVisible(false)}>
-                <Image source={require('../../assets/drawable/close.png')} style={styles.closeIcon} tintColor={'#000000ff'} />
+                <Image source={require('../../../assets/drawable/close.png')} style={styles.closeIcon} tintColor={'#000000ff'} />
               </TouchableOpacity>
               <View style={styles.backIcon} />
             </View>
@@ -209,8 +209,8 @@ const SignupScreen: React.FC<SignupScreenProps> = ({ navigation }) => {
                 <Image
                   source={
                     agreements.all
-                      ? require('../../assets/drawable/checkbox_checked.png')
-                      : require('../../assets/drawable/checkbox_unchecked.png')
+                      ? require('../../../assets/drawable/checkbox_checked.png')
+                      : require('../../../assets/drawable/checkbox_unchecked.png')
                   }
                   style={styles.checkbox}
                 />
@@ -231,15 +231,15 @@ const SignupScreen: React.FC<SignupScreenProps> = ({ navigation }) => {
                     <Image
                       source={
                         agreements[key as keyof typeof agreements]
-                          ? require('../../assets/drawable/checkbox_checked.png')
-                          : require('../../assets/drawable/checkbox_unchecked.png')
+                          ? require('../../../assets/drawable/checkbox_checked.png')
+                          : require('../../../assets/drawable/checkbox_unchecked.png')
                       }
                       style={styles.checkbox}
                     />
                     {textBoldChange(text)}
                     <TouchableOpacity onPress={() => toggleDetails(key as keyof typeof detailsVisible)}>
                       <Image
-                        source={require('../../assets/drawable/right-chevron.png')}
+                        source={require('../../../assets/drawable/right-chevron.png')}
                         style={[
                           styles.arrowIcon,
                           detailsVisible[key as keyof typeof detailsVisible] && styles.arrowRotated,
@@ -470,8 +470,8 @@ export default SignupScreen;
 //     <Image
 //       source={
 //         agreements.all
-//           ? require('../../assets/drawable/checkbox_checked.png')
-//           : require('../../assets/drawable/checkbox_unchecked.png')
+//           ? require('../../../assets/drawable/checkbox_checked.png')
+//           : require('../../../assets/drawable/checkbox_unchecked.png')
 //       }
 //       style={styles.checkbox}
 //     />
@@ -493,15 +493,15 @@ export default SignupScreen;
 //         <Image
 //           source={
 //             agreements[key as keyof typeof agreements]
-//               ? require('../../assets/drawable/checkbox_checked.png')
-//               : require('../../assets/drawable/checkbox_unchecked.png')
+//               ? require('../../../assets/drawable/checkbox_checked.png')
+//               : require('../../../assets/drawable/checkbox_unchecked.png')
 //           }
 //           style={styles.checkbox}
 //         />
 //         {textBoldChange(text)}
 //         <TouchableOpacity onPress={() => toggleDetails(key as keyof typeof detailsVisible)}>
 //           <Image
-//             source={require('../../assets/drawable/chevron.png')}
+//             source={require('../../../assets/drawable/chevron.png')}
 //             style={[
 //               styles.arrowIcon,
 //               detailsVisible[key as keyof typeof detailsVisible] && styles.arrowRotated,

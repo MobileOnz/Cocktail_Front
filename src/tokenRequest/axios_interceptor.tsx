@@ -4,8 +4,11 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-toast-message';
 
+const BASE_URL = API_BASE_URL || 'http://onz-cocktail.kr/onz';
+console.log('[Axios] BASE_URL:', BASE_URL);
+
 const instance = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: BASE_URL,
   timeout: 10000,
 });
 

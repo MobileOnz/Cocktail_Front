@@ -5,10 +5,10 @@ import {
   Image,
   ScrollView,
   FlatList,
-  Dimensions,
   TouchableOpacity,
   StatusBar,
   Animated,
+  useWindowDimensions,
 } from 'react-native';
 import { Appbar, Divider, Text } from 'react-native-paper';
 import theme from '../../assets/styles/theme';
@@ -30,6 +30,7 @@ const Home = () => {
 
   const [pageIndex, setPageIndex] = useState(0);
   const navigation = useNavigation<any>();
+  const { width: windowWidth } = useWindowDimensions();
 
   const vm = useHomeViewModel();
 
@@ -161,7 +162,7 @@ const Home = () => {
             removeClippedSubviews={false}
             ItemSeparatorComponent={() => <View style={{ width: widthPercentage(10) }} />}
             contentContainerStyle={{ paddingHorizontal: 16 }}
-
+            style={{ height: heightPercentage(210) }}
             keyExtractor={item => String(item.id)}
             windowSize={3}
             horizontal
@@ -250,7 +251,7 @@ const Home = () => {
             </TouchableOpacity>
           </View>
           <PagerView
-            style={styles.pagerView}
+            style={[styles.pagerView, { width: windowWidth }]}
             initialPage={0}
             onPageSelected={e => setPageIndex(e.nativeEvent.position)}
           >
@@ -315,6 +316,7 @@ const Home = () => {
           data={vm.refreshList}
           extraData={vm.refreshList}
           horizontal
+          style={{ height: heightPercentage(220) + 40 }}
           ItemSeparatorComponent={() => <View style={{ width: widthPercentage(10) }} />}
           contentContainerStyle={{ paddingHorizontal: 16 }}
           keyExtractor={item => String(item.id)}
@@ -345,6 +347,7 @@ const Home = () => {
           data={vm.beginnerList}
           extraData={vm.beginnerList}
           horizontal
+          style={{ height: heightPercentage(220) + 40 }}
           keyExtractor={item => String(item.id)}
           ItemSeparatorComponent={() => <View style={{ width: widthPercentage(10) }} />}
           contentContainerStyle={{ paddingHorizontal: 16 }}
@@ -375,9 +378,9 @@ const Home = () => {
           data={vm.intermediateList}
           extraData={vm.intermediateList}
           horizontal
+          style={{ height: heightPercentage(220) + 40 }}
           ItemSeparatorComponent={() => <View style={{ width: widthPercentage(10) }} />}
           contentContainerStyle={{ paddingHorizontal: 16 }}
-
           keyExtractor={item => String(item.id)}
           showsHorizontalScrollIndicator={false}
           renderItem={({ item }) => (
@@ -584,8 +587,7 @@ const styles = StyleSheet.create({
     top: 15,
   },
   pagerView: {
-    width: Dimensions.get('window').width,
-    height: 3 * 78,
+    height: heightPercentage(3 * 78),
   },
   pagerPage: {
     paddingTop: 4,
