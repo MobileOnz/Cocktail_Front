@@ -28,7 +28,7 @@ interface Props {
 const GuideDetailScreen: React.FC<Props> = ({ navigation, route}) => {
     const {id, title } = route.params;
     const [ currentPage, setCurrentPage] = useState(0);
-    const { getGuideDetail, guideDetail, loading, stay3sViewGuideDetail } = GuideDetailViewModel();
+    const { getGuideDetail, guideDetail, loading, stay3sViewGuideDetail, completePageGuideDetail } = GuideDetailViewModel();
 
     // 공유
     const handleSharePress = () => {
@@ -53,6 +53,15 @@ const GuideDetailScreen: React.FC<Props> = ({ navigation, route}) => {
       };
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [guideDetail]);
+
+    useEffect(() => {
+      if (!guideDetail) {return;}
+      const lastPage = guideDetail.details.length - 1;
+      if (currentPage === lastPage) {
+        completePageGuideDetail(guideDetail);
+      }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [currentPage, guideDetail]);
 
     if (loading) {
       return (

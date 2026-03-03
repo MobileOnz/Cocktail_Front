@@ -34,7 +34,18 @@ export function startStay3sCocktailDetail(params: {
         cocktail_name: params.cocktailName,
         entry_origin: params.entryOrigin,
     });
+}
 
+export function stay10sPageCocktailDetail(params: {
+    cocktailId: number;
+    cocktailName: string;
+    entryOrigin: string;
+}) {
+    track('stay10s_page_cocktaildetail', {
+        cocktail_id: params.cocktailId,
+        cocktail_name: params.cocktailName,
+        entry_origin: params.entryOrigin,
+    });
 }
 
 // 칵테일 추천
@@ -60,7 +71,7 @@ export function viewPageRecommend(params: {
     answerQ4Code: string;
     answerQ5Code: string;
 }) {
-    track('stay3s_view_cocktaildetail', {
+    track('view_page_recommend', {
         recommend_flow_id: params.recommendFlowId,
         answer_q1_code: params.answerQ1Code,
         answer_q2_code: params.answerQ2Code,
@@ -83,6 +94,7 @@ export function clickCtaRecommendresult(params: {
 }) {
     track('click_cta_recommendresult', {
         cocktail_id: params.cocktailId,
+        cocktail_name: params.cocktailName,
         answer_q1_code: params.answerQ1Code,
         answer_q2_code: params.answerQ2Code,
         answer_q3_code: params.answerQ3Code,
@@ -121,5 +133,18 @@ export function stay3sViewGuidedetail(params: {
         guide_type: params.guideType,
         entry_origin: params.entryOrigin,
     });
+}
 
+export function completePageGuidedetail(params: {
+    guideId: number;
+    guideTitle: string;
+    guideType: string;
+    entryOrigin: string;
+}) {
+    track('complete_page_guidedetail', {
+        guide_id: params.guideId,
+        guide_title: params.guideTitle,
+        guide_type: params.guideType,
+        entry_origin: params.entryOrigin,
+    });
 }

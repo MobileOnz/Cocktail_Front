@@ -7,6 +7,7 @@ import instance from '../../tokenRequest/axios_interceptor';
 import { useNavigation } from '@react-navigation/native';
 import { getToken } from '../../tokenRequest/Token';
 import Toast from 'react-native-toast-message';
+import perf from '@react-native-firebase/perf';
 
 
 type UseSearchResultDeps = {
@@ -82,7 +83,8 @@ export const useHomeViewModel = (deps?: UseSearchResultDeps) => {
   };
 
   const fetchHomeData = useCallback(async () => {
-
+    const trace = await perf().newTrace('HomeScreen_Load');
+    await trace.start();
     setLoading(true);
     setError(null);
     try {
@@ -118,9 +120,11 @@ export const useHomeViewModel = (deps?: UseSearchResultDeps) => {
       setRefreshList(refreshData);
       setIntermediateList(intermediateData);
       setBeginnerList(beginnerData);
+      await trace.stop();
     } catch (e) {
       console.log(e);
       setError('데이터 로딩 중 오류가 발생했습니다.');
+      await trace.stop();
     } finally {
       setLoading(false);
     }

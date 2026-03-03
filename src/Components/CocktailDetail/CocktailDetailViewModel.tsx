@@ -7,6 +7,8 @@ import instance from '../../tokenRequest/axios_interceptor';
 
 import Toast from 'react-native-toast-message';
 import { getToken } from '../../tokenRequest/Token';
+import perf from '@react-native-firebase/perf';
+import { stay10sPageCocktailDetail } from '../../analytics/eventProperty';
 
 
 type UseCocktailDetailDeps = {
@@ -39,6 +41,8 @@ const useCocktailDetailViewModel = (id: number, deps?: UseCocktailDetailDeps) =>
 
 
     const fetchDetail = useCallback(async () => {
+        const trace = await perf().newTrace('DetailScreen_Load');
+        await trace.start();
         setLoading(true);
         setError(null);
         const token = await getToken();
@@ -56,15 +60,15 @@ const useCocktailDetailViewModel = (id: number, deps?: UseCocktailDetailDeps) =>
                 setMyReaction(null);
             }
 
-
-
             if (detailData?.style) {
                 const recommendData = await repository.recommendCocktails(detailData.style);
                 setRecommendedCocktails(recommendData);
             }
+            await trace.stop();
         } catch (error) {
             console.log(error);
             setError('에러가 발생했습니다');
+            await trace.stop();
         }
         finally {
             setLoading(false);
@@ -95,6 +99,15 @@ const useCocktailDetailViewModel = (id: number, deps?: UseCocktailDetailDeps) =>
 
             });
         }
+    };
+
+    const trackStay10s = (entryOrigin: string) => {
+        if (!detail) {return;}
+        stay10sPageCocktailDetail({
+            cocktailId: detail.id,
+            cocktailName: detail.korName,
+            entryOrigin,
+        });
     };
 
     const bookmarked = async (cocktailId: number) => {
@@ -142,6 +155,7 @@ const useCocktailDetailViewModel = (id: number, deps?: UseCocktailDetailDeps) =>
         bookmarked,
         handleReaction,
         myReaction,
+        trackStay10s,
     };
 
 };

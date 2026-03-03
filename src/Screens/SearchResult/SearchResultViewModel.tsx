@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { CocktailCard } from '../../model/domain/CocktailCard';
 import axios from 'axios';
+import perf from '@react-native-firebase/perf';
 import { di } from '../../DI/Container';
 import { ISearchRepository } from '../../model/repository/SearchRepository';
 import { DEFAULT_FILTER, FilterState } from '../../Components/BottomSheet/FilterBottomSheet/FilterBottomSheetViewModel';
@@ -19,6 +20,8 @@ const useSearchResultViewModel = (keyword: string, deps?: UseSearchResultDeps) =
 
 
     const fetchResult = useCallback(async (filter?: FilterState) => {
+        const trace = await perf().newTrace('SearchResult_Load');
+        await trace.start();
         setLoading(true);
         setError(null);
         if (filter) { setAppliedFilter(filter); }
@@ -40,7 +43,9 @@ const useSearchResultViewModel = (keyword: string, deps?: UseSearchResultDeps) =
             );
 
             setResults(data);
+            await trace.stop();
         } catch (error) {
+            await trace.stop();
             if (axios.isAxiosError(error)) {
                 console.log(' AxiosError message:', error.message);
                 console.log(' AxiosError code:', error.code);
