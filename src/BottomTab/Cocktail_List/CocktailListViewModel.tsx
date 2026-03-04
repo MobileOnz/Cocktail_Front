@@ -70,17 +70,15 @@ export const useHomeViewModel = (deps?: UseSearchResultDeps) => {
     }
   };
 
-  const handleScroll = (event: any) => {
+  const handleScroll = useCallback((event: any) => {
     const offsetY = event.nativeEvent.contentOffset.y;
-
     const isTop = offsetY <= 10;
-
     if (!isTop && !isScrolled) {
       setIsScrolled(true);
     } else if (isTop && isScrolled) {
       setIsScrolled(false);
     }
-  };
+  }, [isScrolled]);
 
   const fetchHomeData = useCallback(async () => {
     const trace = await perf().newTrace('HomeScreen_Load');

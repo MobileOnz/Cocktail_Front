@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -10,6 +10,8 @@ import {
   Animated,
   useWindowDimensions,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import FastImage from 'react-native-fast-image';
 import { Appbar, Divider, Text } from 'react-native-paper';
 import theme from '../../assets/styles/theme';
 import { fontPercentage, heightPercentage, widthPercentage } from '../../assets/styles/FigmaScreen';
@@ -33,6 +35,9 @@ const Home = () => {
   const { width: windowWidth } = useWindowDimensions();
 
   const vm = useHomeViewModel();
+  const insets = useSafeAreaInsets();
+  // 탭바 높이(58) + 탭바 bottom(insets.bottom + 12) + 여유 여백(16)
+  const tabBarSpace = heightPercentage(58) + insets.bottom + 12 + 16;
 
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -62,8 +67,48 @@ const Home = () => {
       result.push(vm.newCocktail.slice(i, i + 3));
     }
     return result;
-
   }, [vm.newCocktail]);
+
+  const renderBestItem = useCallback(({ item, index }: { item: any; index: number }) => (
+    <TouchableOpacity
+      activeOpacity={0.8}
+      onPress={() => navigation.navigate('CocktailDetailScreen', { cocktailId: item.id })}
+    >
+      <View style={styles.card}>
+        <PuzzlePiece uri={item.image} size={210} />
+        <View style={styles.bestRankWrapper}>
+          <Text style={styles.bestRankText}>{index + 1}</Text>
+        </View>
+        <View style={styles.bestTitleWrapper}>
+          <Text style={styles.bestTitleText}>
+            {truncate(item.name, { length: 7, omission: '...' })}
+          </Text>
+        </View>
+        <TouchableOpacity style={styles.bestBookmarkButton} onPress={() => vm.bookmarked(item.id)}>
+          <Image
+            source={item.isBookmarked
+              ? require('../../assets/drawable/full_save.png')
+              : require('../../assets/drawable/save.png')}
+            style={item.isBookmarked ? { width: 20, height: 20, tintColor: '#FFF' } : { width: 20, height: 20 }}
+            resizeMode="contain"
+          />
+        </TouchableOpacity>
+      </View>
+    </TouchableOpacity>
+  ), [navigation, vm.bookmarked]);
+
+  const renderCocktailCard = useCallback(({ item }: { item: any }) => (
+    <CocktailCard
+      id={item.id}
+      name={item.name}
+      image={item.image}
+      type={item.type}
+      bookmarked={item.isBookmarked}
+      onPress={() => navigation.navigate('CocktailDetailScreen', { cocktailId: item.id })}
+      onToggleBookmark={() => vm.bookmarked(item.id)}
+    />
+  ), [navigation, vm.bookmarked]);
+
   return (
     <View style={styles.container}>
 
@@ -133,10 +178,10 @@ const Home = () => {
           <View style={styles.mainImageShadow}>
 
             <View style={styles.mainImageClip}>
-              <Image
-                source={{ uri: vm.randomCocktail?.image }}
+              <FastImage
+                source={{ uri: vm.randomCocktail?.image, priority: FastImage.priority.high }}
                 style={styles.mainImage}
-                resizeMode="cover"
+                resizeMode={FastImage.resizeMode.cover}
               />
               <LinearGradient
                 colors={['transparent', 'rgba(0,0,0,0.8)']}
@@ -167,52 +212,7 @@ const Home = () => {
             windowSize={3}
             horizontal
             showsHorizontalScrollIndicator={false}
-            renderItem={({ item, index }) => (
-
-              <TouchableOpacity
-                key={item.id}
-                activeOpacity={0.8}
-                onPress={() =>
-                  navigation.navigate('CocktailDetailScreen', {
-                    cocktailId: item.id,
-                  })
-                }
-              >
-                <View style={styles.card}>
-                  <PuzzlePiece uri={item.image} size={210} />
-
-                  {/* 랭크 */}
-                  <View style={styles.bestRankWrapper}>
-                    <Text style={styles.bestRankText}>{index + 1}</Text>
-                  </View>
-
-                  {/* 제목 */}
-                  <View style={styles.bestTitleWrapper}>
-                    <Text style={styles.bestTitleText}>
-                      {truncate(item.name, { length: 7, omission: '...' })}
-                    </Text>
-                  </View>
-
-                  {/* 북마크 아이콘 */}
-                  <TouchableOpacity
-                    style={styles.bestBookmarkButton}
-                    onPress={() => vm.bookmarked(item.id)}
-                  >
-                    <Image
-                      source={
-                        item.isBookmarked
-                          ? require('../../assets/drawable/full_save.png') // 채워진 이미지
-                          : require('../../assets/drawable/save.png')      // 비어있는 이미지
-                      }
-                      style={item.isBookmarked ?
-                        { width: 20, height: 20, tintColor: '#FFF' }
-                        : { width: 20, height: 20 }}
-                      resizeMode="contain"
-                    />
-                  </TouchableOpacity>
-                </View>
-              </TouchableOpacity>
-            )}
+            renderItem={renderBestItem}
           />
         </View>
 
@@ -260,7 +260,11 @@ const Home = () => {
                 {items.map(item => (
                   <View key={item.id} style={styles.newCocktailRow}>
 
-                    <Image source={{ uri: item.image }} style={styles.newCocktailImage} />
+                    <FastImage
+                      source={{ uri: item.image, priority: FastImage.priority.normal }}
+                      style={styles.newCocktailImage}
+                      resizeMode={FastImage.resizeMode.cover}
+                    />
 
                     <TouchableOpacity style={styles.newCocktailTextWrapper}
                       onPress={() => navigation.navigate('CocktailDetailScreen', {
@@ -321,23 +325,7 @@ const Home = () => {
           contentContainerStyle={{ paddingHorizontal: 16 }}
           keyExtractor={item => String(item.id)}
           showsHorizontalScrollIndicator={false}
-          renderItem={({ item }) => (
-            <CocktailCard
-              id={item.id}
-              name={item.name}
-              image={item.image}
-              type={item.type}
-              bookmarked={item.isBookmarked}
-              onPress={() =>
-                navigation.navigate('CocktailDetailScreen', {
-                  cocktailId: item.id,
-                })
-              }
-              onToggleBookmark={() => {
-                vm.bookmarked(item.id);
-              }}
-            />
-          )}
+          renderItem={renderCocktailCard}
         />
 
         <Text variant="bodyLarge" style={[styles.mainText, { marginTop: heightPercentage(48), marginLeft: widthPercentage(16), marginBottom: heightPercentage(16) }]}>
@@ -352,23 +340,7 @@ const Home = () => {
           ItemSeparatorComponent={() => <View style={{ width: widthPercentage(10) }} />}
           contentContainerStyle={{ paddingHorizontal: 16 }}
           showsHorizontalScrollIndicator={false}
-          renderItem={({ item }) => (
-            <CocktailCard
-              id={item.id}
-              name={item.name}
-              image={item.image}
-              type={item.type}
-              bookmarked={item.isBookmarked}
-              onPress={() =>
-                navigation.navigate('CocktailDetailScreen', {
-                  cocktailId: item.id,
-                })
-              }
-              onToggleBookmark={() => {
-                vm.bookmarked(item.id);
-              }}
-            />
-          )}
+          renderItem={renderCocktailCard}
         />
 
         <Text variant="bodyLarge" style={[styles.mainText, { marginTop: heightPercentage(48), marginLeft: widthPercentage(16), marginBottom: heightPercentage(16) }]}>
@@ -383,25 +355,9 @@ const Home = () => {
           contentContainerStyle={{ paddingHorizontal: 16 }}
           keyExtractor={item => String(item.id)}
           showsHorizontalScrollIndicator={false}
-          renderItem={({ item }) => (
-            <CocktailCard
-              id={item.id}
-              name={item.name}
-              image={item.image}
-              type={item.type}
-              bookmarked={item.isBookmarked}
-              onPress={() =>
-                navigation.navigate('CocktailDetailScreen', {
-                  cocktailId: item.id,
-                })
-              }
-              onToggleBookmark={() => {
-                vm.bookmarked(item.id);
-              }}
-            />
-          )}
+          renderItem={renderCocktailCard}
         />
-        <View style={{ height: heightPercentage(180) }} />
+        <View style={{ height: tabBarSpace }} />
       </ScrollView>
     </View>
   );
