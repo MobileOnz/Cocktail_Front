@@ -4,20 +4,21 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { BlurView } from '@react-native-community/blur';
 // import AsyncStorage from '@react-native-async-storage/async-storage';
 import Home from '../BottomTab/Cocktail_List/CocktailListScreen';
-import RecommendationIntroScreen from '../Screens/Recommend/RecommendationIntroScreen';
+import RecommendationIntroScreen from '../BottomTab/Recommend/RecommendationIntroScreen';
 import LinearGradient from 'react-native-linear-gradient';
 
 // import { isTokenExpired } from '../tokenRequest/Token';
 import { BottomTabParamList } from './Navigation';
-import GuideScreen from '../Screens/Guide/GuideScreen';
+import GuideScreen from '../BottomTab/Guide/GuideScreen';
 import HomeIcon from '../assets/drawable/Home.svg';
 import RecommendIcon from '../assets/drawable/Cocktail.svg';
 import GuideIcon from '../assets/drawable/Guide.svg';
 import MyPageIcon from '../assets/drawable/MyPage.svg';
-import MyPageScreen from '../Screens/MyPage/MyPageScreen';
+import MyPageScreen from '../BottomTab/MyPage/MyPageScreen';
 import { heightPercentage } from '../assets/styles/FigmaScreen';
 import { useNavigationState } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const Tab = createBottomTabNavigator<BottomTabParamList>();
 export const ICON_PATH = {
@@ -60,6 +61,7 @@ const TabBarBackground = () => {
 };
 
 const BottomTabNavigator = () => {
+  const insets = useSafeAreaInsets();
 
   return (
     <View style={{ flex: 1 }}>
@@ -71,7 +73,7 @@ const BottomTabNavigator = () => {
           tabBarStyle: {
             position: 'absolute',
             marginHorizontal: 10,
-            bottom: 30,
+            bottom: insets.bottom + 12,
             backgroundColor: 'transparent',
             borderTopWidth: 0,
             shadowColor: '#000',

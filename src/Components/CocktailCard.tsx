@@ -1,6 +1,7 @@
 // components/CocktailCard.tsx
 import React from 'react';
 import { View, Image, Text, StyleSheet, Pressable } from 'react-native';
+import FastImage from 'react-native-fast-image';
 import PillStyleStatus from '../Components/PillStyleStatus';
 import { fontPercentage, heightPercentage, widthPercentage } from '../assets/styles/FigmaScreen';
 
@@ -14,7 +15,7 @@ type Props = {
   onToggleBookmark?: (id: number, nextStatus: boolean) => void;
 };
 
-export default function CocktailCard({
+const CocktailCard = React.memo(function CocktailCard({
   id,
   name,
   type,
@@ -28,7 +29,11 @@ export default function CocktailCard({
       <Pressable onPress={onPress} style={[styles.card]}>
         {/* 이미지 영역 */}
         <View style={styles.imageWrap}>
-          <Image source={{ uri: image }} style={styles.image} resizeMode="cover" />
+          <FastImage
+            source={{ uri: image, priority: FastImage.priority.normal }}
+            style={styles.image}
+            resizeMode={FastImage.resizeMode.cover}
+          />
 
           {/* 좌상단: 톤 라벨 */}
           <View style={styles.pillWrap}>
@@ -62,12 +67,14 @@ export default function CocktailCard({
       </Text>
     </View>
   );
-}
+});
+
+export default CocktailCard;
 
 
 const styles = StyleSheet.create({
   container: {
-    width: 160,
+    width: widthPercentage(160),
     alignItems: 'center',
   },
   card: {

@@ -1,6 +1,6 @@
 // AllCocktailScreen.tsx
 
-import React, { useRef } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 import { StyleSheet, View, Pressable, ScrollView, TouchableOpacity, Platform } from 'react-native';
 import { ActivityIndicator, Button, Text } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -9,6 +9,7 @@ import { FlatList } from 'react-native-gesture-handler';
 import theme from '../../assets/styles/theme';
 import OpenBottomSheet, { OpenBottomSheetHandle } from '../../Components/BottomSheet/OpenBottomSheet';
 import CocktailCard from '../../Components/CocktailCard';
+import { CocktailCard as CocktailCardModel } from '../../model/domain/CocktailCard';
 import FilterBottomSheet, { FilterBottomSheetRef } from '../../Components/BottomSheet/FilterBottomSheet/FilterBottomSheet';
 import useAllCocktailViewModel from './AllCocktailViewModel';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -22,115 +23,148 @@ const AllCocktailScreen = ({ navigation }: Props) => {
     const filterRef = useRef<FilterBottomSheetRef>(null);
     const bottomSheetRef = useRef<OpenBottomSheetHandle>(null);
 
+    const extraData = useMemo(
+        () => ({ loading: vm.loading, filter: vm.appliedFilter }),
+        [vm.loading, vm.appliedFilter],
+    );
+
+    const handleEndReached = useCallback(() => {
+        if (!vm.isLast && !vm.loading) {
+            vm.loadMore();
+        }
+    }, [vm.isLast, vm.loading, vm.loadMore]);
+
+    const renderItem = useCallback(
+        ({ item }: { item: CocktailCardModel }) => (
+            <View style={styles.cardWrapper}>
+                <CocktailCard
+                    id={item.id}
+                    name={item.name}
+                    type={item.type}
+                    image={item.image}
+                    bookmarked={item.isBookmarked}
+                    onPress={() =>
+                        navigation.navigate('CocktailDetailScreen', {
+                            cocktailId: item.id,
+                        })
+                    }
+                    onToggleBookmark={() => vm.bookmarked(item.id)}
+                />
+            </View>
+        ),
+        [navigation, vm.bookmarked],
+    );
+
+    const keyExtractor = useCallback(
+        (item: CocktailCardModel, index: number) => `${item.id}-${index}`,
+        [],
+    );
+
+    const ListFooterComponent = useMemo(
+        () =>
+            vm.loading && vm.results.length > 0 ? (
+                <ActivityIndicator style={{ marginVertical: 20 }} color="#111" />
+            ) : null,
+        [vm.loading, vm.results.length],
+    );
+
+    const ListHeaderComponent = useMemo(
+        () => (
+            <View>
+                {/* SearchResultScreen과 동일한 헤더 디자인 */}
+                <View style={styles.header}>
+                    <TouchableOpacity onPress={() => navigation.goBack()}>
+                        <Icon
+                            name="chevron-back-sharp"
+                            size={24}
+                            color="#000"
+                            style={{ marginRight: widthPercentage(8) }}
+                        />
+                    </TouchableOpacity>
+                    <View style={styles.titleContainer}>
+                        <Text style={styles.titleText}>칵테일 리스트</Text>
+                    </View>
+                    <View style={{ width: 24 }} />
+                </View>
+                <ScrollView
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    contentContainerStyle={styles.filterView}
+                >
+                    {['최신순', '도수', '스타일', '맛', '베이스'].map((label, idx) => {
+                        const filter = vm.appliedFilter;
+                        const isSelected =
+                            (label === '최신순' && filter.sort !== '최신순') ||
+                            (label === '도수' && filter.degree) ||
+                            (label === '스타일' && filter.style) ||
+                            (label === '맛' && filter.taste.length > 0) ||
+                            (label === '베이스' && filter.base.length > 0);
+
+                        return (
+                            <Button
+                                key={idx}
+                                mode={isSelected ? 'contained' : 'outlined'}
+                                icon={label === '최신순' ? undefined : 'chevron-down'}
+                                compact
+                                contentStyle={styles.filterButtonContent}
+                                style={[
+                                    styles.chip,
+                                    isSelected ? styles.chipSelected : styles.chipUnselected,
+                                ]}
+                                labelStyle={[
+                                    styles.chipLabel,
+                                    isSelected && styles.chipLabelSelected,
+                                ]}
+                                onPress={() => bottomSheetRef.current?.open()}
+                            >
+                                {label}
+                            </Button>
+                        );
+                    })}
+                </ScrollView>
+            </View>
+        ),
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [vm.appliedFilter, navigation],
+    );
+
+    const ListEmptyComponent = useMemo(
+        () => (
+            <View style={styles.emptyContainer}>
+                {vm.loading && <ActivityIndicator size="large" />}
+                {!vm.loading && (
+                    <>
+                        <Text style={styles.text}>아직 준비된 칵테일이 없네요.</Text>
+                        <Text style={styles.text}>다른 필터를 선택해보시겠어요?</Text>
+                    </>
+                )}
+            </View>
+        ),
+        [vm.loading],
+    );
+
     return (
         <SafeAreaView style={styles.safeArea} edges={['top']}>
             <FlatList
-                extraData={[vm.loading, vm.appliedFilter]}
-                onEndReached={() => {
-                    if (!vm.isLast && !vm.loading) {
-                        vm.loadMore();
-                    }
-                }}
-
-                onEndReachedThreshold={0.5}
-                ListFooterComponent={
-                    vm.loading && vm.results.length > 0 ? (
-                        <ActivityIndicator style={{ marginVertical: 20 }} color="#111" />
-                    ) : null
-                }
                 data={vm.results}
-                style={{ flex: 1 }}
+                extraData={extraData}
+                renderItem={renderItem}
+                keyExtractor={keyExtractor}
+                onEndReached={handleEndReached}
+                onEndReachedThreshold={0.5}
+                ListHeaderComponent={ListHeaderComponent}
+                ListFooterComponent={ListFooterComponent}
+                ListEmptyComponent={ListEmptyComponent}
                 numColumns={2}
                 columnWrapperStyle={styles.row}
-                keyExtractor={(item, index) => `${item.id}-${index}`}
+                style={{ flex: 1 }}
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={styles.listContent}
-                ListHeaderComponent={
-                    <View>
-                        {/* SearchResultScreen과 동일한 헤더 디자인 */}
-                        <View style={styles.header}>
-                            <TouchableOpacity onPress={() => navigation.goBack()}>
-                                <Icon
-                                    name="chevron-back-sharp"
-                                    size={24}
-                                    color="#000"
-                                    style={{ marginRight: widthPercentage(8) }}
-                                />
-                            </TouchableOpacity>
-                            <View style={styles.titleContainer}>
-                                <Text style={styles.titleText}>칵테일 리스트</Text>
-                            </View>
-                            <View style={{ width: 24 }} />
-                        </View>
-                        <ScrollView
-                            horizontal
-                            showsHorizontalScrollIndicator={false}
-                            contentContainerStyle={styles.filterView}
-                        >
-                            {['최신순', '도수', '스타일', '맛', '베이스'].map((label, idx) => {
-                                const filter = vm.appliedFilter;
-                                const isSelected =
-                                    (label === '최신순' && filter.sort !== '최신순') ||
-                                    (label === '도수' && filter.degree) ||
-                                    (label === '스타일' && filter.style) ||
-                                    (label === '맛' && filter.taste.length > 0) ||
-                                    (label === '베이스' && filter.base.length > 0);
-
-                                return (
-                                    <Button
-                                        key={idx}
-                                        mode={isSelected ? 'contained' : 'outlined'}
-                                        icon={label === '최신순' ? undefined : 'chevron-down'}
-                                        compact
-                                        contentStyle={styles.filterButtonContent}
-                                        style={[
-                                            styles.chip,
-                                            isSelected ? styles.chipSelected : styles.chipUnselected,
-                                        ]}
-                                        labelStyle={[
-                                            styles.chipLabel,
-                                            isSelected && styles.chipLabelSelected,
-                                        ]}
-                                        onPress={() => bottomSheetRef.current?.open()}
-                                    >
-                                        {label}
-                                    </Button>
-                                );
-                            })}
-                        </ScrollView>
-
-
-                    </View>
-                }
-                ListEmptyComponent={
-                    <View style={styles.emptyContainer}>
-                        {vm.loading && <ActivityIndicator size="large" />}
-                        {!vm.loading && (
-                            <>
-                                <Text style={styles.text}>아직 준비된 칵테일이 없네요.</Text>
-                                <Text style={styles.text}>다른 필터를 선택해보시겠어요?</Text>
-                            </>
-                        )}
-                    </View>
-                }
-                renderItem={({ item }) => (
-                    <View style={styles.cardWrapper}>
-                        <CocktailCard
-                            id={item.id}
-                            name={item.name}
-                            type={item.type}
-                            image={item.image}
-                            onPress={() =>
-                                navigation.navigate('CocktailDetailScreen', {
-                                    cocktailId: item.id,
-                                })
-                            }
-                            onToggleBookmark={() => {
-                                vm.bookmarked(item.id);
-                            }}
-                        />
-                    </View>
-                )}
+                initialNumToRender={6}
+                maxToRenderPerBatch={4}
+                windowSize={5}
+                removeClippedSubviews={true}
+                updateCellsBatchingPeriod={50}
             />
 
             <OpenBottomSheet

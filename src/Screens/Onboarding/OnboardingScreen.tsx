@@ -29,7 +29,7 @@ const OnboardingScreen = ({ setIsOnboarded }: any) => {
                     <Text style={styles.sectionTitle}>성별</Text>
                     <View style={styles.radioGroup}>
                         <TouchableOpacity style={styles.radioItem} onPress={() => vm.setGender('female')}>
-                            <RadioButton
+                            <RadioButton.Android
                                 value="female"
                                 status={vm.gender === 'female' ? 'checked' : 'unchecked'}
                                 onPress={() => vm.setGender('female')}
@@ -39,7 +39,7 @@ const OnboardingScreen = ({ setIsOnboarded }: any) => {
                         </TouchableOpacity>
 
                         <TouchableOpacity style={styles.radioItem} onPress={() => vm.setGender('male')}>
-                            <RadioButton
+                            <RadioButton.Android
                                 value="male"
                                 status={vm.gender === 'male' ? 'checked' : 'unchecked'}
                                 onPress={() => vm.setGender('male')}
@@ -49,7 +49,7 @@ const OnboardingScreen = ({ setIsOnboarded }: any) => {
                         </TouchableOpacity>
 
                         <TouchableOpacity style={styles.radioItem} onPress={() => vm.setGender('none')}>
-                            <RadioButton
+                            <RadioButton.Android
                                 value="none"
                                 status={vm.gender === 'none' ? 'checked' : 'unchecked'}
                                 onPress={() => vm.setGender('none')}

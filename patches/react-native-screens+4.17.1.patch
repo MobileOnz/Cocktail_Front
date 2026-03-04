@@ -1,0 +1,71 @@
+diff --git a/node_modules/react-native-screens/ios/RNSScreen.mm b/node_modules/react-native-screens/ios/RNSScreen.mm
+index 65c18f1..f2098d0 100644
+--- a/node_modules/react-native-screens/ios/RNSScreen.mm
++++ b/node_modules/react-native-screens/ios/RNSScreen.mm
+@@ -1552,6 +1552,12 @@ - (void)reactSetFrame:(CGRect)frame
+ {
+   return RNSScreenView.class;
+ }
++
++// Stub implementations for gamma components (not enabled in this build)
++Class<RCTComponentViewProtocol> RNSStackScreenCls(void) { return nil; }
++Class<RCTComponentViewProtocol> RNSScreenStackHostCls(void) { return nil; }
++Class<RCTComponentViewProtocol> RNSSplitViewHostCls(void) { return nil; }
++Class<RCTComponentViewProtocol> RNSSplitViewScreenCls(void) { return nil; }
+ #endif
+ 
+ #pragma mark - RNSScreen
+diff --git a/node_modules/react-native-screens/ios/bottom-tabs/RNSBottomTabsHostComponentView.mm b/node_modules/react-native-screens/ios/bottom-tabs/RNSBottomTabsHostComponentView.mm
+index e5b111d..b1b40df 100644
+--- a/node_modules/react-native-screens/ios/bottom-tabs/RNSBottomTabsHostComponentView.mm
++++ b/node_modules/react-native-screens/ios/bottom-tabs/RNSBottomTabsHostComponentView.mm
+@@ -2,6 +2,7 @@
+ 
+ #if RCT_NEW_ARCH_ENABLED
+ #import <React/RCTConversions.h>
++#import <React/RCTFabricComponentsPlugins.h>
+ #import <React/RCTImageLoader.h>
+ #import <React/RCTMountingTransactionObserving.h>
+ #import <react/renderer/components/rnscreens/ComponentDescriptors.h>
+diff --git a/node_modules/react-native-screens/ios/bottom-tabs/RNSBottomTabsScreenComponentView.mm b/node_modules/react-native-screens/ios/bottom-tabs/RNSBottomTabsScreenComponentView.mm
+index b8ec8a2..d3788ef 100644
+--- a/node_modules/react-native-screens/ios/bottom-tabs/RNSBottomTabsScreenComponentView.mm
++++ b/node_modules/react-native-screens/ios/bottom-tabs/RNSBottomTabsScreenComponentView.mm
+@@ -11,6 +11,7 @@
+ 
+ #if RCT_NEW_ARCH_ENABLED
+ #import <React/RCTConversions.h>
++#import <React/RCTFabricComponentsPlugins.h>
+ #import <React/RCTImageSource.h>
+ #import <react/renderer/components/rnscreens/ComponentDescriptors.h>
+ #import <react/renderer/components/rnscreens/EventEmitters.h>
+@@ -661,7 +662,7 @@ -(RCTDirectEventBlock)eventName
+ #if RCT_NEW_ARCH_ENABLED
+ #pragma mark - View class exposure
+ 
+-Class<RCTComponentViewProtocol> RNSBottomTabsScreen(void)
++Class<RCTComponentViewProtocol> RNSBottomTabsScreenCls(void)
+ {
+   return RNSBottomTabsScreenComponentView.class;
+ }
+diff --git a/node_modules/react-native-screens/ios/safe-area/RNSSafeAreaViewComponentView.mm b/node_modules/react-native-screens/ios/safe-area/RNSSafeAreaViewComponentView.mm
+index c66e243..7d73950 100644
+--- a/node_modules/react-native-screens/ios/safe-area/RNSSafeAreaViewComponentView.mm
++++ b/node_modules/react-native-screens/ios/safe-area/RNSSafeAreaViewComponentView.mm
+@@ -8,6 +8,7 @@
+ #import "RNSSafeAreaViewNotifications.h"
+ 
+ #if RCT_NEW_ARCH_ENABLED
++#import <React/RCTFabricComponentsPlugins.h>
+ #import <react/renderer/components/rnscreens/ComponentDescriptors.h>
+ #import <react/renderer/components/rnscreens/Props.h>
+ #import <rnscreens/RNSSafeAreaViewComponentDescriptor.h>
+@@ -214,7 +215,7 @@ static BOOL UIEdgeInsetsEqualToEdgeInsetsWithThreshold(UIEdgeInsets insets1, UIE
+ #if RCT_NEW_ARCH_ENABLED
+ #pragma mark - View class exposure
+ 
+-Class<RCTComponentViewProtocol> RNSSafeAreaView(void)
++Class<RCTComponentViewProtocol> RNSSafeAreaViewCls(void)
+ {
+   return RNSSafeAreaViewComponentView.class;
+ }
