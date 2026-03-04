@@ -33,7 +33,7 @@ type SignupScreenProps = StackScreenProps<RootStackParamList, 'SignupScreen'>;
 const SignupScreen: React.FC<SignupScreenProps> = ({ navigation }) => {
 
   const route = useRoute<SignupScreenRouteProp>();
-  const signUpCode: string = route.params?.code;
+  const signUpCode = route.params?.code ?? '';
   const { showToast } = useToast();
   const { signUp } = SignUpViewModel();
   const [modalVisible, setModalVisible] = useState(false);
@@ -45,26 +45,30 @@ const SignupScreen: React.FC<SignupScreenProps> = ({ navigation }) => {
       console.log('닉네임이 없습니다.');
       return;
     }
+    if (!signUpCode) {
+      showToast('인증 코드가 없습니다. 다시 로그인해주세요.');
+      navigation.navigate('Login' as never);
+      return;
+    }
     const deviceId = await DeviceInfo.getUniqueId();
     const payload: SignUpRequest = {
-      code: signUpCode,           // 인증 코드 (UUID)
-      nickName: nickname,         // 닉네임
-      deviceNumber: deviceId,     // 디바이스 고유 식별자
-      ageTerm: agreements.age,      // 연령 약관 동의
-      serviceTerm: agreements.terms, // 서비스 이용약관 동의
-      marketingTerm: agreements.marketing, // 마케팅 수신 동의
-      adTerm: agreements.ads,       // 광고성 정보 수신 동의
+      code: signUpCode,
+      nickName: nickname,
+      deviceNumber: deviceId,
+      ageTerm: agreements.age,
+      serviceTerm: agreements.terms,
+      marketingTerm: agreements.marketing,
+      adTerm: agreements.ads,
     };
-    console.log(JSON.stringify(payload));
 
     try {
       const result = await signUp(payload);
       console.log('백엔드 응답', result);
+      setModalVisible(false);
       navigation.navigate('BottomTabNavigator' as never);
     } catch (error: any) {
       showToast('알 수 없는 오류가 발생했습니다.');
-    } finally {
-      setModalVisible(false);
+      // 에러 시 모달 유지 → 사용자가 다시 시도 가능
     }
   };
 

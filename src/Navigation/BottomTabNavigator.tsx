@@ -18,6 +18,7 @@ import MyPageScreen from '../BottomTab/MyPage/MyPageScreen';
 import { heightPercentage } from '../assets/styles/FigmaScreen';
 import { useNavigationState } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const Tab = createBottomTabNavigator<BottomTabParamList>();
 export const ICON_PATH = {
@@ -60,6 +61,7 @@ const TabBarBackground = () => {
 };
 
 const BottomTabNavigator = () => {
+  const insets = useSafeAreaInsets();
 
   return (
     <View style={{ flex: 1 }}>
@@ -71,7 +73,7 @@ const BottomTabNavigator = () => {
           tabBarStyle: {
             position: 'absolute',
             marginHorizontal: 10,
-            bottom: 30,
+            bottom: insets.bottom + 12,
             backgroundColor: 'transparent',
             borderTopWidth: 0,
             shadowColor: '#000',

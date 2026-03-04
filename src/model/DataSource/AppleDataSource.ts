@@ -3,6 +3,7 @@ import { AuthResult } from '../domain/AuthResult';
 import { ISocialAuthDataSource } from './ISocialAuthDataSource';
 import { API_BASE_URL } from '@env';
 import { appleAuth } from '@invertase/react-native-apple-authentication';
+import DeviceInfo from 'react-native-device-info';
 
 export class AppleDataSource implements ISocialAuthDataSource {
     async login(): Promise<AuthResult> {
@@ -23,12 +24,14 @@ export class AppleDataSource implements ISocialAuthDataSource {
 
             console.log('Apple identityToken:', identityToken);
 
+            const deviceNumber = await DeviceInfo.getUniqueId();
+
             const response = await axios.post(
                 `${API_BASE_URL}/api/v2/auth/social-login`,
                 {
                     provider: 'apple',
                     accessToken: identityToken,
-                    deviceNumber: 'device_unique_identifier_12345',
+                    deviceNumber,
                     code: '',
                     state: '',
                 }
