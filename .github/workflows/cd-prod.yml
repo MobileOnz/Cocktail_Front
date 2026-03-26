@@ -37,6 +37,12 @@ jobs:
     name: Android → Google Play
     runs-on: ubuntu-latest
 
+    env:
+      ANDROID_KEYSTORE_PATH: my-release-key.jks
+      ANDROID_STORE_PASSWORD: ${{ secrets.ANDROID_STORE_PASSWORD }}
+      ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+      ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+
     steps:
       - uses: actions/checkout@v4
 
@@ -61,11 +67,6 @@ jobs:
             > android/app/my-release-key.jks
 
       - name: Build Release AAB
-        env:
-          ANDROID_KEYSTORE_PATH: my-release-key.jks
-          ANDROID_STORE_PASSWORD: ${{ secrets.ANDROID_STORE_PASSWORD }}
-          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
-          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: cd android && ./gradlew bundleRelease --no-daemon
 
       - name: Upload AAB to Google Play (Internal)
@@ -110,7 +111,7 @@ jobs:
           KEYCHAIN_PATH=$RUNNER_TEMP/ios-build.keychain
           KEYCHAIN_PASS=$(openssl rand -base64 20)
 
-          echo "${{ secrets.IOS_DIST_CERT_P12_BASE64 }}" | base64 --decode > $CERT_PATH
+          echo "${{ secrets.IOS_DIST_CERT_P12_BASE64 }}" | tr -d ' \r\n' | base64 -d > $CERT_PATH
 
           security create-keychain -p "$KEYCHAIN_PASS" $KEYCHAIN_PATH
           security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
@@ -126,7 +127,7 @@ jobs:
       - name: Import provisioning profile
         run: |
           PP_PATH=$RUNNER_TEMP/profile.mobileprovision
-          echo "${{ secrets.IOS_APP_STORE_PROFILE_BASE64 }}" | base64 --decode > $PP_PATH
+          echo "${{ secrets.IOS_APP_STORE_PROFILE_BASE64 }}" | tr -d ' \r\n' | base64 -d > $PP_PATH
 
           PP_UUID=$(/usr/libexec/PlistBuddy -c "Print :UUID" \
             /dev/stdin <<< $(security cms -D -i $PP_PATH))
