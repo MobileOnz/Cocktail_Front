@@ -140,16 +140,32 @@ jobs:
 
           echo "PROVISIONING_PROFILE_UUID=$PP_UUID" >> $GITHUB_ENV
 
+      - name: Configure Xcode signing (main target only)
+        env:
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        run: |
+          cd ios
+          bundle exec ruby << 'RUBY'
+          require 'xcodeproj'
+          project = Xcodeproj::Project.open('Cocktail_Front.xcodeproj')
+          target = project.targets.find { |t| t.name == 'Cocktail_Front' }
+          config = target.build_configurations.find { |c| c.name == 'Release' }
+          config.build_settings['CODE_SIGN_STYLE'] = 'Manual'
+          config.build_settings['PROVISIONING_PROFILE_SPECIFIER'] = ENV['PROVISIONING_PROFILE_UUID']
+          config.build_settings['CODE_SIGN_IDENTITY'] = 'iPhone Distribution'
+          config.build_settings['DEVELOPMENT_TEAM'] = ENV['APPLE_TEAM_ID']
+          project.save
+          puts "Signing configured for target: #{target.name}, config: #{config.name}"
+          RUBY
+
       - name: Archive
         run: |
           xcodebuild archive \
             -workspace ios/Cocktail_Front.xcworkspace \
             -scheme Cocktail_Front \
             -configuration Release \
+            -destination "generic/platform=iOS" \
             -archivePath $RUNNER_TEMP/Cocktail_Front.xcarchive \
-            CODE_SIGN_STYLE=Manual \
-            PROVISIONING_PROFILE="$PROVISIONING_PROFILE_UUID" \
-            CODE_SIGN_IDENTITY="iPhone Distribution" \
             -quiet
 
       - name: Export IPA (app-store)
