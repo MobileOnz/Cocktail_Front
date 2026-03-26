@@ -1,0 +1,179 @@
+name: CD – Production (Google Play + App Store)
+
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: cd-prod
+  cancel-in-progress: false   # 프로덕션은 취소하지 않음
+
+# ────────────────────────────────────────────────
+# 필요한 GitHub Secrets (QA 공통 항목 + 추가)
+# ────────────────────────────────────────────────
+# [Android] (QA와 동일)
+#   ANDROID_KEYSTORE_BASE64
+#   ANDROID_STORE_PASSWORD
+#   ANDROID_KEY_ALIAS
+#   ANDROID_KEY_PASSWORD
+#   GOOGLE_PLAY_SERVICE_ACCOUNT_JSON - Google Play 서비스 계정 JSON
+#                                      (Play Console → 설정 → API 액세스)
+#
+# [iOS] (QA와 동일)
+#   IOS_DIST_CERT_P12_BASE64
+#   IOS_DIST_CERT_PASSWORD
+#   IOS_APP_STORE_PROFILE_BASE64
+#   APPLE_TEAM_ID
+#   APP_STORE_CONNECT_API_KEY_ID
+#   APP_STORE_CONNECT_API_ISSUER_ID
+#   APP_STORE_CONNECT_API_KEY_CONTENT
+# ────────────────────────────────────────────────
+
+jobs:
+  # ──────────────────────────────────────────────
+  # Android → Google Play (Internal Track)
+  # ──────────────────────────────────────────────
+  android-play:
+    name: Android → Google Play
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install JS dependencies
+        run: npm ci
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: gradle/gradle-build-action@v3
+
+      - name: Decode keystore
+        run: |
+          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 --decode \
+            > android/app/my-release-key.jks
+
+      - name: Build Release AAB
+        env:
+          ANDROID_KEYSTORE_PATH: my-release-key.jks
+          ANDROID_STORE_PASSWORD: ${{ secrets.ANDROID_STORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: cd android && ./gradlew bundleRelease --no-daemon
+
+      - name: Upload AAB to Google Play (Internal)
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
+          packageName: com.cocktail_front
+          releaseFiles: android/app/build/outputs/bundle/release/app-release.aab
+          track: internal   # internal → alpha → beta → production 순으로 승격
+          status: completed
+
+  # ──────────────────────────────────────────────
+  # iOS → App Store
+  # ──────────────────────────────────────────────
+  ios-appstore:
+    name: iOS → App Store
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install JS dependencies
+        run: npm ci
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+          bundler-cache: true
+
+      - name: Install CocoaPods
+        run: bundle exec pod install --project-directory=ios
+
+      - name: Import distribution certificate
+        run: |
+          CERT_PATH=$RUNNER_TEMP/dist.p12
+          KEYCHAIN_PATH=$RUNNER_TEMP/ios-build.keychain
+          KEYCHAIN_PASS=$(openssl rand -base64 20)
+
+          echo "${{ secrets.IOS_DIST_CERT_P12_BASE64 }}" | base64 --decode > $CERT_PATH
+
+          security create-keychain -p "$KEYCHAIN_PASS" $KEYCHAIN_PATH
+          security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
+          security unlock-keychain -p "$KEYCHAIN_PASS" $KEYCHAIN_PATH
+          security import $CERT_PATH \
+            -P "${{ secrets.IOS_DIST_CERT_PASSWORD }}" \
+            -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
+          security list-keychain -d user -s $KEYCHAIN_PATH
+
+          echo "KEYCHAIN_PATH=$KEYCHAIN_PATH" >> $GITHUB_ENV
+          echo "KEYCHAIN_PASS=$KEYCHAIN_PASS" >> $GITHUB_ENV
+
+      - name: Import provisioning profile
+        run: |
+          PP_PATH=$RUNNER_TEMP/profile.mobileprovision
+          echo "${{ secrets.IOS_APP_STORE_PROFILE_BASE64 }}" | base64 --decode > $PP_PATH
+
+          PP_UUID=$(/usr/libexec/PlistBuddy -c "Print :UUID" \
+            /dev/stdin <<< $(security cms -D -i $PP_PATH))
+
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles/$PP_UUID.mobileprovision
+
+          echo "PROVISIONING_PROFILE_UUID=$PP_UUID" >> $GITHUB_ENV
+
+      - name: Archive
+        run: |
+          xcodebuild archive \
+            -workspace ios/Cocktail_Front.xcworkspace \
+            -scheme Cocktail_Front \
+            -configuration Release \
+            -archivePath $RUNNER_TEMP/Cocktail_Front.xcarchive \
+            CODE_SIGN_STYLE=Manual \
+            PROVISIONING_PROFILE="$PROVISIONING_PROFILE_UUID" \
+            CODE_SIGN_IDENTITY="iPhone Distribution" \
+            -quiet
+
+      - name: Export IPA (app-store)
+        run: |
+          cat > $RUNNER_TEMP/ExportOptions.plist << PLIST
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0"><dict>
+            <key>method</key><string>app-store</string>
+            <key>teamID</key><string>${{ secrets.APPLE_TEAM_ID }}</string>
+          </dict></plist>
+          PLIST
+
+          xcodebuild -exportArchive \
+            -archivePath $RUNNER_TEMP/Cocktail_Front.xcarchive \
+            -exportOptionsPlist $RUNNER_TEMP/ExportOptions.plist \
+            -exportPath $RUNNER_TEMP/ipa
+
+      - name: Upload to App Store
+        run: |
+          echo "${{ secrets.APP_STORE_CONNECT_API_KEY_CONTENT }}" > $RUNNER_TEMP/api_key.p8
+
+          xcrun altool --upload-app \
+            --type ios \
+            --file $(find $RUNNER_TEMP/ipa -name "*.ipa" | head -1) \
+            --apiKey "${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}" \
+            --apiIssuer "${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}" \
+            --private-key @$RUNNER_TEMP/api_key.p8
+
+      - name: Cleanup keychain
+        if: always()
+        run: security delete-keychain ${{ env.KEYCHAIN_PATH }} 2>/dev/null || true
