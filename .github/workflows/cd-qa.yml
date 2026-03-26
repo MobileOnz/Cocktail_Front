@@ -166,18 +166,19 @@ jobs:
 
       - name: Archive
         run: |
-          set -o pipefail
+          set +e
           xcodebuild archive \
             -workspace ios/Cocktail_Front.xcworkspace \
             -scheme Cocktail_Front \
             -configuration Release \
             -destination "generic/platform=iOS" \
             -archivePath $RUNNER_TEMP/Cocktail_Front.xcarchive \
-            2>&1 | tee /tmp/xcodebuild.log | grep -E "error:|warning:.*signing|ARCHIVE|CodeSign|Signing" || true
-          BUILD_EXIT=${PIPESTATUS[0]}
-          echo "--- ERRORS ONLY ---"
-          grep -E "^.*(error:|errSec|No signing|Code signing|provision)" /tmp/xcodebuild.log || echo "(no error lines found)"
-          exit $BUILD_EXIT
+            2>&1 | tee /tmp/xcodebuild.log
+          ARCHIVE_EXIT=${PIPESTATUS[0]}
+          echo "--- xcodebuild exit: $ARCHIVE_EXIT ---"
+          echo "--- ERROR LINES ---"
+          grep -iE "error:|errSec|No signing|Code sign|provision|codesign" /tmp/xcodebuild.log | head -30 || echo "(none)"
+          exit $ARCHIVE_EXIT
 
       - name: Export IPA (app-store)
         run: |
