@@ -32,7 +32,7 @@ const AllCocktailScreen = ({ navigation }: Props) => {
         if (!vm.isLast && !vm.loading) {
             vm.loadMore();
         }
-    }, [vm.isLast, vm.loading, vm.loadMore]);
+    }, [vm]);
 
     const renderItem = useCallback(
         ({ item }: { item: CocktailCardModel }) => (
@@ -52,7 +52,7 @@ const AllCocktailScreen = ({ navigation }: Props) => {
                 />
             </View>
         ),
-        [navigation, vm.bookmarked],
+        [navigation, vm],
     );
 
     const keyExtractor = useCallback(
