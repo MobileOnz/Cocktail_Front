@@ -144,6 +144,7 @@ jobs:
         env:
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         run: |
+          echo "PROVISIONING_PROFILE_UUID=$PROVISIONING_PROFILE_UUID"
           cd ios
           bundle exec ruby << 'RUBY'
           require 'xcodeproj'
@@ -151,11 +152,12 @@ jobs:
           target = project.targets.find { |t| t.name == 'Cocktail_Front' }
           config = target.build_configurations.find { |c| c.name == 'Release' }
           config.build_settings['CODE_SIGN_STYLE'] = 'Manual'
+          config.build_settings['PROVISIONING_PROFILE'] = ENV['PROVISIONING_PROFILE_UUID']
           config.build_settings['PROVISIONING_PROFILE_SPECIFIER'] = ENV['PROVISIONING_PROFILE_UUID']
           config.build_settings['CODE_SIGN_IDENTITY'] = 'iPhone Distribution'
           config.build_settings['DEVELOPMENT_TEAM'] = ENV['APPLE_TEAM_ID']
           project.save
-          puts "Signing configured for target: #{target.name}, config: #{config.name}"
+          puts "Signing configured: target=#{target.name}, profile=#{ENV['PROVISIONING_PROFILE_UUID']}, team=#{ENV['APPLE_TEAM_ID']}"
           RUBY
 
       - name: Archive
@@ -166,7 +168,7 @@ jobs:
             -configuration Release \
             -destination "generic/platform=iOS" \
             -archivePath $RUNNER_TEMP/Cocktail_Front.xcarchive \
-            -quiet
+            2>&1 | tee /tmp/xcodebuild.log; exit ${PIPESTATUS[0]}
 
       - name: Export IPA (app-store)
         run: |
