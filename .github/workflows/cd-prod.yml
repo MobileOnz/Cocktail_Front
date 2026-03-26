@@ -63,8 +63,7 @@ jobs:
 
       - name: Decode keystore
         run: |
-          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 --decode \
-            > android/app/my-release-key.jks
+          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | tr -d ' \r\n' | base64 -d > android/app/my-release-key.jks
 
       - name: Build Release AAB
         run: cd android && ./gradlew bundleRelease --no-daemon
@@ -103,7 +102,9 @@ jobs:
           bundler-cache: true
 
       - name: Install CocoaPods
-        run: bundle exec pod install --project-directory=ios
+        run: |
+          bundle exec pod update hermes-engine --no-repo-update --project-directory=ios
+          bundle exec pod install --project-directory=ios
 
       - name: Import distribution certificate
         run: |
