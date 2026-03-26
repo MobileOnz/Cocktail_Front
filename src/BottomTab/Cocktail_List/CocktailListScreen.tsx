@@ -95,7 +95,7 @@ const Home = () => {
         </TouchableOpacity>
       </View>
     </TouchableOpacity>
-  ), [navigation, vm.bookmarked]);
+  ), [navigation, vm]);
 
   const renderCocktailCard = useCallback(({ item }: { item: any }) => (
     <CocktailCard
@@ -107,7 +107,7 @@ const Home = () => {
       onPress={() => navigation.navigate('CocktailDetailScreen', { cocktailId: item.id })}
       onToggleBookmark={() => vm.bookmarked(item.id)}
     />
-  ), [navigation, vm.bookmarked]);
+  ), [navigation, vm]);
 
   return (
     <View style={styles.container}>
