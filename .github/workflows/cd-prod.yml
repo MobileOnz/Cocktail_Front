@@ -161,14 +161,15 @@ jobs:
           RUBY
 
       - name: Archive
+        env:
+          NODE_OPTIONS: "--max-old-space-size=4096"
         run: |
           xcodebuild archive \
             -workspace ios/Cocktail_Front.xcworkspace \
             -scheme Cocktail_Front \
             -configuration Release \
             -destination "generic/platform=iOS" \
-            -archivePath $RUNNER_TEMP/Cocktail_Front.xcarchive \
-            2>&1 | tee /tmp/xcodebuild.log; exit ${PIPESTATUS[0]}
+            -archivePath $RUNNER_TEMP/Cocktail_Front.xcarchive
 
       - name: Export IPA (app-store)
         run: |

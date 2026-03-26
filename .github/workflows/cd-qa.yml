@@ -124,7 +124,8 @@ jobs:
           security import $CERT_PATH \
             -P "${{ secrets.IOS_DIST_CERT_PASSWORD }}" \
             -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
-          security list-keychain -d user -s $KEYCHAIN_PATH
+          security list-keychain -d user -s $KEYCHAIN_PATH login.keychain-db
+          security default-keychain -s $KEYCHAIN_PATH
 
           echo "KEYCHAIN_PATH=$KEYCHAIN_PATH" >> $GITHUB_ENV
           echo "KEYCHAIN_PASS=$KEYCHAIN_PASS" >> $GITHUB_ENV
@@ -148,7 +149,10 @@ jobs:
         env:
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         run: |
-          echo "PROVISIONING_PROFILE_UUID=$PROVISIONING_PROFILE_UUID"
+          echo "=== Signing identities in keychain ==="
+          security find-identity -v -p codesigning
+          echo "=== Provisioning profile UUID ==="
+          echo "$PROVISIONING_PROFILE_UUID"
           cd ios
           bundle exec ruby << 'RUBY'
           require 'xcodeproj'
@@ -165,20 +169,15 @@ jobs:
           RUBY
 
       - name: Archive
+        env:
+          NODE_OPTIONS: "--max-old-space-size=4096"
         run: |
-          set +e
           xcodebuild archive \
             -workspace ios/Cocktail_Front.xcworkspace \
             -scheme Cocktail_Front \
             -configuration Release \
             -destination "generic/platform=iOS" \
-            -archivePath $RUNNER_TEMP/Cocktail_Front.xcarchive \
-            2>&1 | tee /tmp/xcodebuild.log
-          ARCHIVE_EXIT=${PIPESTATUS[0]}
-          echo "--- xcodebuild exit: $ARCHIVE_EXIT ---"
-          echo "--- ERROR LINES ---"
-          grep -iE "error:|errSec|No signing|Code sign|provision|codesign" /tmp/xcodebuild.log | head -30 || echo "(none)"
-          exit $ARCHIVE_EXIT
+            -archivePath $RUNNER_TEMP/Cocktail_Front.xcarchive
 
       - name: Export IPA (app-store)
         run: |
