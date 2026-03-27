@@ -220,7 +220,7 @@ jobs:
           API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
         run: |
           mkdir -p ~/.appstoreconnect/private_keys
-          printf '%b' "$API_KEY_CONTENT" > ~/.appstoreconnect/private_keys/AuthKey_${API_KEY_ID}.p8
+          echo "$API_KEY_CONTENT" | python3 -c "import base64,sys; sys.stdout.buffer.write(base64.b64decode(sys.stdin.read().replace('\n','').replace('\r','').replace(' ','')))" > ~/.appstoreconnect/private_keys/AuthKey_${API_KEY_ID}.p8
 
           xcrun altool --upload-app \
             --type ios \
