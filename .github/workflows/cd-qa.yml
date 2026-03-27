@@ -87,7 +87,7 @@ jobs:
     runs-on: macos-latest
 
     env:
-      NODE_OPTIONS: "--max-old-space-size=8192"
+      NODE_OPTIONS: "--max-old-space-size=16384"
 
     steps:
       - uses: actions/checkout@v4
@@ -170,6 +170,9 @@ jobs:
           project.save
           puts "Signing configured: target=#{target.name}, profile=#{ENV['PROVISIONING_PROFILE_UUID']}, team=#{ENV['APPLE_TEAM_ID']}"
           RUBY
+
+      - name: Clean DerivedData
+        run: rm -rf ~/Library/Developer/Xcode/DerivedData
 
       - name: Archive
         run: |
