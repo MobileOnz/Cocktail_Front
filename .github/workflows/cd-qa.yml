@@ -86,6 +86,9 @@ jobs:
     name: iOS → TestFlight
     runs-on: macos-latest
 
+    env:
+      NODE_OPTIONS: "--max-old-space-size=8192"
+
     steps:
       - uses: actions/checkout@v4
 
@@ -169,8 +172,6 @@ jobs:
           RUBY
 
       - name: Archive
-        env:
-          NODE_OPTIONS: "--max-old-space-size=4096"
         run: |
           xcodebuild archive \
             -workspace ios/Cocktail_Front.xcworkspace \
