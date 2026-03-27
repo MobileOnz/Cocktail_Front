@@ -171,6 +171,15 @@ jobs:
           puts "Signing configured: target=#{target.name}, profile=#{ENV['PROVISIONING_PROFILE_UUID']}, team=#{ENV['APPLE_TEAM_ID']}"
           RUBY
 
+      - name: Pre-bundle JS (validate before archive)
+        run: |
+          npx react-native bundle \
+            --platform ios \
+            --dev false \
+            --entry-file index.js \
+            --bundle-output /tmp/ios-main.jsbundle \
+            --assets-dest /tmp/ios-assets
+
       - name: Clean DerivedData
         run: rm -rf ~/Library/Developer/Xcode/DerivedData
 
