@@ -214,15 +214,24 @@ jobs:
             -exportPath $RUNNER_TEMP/ipa
 
       - name: Upload to TestFlight
+        env:
+          API_KEY_CONTENT: ${{ secrets.APP_STORE_CONNECT_API_KEY_CONTENT }}
+          API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
         run: |
           mkdir -p ~/.appstoreconnect/private_keys
-          echo "${{ secrets.APP_STORE_CONNECT_API_KEY_CONTENT }}" > ~/.appstoreconnect/private_keys/AuthKey_${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}.p8
+          python3 -c "
+import os, sys
+content = os.environ['API_KEY_CONTENT']
+content = content.replace('\\\\n', '\\n')
+sys.stdout.write(content)
+" > ~/.appstoreconnect/private_keys/AuthKey_${API_KEY_ID}.p8
 
           xcrun altool --upload-app \
             --type ios \
             --file $(find $RUNNER_TEMP/ipa -name "*.ipa" | head -1) \
-            --apiKey "${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}" \
-            --apiIssuer "${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}"
+            --apiKey "$API_KEY_ID" \
+            --apiIssuer "$API_ISSUER_ID"
 
       - name: Cleanup keychain
         if: always()
