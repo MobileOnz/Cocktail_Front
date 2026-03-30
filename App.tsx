@@ -9,6 +9,8 @@ import { setGlobalInsets } from './src/assets/contexts/globalInsets';
 // import MobileAds from "react-native-google-mobile-ads";
 // import { firebase } from "@react-native-firebase/app";
 import { initAmplitude } from './src/analytics/amplitudeInit';
+import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
+import { queryClient, persister } from './src/lib/queryClient';
 import { ToastProvider } from './src/Components/ToastContext';
 import { initDb } from './src/model/local/index';
 import RNBootSplash from 'react-native-bootsplash';
@@ -126,14 +128,15 @@ function App(): React.JSX.Element {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <BottomSheetModalProvider>
-        <PaperProvider>
-          <SafeAreaProvider>
-            <AppContent isOnboarded={isOnboarded} setIsOnboarded={setIsOnboarded} />
-          </SafeAreaProvider>
-        </PaperProvider>
-      </BottomSheetModalProvider>
-
+      <PersistQueryClientProvider client={queryClient} persistOptions={{ persister }}>
+        <BottomSheetModalProvider>
+          <PaperProvider>
+            <SafeAreaProvider>
+              <AppContent isOnboarded={isOnboarded} setIsOnboarded={setIsOnboarded} />
+            </SafeAreaProvider>
+          </PaperProvider>
+        </BottomSheetModalProvider>
+      </PersistQueryClientProvider>
     </GestureHandlerRootView>
 
   );

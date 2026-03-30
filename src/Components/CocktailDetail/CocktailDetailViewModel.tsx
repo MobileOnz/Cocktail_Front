@@ -1,15 +1,12 @@
-import { useCallback, useEffect, useState } from 'react';
-import { ICocktailDetailRepository } from '../../model/Repository/CocktailDetailRepository';
-import { CocktailDetail } from '../../model/domain/CocktailDetail';
+import { useState } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { ICocktailDetailRepository } from '../../model/repository/CocktailDetailRepository';
 import { di } from '../../DI/Container';
-import { CocktailCard } from '../../model/domain/CocktailCard';
 import instance from '../../tokenRequest/axios_interceptor';
-
 import Toast from 'react-native-toast-message';
 import { getToken } from '../../tokenRequest/Token';
 import perf from '@react-native-firebase/perf';
 import { stay10sPageCocktailDetail } from '../../analytics/eventProperty';
-
 
 type UseCocktailDetailDeps = {
     repository?: ICocktailDetailRepository;
@@ -17,146 +14,116 @@ type UseCocktailDetailDeps = {
 
 type ReactionType = 'RECOMMEND' | 'HARD';
 
+const fetchDetailData = async (id: number, repository: ICocktailDetailRepository) => {
+    const trace = await perf().newTrace('DetailScreen_Load');
+    await trace.start();
+    try {
+        const token = await getToken();
+        const [detailData, reactionRes] = await Promise.all([
+            repository.getDetailData(id),
+            token ? repository.fetchCocktailRecommendations(id.toString()) : Promise.resolve(null),
+        ]);
+
+        let recommendedCocktails = [];
+        if (detailData?.style) {
+            recommendedCocktails = await repository.recommendCocktails(detailData.style);
+        }
+
+        await trace.stop();
+        return {
+            detail: detailData,
+            myReaction: (reactionRes as ReactionType | null) ?? null,
+            recommendedCocktails,
+        };
+    } catch (e) {
+        await trace.stop();
+        throw e;
+    }
+};
+
 const useCocktailDetailViewModel = (id: number, deps?: UseCocktailDetailDeps) => {
-    const [detail, setDetail] = useState<CocktailDetail>();
-    const [recommendedCocktails, setRecommendedCocktails] = useState<CocktailCard[]>([]);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
+    const repository = deps?.repository ?? di.cocktailDetailRepository;
+    const queryClient = useQueryClient();
     const [myReaction, setMyReaction] = useState<ReactionType | null>(null);
 
-    const repository = deps?.repository ?? di.cocktailDetailRepository;
+    // 칵테일 상세 + 추천 목록: 24시간 캐시 (레시피/재료는 거의 안 바뀜)
+    const { data, isLoading, error } = useQuery({
+        queryKey: ['cocktailDetail', id],
+        queryFn: () => fetchDetailData(id, repository),
+        staleTime: 1000 * 60 * 60 * 24, // 24시간
+    });
 
     const checkToken = async () => {
         const token = await getToken();
-        console.log('현재 API 요청에 사용할 토큰:', token);
         if (!token) {
-            Toast.show({
-                type: 'error',
-                text1: '로그인이 필요합니다.',
-            });
+            Toast.show({ type: 'error', text1: '로그인이 필요합니다.' });
             return false;
         }
         return true;
     };
 
-
-    const fetchDetail = useCallback(async () => {
-        const trace = await perf().newTrace('DetailScreen_Load');
-        await trace.start();
-        setLoading(true);
-        setError(null);
-        const token = await getToken();
-
-        try {
-            const [detailData, reactionRes] = await Promise.all([
-                repository.getDetailData(id),
-                token ? repository.fetchCocktailRecommendations(id.toString()) : Promise.resolve(null),
-            ]);
-            console.log('서버에서 온 상세 데이터:', detailData);
-            setDetail(detailData);
-            if (reactionRes) {
-                setMyReaction(reactionRes as ReactionType);
-            } else {
-                setMyReaction(null);
-            }
-
-            if (detailData?.style) {
-                const recommendData = await repository.recommendCocktails(detailData.style);
-                setRecommendedCocktails(recommendData);
-            }
-            await trace.stop();
-        } catch (error) {
-            console.log(error);
-            setError('에러가 발생했습니다');
-            await trace.stop();
-        }
-        finally {
-            setLoading(false);
-        }
-
-    }, [id, repository]);
-
     const handleReaction = async (type: ReactionType) => {
         if (!(await checkToken())) { return; }
-
         const prev = myReaction;
         const next = myReaction === type ? null : type;
         setMyReaction(next);
-
         try {
-
             const res = await repository.postCocktailRecommendation(id.toString(), type);
-            console.log('[Reaction 성공] 전체 데이터:', res.data);
-
-            // 2. 특정 값만 찍어보고 싶을 때
             console.log('[Reaction 성공] 추천수:', res.data.recommendCount);
             console.log('[Reaction 성공] hardCount:', res.data.hardCount);
         } catch (e) {
             setMyReaction(prev);
-            Toast.show({
-                type: 'error',
-                text1: '반응을 등록하지 못했습니다.',
-
-            });
+            Toast.show({ type: 'error', text1: '반응을 등록하지 못했습니다.' });
         }
     };
 
     const trackStay10s = (entryOrigin: string) => {
-        if (!detail) {return;}
+        if (!data?.detail) { return; }
         stay10sPageCocktailDetail({
-            cocktailId: detail.id,
-            cocktailName: detail.korName,
+            cocktailId: data.detail.id,
+            cocktailName: data.detail.korName,
             entryOrigin,
         });
     };
 
     const bookmarked = async (cocktailId: number) => {
-
         if (!(await checkToken())) { return; }
 
-        //바로 아이템 표시를 위해 낙관적 UI 구조 활용
-        const toggleBookmarkInList = (list: CocktailCard[]) =>
-            list.map(item =>
-                item.id === cocktailId
-                    ? { ...item, isBookmarked: !item.isBookmarked }
-                    : item
-            );
+        // 낙관적 UI: 캐시 직접 수정
+        queryClient.setQueryData(['cocktailDetail', id], (old: typeof data) => {
+            if (!old) { return old; }
+            return {
+                ...old,
+                detail: old.detail?.id === cocktailId
+                    ? { ...old.detail, isBookmarked: !old.detail.isBookmarked }
+                    : old.detail,
+                recommendedCocktails: old.recommendedCocktails.map(item =>
+                    item.id === cocktailId ? { ...item, isBookmarked: !item.isBookmarked } : item,
+                ),
+            };
+        });
 
-        setRecommendedCocktails(prev => toggleBookmarkInList(prev));
-        if (detail && detail.id === cocktailId) {
-            setDetail({ ...detail, isBookmarked: !detail.isBookmarked });
-        }
-
-
+        // 홈 캐시도 동기화
+        queryClient.invalidateQueries({ queryKey: ['homeData'] });
 
         try {
-            const res = await instance.post(`/api/v2/cocktails/${cocktailId}/bookmarks`);
-
-            console.log('북마크 클릭 성공 응답:', res.data);
-
+            await instance.post(`/api/v2/cocktails/${cocktailId}/bookmarks`);
         } catch (error: any) {
-            console.error('북마크 처리 중 에러 발생:', error);
-            console.log('에러 데이터:', error.response.data);
-            console.log('에러 상태코드:', error.response.status);
-            console.log('에러 헤더:', error.response.headers);
-            await fetchDetail();
+            console.error('북마크 처리 중 에러:', error);
+            queryClient.invalidateQueries({ queryKey: ['cocktailDetail', id] });
         }
     };
 
-    useEffect(() => {
-        fetchDetail();
-    }, [fetchDetail]);
-
     return {
-        detail,
-        loading,
-        error,
-        recommendedCocktails,
+        detail: data?.detail,
+        loading: isLoading,
+        error: error ? '에러가 발생했습니다' : null,
+        recommendedCocktails: data?.recommendedCocktails ?? [],
         bookmarked,
         handleReaction,
-        myReaction,
+        myReaction: data?.myReaction ?? myReaction,
         trackStay10s,
     };
-
 };
+
 export default useCocktailDetailViewModel;

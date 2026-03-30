@@ -36,9 +36,14 @@ const AuthViewModel = () => {
 
     } catch (error: any) {
       if (error instanceof AuthError) {
+     console.log('카카오 로그인 에러:', JSON.stringify(error, null, 2));
+     console.log(error?.response?.data);
         throw error;
       }
 
+      console.error('[AuthViewModel] 원본 에러:', error);
+      console.error('[AuthViewModel] code:', error?.code, 'message:', error?.message);
+      console.error('[AuthViewModel] response:', JSON.stringify(error?.response?.data));
       throw new AuthError(
         AuthErrorType.SERVER_ERROR,
         '알 수 없는 로그인 오류'
@@ -63,6 +68,9 @@ const AuthViewModel = () => {
         throw error;
       }
 
+      console.error('[AuthViewModel] 원본 에러:', error);
+      console.error('[AuthViewModel] code:', error?.code, 'message:', error?.message);
+      console.error('[AuthViewModel] response:', JSON.stringify(error?.response?.data));
       throw new AuthError(
         AuthErrorType.SERVER_ERROR,
         '알 수 없는 로그인 오류'
@@ -87,6 +95,9 @@ const AuthViewModel = () => {
         throw error;
       }
 
+      console.error('[AuthViewModel] 원본 에러:', error);
+      console.error('[AuthViewModel] code:', error?.code, 'message:', error?.message);
+      console.error('[AuthViewModel] response:', JSON.stringify(error?.response?.data));
       throw new AuthError(
         AuthErrorType.SERVER_ERROR,
         '알 수 없는 로그인 오류'
@@ -111,6 +122,9 @@ const AuthViewModel = () => {
         throw error;
       }
 
+      console.error('[AuthViewModel] 원본 에러:', error);
+      console.error('[AuthViewModel] code:', error?.code, 'message:', error?.message);
+      console.error('[AuthViewModel] response:', JSON.stringify(error?.response?.data));
       throw new AuthError(
         AuthErrorType.SERVER_ERROR,
         '알 수 없는 로그인 오류'

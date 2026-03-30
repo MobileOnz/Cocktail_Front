@@ -2,6 +2,7 @@ export enum AuthErrorType {
   TOKEN_EXPIRED = 'TOKEN_EXPIRED',
   SOCIAL_LOGIN_FAILED = 'SOCIAL_LOGIN_FAILED',
   SERVER_ERROR = 'SERVER_ERROR',
+  CANCELLED = 'CANCELLED',
 }
 
 export class AuthError extends Error {

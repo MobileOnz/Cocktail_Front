@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.cocktail_front",
+      "sha256_cert_fingerprints": [
+        "B8:9E:BC:56:15:E5:6C:03:9B:7F:67:49:AE:06:F5:B5:67:AC:51:74:7A:DB:72:37:12:26:62:84:A2:F5:B7:4E"
+      ]
+    }
+  }
+]

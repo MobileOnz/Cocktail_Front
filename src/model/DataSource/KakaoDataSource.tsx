@@ -20,27 +20,34 @@ export class KakaoAuthDataSource implements ISocialAuthDataSource {
         );
       }
       console.log('accessToken', accessToken);
-      const response = await axios.post(
-        `${API_BASE_URL}/api/v2/auth/social-login`,
-        {
-          provider: 'kakao',
-          accessToken: accessToken,
-          code: '',
-          state: '',
+      let response;
+      try {
+        response = await axios.post(
+          `${API_BASE_URL}/api/v2/auth/social-login`,
+          {
+            provider: 'kakao',
+            accessToken: accessToken,
+            code: '',
+            state: '',
+          }
+        );
+      } catch (axiosError: any) {
+        if (axiosError.response) {
+          console.error('[Kakao] 백엔드 에러 status:', axiosError.response.status);
+          console.error('[Kakao] 백엔드 에러 data:', JSON.stringify(axiosError.response.data));
+        } else {
+          console.error('[Kakao] 네트워크 에러:', axiosError.message);
         }
-      );
-
-      const data = response.data;
-      console.log('카카오 로그인 - 백엔드 응답값: ' + data.accessToken);
-      // 신규 회원
-      if (data.type === 'signup') {
-        return {
-          type: 'signup',
-          signupCode: data.code,
-        };
+        throw axiosError;
       }
 
-      //기존 회원
+      const data = response.data;
+      console.log('[Kakao] 백엔드 응답:', JSON.stringify(data));
+
+      if (data.type === 'signup') {
+        return { type: 'signup', signupCode: data.code };
+      }
+
       return {
         type: 'token',
         accessToken: data.accessToken,
@@ -49,8 +56,11 @@ export class KakaoAuthDataSource implements ISocialAuthDataSource {
 
     } catch (error: any) {
       if (error.code === 'E_CANCELLED_OPERATION') {
-        throw new Error('카카오 로그인 취소');
+        throw new AuthError(AuthErrorType.CANCELLED, '카카오 로그인 취소');
       }
+      console.error('[Kakao] SDK 에러 code:', error.code);
+      console.error('[Kakao] SDK 에러 message:', error.message);
+      console.error('[Kakao] SDK 에러 full:', JSON.stringify(error));
       throw error;
     }
   }

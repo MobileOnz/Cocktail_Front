@@ -46,6 +46,7 @@ const SignupScreen: React.FC<SignupScreenProps> = ({ navigation }) => {
       return;
     }
     if (!signUpCode) {
+      setModalVisible(false);
       showToast('인증 코드가 없습니다. 다시 로그인해주세요.');
       navigation.navigate('Login' as never);
       return;
@@ -67,8 +68,8 @@ const SignupScreen: React.FC<SignupScreenProps> = ({ navigation }) => {
       setModalVisible(false);
       navigation.navigate('BottomTabNavigator' as never);
     } catch (error: any) {
+      console.error('[SignUp] 에러:', error?.message, JSON.stringify(error?.response?.data));
       showToast('알 수 없는 오류가 발생했습니다.');
-      // 에러 시 모달 유지 → 사용자가 다시 시도 가능
     }
   };
 

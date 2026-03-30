@@ -371,6 +371,7 @@ const styles = StyleSheet.create({
   },
   newCocktailName: {
     fontSize: fontPercentage(16),
+    color : '#000000',
     fontWeight: '500',
     fontFamily: 'Pretendard-Medium',
   },
@@ -437,6 +438,7 @@ const styles = StyleSheet.create({
   mainText: {
     fontFamily: 'Pretendard-SemiBold',
     fontWeight: '600',
+    color : '#000000'
   },
   filterView: {
     flexDirection: 'row',
