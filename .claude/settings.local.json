@@ -26,7 +26,8 @@
       "Bash(adb shell:*)",
       "Bash(openssl sha1:*)",
       "Bash(openssl base64:*)",
-      "Bash(xxd:*)"
+      "Bash(xxd:*)",
+      "Bash(npm ci:*)"
     ]
   }
 }
