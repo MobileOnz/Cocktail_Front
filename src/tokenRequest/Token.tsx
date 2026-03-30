@@ -15,7 +15,7 @@ export async function getToken(): Promise<string | null> {
  */
 export async function isTokenExpired(): Promise<boolean> {
   const token = await getToken();
-  if (!token) {return true;}
+  if (!token) { return true; }
 
   try {
     const decoded: any = jwtDecode(token);
@@ -45,28 +45,23 @@ export async function tokenRefresh(): Promise<string | null> {
         return null;
       }
 
-      const response = await axios.post(`${API_BASE_URL}/api/auth/refresh`, null, {
+      const response = await axios.post(`${API_BASE_URL}/api/v2/auth/reissue`, null, {
         headers: {
-          'Refresh-Token': refreshToken,
+          'RefreshToken': refreshToken,
         },
       });
 
-      const newAccessToken = response.data.data.access_token;
-      const newRefreshToken = response.data.data.refresh_token;
-
-      console.log('response.data.data :', response.data.data);
-      console.log('newAccessToken :', newAccessToken);
-      console.log('newRefreshToken :', newRefreshToken);
-
-      if (!newAccessToken || !newRefreshToken) {
+      const { accessToken, refreshToken: newRefreshToken } = response.data;
+      console.log('[Token] 재발급 성공:', { accessToken: '받음', refreshToken: '받음' });
+      if (!accessToken || !newRefreshToken) {
         console.error('access 또는 refresh 토큰이 응답에 없습니다.');
         return null;
       }
 
-      await AsyncStorage.setItem('accessToken', newAccessToken);
+      await AsyncStorage.setItem('accessToken', accessToken);
       await AsyncStorage.setItem('refreshToken', newRefreshToken);
 
-      return newAccessToken;
+      return accessToken;
     } catch (error: any) {
       try {
         const token = error.response?.data?.data?.access_token;

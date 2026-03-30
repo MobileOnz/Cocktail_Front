@@ -1,160 +1,181 @@
-import React, { useRef, useState } from 'react';
-import { Image, TouchableOpacity, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import React from 'react';
+import { StyleSheet, View } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { BlurView } from '@react-native-community/blur';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import CocktailBookScreen from '../BottomTab/CocktailBookScreen';
-import RecommendationsScreen from '../BottomTab/RecommendationIntroScreen';
-import MyPageScreen from '../BottomTab/MyPageScreen';
-import theme from '../assets/styles/theme';
-import {
-  widthPercentage,
-  heightPercentage,
-  fontPercentage,
-} from '../assets/styles/FigmaScreen';
-import { isTokenExpired } from '../tokenRequest/Token';
+// import AsyncStorage from '@react-native-async-storage/async-storage';
+import Home from '../BottomTab/Cocktail_List/CocktailListScreen';
+import RecommendationIntroScreen from '../BottomTab/Recommend/RecommendationIntroScreen';
+import LinearGradient from 'react-native-linear-gradient';
+
+// import { isTokenExpired } from '../tokenRequest/Token';
 import { BottomTabParamList } from './Navigation';
-import OpenBottomSheet, { OpenBottomSheetHandle } from '../Components/BottomSheet/OpenBottomSheet';
-import FilterBottomSheet from '../Components/BottomSheet/FilterBottomSheet';
-import Maps from '../BottomTab/Cocktail_List/CocktailListScreen';
-import { Portal } from 'react-native-paper';
+import GuideScreen from '../BottomTab/Guide/GuideScreen';
+import HomeIcon from '../assets/drawable/Home.svg';
+import RecommendIcon from '../assets/drawable/Cocktail.svg';
+import GuideIcon from '../assets/drawable/Guide.svg';
+import MyPageIcon from '../assets/drawable/MyPage.svg';
+import MyPageScreen from '../BottomTab/MyPage/MyPageScreen';
+import { heightPercentage } from '../assets/styles/FigmaScreen';
+import { useNavigationState } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const Tab = createBottomTabNavigator<BottomTabParamList>();
+export const ICON_PATH = {
+  홈: HomeIcon,
+  '맞춤 추천': RecommendIcon,
+  가이드: GuideIcon,
+  마이페이지: MyPageIcon,
+} as const;
+
+const TabBarBackground = () => {
+  const state = useNavigationState(state => state);
+  const currentRouteName = state?.routes[state.index]?.name;
+  const isMyPage = currentRouteName === '마이페이지';
+  return (
+    <View style={styles.container}>
+      <BlurView
+        blurType={isMyPage ? 'light' : 'dark'}
+        blurAmount={isMyPage ? 10 : 1}
+        reducedTransparencyFallbackColor="transparent"
+      />
+      <View
+        style={[
+          StyleSheet.absoluteFill,
+          { backgroundColor: isMyPage ? 'rgba(255, 255, 255, 0.8)' : 'rgba(0, 0, 0, 0.2)' },
+        ]}
+      />
+
+      <LinearGradient
+        style={StyleSheet.absoluteFill}
+        colors={[
+          'rgba(255, 255, 255, 0.15)',
+          'transparent',
+          'rgba(255, 255, 255, 0.15)',
+        ]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 0 }}
+      />
+    </View>
+  );
+};
 
 const BottomTabNavigator = () => {
-  const sheetRef = useRef<OpenBottomSheetHandle>(null);
-
-  const [_isLoginSheetVisible, setLoginSheetVisible] = useState(false);
-  const [_isLoggedIn, setIsLoggedIn] = useState(false);
-
-  // 맞춤 추천 탭 클릭 시 로그인 체크
-  const handleRecommendationPress = async () => {
-    try {
-      const token = await AsyncStorage.getItem('accessToken');
-
-      if (!token) {
-        setIsLoggedIn(false);
-        setLoginSheetVisible(true);
-        return;
-      }
-
-      const expired = await isTokenExpired();
-
-      if (expired) {
-        setIsLoggedIn(false);
-        setLoginSheetVisible(true);
-        return;
-      }
-
-      // 유효한 토큰
-      setIsLoggedIn(true);
-    } catch (error) {
-      console.error('🔒 토큰 확인 중 오류 발생:', error);
-      setLoginSheetVisible(true);
-    }
-  };
-
-  // 커스텀 탭 버튼
-  const CustomTabBarButton = (props: any) => (
-    <TouchableOpacity
-      {...props}
-      onPress={() => {
-        console.log('🖲 CustomTabBarButton 클릭됨!');
-        handleRecommendationPress();
-      }}
-      activeOpacity={1}
-    />
-  );
+  const insets = useSafeAreaInsets();
 
   return (
-    <>
-      <View style={{ flex: 1 }}>
-        <Tab.Navigator
-          initialRouteName="지도"
-          screenOptions={({ route }) => ({
-            tabBarBackground: () => (
-              <BlurView
-                style={{ flex: 1 }}
-                blurType="light"
-                blurAmount={20}
-                reducedTransparencyFallbackColor="rgba(255,255,255,0.6)"
-                overlayColor="transparent"
+    <View style={{ flex: 1 }}>
+      <Tab.Navigator
+        initialRouteName="홈"
+        screenOptions={({ route }) => ({
+          tabBarShowLabel: false,
+          tabBarBackground: () => <TabBarBackground />,
+          tabBarStyle: {
+            position: 'absolute',
+            marginHorizontal: 10,
+            bottom: insets.bottom + 12,
+            backgroundColor: 'transparent',
+            borderTopWidth: 0,
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 10 },
+            shadowOpacity: 0.25,
+            shadowRadius: 15,
+            elevation: 0,
+            height: heightPercentage(58),
+            borderRadius: 999,
+            overflow: 'hidden',
+            paddingBottom: 0,
+            paddingTop: 0,
+          },
+          tabBarIconStyle: {
+            width: '100%',
+            height: '100%',
+            marginBottom: 0,
+            marginTop: 0,
+          },
+          tabBarItemStyle: {
+            height: heightPercentage(58),
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+          },
+          tabBarIcon: ({ focused }) => {
+
+            const IconComponent =
+              ICON_PATH[route.name as keyof typeof ICON_PATH] ?? ICON_PATH['홈'];
+            const isMyPageTab = route.name === '마이페이지';
+
+            let c;
+            if (isMyPageTab) {
+              c = focused ? '#000000' : '#E0E0E0';
+            } else {
+              c = focused ? '#FFFFFF' : '#E0E0E0';
+            }
+
+            return (
+              <IconComponent
+                width={40}
+                height={40}
+                color={c}
               />
-            ),
-            tabBarIcon: ({ color }) => {
-              let iconSource;
-              const iconStyle = {
-                width: widthPercentage(18),
-                height: heightPercentage(18),
-                tintColor: color,
-                marginTop: heightPercentage(4),
-              };
-
-              if (route.name === '지도') {
-                iconSource = require('../assets/drawable/maps.png');
-              } else if (route.name === '칵테일 백과') {
-                iconSource = require('../assets/drawable/dictionary.png');
-              } else if (route.name === '맞춤 추천') {
-                iconSource = require('../assets/drawable/recommend.png');
-              } else if (route.name === '마이페이지') {
-                iconSource = require('../assets/drawable/mypage.png');
+            );
+          },
+        })}
+      >
+        <Tab.Screen name="홈" component={Home} options={{ headerShown: false }} />
+        <Tab.Screen
+          name="맞춤 추천"
+          component={RecommendationIntroScreen}
+          options={{
+            headerShown: false,
+          }}
+          listeners={({ navigation }) => ({
+            tabPress: async e => {
+              e.preventDefault(); // ❗ 탭 전환 막기
+              
+              // 로그인 시에만 접근 가능하게 하기
+              const loggedIn = await AsyncStorage.getItem('accessToken');
+              console.log(loggedIn)
+              if (!loggedIn) {
+                navigation.navigate('Login', {
+                  redirect: 1
+                });
+                return;
               }
-
-              return <Image source={iconSource} style={iconStyle} resizeMode="contain" />;
-            },
-            // 모든 탭에 동일하게 적용되는 스타일
-            tabBarStyle: {
-              position: 'absolute',
-              height: heightPercentage(60),
-              backgroundColor: 'transparent',
-              borderTopWidth: 0,
-              elevation: 0,
-              borderRadius: 100,
-              overflow: 'hidden',
-              marginBottom: heightPercentage(30),
-            },
-            tabBarLabelStyle: {
-              fontSize: fontPercentage(11),
-              paddingBottom: 5,
-            },
-            tabBarItemStyle: {
-              justifyContent: 'center',
-              alignItems: 'center',
-              marginBottom: 10,
-            },
-            tabBarActiveTintColor: 'black',
-            tabBarInactiveTintColor: theme.bottomTextColor,
+              
+              navigation.getParent()?.navigate('RecommendIntroScreen');
+            }    
           })}
-        >
-          <Tab.Screen
-            name="지도"
-            options={{ headerShown: false }}
-          >
-            {() => <Maps sheetRef={sheetRef} />}
-          </Tab.Screen>
-          <Tab.Screen name="칵테일 백과" component={CocktailBookScreen} options={{ headerShown: false }} />
-          <Tab.Screen
-            name="맞춤 추천"
-            component={RecommendationsScreen}
-            options={{
-              headerShown: false,
-              tabBarButton: CustomTabBarButton,
-            }}
-          />
-          <Tab.Screen name="마이페이지" component={MyPageScreen} options={{ headerShown: false }} />
-        </Tab.Navigator>
+        />
+
+        <Tab.Screen
+          name="가이드"
+          component={GuideScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
+
+        <Tab.Screen name="마이페이지" component={MyPageScreen} options={{ headerShown: false }} />
+      </Tab.Navigator>
 
 
-        <SafeAreaView edges={['bottom']} style={{ backgroundColor: 'transparent' }} />
-      </View>
-      <Portal>
-        <OpenBottomSheet ref={sheetRef}>
-          <FilterBottomSheet />
-        </OpenBottomSheet>
-      </Portal>
-    </>
+    </View>
   );
 };
 
 export default BottomTabNavigator;
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    borderRadius: 30,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: 'rgba(245, 245, 245, 1)',
+  },
+  absolute: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(255,255,255,0.4)',
+  },
+});

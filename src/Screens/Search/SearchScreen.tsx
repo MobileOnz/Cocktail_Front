@@ -1,12 +1,11 @@
-// src/screens/SearchScreen.tsx
 import React from 'react';
 import {
   View,
-  Text,
   StyleSheet,
   TouchableOpacity,
-  ScrollView,
   StatusBar,
+  Text,
+  FlatList,
   Image,
 } from 'react-native';
 import { StackScreenProps } from '@react-navigation/stack';
@@ -18,8 +17,11 @@ import {
 } from '../../assets/styles/FigmaScreen';
 import { RootStackParamList } from '../../Navigation/Navigation';
 import { useSearchViewModel } from '../Search/SearchViewModel';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import FIcon from 'react-native-vector-icons/Feather';
+import Icon from 'react-native-vector-icons/Ionicons';
 import { TextInput } from 'react-native-paper';
+import Animated from 'react-native-reanimated';
+
 type SearchScreenProps = StackScreenProps<RootStackParamList, 'SearchScreen'>;
 
 const SearchScreen: React.FC<SearchScreenProps> = ({ navigation, route }) => {
@@ -27,14 +29,16 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation, route }) => {
 
   const {
     searchText,
-    suggestions,
-    recentNameSearches,
-    recentMenuSearches,
-    setSearchText,
-    handleSuggestionPress,
-    handleRecentSearchPress,
+    handleSearchTextChange,
     handleClearText,
+    handleSubmitSearch,
+    suggestions,
     handleGoBack,
+    navigateToMap,
+    recentSearches,
+    removeRecentSearch,
+    clearAllRecentSearches,
+    handleRecentSearchPress,
   } = useSearchViewModel({
     navigation,
     initialKeyword,
@@ -44,96 +48,110 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation, route }) => {
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor={theme.background} />
 
-      {/* 검색 입력 영역 */}
-      <View style={[styles.header, { backgroundColor: theme.background }]}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={handleGoBack}
-        >
-          <Icon name="chevron-left" size={30} color="#333" />
+      {/* 상단 검색 바 영역 */}
+      <View style={styles.header}>
+        <TouchableOpacity style={styles.backButton} onPress={handleGoBack}>
+          <Icon name="chevron-back-sharp" size={24} color="#000" />
         </TouchableOpacity>
 
         <TextInput
-          style={styles.searchInput}
+          style={[styles.searchInput, { paddingLeft: 0 }]}
           mode="outlined"
-          placeholder="칵테일을 검색해보세요."
+          placeholder="칵테일을 검색해보세요"
+          placeholderTextColor="#D9D9D9"
           value={searchText}
-          onChangeText={setSearchText}
-          left={<TextInput.Icon icon="magnify" />}
+          onChangeText={handleSearchTextChange}
+          onSubmitEditing={handleSubmitSearch}
+
+          contentStyle={{ marginLeft: 45, paddingLeft: 0 }}
+          left={
+            <TextInput.Icon
+              forceTextInputFocus={false}
+              icon={() => (
+                <Animated.Image
+                  source={require('../../assets/drawable/SharpSearch.png')}
+                  style={{
+                    width: 24,
+                    height: 24,
+                    tintColor: '#D9D9D9',
+                  }}
+                  resizeMode="contain"
+                />
+              )}
+
+            />
+
+          }
           right={
             searchText.length > 0 ? (
+
               <TextInput.Icon
                 icon="close-circle"
-                color="#868686"
+                color="#BDBDBD"
                 onPress={handleClearText}
               />
             ) : null
           }
+          outlineStyle={{ borderRadius: 8, borderWidth: 0 }}
           activeOutlineColor="transparent"
-          outlineColor="#E0DCCE"
+
         />
       </View>
 
-      {/* 추천 검색어 & 최근 검색어 */}
-      <ScrollView
-        contentContainerStyle={[
-          styles.scrollContent,
-          { backgroundColor: theme.background },
-        ]}
-      >
-        {searchText.length > 0 && suggestions.length > 0 && (
-          <>
-            <Text style={styles.sectionTitle}>추천 검색어</Text>
-            {suggestions.map((keyword, index) => (
-              <TouchableOpacity
-                key={index}
-                style={styles.keywordButton}
-                onPress={() => handleSuggestionPress(keyword)}
-              >
-                <Text style={styles.keywordText}>{keyword}</Text>
-              </TouchableOpacity>
-            ))}
-          </>
-        )}
 
-        {(searchText.length === 0 || initialKeyword) && (
-          <>
-            <Text
-              style={[
-                styles.sectionTitle,
-                { marginTop: 24, fontSize: 18 },
-              ]}
-            >
-              최근 검색어
-            </Text>
-            {[...recentNameSearches, ...recentMenuSearches].map(
-              (item, index) => {
-                const iconSource =
-                  item.search_type === 'NAME'
-                    ? require('../../assets/drawable/search_location_icon.png')
-                    : require('../../assets/drawable/search_menu_icon.png');
+      {/* 검색어 입력 전: 최근 검색어 목록 */}
+      {searchText.length === 0 && (
+        <View style={styles.content}>
+          <View style={styles.recentHeader}>
+            <Text style={styles.recentTitle}>최근 검색어</Text>
+            <TouchableOpacity onPress={clearAllRecentSearches}>
+              <Text style={styles.clearAllText}>전체 삭제</Text>
+            </TouchableOpacity>
+          </View>
 
-                return (
-                  <TouchableOpacity
-                    key={`${item.keyword}-${index}`}
-                    style={styles.recentItem}
-                    onPress={() => handleRecentSearchPress(item.keyword)}
-                  >
-                    <View style={styles.recentRow}>
-                      <Image
-                        source={iconSource}
-                        style={styles.recentIcon}
-                        resizeMode="contain"
-                      />
-                      <Text style={styles.recentText}>{item.keyword}</Text>
-                    </View>
-                  </TouchableOpacity>
-                );
-              },
+          <FlatList
+            data={recentSearches}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={({ item }) => (
+              <View style={styles.recentItem}>
+                <TouchableOpacity
+                  style={{ flex: 1 }}
+                  onPress={() => handleRecentSearchPress(item.queryText)}
+                >
+                  <Text style={styles.recentText}>{item.queryText}</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => removeRecentSearch(item.id)}>
+                  <FIcon name="close" size={20} color="#333" />
+                </TouchableOpacity>
+              </View>
             )}
-          </>
-        )}
-      </ScrollView>
+          />
+        </View>
+      )}
+
+      {/* 검색어 입력 중: 자동완성 추천 목록 */}
+      {searchText.length > 0 && (
+        <View style={styles.content}>
+          {suggestions.map((item, index) => (
+            <TouchableOpacity
+              style={styles.suggestionItem}
+              onPress={() => navigateToMap(item.name)}
+              key={index}
+            >
+              <Image
+                source={require('../../assets/drawable/SharpSearch.png')}
+                style={{
+                  width: 20,
+                  height: 20,
+                  tintColor: '#313131',
+                }}
+                resizeMode="contain"
+              />
+              <Text style={styles.suggestionText}>{item.name}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      )}
     </View>
   );
 };
@@ -143,80 +161,64 @@ export default SearchScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: theme.background,
+    backgroundColor: '#FFFFFF', // 화이트 배경
   },
   header: {
-    position: 'relative',
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: widthPercentage(16),
-    paddingVertical: heightPercentage(10),
-    backgroundColor: '#f0f0f0',
-  },
-  clearButton: {
-    right: widthPercentage(9),
-    top: heightPercentage(38),
-    position: 'absolute',
-    width: widthPercentage(18),
-    height: heightPercentage(18),
+    marginTop: heightPercentage(50), // 상태바 높이 고려
+    paddingBottom: heightPercentage(10),
   },
   backButton: {
-    width: widthPercentage(24),
-    height: widthPercentage(24),
-    marginTop: heightPercentage(40),
-    marginRight: widthPercentage(15),
+    marginRight: widthPercentage(8),
   },
   searchInput: {
-    color: '#F3EFE6',
-    marginRight: widthPercentage(30),
-    paddingHorizontal: heightPercentage(12),
-    backgroundColor: '#F3EFE6',
-    borderRadius: 8,
-    width: '90%',
-    height: heightPercentage(48),
-    marginTop: heightPercentage(49),
-    lineHeight: fontPercentage(22), // 150%
-    letterSpacing: fontPercentage(16) * 0.0057,
+    flex: 1,
+    fontFamily: 'Pretendard-Medium',
+    height: heightPercentage(42),
+    backgroundColor: '#F5F5F5', // 연한 회색 배경
     fontSize: fontPercentage(16),
-    textAlignVertical: 'center',
   },
-  scrollContent: {
-    paddingHorizontal: widthPercentage(16),
-    paddingVertical: heightPercentage(16),
+  content: {
+    paddingHorizontal: widthPercentage(20),
+    marginTop: heightPercentage(20),
   },
-  sectionTitle: {
-    fontSize: fontPercentage(16),
-    fontWeight: 'bold',
-    marginBottom: heightPercentage(8),
+  recentHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: heightPercentage(20),
   },
-  keywordButton: {
-    height: heightPercentage(40),
-    justifyContent: 'center',
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
+  recentTitle: {
+    fontFamily: 'Pretendard-SemiBold',
+    fontSize: fontPercentage(18),
+    color: '#000',
   },
-  keywordText: {
-    fontSize: fontPercentage(14),
-    color: '#333',
+  clearAllText: {
+    fontFamily: 'Pretendard-Medium',
+    fontSize: fontPercentage(12),
+    color: '#868686',
   },
   recentItem: {
-    height: heightPercentage(48),
-    justifyContent: 'center',
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
-  },
-  recentRow: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-  },
-  recentIcon: {
-    width: widthPercentage(24),
-    height: widthPercentage(24),
-    marginRight: widthPercentage(12),
+    paddingVertical: heightPercentage(12),
   },
   recentText: {
+    fontFamily: 'Pretendard-Medium',
     fontSize: fontPercentage(16),
-    color: '#2d2d2d',
-    fontFamily: 'pretendard-Medium',
+    color: '#616161',
+  },
+  suggestionItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: heightPercentage(12),
+  },
+  suggestionText: {
+    fontSize: fontPercentage(16),
+    color: '#616161',
+    marginLeft: widthPercentage(10),
   },
 });
