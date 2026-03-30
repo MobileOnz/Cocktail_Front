@@ -43,7 +43,7 @@ const useSearchResultViewModel = (keyword: string, deps?: UseSearchResultDeps) =
     const [appliedFilter, setAppliedFilter] = useState<FilterState>(DEFAULT_FILTER);
 
     // 검색 결과: 5분 캐시 (같은 키워드+필터 재검색 시 캐시 활용)
-    const { data, isLoading, error, refetch } = useQuery({
+    const { data, isLoading, error } = useQuery({
         queryKey: ['searchResult', keyword, appliedFilter],
         queryFn: () => fetchSearchResult(keyword, appliedFilter, repository),
         staleTime: 1000 * 60 * 5, // 5분
