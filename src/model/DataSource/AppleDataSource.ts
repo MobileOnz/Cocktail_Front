@@ -4,6 +4,7 @@ import { ISocialAuthDataSource } from './ISocialAuthDataSource';
 import { API_BASE_URL } from '@env';
 import { appleAuth } from '@invertase/react-native-apple-authentication';
 import DeviceInfo from 'react-native-device-info';
+import { AuthError, AuthErrorType } from '../domain/AuthError';
 
 export class AppleDataSource implements ISocialAuthDataSource {
     async login(): Promise<AuthResult> {
@@ -38,13 +39,12 @@ export class AppleDataSource implements ISocialAuthDataSource {
             );
 
             const data = response.data;
-            console.log('애플 로그인 - 백엔드 응답 유형:', data.type);
-
+            console.log('[Apple] 백엔드 전체 응답:', JSON.stringify(data));
 
             if (data.type === 'signup') {
                 return {
                     type: 'signup',
-                    signupCode: data.tempCode,
+                    signupCode: data.tempCode ?? data.code,
                 };
             }
 
@@ -55,12 +55,16 @@ export class AppleDataSource implements ISocialAuthDataSource {
             };
 
         } catch (error: any) {
-
             if (error.code === appleAuth.Error.CANCELED) {
-                throw new Error('애플 로그인 취소');
+                throw new AuthError(AuthErrorType.CANCELLED, '애플 로그인 취소');
             }
 
-            console.error('AppleDataSource Error:', error);
+            if (error.response) {
+                console.error('[Apple] 백엔드 에러 status:', error.response.status);
+                console.error('[Apple] 백엔드 에러 data:', JSON.stringify(error.response.data));
+            } else {
+                console.error('[Apple] 에러:', error.message ?? error);
+            }
             throw error;
         }
     }

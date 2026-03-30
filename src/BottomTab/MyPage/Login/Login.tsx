@@ -7,6 +7,7 @@ import { RootStackParamList } from '../../../Navigation/Navigation';
 import { useToast } from '../../../Components/ToastContext';
 import AuthViewModel from './AuthViewModel';
 import { AuthError, AuthErrorType } from '../../../model/domain/AuthError';
+import Icon from 'react-native-vector-icons/Ionicons';
 type LoginScreenProps = StackScreenProps<RootStackParamList, 'Login'>;
 
 const LoginScreen: React.FC<LoginScreenProps> = ({ navigation, route }) => {
@@ -38,7 +39,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation, route }) => {
         }
 
         navigation.navigate('BottomTabNavigator', {
-          screen: '지도',
+          screen: '홈',
           params: { shouldRefresh: true },
         });
         return;
@@ -52,22 +53,21 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation, route }) => {
       }
 
     } catch (error) {
+      console.error('[Login] catch:', error);
       if (error instanceof AuthError) {
+        if (error.type === AuthErrorType.CANCELLED) { return; }
         switch (error.type) {
           case AuthErrorType.TOKEN_EXPIRED:
             showToast('로그인이 만료되었습니다.');
             break;
-
           case AuthErrorType.SOCIAL_LOGIN_FAILED:
             showToast('소셜 로그인에 실패했습니다.');
             break;
-
           default:
             showToast('로그인에 실패했습니다.');
         }
         return;
       }
-
       showToast('알 수 없는 오류가 발생했습니다.');
     }
   };
@@ -95,7 +95,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation, route }) => {
         }
 
         navigation.navigate('BottomTabNavigator', {
-          screen: '지도',
+          screen: '홈',
           params: { shouldRefresh: true },
         });
         return;
@@ -109,22 +109,21 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation, route }) => {
       }
 
     } catch (error) {
+      console.error('[Login] catch:', error);
       if (error instanceof AuthError) {
+        if (error.type === AuthErrorType.CANCELLED) { return; }
         switch (error.type) {
           case AuthErrorType.TOKEN_EXPIRED:
             showToast('로그인이 만료되었습니다.');
             break;
-
           case AuthErrorType.SOCIAL_LOGIN_FAILED:
             showToast('소셜 로그인에 실패했습니다.');
             break;
-
           default:
             showToast('로그인에 실패했습니다.');
         }
         return;
       }
-
       showToast('알 수 없는 오류가 발생했습니다.');
     }
   };
@@ -185,7 +184,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation, route }) => {
         }
 
         navigation.navigate('BottomTabNavigator', {
-          screen: '지도',
+          screen: '홈',
           params: { shouldRefresh: true },
         });
         return;
@@ -199,22 +198,21 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation, route }) => {
       }
 
     } catch (error) {
+      console.error('[Login] catch:', error);
       if (error instanceof AuthError) {
+        if (error.type === AuthErrorType.CANCELLED) { return; }
         switch (error.type) {
           case AuthErrorType.TOKEN_EXPIRED:
             showToast('로그인이 만료되었습니다.');
             break;
-
           case AuthErrorType.SOCIAL_LOGIN_FAILED:
             showToast('소셜 로그인에 실패했습니다.');
             break;
-
           default:
             showToast('로그인에 실패했습니다.');
         }
         return;
       }
-
       showToast('알 수 없는 오류가 발생했습니다.');
     }
   };
@@ -225,8 +223,20 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation, route }) => {
       console.log(JSON.stringify(result));
       if (result.type === 'token') {
         showToast('로그인하였습니다.');
+
+        if (redirectTo === 1) {
+          navigation.reset({
+            index: 0,
+            routes: [
+              { name: 'BottomTabNavigator', params: { screen: '홈' } },
+              { name: 'RecommendIntroScreen' },
+            ],
+          });
+          return;
+        }
+
         navigation.navigate('BottomTabNavigator', {
-          screen: '지도',
+          screen: '홈',
           params: { shouldRefresh: true },
         });
         return;
@@ -240,22 +250,21 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation, route }) => {
       }
 
     } catch (error) {
+      console.error('[Login] catch:', error);
       if (error instanceof AuthError) {
+        if (error.type === AuthErrorType.CANCELLED) { return; }
         switch (error.type) {
           case AuthErrorType.TOKEN_EXPIRED:
             showToast('로그인이 만료되었습니다.');
             break;
-
           case AuthErrorType.SOCIAL_LOGIN_FAILED:
             showToast('소셜 로그인에 실패했습니다.');
             break;
-
           default:
             showToast('로그인에 실패했습니다.');
         }
         return;
       }
-
       showToast('알 수 없는 오류가 발생했습니다.');
     }
   };
@@ -317,14 +326,9 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation, route }) => {
 
           {/* Apple 버튼 */}
           {Platform.OS === 'ios' && (
-            <TouchableOpacity
-              style={styles.loginButton}
-              onPress={appleLogin}
-            >
-              <Image
-                source={require('../../../assets/drawable/Apple_login.png')}
-                style={styles.buttonImage}
-              />
+            <TouchableOpacity style={[styles.loginButton, styles.appleButton]} onPress={appleLogin}>
+              <Icon name="logo-apple" size={20} color="#000" style={styles.appleIcon} />
+              <Text style={styles.appleButtonText}>Apple로 로그인</Text>
             </TouchableOpacity>
           )}
 
@@ -387,6 +391,22 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     resizeMode: 'contain',
+  },
+  appleButton: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  appleIcon: {
+    marginRight: 8,
+  },
+  appleButtonText: {
+    color: '#000000',
+    fontSize: fontPercentage(15),
+    fontFamily: 'Pretendard-Medium',
+    fontWeight: '600',
   },
 });
 

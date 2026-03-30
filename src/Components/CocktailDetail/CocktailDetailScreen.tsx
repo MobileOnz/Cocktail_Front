@@ -1,7 +1,7 @@
 // CocktailDetailScreen.tsx
 import React, { useEffect, useRef } from 'react';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { Image, ScrollView, Text, View, StyleSheet, Pressable, TouchableOpacity } from 'react-native';
+import { Image, ScrollView, Text, View, StyleSheet, Pressable, TouchableOpacity, Share } from 'react-native';
 import { ActivityIndicator, Divider } from 'react-native-paper';
 
 import PillStyleStatus from '../PillStyleStatus';
@@ -43,6 +43,16 @@ export function CocktailDetailScreen({ route }: Props) {
 
   const vm = useCocktailDetailViewModel(cocktailId);
   const stay10sTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handleShare = async () => {
+    if (!vm.detail) { return; }
+    const url = `https://onz-cocktail.kr/cocktail/${vm.detail.id}`;
+    await Share.share({
+      title: vm.detail.korName,
+      message: `${vm.detail.korName} 칵테일을 확인해보세요!\n\n${url}`,
+      url,
+    });
+  };
 
   useEffect(() => {
     if (!vm.detail) {return;}
@@ -112,7 +122,7 @@ export function CocktailDetailScreen({ route }: Props) {
               />
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={() => { }} style={{ marginRight: 10 }}>
+            <TouchableOpacity onPress={handleShare} style={{ marginRight: 10 }}>
               <Icon name="share-social-outline" size={24} color={'#fff'} />
             </TouchableOpacity>
 

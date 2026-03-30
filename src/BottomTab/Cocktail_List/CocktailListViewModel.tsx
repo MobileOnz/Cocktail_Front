@@ -1,92 +1,24 @@
-import { useCallback, useEffect, useState } from 'react';
-import { IHomeCocktailRepository } from '../../model/Repository/HomeCocktailRepository';
+import { useCallback, useState } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { di } from '../../DI/Container';
-import { CocktailCard } from '../../model/domain/CocktailCard';
-import { CocktailMain } from '../../model/domain/CocktailMain';
+import { IHomeCocktailRepository } from '../../model/repository/HomeCocktailRepository';
 import instance from '../../tokenRequest/axios_interceptor';
 import { useNavigation } from '@react-navigation/native';
 import { getToken } from '../../tokenRequest/Token';
 import Toast from 'react-native-toast-message';
 import perf from '@react-native-firebase/perf';
 
-
 type UseSearchResultDeps = {
   repository?: IHomeCocktailRepository;
 };
 
-export const useHomeViewModel = (deps?: UseSearchResultDeps) => {
-  const repository = deps?.repository ?? di.homeCocktailRepository;
-  const [randomCocktail, setRandomCocktail] = useState<CocktailMain>();
-  const [newCocktail, setNewCocktail] = useState<CocktailCard[]>([]);
-  const [bestCocktail, setBestCocktail] = useState<CocktailCard[]>([]);
-  const [refreshList, setRefreshList] = useState<CocktailCard[]>([]);
-  const [intermediateList, setIntermediateList] = useState<CocktailCard[]>([]);
-  const [beginnerList, setBeginnerList] = useState<CocktailCard[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [isScrolled, setIsScrolled] = useState(false);
-  const navigation = useNavigation<any>();
-
-  const bookMarkCheck = async () => {
-    const token = await getToken();
-    if (!token) {
-      Toast.show({
-        type: 'error',
-        text1: '로그인이 필요한 서비스 입니다.',
-      });
-      return;
-    }
-
-    navigation.navigate('CocktailBoxScreen');
-  }
-
-  const bookmarked = async (cocktailId: number) => {
-
-    //바로 아이템 표시를 위해 낙관적 UI 구조 활용
-    const toggleBookmarkInList = (list: CocktailCard[]) =>
-      list.map(item =>
-        item.id === cocktailId
-          ? { ...item, isBookmarked: !item.isBookmarked }
-          : item
-      );
-
-    setBestCocktail(prev => toggleBookmarkInList(prev));
-    setNewCocktail(prev => toggleBookmarkInList(prev));
-    setRefreshList(prev => toggleBookmarkInList(prev));
-    setBeginnerList(prev => toggleBookmarkInList(prev));
-    setIntermediateList(prev => toggleBookmarkInList(prev));
-
-
-
-    try {
-      await instance.post(`/api/v2/cocktails/${cocktailId}/bookmarks`);
-
-    } catch (error: any) {
-      console.error('북마크 처리 중 에러 발생:', error);
-      console.log('에러 데이터:', error.response.data);
-      console.log('에러 상태코드:', error.response.status);
-      console.log('에러 헤더:', error.response.headers);
-      await fetchHomeData();
-    }
-  };
-
-  const handleScroll = useCallback((event: any) => {
-    const offsetY = event.nativeEvent.contentOffset.y;
-    const isTop = offsetY <= 10;
-    if (!isTop && !isScrolled) {
-      setIsScrolled(true);
-    } else if (isTop && isScrolled) {
-      setIsScrolled(false);
-    }
-  }, [isScrolled]);
-
-  const fetchHomeData = useCallback(async () => {
-    const trace = await perf().newTrace('HomeScreen_Load');
-    await trace.start();
-    setLoading(true);
-    setError(null);
-    try {
-      const [randomCocktailData, newCocktailData, bestCocktailData, refreshData, intermediateData, beginnerData] = await Promise.all([
+// 홈 데이터를 한 번에 fetch하는 함수
+const fetchHomeData = async (repository: IHomeCocktailRepository) => {
+  const trace = await perf().newTrace('HomeScreen_Load');
+  await trace.start();
+  try {
+    const [randomCocktail, newCocktail, bestCocktail, refreshList, intermediateList, beginnerList] =
+      await Promise.all([
         repository.random(),
         repository.newCocktail(),
         repository.bestCocktail(),
@@ -94,57 +26,84 @@ export const useHomeViewModel = (deps?: UseSearchResultDeps) => {
         repository.intermediate(),
         repository.beginner(),
       ]);
-      if (refreshData && refreshData.length > 0) {
-        console.log('--- [Refresh 리스트 전체 북마크 체크] ---');
+    await trace.stop();
+    return { randomCocktail, newCocktail, bestCocktail, refreshList, intermediateList, beginnerList };
+  } catch (e) {
+    await trace.stop();
+    throw e;
+  }
+};
 
-        refreshData.forEach((item: any, index: number) => {
-          console.log(`[${index}] 아이템명: ${item.name || '이름없음'}`);
-          console.log(`    - ID: ${item.id}`);
-          console.log(`    - isBookmarked 값: ${item.isBookmarked}`);
+export const useHomeViewModel = (deps?: UseSearchResultDeps) => {
+  const repository = deps?.repository ?? di.homeCocktailRepository;
+  const queryClient = useQueryClient();
+  const navigation = useNavigation<any>();
+  const [isScrolled, setIsScrolled] = useState(false);
 
-          // 만약 isBookmarked가 undefined라면, 다른 비슷한 필드가 있는지 전체 출력
-          if (item.isBookmarked === undefined) {
-            console.log('    - [경고] isBookmarked가 없습니다! 실제 데이터 구조:', JSON.stringify(item));
-          }
-        });
+  // ─── useQuery: 캐시된 데이터 즉시 표시 후 백그라운드에서 최신 데이터 fetch ───
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['homeData'],
+    queryFn: () => fetchHomeData(repository),
+    staleTime: 1000 * 60 * 60, // 1시간
+  });
 
-        console.log('---------------------------------------');
-      } else {
-        console.log('--- [Refresh 리스트] 데이터가 비어있습니다. ---');
-      }
-      setRandomCocktail(randomCocktailData);
-      setNewCocktail(newCocktailData);
-      setBestCocktail(bestCocktailData);
-      setRefreshList(refreshData);
-      setIntermediateList(intermediateData);
-      setBeginnerList(beginnerData);
-      await trace.stop();
-    } catch (e) {
-      console.log(e);
-      setError('데이터 로딩 중 오류가 발생했습니다.');
-      await trace.stop();
-    } finally {
-      setLoading(false);
+  // 북마크 토글 (낙관적 UI)
+  const bookmarked = async (cocktailId: number) => {
+    // 캐시에서 직접 북마크 상태 토글
+    queryClient.setQueryData(['homeData'], (old: typeof data) => {
+      if (!old) { return old; }
+      const toggle = (list: any[]) =>
+        list.map(item =>
+          item.id === cocktailId ? { ...item, isBookmarked: !item.isBookmarked } : item,
+        );
+      return {
+        ...old,
+        bestCocktail: toggle(old.bestCocktail),
+        newCocktail: toggle(old.newCocktail),
+        refreshList: toggle(old.refreshList),
+        beginnerList: toggle(old.beginnerList),
+        intermediateList: toggle(old.intermediateList),
+      };
+    });
+
+    try {
+      await instance.post(`/api/v2/cocktails/${cocktailId}/bookmarks`);
+    } catch (e: any) {
+      console.error('북마크 처리 중 에러:', e);
+      // 실패 시 캐시 무효화 → 서버에서 최신 데이터 재요청
+      queryClient.invalidateQueries({ queryKey: ['homeData'] });
     }
-  }, [repository]);
+  };
 
-  // 2. 마운트 시점에 한 번만 실행
-  useEffect(() => {
-    fetchHomeData();
-  }, [fetchHomeData]);
+  const bookMarkCheck = async () => {
+    const token = await getToken();
+    if (!token) {
+      Toast.show({ type: 'error', text1: '로그인이 필요한 서비스 입니다.' });
+      return;
+    }
+    navigation.navigate('CocktailBoxScreen');
+  };
+
+  const handleScroll = useCallback((event: any) => {
+    const offsetY = event.nativeEvent.contentOffset.y;
+    const isTop = offsetY <= 10;
+    if (!isTop && !isScrolled) { setIsScrolled(true); }
+    else if (isTop && isScrolled) { setIsScrolled(false); }
+  }, [isScrolled]);
+
   return {
     bookmarked,
-    randomCocktail,
-    bestCocktail,
-    newCocktail,
-    refreshList,
-    beginnerList,
-    intermediateList,
-    loading,
-    error,
+    randomCocktail: data?.randomCocktail,
+    bestCocktail: data?.bestCocktail ?? [],
+    newCocktail: data?.newCocktail ?? [],
+    refreshList: data?.refreshList ?? [],
+    beginnerList: data?.beginnerList ?? [],
+    intermediateList: data?.intermediateList ?? [],
+    loading: isLoading,
+    error: error ? '데이터 로딩 중 오류가 발생했습니다.' : null,
     handleScroll,
     isScrolled,
     setIsScrolled,
-    bookMarkCheck
+    bookMarkCheck,
   };
 };

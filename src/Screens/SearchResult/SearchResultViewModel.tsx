@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { CocktailCard } from '../../model/domain/CocktailCard';
 import axios from 'axios';
 import perf from '@react-native-firebase/perf';
@@ -10,71 +11,56 @@ type UseSearchResultDeps = {
     repository?: ISearchRepository;
 };
 
+const fetchSearchResult = async (
+    keyword: string,
+    filter: FilterState,
+    repository: ISearchRepository,
+): Promise<CocktailCard[]> => {
+    const trace = await perf().newTrace('SearchResult_Load');
+    await trace.start();
+    try {
+        const data = await repository.search(
+            keyword?.trim(),
+            filter.degree || undefined,
+            filter.style || undefined,
+            filter.taste.length > 0 ? filter.taste : undefined,
+            filter.base.length > 0 ? filter.base : undefined,
+            filter.sort,
+        );
+        await trace.stop();
+        return data;
+    } catch (error) {
+        await trace.stop();
+        if (axios.isAxiosError(error)) {
+            console.log('AxiosError:', error.message, error.response?.status);
+        }
+        throw error;
+    }
+};
+
 const useSearchResultViewModel = (keyword: string, deps?: UseSearchResultDeps) => {
-    const [results, setResults] = useState<CocktailCard[]>([]);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
+    const repository = deps?.repository ?? di.cocktailSearchRepository;
     const [appliedFilter, setAppliedFilter] = useState<FilterState>(DEFAULT_FILTER);
 
-    const repository = deps?.repository ?? di.cocktailSearchRepository;
+    // 검색 결과: 5분 캐시 (같은 키워드+필터 재검색 시 캐시 활용)
+    const { data, isLoading, error, refetch } = useQuery({
+        queryKey: ['searchResult', keyword, appliedFilter],
+        queryFn: () => fetchSearchResult(keyword, appliedFilter, repository),
+        staleTime: 1000 * 60 * 5, // 5분
+        enabled: !!keyword,
+    });
 
-
-    const fetchResult = useCallback(async (filter?: FilterState) => {
-        const trace = await perf().newTrace('SearchResult_Load');
-        await trace.start();
-        setLoading(true);
-        setError(null);
-        if (filter) { setAppliedFilter(filter); }
-        try {
-            const targetFilter = filter ?? appliedFilter;
-            const abvParam = targetFilter.degree || undefined;
-            const styleParam = targetFilter.style || undefined;
-            const tasteParam = targetFilter.taste.length > 0 ? targetFilter.taste : undefined;
-            const baseParam = targetFilter.base.length > 0 ? targetFilter.base : undefined;
-            const sortParam = targetFilter.sort;
-
-            const data = await repository.search(
-                keyword?.trim(),
-                abvParam,
-                styleParam,
-                tasteParam,
-                baseParam,
-                sortParam
-            );
-
-            setResults(data);
-            await trace.stop();
-        } catch (error) {
-            await trace.stop();
-            if (axios.isAxiosError(error)) {
-                console.log(' AxiosError message:', error.message);
-                console.log(' AxiosError code:', error.code);
-                console.log(' AxiosError config:', error.config);
-                console.log(' AxiosError request:', error.request);
-                console.log(' AxiosError response:', error.response?.data);
-                console.log(' AxiosError status:', error.response?.status);
-            } else {
-                console.log(' Unknown error:', error);
-            }
-        }
-        finally {
-            setLoading(false);
-        }
-
-    }, [keyword, repository, appliedFilter]);
-
-    useEffect(() => {
-        fetchResult();
-    }, [fetchResult]);
-
-    return {
-        results,
-        loading,
-        error,
-        refetch: fetchResult,
-        appliedFilter,
+    const applyFilter = (filter: FilterState) => {
+        setAppliedFilter(filter);
     };
 
+    return {
+        results: data ?? [],
+        loading: isLoading,
+        error: error ? '검색 중 오류가 발생했습니다.' : null,
+        refetch: applyFilter,
+        appliedFilter,
+    };
 };
 
 export default useSearchResultViewModel;

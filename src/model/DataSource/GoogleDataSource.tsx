@@ -73,7 +73,7 @@ export class GoogleAuthDataSource implements ISocialAuthDataSource {
     } catch (error: any) {
       console.error('❌ 구글 로그인 과정 최종 에러:', error);
       if (error.code === 'E_CANCELLED_OPERATION') {
-        throw new Error('구글 로그인 취소');
+        throw new AuthError(AuthErrorType.CANCELLED, '구글 로그인 취소');
       }
       throw error;
     }

@@ -42,6 +42,14 @@
 				<string>com.googleusercontent.apps.1058340377075-an8fq49j4mg29fq9rm88qpi253dd2vts</string>
 			</array>
 		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>onzcocktail</string>
+			</array>
+		</dict>
 	</array>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
@@ -81,10 +89,10 @@
 			<dict>
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
 				<true/>
-				<key>NSIncludesSubdomains</key>
-				<true/>
 				<key>NSExceptionMinimumTLSVersion</key>
 				<string>TLSv1.0</string>
+				<key>NSIncludesSubdomains</key>
+				<true/>
 				<key>NSThirdPartyExceptionAllowsInsecureHTTPLoads</key>
 				<true/>
 			</dict>

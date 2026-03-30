@@ -34,6 +34,8 @@ const AllCocktailScreen = ({ navigation }: Props) => {
         }
     }, [vm]);
 
+    const { bookmarked } = vm;
+
     const renderItem = useCallback(
         ({ item }: { item: CocktailCardModel }) => (
             <View style={styles.cardWrapper}>
@@ -48,11 +50,11 @@ const AllCocktailScreen = ({ navigation }: Props) => {
                             cocktailId: item.id,
                         })
                     }
-                    onToggleBookmark={() => vm.bookmarked(item.id)}
+                    onToggleBookmark={() => bookmarked(item.id)}
                 />
             </View>
         ),
-        [navigation, vm],
+        [navigation, bookmarked],
     );
 
     const keyExtractor = useCallback(
@@ -62,16 +64,33 @@ const AllCocktailScreen = ({ navigation }: Props) => {
 
     const ListFooterComponent = useMemo(
         () =>
-            vm.loading && vm.results.length > 0 ? (
+            vm.isFetchingNextPage ? (
                 <ActivityIndicator style={{ marginVertical: 20 }} color="#111" />
             ) : null,
-        [vm.loading, vm.results.length],
+        [vm.isFetchingNextPage],
     );
 
-    const ListHeaderComponent = useMemo(
+    const ListHeaderComponent = null;
+
+    const ListEmptyComponent = useMemo(
         () => (
-            <View>
-                {/* SearchResultScreen과 동일한 헤더 디자인 */}
+            <View style={styles.emptyContainer}>
+                {vm.loading && <ActivityIndicator size="large" />}
+                {!vm.loading && (
+                    <>
+                        <Text style={styles.text}>아직 준비된 칵테일이 없네요.</Text>
+                        <Text style={styles.text}>다른 필터를 선택해보시겠어요?</Text>
+                    </>
+                )}
+            </View>
+        ),
+        [vm.loading],
+    );
+
+    return (
+        <SafeAreaView style={styles.safeArea} edges={['top']}>
+            {/* 고정 헤더 영역 */}
+            <View style={styles.stickyHeader}>
                 <View style={styles.header}>
                     <TouchableOpacity onPress={() => navigation.goBack()}>
                         <Icon
@@ -123,28 +142,7 @@ const AllCocktailScreen = ({ navigation }: Props) => {
                     })}
                 </ScrollView>
             </View>
-        ),
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        [vm.appliedFilter, navigation],
-    );
 
-    const ListEmptyComponent = useMemo(
-        () => (
-            <View style={styles.emptyContainer}>
-                {vm.loading && <ActivityIndicator size="large" />}
-                {!vm.loading && (
-                    <>
-                        <Text style={styles.text}>아직 준비된 칵테일이 없네요.</Text>
-                        <Text style={styles.text}>다른 필터를 선택해보시겠어요?</Text>
-                    </>
-                )}
-            </View>
-        ),
-        [vm.loading],
-    );
-
-    return (
-        <SafeAreaView style={styles.safeArea} edges={['top']}>
             <FlatList
                 data={vm.results}
                 extraData={extraData}
@@ -204,6 +202,10 @@ const styles = StyleSheet.create({
     safeArea: {
         flex: 1,
         backgroundColor: theme.background,
+    },
+    stickyHeader: {
+        backgroundColor: theme.background,
+        zIndex: 10,
     },
     header: {
         padding: 10,
