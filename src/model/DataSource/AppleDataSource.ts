@@ -23,8 +23,6 @@ export class AppleDataSource implements ISocialAuthDataSource {
                 throw new Error('애플 인증 토큰(identityToken)이 없습니다.');
             }
 
-            console.log('Apple identityToken:', identityToken);
-
             const deviceNumber = await DeviceInfo.getUniqueId();
 
             const response = await axios.post(
@@ -39,7 +37,6 @@ export class AppleDataSource implements ISocialAuthDataSource {
             );
 
             const data = response.data;
-            console.log('[Apple] 백엔드 전체 응답:', JSON.stringify(data));
 
             if (data.type === 'signup') {
                 return {
@@ -59,12 +56,6 @@ export class AppleDataSource implements ISocialAuthDataSource {
                 throw new AuthError(AuthErrorType.CANCELLED, '애플 로그인 취소');
             }
 
-            if (error.response) {
-                console.error('[Apple] 백엔드 에러 status:', error.response.status);
-                console.error('[Apple] 백엔드 에러 data:', JSON.stringify(error.response.data));
-            } else {
-                console.error('[Apple] 에러:', error.message ?? error);
-            }
             throw error;
         }
     }

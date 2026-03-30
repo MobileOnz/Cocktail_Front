@@ -53,7 +53,6 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation, route }) => {
       }
 
     } catch (error) {
-      console.error('[Login] catch:', error);
       if (error instanceof AuthError) {
         if (error.type === AuthErrorType.CANCELLED) { return; }
         switch (error.type) {
@@ -75,7 +74,6 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation, route }) => {
   const kakaoLogin = async () => {
     try {
       const result = await loginWithKakao();
-      console.log(JSON.stringify(result));
       if (result.type === 'token') {
         showToast('로그인하였습니다.');
 
@@ -109,7 +107,6 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation, route }) => {
       }
 
     } catch (error) {
-      console.error('[Login] catch:', error);
       if (error instanceof AuthError) {
         if (error.type === AuthErrorType.CANCELLED) { return; }
         switch (error.type) {
@@ -164,7 +161,6 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation, route }) => {
   const googleLogin = async () => {
     try {
       const result = await loginWithGoogle();
-      console.log(JSON.stringify(result));
       if (result.type === 'token') {
         showToast('로그인하였습니다.');
 
@@ -198,7 +194,6 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation, route }) => {
       }
 
     } catch (error) {
-      console.error('[Login] catch:', error);
       if (error instanceof AuthError) {
         if (error.type === AuthErrorType.CANCELLED) { return; }
         switch (error.type) {
@@ -220,7 +215,6 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation, route }) => {
   const appleLogin = async () => {
     try {
       const result = await loginWithApple();
-      console.log(JSON.stringify(result));
       if (result.type === 'token') {
         showToast('로그인하였습니다.');
 
@@ -250,7 +244,6 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation, route }) => {
       }
 
     } catch (error) {
-      console.error('[Login] catch:', error);
       if (error instanceof AuthError) {
         if (error.type === AuthErrorType.CANCELLED) { return; }
         switch (error.type) {

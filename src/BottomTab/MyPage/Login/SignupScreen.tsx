@@ -42,7 +42,6 @@ const SignupScreen: React.FC<SignupScreenProps> = ({ navigation }) => {
   //회원가입 처리
   const signUpRequest = async () => {
     if (!nickname) {
-      console.log('닉네임이 없습니다.');
       return;
     }
     if (!signUpCode) {
@@ -63,12 +62,10 @@ const SignupScreen: React.FC<SignupScreenProps> = ({ navigation }) => {
     };
 
     try {
-      const result = await signUp(payload);
-      console.log('백엔드 응답', result);
+      await signUp(payload);
       setModalVisible(false);
       navigation.navigate('BottomTabNavigator' as never);
     } catch (error: any) {
-      console.error('[SignUp] 에러:', error?.message, JSON.stringify(error?.response?.data));
       showToast('알 수 없는 오류가 발생했습니다.');
     }
   };

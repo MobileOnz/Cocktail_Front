@@ -9,7 +9,6 @@ export class NaverAuthDataSource implements ISocialAuthDataSource {
 
   async login(): Promise<AuthResult> {
     const { successResponse, failureResponse } = await NaverLogin.login();
-    console.log('성공 응답: ' + JSON.stringify(successResponse), '실패 응답: ' + failureResponse);
     if (failureResponse) {
       throw new AuthError(
         AuthErrorType.SOCIAL_LOGIN_FAILED,
@@ -36,7 +35,6 @@ export class NaverAuthDataSource implements ISocialAuthDataSource {
       );
 
       const data = response.data;
-      console.log('[Naver] 백엔드 응답:', JSON.stringify(data));
 
       if (data.type === 'token') {
         return {
@@ -57,13 +55,6 @@ export class NaverAuthDataSource implements ISocialAuthDataSource {
 
     } catch (error: any) {
       if (error instanceof AuthError) { throw error; }
-
-      if (error.response) {
-        console.error('[Naver] 백엔드 에러 status:', error.response.status);
-        console.error('[Naver] 백엔드 에러 data:', JSON.stringify(error.response.data));
-      } else {
-        console.error('[Naver] 네트워크 에러:', error.message);
-      }
 
       if (error.response?.status === 401) {
         throw new AuthError(AuthErrorType.TOKEN_EXPIRED, 'Access token expired');
