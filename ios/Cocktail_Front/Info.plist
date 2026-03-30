@@ -42,6 +42,14 @@
 				<string>com.googleusercontent.apps.1058340377075-an8fq49j4mg29fq9rm88qpi253dd2vts</string>
 			</array>
 		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>onzcocktail</string>
+			</array>
+		</dict>
 	</array>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
@@ -72,9 +80,23 @@
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>
-		<false/>
+		<true/>
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
+		<key>NSExceptionDomains</key>
+		<dict>
+			<key>onz-cocktail.kr</key>
+			<dict>
+				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+				<key>NSExceptionMinimumTLSVersion</key>
+				<string>TLSv1.0</string>
+				<key>NSIncludesSubdomains</key>
+				<true/>
+				<key>NSThirdPartyExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+			</dict>
+		</dict>
 	</dict>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>이 앱은 백그라운드에서 위치를 사용합니다.</string>
@@ -95,6 +117,11 @@
 	</array>
 	<key>UIAppFonts</key>
 	<array>
+		<string>MaterialIcons.ttf</string>
+		<string>MaterialCommunityIcons.ttf</string>
+		<string>Ionicons.ttf</string>
+		<string>Feather.ttf</string>
+		<string>EvilIcons.ttf</string>
 		<string>Pretendard-Black.otf</string>
 		<string>Pretendard-Bold.otf</string>
 		<string>Pretendard-ExtraBold.otf</string>
@@ -104,6 +131,24 @@
 		<string>Pretendard-Regular.otf</string>
 		<string>Pretendard-SemiBold.otf</string>
 		<string>Pretendard-Thin.otf</string>
+		<string>NotoSerif-ExtraLightItalic.ttf</string>
+		<string>NotoSerif-LightItalic.ttf</string>
+		<string>NotoSerif-SemiBoldItalic.ttf</string>
+		<string>NotoSerif-MediumItalic.ttf</string>
+		<string>NotoSerif-BoldItalic.ttf</string>
+		<string>NotoSerif-Regular.ttf</string>
+		<string>NotoSerif-ThinItalic.ttf</string>
+		<string>NotoSerif-ExtraLight.ttf</string>
+		<string>NotoSerif-Black.ttf</string>
+		<string>NotoSerif-Medium.ttf</string>
+		<string>NotoSerif-BlackItalic.ttf</string>
+		<string>NotoSerif-ExtraBoldItalic.ttf</string>
+		<string>NotoSerif-Thin.ttf</string>
+		<string>NotoSerif-SemiBold.ttf</string>
+		<string>NotoSerif-Italic.ttf</string>
+		<string>NotoSerif-Light.ttf</string>
+		<string>NotoSerif-Bold.ttf</string>
+		<string>NotoSerif-ExtraBold.ttf</string>
 	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>BootSplash</string>

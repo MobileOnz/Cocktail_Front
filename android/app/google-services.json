@@ -1,26 +1,59 @@
 {
   "project_info": {
-    "project_number": "265741208176",
-    "project_id": "cocktail-e311f",
-    "storage_bucket": "cocktail-e311f.firebasestorage.app"
+    "project_number": "513269758316",
+    "project_id": "cocktail-f9689",
+    "storage_bucket": "cocktail-f9689.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:265741208176:android:ddf413e88f483c30c682b5",
+        "mobilesdk_app_id": "1:513269758316:android:8f3b11afa11de306391b49",
         "android_client_info": {
           "package_name": "com.cocktail_front"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "513269758316-939mvm7f3kl63pc3ajc45ihnsr18ejag.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.cocktail_front",
+            "certificate_hash": "03a4667b35f767e5eaea47df394d26233657bbbe"
+          }
+        },
+        {
+          "client_id": "513269758316-ohahoph1dfvjgvsaj2fe8n79qtg986vr.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.cocktail_front",
+            "certificate_hash": "7c957bfb406a4f8e90f2c56ff304773e4275d47b"
+          }
+        },
+        {
+          "client_id": "513269758316-igsea78n7g0jq292f4u22pobqr0k47fd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
-          "current_key": "AIzaSyAwLSoV84bd4j5PsMHbwhJPF91p265SXqM"
+          "current_key": "AIzaSyC_yJyoPvqlItbQhiC5irzBLlDSs90LJnw"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "513269758316-igsea78n7g0jq292f4u22pobqr0k47fd.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "513269758316-dfpskilt77kh222lg6bjl7ds0tuq341s.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "org.reactjs.native.example.Cocktail-Front"
+              }
+            }
+          ]
         }
       }
     }

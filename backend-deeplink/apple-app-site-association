@@ -1,0 +1,13 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appIDs": [
+          "C3458JSAR9.org.reactjs.native.example.Cocktail-Front"
+        ],
+        "paths": ["/cocktail/*"]
+      }
+    ]
+  }
+}

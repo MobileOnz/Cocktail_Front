@@ -1,24 +1,25 @@
 // components/CocktailCard.tsx
 import React from 'react';
 import { View, Image, Text, StyleSheet, Pressable } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import FastImage from 'react-native-fast-image';
 import PillStyleStatus from '../Components/PillStyleStatus';
-import { heightPercentage, widthPercentage } from '../assets/styles/FigmaScreen';
+import { fontPercentage, heightPercentage, widthPercentage } from '../assets/styles/FigmaScreen';
 
 type Props = {
+  id: number;
   name: string;
-  imageUri: string;
-  tone: string;
+  image: string;
+  type: string;
   bookmarked?: boolean;
   onPress?: () => void;
-  onToggleBookmark?: (_next: boolean) => void;
-
+  onToggleBookmark?: (id: number, nextStatus: boolean) => void;
 };
 
-export default function CocktailCard({
+const CocktailCard = React.memo(function CocktailCard({
+  id,
   name,
-  imageUri,
-  tone,
+  type,
+  image,
   bookmarked = false,
   onPress,
   onToggleBookmark,
@@ -28,21 +29,35 @@ export default function CocktailCard({
       <Pressable onPress={onPress} style={[styles.card]}>
         {/* 이미지 영역 */}
         <View style={styles.imageWrap}>
-          <Image source={{ uri: imageUri }} style={styles.image} resizeMode="cover" />
+          <FastImage
+            source={{ uri: image, priority: FastImage.priority.normal }}
+            style={styles.image}
+            resizeMode={FastImage.resizeMode.cover}
+          />
 
           {/* 좌상단: 톤 라벨 */}
           <View style={styles.pillWrap}>
-            <PillStyleStatus tone={tone} />
+            <PillStyleStatus tone={type} />
           </View>
 
           {/* 우상단: 북마크 */}
           <Pressable
             hitSlop={10}
-            onPress={() => onToggleBookmark?.(!bookmarked)}
+            onPress={() => onToggleBookmark?.(id, !bookmarked)}
             style={styles.bookmarkBtn}
             accessibilityLabel="즐겨찾기"
           >
-            <Icon name={bookmarked ? 'bookmark-outline' : 'bookmark'} size={22} color="#FFF" />
+            <Image
+              source={
+                bookmarked
+                  ? require('../assets/drawable/full_save.png') // 채워진 이미지
+                  : require('../assets/drawable/save.png')      // 비어있는 이미지
+              }
+              style={bookmarked ?
+                { width: 20, height: 20, tintColor: '#FFF' }
+                : { width: 20, height: 20 }}
+              resizeMode="contain"
+            />
           </Pressable>
         </View>
       </Pressable>
@@ -52,19 +67,17 @@ export default function CocktailCard({
       </Text>
     </View>
   );
-}
+});
+
+export default CocktailCard;
 
 
 const styles = StyleSheet.create({
   container: {
-    width: 160,
+    width: widthPercentage(160),
     alignItems: 'center',
-    marginHorizontal: widthPercentage(15),
-    marginVertical: heightPercentage(15),
   },
   card: {
-
-    borderRadius: 20,
     overflow: 'hidden',
   },
   imageWrap: {
@@ -72,6 +85,7 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   image: {
+    borderRadius: 8,
     width: widthPercentage(160),
     height: heightPercentage(220),
     resizeMode: 'contain',
@@ -91,9 +105,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   title: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#1A1A1A',
+    fontFamily: 'Pretendard-Medium',
+    fontSize: fontPercentage(16),
+    fontWeight: '500',
+    color: '#1B1B1B',
     paddingHorizontal: 10,
     paddingVertical: 10,
     alignSelf: 'flex-start',
