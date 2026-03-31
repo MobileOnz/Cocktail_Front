@@ -52,7 +52,7 @@ jobs:
           cache: npm
 
       - name: Install JS dependencies
-        run: npm ci
+        run: npm ci --legacy-peer-deps
 
       - uses: actions/setup-java@v4
         with:
@@ -91,7 +91,7 @@ jobs:
           cache: npm
 
       - name: Install JS dependencies
-        run: npm ci
+        run: npm ci --legacy-peer-deps
 
       - uses: ruby/setup-ruby@v1
         with:
