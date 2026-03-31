@@ -64,6 +64,8 @@ jobs:
           echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | tr -d ' \r\n' | base64 -d > android/app/my-release-key.jks
 
       - name: Build Release AAB
+        env:
+          VERSION_CODE: ${{ github.run_number }}
         run: cd android && ./gradlew bundleRelease --no-daemon --no-configuration-cache
 
       - name: Upload AAB to Google Play (Internal)
