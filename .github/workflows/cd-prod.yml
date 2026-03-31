@@ -76,6 +76,8 @@ jobs:
           releaseFiles: android/app/build/outputs/bundle/release/app-release.aab
           track: internal   # internal → alpha → beta → production 순으로 승격
           status: completed
+          releaseNotes: |
+            en-US:${{ github.event.head_commit.message }}
 
   # ──────────────────────────────────────────────
   # iOS → App Store
