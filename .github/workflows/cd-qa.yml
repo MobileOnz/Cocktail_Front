@@ -111,7 +111,7 @@ jobs:
       - name: Install CocoaPods
         run: |
           bundle exec pod update hermes-engine --no-repo-update --project-directory=ios
-          bundle exec pod install --project-directory=ios
+          bundle exec pod install --no-repo-update --project-directory=ios
 
       - name: Import distribution certificate
         env:
