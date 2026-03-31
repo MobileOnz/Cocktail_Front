@@ -197,15 +197,19 @@ jobs:
             -exportPath $RUNNER_TEMP/ipa
 
       - name: Upload to App Store
+        env:
+          API_KEY_CONTENT: ${{ secrets.APP_STORE_CONNECT_API_KEY_CONTENT }}
+          API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
         run: |
-          echo "${{ secrets.APP_STORE_CONNECT_API_KEY_CONTENT }}" > $RUNNER_TEMP/api_key.p8
+          mkdir -p ~/.appstoreconnect/private_keys
+          echo "$API_KEY_CONTENT" | python3 -c "import base64,sys; sys.stdout.buffer.write(base64.b64decode(sys.stdin.read().replace('\n','').replace('\r','').replace(' ',''))) " > ~/.appstoreconnect/private_keys/AuthKey_${API_KEY_ID}.p8
 
           xcrun altool --upload-app \
             --type ios \
             --file $(find $RUNNER_TEMP/ipa -name "*.ipa" | head -1) \
-            --apiKey "${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}" \
-            --apiIssuer "${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}" \
-            --private-key @$RUNNER_TEMP/api_key.p8
+            --apiKey "$API_KEY_ID" \
+            --apiIssuer "$API_ISSUER_ID"
 
       - name: Cleanup keychain
         if: always()
