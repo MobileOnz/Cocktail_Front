@@ -65,6 +65,8 @@ jobs:
           echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | tr -d ' \r\n' | base64 -d > android/app/my-release-key.jks
 
       - name: Build Release APK
+        env:
+          VERSION_CODE: ${{ github.run_number }}
         run: cd android && ./gradlew assembleRelease --no-daemon --no-configuration-cache
 
       - name: Upload to Firebase App Distribution

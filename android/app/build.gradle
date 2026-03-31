@@ -95,7 +95,7 @@ android {
         applicationId "com.cocktail_front"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 7
+        versionCode (System.getenv("VERSION_CODE") ? System.getenv("VERSION_CODE").toInteger() : 8)
         versionName "2.0"
          manifestPlaceholders = [
         appAuthRedirectScheme: "com.googleusercontent.apps.1058340377075-vt8u6qabph0f0van79eqhkt9j2f1jkbe"
