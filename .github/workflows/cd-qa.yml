@@ -53,7 +53,7 @@ jobs:
           cache: npm
 
       - name: Install JS dependencies
-        run: npm install --package-lock-only --ignore-scripts && npm ci
+        run: npm install --ignore-scripts
 
       - uses: actions/setup-java@v4
         with:
@@ -100,7 +100,7 @@ jobs:
           cache: npm
 
       - name: Install JS dependencies
-        run: npm install --package-lock-only --ignore-scripts && npm ci
+        run: npm install --ignore-scripts
 
       - uses: ruby/setup-ruby@v1
         with:
