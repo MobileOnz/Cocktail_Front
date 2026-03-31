@@ -46,7 +46,9 @@ allprojects {
 subprojects {
     afterEvaluate { project ->
         if (project.hasProperty('android')) {
-            if (project.android.compileSdkVersion < 35) {
+            def current = project.android.compileSdkVersion
+            def currentInt = (current instanceof Integer) ? current : current.toString().replace('android-', '').toInteger()
+            if (currentInt < 35) {
                 project.android.compileSdkVersion 35
             }
         }
