@@ -51,8 +51,11 @@ jobs:
           node-version: 20
           cache: npm
 
+      - name: Upgrade npm
+        run: npm install -g npm@latest
+
       - name: Install JS dependencies
-        run: npm ci --legacy-peer-deps
+        run: npm ci
 
       - uses: actions/setup-java@v4
         with:
@@ -90,8 +93,11 @@ jobs:
           node-version: 20
           cache: npm
 
+      - name: Upgrade npm
+        run: npm install -g npm@latest
+
       - name: Install JS dependencies
-        run: npm ci --legacy-peer-deps
+        run: npm ci
 
       - uses: ruby/setup-ruby@v1
         with:
