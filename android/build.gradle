@@ -43,4 +43,14 @@ allprojects {
     }
 }
 
+subprojects {
+    afterEvaluate { project ->
+        if (project.hasProperty('android')) {
+            if (project.android.compileSdkVersion < 35) {
+                project.android.compileSdkVersion 35
+            }
+        }
+    }
+}
+
 apply plugin: "com.facebook.react.rootproject"
