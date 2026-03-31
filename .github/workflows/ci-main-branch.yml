@@ -55,15 +55,9 @@ jobs:
       - name: Gradle cache
         uses: gradle/gradle-build-action@v3
 
-      # 9️⃣ Android 빌드
+      # 9️⃣ Android 빌드 (릴리즈 서명은 cd-prod.yml에서 처리)
       - name: Build Android
-        run: |
-          cd android
-          if [ "${{ github.ref_name }}" = "main" ]; then
-            ./gradlew assembleRelease
-          else
-            ./gradlew assembleDebug
-          fi
+        run: cd android && ./gradlew assembleDebug
 
           
       - name: Prepare Safe Artifact Name
