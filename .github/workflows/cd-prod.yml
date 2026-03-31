@@ -51,11 +51,8 @@ jobs:
           node-version: 20
           cache: npm
 
-      - name: Upgrade npm
-        run: npm install -g npm@latest
-
       - name: Install JS dependencies
-        run: npm ci
+        run: npm install --package-lock-only --ignore-scripts && npm ci
 
       - uses: actions/setup-java@v4
         with:
@@ -93,11 +90,8 @@ jobs:
           node-version: 20
           cache: npm
 
-      - name: Upgrade npm
-        run: npm install -g npm@latest
-
       - name: Install JS dependencies
-        run: npm ci
+        run: npm install --package-lock-only --ignore-scripts && npm ci
 
       - uses: ruby/setup-ruby@v1
         with:
