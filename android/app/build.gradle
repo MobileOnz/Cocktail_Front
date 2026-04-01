@@ -101,11 +101,7 @@ android {
             appAuthRedirectScheme: "com.googleusercontent.apps.1058340377075-vt8u6qabph0f0van79eqhkt9j2f1jkbe"
         ]
     }
-    externalNativeBuild {
-        cmake {
-            path "src/main/jni/CMakeLists.txt"
-        }
-    }
+
     packagingOptions {
         jniLibs {
             useLegacyPackaging = false
