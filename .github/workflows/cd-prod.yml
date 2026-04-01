@@ -164,6 +164,11 @@ jobs:
           puts "Signing configured: target=#{target.name}, profile=#{ENV['PROVISIONING_PROFILE_UUID']}, team=#{ENV['APPLE_TEAM_ID']}"
           RUBY
 
+      - name: Set build number
+        run: |
+          cd ios
+          agvtool new-version -all $GITHUB_RUN_NUMBER
+
       - name: Archive
         env:
           NODE_OPTIONS: "--max-old-space-size=4096"
