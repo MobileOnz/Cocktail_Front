@@ -97,9 +97,14 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode (System.getenv("VERSION_CODE") ? System.getenv("VERSION_CODE").toInteger() : 8)
         versionName "2.0"
-         manifestPlaceholders = [
-        appAuthRedirectScheme: "com.googleusercontent.apps.1058340377075-vt8u6qabph0f0van79eqhkt9j2f1jkbe"
-    ]
+        manifestPlaceholders = [
+            appAuthRedirectScheme: "com.googleusercontent.apps.1058340377075-vt8u6qabph0f0van79eqhkt9j2f1jkbe"
+        ]
+        externalNativeBuild {
+            cmake {
+                arguments "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON"
+            }
+        }
     }
     packagingOptions {
         jniLibs {
