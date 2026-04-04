@@ -54,6 +54,13 @@ jobs:
       - name: Install JS dependencies
         run: npm install --ignore-scripts
 
+      - name: Create .env file
+        run: |
+          echo "API_BASE_URL=http://onz-cocktail.kr/onz" >> .env
+          echo "GOOGLE_PLACES_API_KEY=AIzaSyDeWHr3QIavBa4RGYwZly8h0sNTfLmQ" >> .env
+          echo "GOOGLE_CLIENT_ID=1058340377075-vt8u6qabph0f0van79eqhkt9j2f1jkbe.apps.googleusercontent.com" >> .env
+          echo "GOOGLE_REDIRECT_URI=com.googleusercontent.apps.1058340377075-vt8u6qabph0f0van79eqhkt9j2f1jkbe:/oauth2redirect/google" >> .env
+
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -96,6 +103,13 @@ jobs:
 
       - name: Install JS dependencies
         run: npm install --ignore-scripts
+
+      - name: Create .env file
+        run: |
+          echo "API_BASE_URL=http://onz-cocktail.kr/onz" >> .env
+          echo "GOOGLE_PLACES_API_KEY=AIzaSyDeWHr3QIavBa4RGYwZly8h0sNTfLmQ" >> .env
+          echo "GOOGLE_CLIENT_ID=1058340377075-vt8u6qabph0f0van79eqhkt9j2f1jkbe.apps.googleusercontent.com" >> .env
+          echo "GOOGLE_REDIRECT_URI=com.googleusercontent.apps.1058340377075-vt8u6qabph0f0van79eqhkt9j2f1jkbe:/oauth2redirect/google" >> .env
 
       - uses: ruby/setup-ruby@v1
         with:
