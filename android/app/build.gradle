@@ -107,12 +107,6 @@ android {
         }
     }
 
-    externalNativeBuild {
-        cmake {
-            path "src/main/jni/CMakeLists.txt"
-        }
-    }
-
     packagingOptions {
         jniLibs {
             useLegacyPackaging = false
