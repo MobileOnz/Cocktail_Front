@@ -56,6 +56,7 @@ export function CocktailDetailScreen({ route }: Props) {
 
   useEffect(() => {
     if (!vm.detail) {return;}
+    vm.trackViewDetail('cocktail_detail');
     stay10sTimerRef.current = setTimeout(() => {
       vm.trackStay10s('cocktail_detail');
     }, 10000);
