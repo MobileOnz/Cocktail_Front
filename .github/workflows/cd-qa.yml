@@ -67,8 +67,10 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Accept Android SDK licenses
-        run: yes | ${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager --licenses || true
+      - name: Accept Android SDK licenses & install NDK 28
+        run: |
+          yes | ${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager --licenses || true
+          yes | ${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager "ndk;28.0.12433566" || true
 
       - name: Decode keystore
         run: |
