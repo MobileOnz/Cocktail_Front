@@ -52,7 +52,7 @@ jobs:
           cache: npm
 
       - name: Install JS dependencies
-        run: npm ci --ignore-scripts
+        run: npm install --ignore-scripts
 
       - name: Create .env file
         run: |
@@ -102,7 +102,7 @@ jobs:
           cache: npm
 
       - name: Install JS dependencies
-        run: npm ci --ignore-scripts
+        run: npm install --ignore-scripts
 
       - name: Create .env file
         run: |
