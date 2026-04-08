@@ -67,6 +67,9 @@ jobs:
           distribution: temurin
           java-version: '17'
 
+      - name: Accept Android SDK licenses
+        run: yes | ${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager --licenses || true
+
       - name: Decode keystore
         run: |
           echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | tr -d ' \r\n' | base64 -d > android/app/my-release-key.jks
@@ -123,9 +126,7 @@ jobs:
           bundler-cache: true
 
       - name: Install CocoaPods
-        run: |
-          bundle exec pod update hermes-engine --no-repo-update --project-directory=ios
-          bundle exec pod install --no-repo-update --project-directory=ios
+        run: bundle exec pod install --no-repo-update --project-directory=ios
 
       - name: Import distribution certificate
         env:
