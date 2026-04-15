@@ -69,19 +69,21 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Accept Android SDK licenses & configure NDK
+      - name: Accept Android SDK licenses & install NDK 28
         run: |
-          mkdir -p "${ANDROID_HOME}/licenses"
+          sudo mkdir -p "${ANDROID_HOME}/licenses"
           printf '8933bad161af4178b1185d1a37fbf41ea5269c55\nd56f5187479451eabf01fb78af6dfcb131a6481e\n24333f8a63b6825ea9c5514f83c2829b004d1fee\n' \
-            > "${ANDROID_HOME}/licenses/android-sdk-license"
+            | sudo tee "${ANDROID_HOME}/licenses/android-sdk-license" > /dev/null
           printf '84831b9409646a918e30573bab4c9c91346d8abd\n' \
-            > "${ANDROID_HOME}/licenses/android-sdk-preview-license"
+            | sudo tee "${ANDROID_HOME}/licenses/android-sdk-preview-license" > /dev/null
           printf '4d62ef8dda7defaeeed2669d57be10914e495ab\n6f0c77e5fcb2e8b8a71dbd3f30de2e4b02dc6a4\n' \
-            > "${ANDROID_HOME}/licenses/android-sdk-ndk-license"
-          printf 'sdk.dir=%s\nndk.dir=%s/ndk/28.0.12433566\n' \
-            "${ANDROID_HOME}" "${ANDROID_HOME}" > android/local.properties
-          echo "=== android-sdk-license ==="
-          cat "${ANDROID_HOME}/licenses/android-sdk-license"
+            | sudo tee "${ANDROID_HOME}/licenses/android-sdk-ndk-license" > /dev/null
+          echo "=== android-sdk-license ===" && cat "${ANDROID_HOME}/licenses/android-sdk-license"
+          echo "=== Pre-installed NDK versions ==="
+          ls "${ANDROID_HOME}/ndk/" 2>/dev/null || echo "(none)"
+          echo "=== Installing NDK 28.0.12433566 ==="
+          sdkmanager "ndk;28.0.12433566"
+          printf 'sdk.dir=%s\n' "${ANDROID_HOME}" > android/local.properties
 
       - name: Decode keystore
         run: |
