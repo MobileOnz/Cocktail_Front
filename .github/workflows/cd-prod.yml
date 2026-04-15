@@ -75,6 +75,16 @@ jobs:
         run: |
           echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | tr -d ' \r\n' | base64 -d > android/app/my-release-key.jks
 
+      - name: Pre-bundle JS (validate Metro resolution)
+        run: |
+          npx react-native bundle \
+            --platform android \
+            --dev false \
+            --entry-file index.js \
+            --bundle-output /tmp/android.bundle \
+            --assets-dest /tmp/android-assets \
+            2>&1
+
       - name: Build Release AAB
         env:
           VERSION_CODE: ${{ github.run_number }}
