@@ -66,10 +66,10 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Setup Android SDK & accept licenses (NDK 28)
-        uses: android-actions/setup-android@v3
-        with:
-          packages: "ndk;28.0.12433566"
+      - name: Set NDK path (bypass SDK Manager license check)
+        run: |
+          printf 'sdk.dir=%s\nndk.dir=%s/ndk/28.0.12433566\n' \
+            "${ANDROID_HOME}" "${ANDROID_HOME}" > android/local.properties
 
       - name: Decode keystore
         run: |
