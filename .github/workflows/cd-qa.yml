@@ -67,14 +67,11 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-- name: Setup Android SDK
-  uses: android-actions/setup-android@v3
+      - name: Setup Android SDK & accept licenses (NDK 28)
+        uses: android-actions/setup-android@v3
+        with:
+          packages: "ndk;28.0.12433566"
 
-- name: Accept Android licenses
-  run: yes | sdkmanager --licenses
-
-- name: Install NDK
-  run: sdkmanager "ndk;28.0.12433566"
       - name: Decode keystore
         run: |
           echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | tr -d ' \r\n' | base64 -d > android/app/my-release-key.jks
