@@ -23,7 +23,7 @@ const CocktailBoxScreen = () => {
 
                 // 상단 헤더를 리스트의 일부로 설정
                 ListHeaderComponent={
-                    <SafeAreaView style={styles.container}>
+                    <View>
                         <Appbar.Header style={{ backgroundColor: '#FFF' }}>
                             <TouchableOpacity style={{ paddingLeft: 20 }}
                                 onPress={() => navigation.goBack()}>
@@ -39,8 +39,7 @@ const CocktailBoxScreen = () => {
                             </View>
 
                         </Appbar.Header>
-
-                    </SafeAreaView>
+                    </View>
                 }
 
                 // 데이터가 없을 때의 화면
