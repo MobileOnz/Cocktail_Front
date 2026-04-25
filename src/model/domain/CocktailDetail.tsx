@@ -15,5 +15,10 @@ export interface CocktailDetail {
     imageUrl: string;
     flavors: string[];
     moods: string[];
-    isBookmarked: boolean
+    isBookmarked: boolean;
+    // Image variants (nullable until S3 image pipeline is run)
+    imageUrlThumb?: string | null;
+    imageUrlDetail?: string | null;
+    glassImageUrlThumb?: string | null;
+    glassImageUrlDetail?: string | null;
 }

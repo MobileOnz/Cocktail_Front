@@ -13,6 +13,7 @@ import ProfileScreen from '../BottomTab/MyPage/ProfileScreen';
 import TermsAndConditionsScreen from '../BottomTab/MyPage/TermsAndConditionsScreen';
 import QuitScreen from '../BottomTab/MyPage/QuitScreen';
 import PrivacyPolicyScreen from '../BottomTab/MyPage/PrivacyPolicyScreen';
+import InquiryFormScreen from '../BottomTab/MyPage/Inquiry/InquiryFormScreen';
 import { CocktailDetailScreen } from '../Components/CocktailDetail/CocktailDetailScreen';
 import RecommendationScreen from '../BottomTab/Recommend/RecommendationScreen';
 import GuideScreen from '../BottomTab/Guide/GuideScreen';
@@ -83,6 +84,7 @@ export type RootStackParamList = {
   CocktailDetailScreen: { cocktailId: number }
   SearchResultScreen: { keyword: string }
   CocktailBoxScreen: undefined
+  InquiryFormScreen: undefined
 
 };
 const Stack = createStackNavigator<RootStackParamList>();
@@ -130,6 +132,7 @@ const Navigation: React.FC<NavigationProps> = memo(({ isOnboarded, setIsOnboarde
             <Stack.Screen name="SignupScreen" component={SignupScreen} />
             <Stack.Screen name="TermsAndConditionsScreen" component={TermsAndConditionsScreen} />
             <Stack.Screen name="PrivacyPolicyScreen" component={PrivacyPolicyScreen} />
+            <Stack.Screen name="InquiryFormScreen" component={InquiryFormScreen} />
             <Stack.Screen name="LoadingScreen" component={LoadingScreen} />
             <Stack.Screen name="ResultScreen" component={ResultScreen} />
           </>

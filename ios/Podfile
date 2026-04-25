@@ -56,6 +56,23 @@ target 'Cocktail_Front' do
       :mac_catalyst_enabled => false,
     )
 
+    # ✅ Patch fmt/base.h to disable FMT_USE_CONSTEVAL (Xcode 16+ rejects fmt's consteval usage).
+    # fmt 11.0.2 redefines the macro unconditionally, so -D flags are ignored — must edit the header.
+    fmt_base_h = File.join(installer.sandbox.root, 'fmt/include/fmt/base.h')
+    if File.exist?(fmt_base_h)
+      content = File.read(fmt_base_h)
+      patched = content
+        .sub(
+          "#elif defined(__cpp_consteval)\n#  define FMT_USE_CONSTEVAL 1\n",
+          "#elif defined(__cpp_consteval)\n#  define FMT_USE_CONSTEVAL 0  // Patched: Xcode 16+ consteval bug\n"
+        )
+        .sub(
+          "#elif FMT_GCC_VERSION >= 1002 || FMT_CLANG_VERSION >= 1101\n#  define FMT_USE_CONSTEVAL 1\n",
+          "#elif FMT_GCC_VERSION >= 1002 || FMT_CLANG_VERSION >= 1101\n#  define FMT_USE_CONSTEVAL 0  // Patched: Xcode 16+ consteval bug\n"
+        )
+      File.write(fmt_base_h, patched) if patched != content
+    end
+
     installer.pods_project.targets.each do |target|
       target.build_configurations.each do |config|
         # ✅ 모든 모듈에 CLANG_ENABLE_MODULES 및 HEADER_SEARCH_PATHS 설정
@@ -74,6 +91,7 @@ target 'Cocktail_Front' do
         config.build_settings['GCC_TREAT_WARNINGS_AS_ERRORS'] = 'NO'
         config.build_settings['SWIFT_TREAT_WARNINGS_AS_ERRORS'] = 'NO'
         config.build_settings['CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS'] = 'NO'
+
       end
 
       # ✅ RNKakaoLogins 모듈의 설정 (필요 시)

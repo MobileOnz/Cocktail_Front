@@ -16,11 +16,12 @@ export class BookmarkRepository implements IBookmarkRepository {
         const validSchema = dto.map((item) => {
             return CocktailSchema.parse(item);
         });
+        // Bookmark grid → prefer thumb, fall back to original.
         return validSchema.map(dto => ({
             id: dto.id,
             name: dto.korName,
             type: dto.style,
-            image: dto.imageUrl,
+            image: dto.imageUrlThumb ?? dto.imageUrl,
             isBookmarked: dto.isBookmarked,
         }));
     }

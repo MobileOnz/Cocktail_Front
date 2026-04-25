@@ -74,11 +74,12 @@ export class SearchRepository implements ISearchRepository {
             return CocktailSchema.parse(item);
         });
 
+        // Search result grid → prefer thumb, fall back to original.
         return validSchema.map(dto => ({
             id: dto.id,
             name: dto.korName,
             type: dto.style,
-            image: dto.imageUrl,
+            image: dto.imageUrlThumb ?? dto.imageUrl,
             isBookmarked: dto.isBookmarked,
         }));
     }

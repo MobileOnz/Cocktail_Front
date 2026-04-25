@@ -44,6 +44,10 @@ export class CocktailDetailRepository implements ICocktailDetailRepository {
       flavors: dto.flavors,
       moods: dto.moods,
       isBookmarked: dto.isBookmarked,
+      imageUrlThumb: dto.imageUrlThumb,
+      imageUrlDetail: dto.imageUrlDetail,
+      glassImageUrlThumb: dto.glassImageUrlThumb,
+      glassImageUrlDetail: dto.glassImageUrlDetail,
     };
 
     return detail;
@@ -56,11 +60,12 @@ export class CocktailDetailRepository implements ICocktailDetailRepository {
       return CocktailSchema.parse(item);
     });
 
+    // Recommended list = small cards → prefer thumb, fall back to original.
     return validSchema.map(dto => ({
       id: dto.id,
       name: dto.korName,
       type: dto.style,
-      image: dto.imageUrl,
+      image: dto.imageUrlThumb ?? dto.imageUrl,
       isBookmarked: dto.isBookmarked,
     }));
   }
