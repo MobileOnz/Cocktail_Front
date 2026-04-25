@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, Image, TouchableOpacity, SafeAreaView, ActivityIndicator } from 'react-native';
+import { StyleSheet, Text, View, Image, TouchableOpacity, SafeAreaView, ActivityIndicator, Linking, Platform } from 'react-native';
 import { widthPercentage, heightPercentage, fontPercentage } from '../../assets/styles/FigmaScreen';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -8,7 +8,16 @@ import MyPageViewModel from './MyPageViewModel';
 import { User } from '../../model/domain/User';
 // import WithdrawBottomSheet from '../BottomSheet/WithdrawBottomSheet';
 import SignOutModal from '../../Components/SignOutModal';
+import WithdrawConfirmModal from '../../Components/WithdrawConfirmModal';
 import { useToast } from '../../Components/ToastContext';
+import DeviceInfo from 'react-native-device-info';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+// TODO: 앱스토어 등록 완료 후 실제 numeric App Store ID 로 교체
+//   (App Store Connect → My Apps → App Information → Apple ID 항목)
+const IOS_APP_STORE_ID = '0000000000';
+// android applicationId — android/app/build.gradle 에 정의됨
+const ANDROID_PACKAGE_NAME = 'com.cocktail_front';
 
 //import { BannerAd, BannerAdSize, TestIds } from 'react-native-google-mobile-ads';
 
@@ -20,8 +29,13 @@ const MyPageScreen = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const { showToast } = useToast();
   const [showSignOutModal, setShowSignOutModal] = useState(false);
+  const [showWithdrawModal, setShowWithdrawModal] = useState(false);
+  const [withdrawing, setWithdrawing] = useState(false);
   const [user, setUser] = useState<User | null>(null);
-  const { loading, profileUri, getMemberInfo, logOut } = MyPageViewModel();
+  const { loading, profileUri, getMemberInfo, logOut, withDrawUser } = MyPageViewModel();
+
+  // 앱 버전 표기 (예: v1.2.3 (45))
+  const appVersionLabel = `v${DeviceInfo.getVersion()} (${DeviceInfo.getBuildNumber()})`;
 
   useEffect(() => {
     const fetch = async () => {
@@ -51,6 +65,67 @@ const MyPageScreen = () => {
       showToast('로그아웃 실패');
     } finally {
       setShowSignOutModal(false);
+    }
+  };
+
+  // 서비스 리뷰 남기기 — 네이티브 스토어로 이동
+  const handleReview = async () => {
+    const url = Platform.OS === 'ios'
+      ? `itms-apps://itunes.apple.com/app/id${IOS_APP_STORE_ID}?action=write-review`
+      : `market://details?id=${ANDROID_PACKAGE_NAME}`;
+    const fallbackUrl = Platform.OS === 'ios'
+      ? `https://apps.apple.com/app/id${IOS_APP_STORE_ID}?action=write-review`
+      : `https://play.google.com/store/apps/details?id=${ANDROID_PACKAGE_NAME}`;
+    try {
+      const canOpen = await Linking.canOpenURL(url);
+      if (canOpen) {
+        await Linking.openURL(url);
+      } else {
+        await Linking.openURL(fallbackUrl);
+      }
+    } catch (e) {
+      console.warn('🚨 리뷰 페이지 열기 실패:', e);
+      try {
+        await Linking.openURL(fallbackUrl);
+      } catch (e2) {
+        showToast('스토어 페이지를 열 수 없습니다.');
+      }
+    }
+  };
+
+  // 회원 탈퇴 처리
+  const handleWithdraw = async () => {
+    if (withdrawing) { return; }
+    setWithdrawing(true);
+    try {
+      const code = await withDrawUser();
+      if (code === 1) {
+        // 토큰/캐시 정리
+        await AsyncStorage.clear();
+        setIsLoggedIn(false);
+        setUser(null);
+        setShowWithdrawModal(false);
+        showToast('회원 탈퇴가 완료되었습니다.');
+        // 탈퇴 직후 마이페이지(비로그인 상태)로 복귀
+        navigation.reset({
+          index: 0,
+          routes: [
+            {
+              name: 'BottomTabNavigator',
+              params: { screen: '마이페이지' },
+            },
+          ],
+        });
+      } else {
+        showToast('탈퇴 처리 중 오류가 발생했습니다.');
+      }
+    } catch (err: any) {
+      const msg = err?.response?.data?.msg || err?.message || '알 수 없는 오류';
+      console.error('🚨 회원 탈퇴 실패:', err?.response?.data || err);
+      showToast(`탈퇴 처리 중 오류: ${msg}`);
+    } finally {
+      setWithdrawing(false);
+      setShowWithdrawModal(false);
     }
   };
 
@@ -185,11 +260,11 @@ const MyPageScreen = () => {
 
           <Text style={styles.supportTitle}>고객지원</Text>
           <View style={styles.supportSection}>
-            {renderSupportItem('버전 정보')}
-            <TouchableOpacity>
+            {renderSupportItemWithValue('버전 정보', appVersionLabel)}
+            <TouchableOpacity onPress={() => navigation.navigate('InquiryFormScreen')}>
               {renderSupportItem('1:1 문의하기')}
             </TouchableOpacity>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={handleReview}>
               {renderSupportItem('서비스 리뷰 남기기')}
             </TouchableOpacity>
           </View>
@@ -207,6 +282,12 @@ const MyPageScreen = () => {
               <TouchableOpacity onPress={() => setShowSignOutModal(true)}>
                 {renderSupportItemWithoutIcon('로그아웃')}
               </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => setShowWithdrawModal(true)}
+                disabled={withdrawing}
+              >
+                {renderWithdrawItem('회원 탈퇴')}
+              </TouchableOpacity>
             </View>
           )}
 
@@ -215,6 +296,12 @@ const MyPageScreen = () => {
             visible={showSignOutModal}
             onClose={() => setShowSignOutModal(false)}
             onSignOut={handleLogout}
+          />
+
+          <WithdrawConfirmModal
+            visible={showWithdrawModal}
+            onClose={() => (withdrawing ? null : setShowWithdrawModal(false))}
+            onConfirm={handleWithdraw}
           />
         </View>
       )}
@@ -233,8 +320,21 @@ const renderSupportItem = (text: string) => {
   );
 };
 
+const renderSupportItemWithValue = (text: string, value: string) => (
+  <View style={styles.supportItem}>
+    <Text style={styles.supportText}>{text}</Text>
+    <Text style={styles.supportValueText}>{value}</Text>
+  </View>
+);
+
 const renderSupportItemWithoutIcon = (text: string) => (
   <View style={[styles.supportItem, { marginTop: heightPercentage(8) }]}>
+    <Text style={[styles.supportText, { color: '#BDBDBD' }]}>{text}</Text>
+  </View>
+);
+
+const renderWithdrawItem = (text: string) => (
+  <View style={styles.supportItem}>
     <Text style={[styles.supportText, { color: '#BDBDBD' }]}>{text}</Text>
   </View>
 );
@@ -355,6 +455,11 @@ const styles = StyleSheet.create({
   supportText: {
     fontSize: fontPercentage(16),
     color: '#1B1B1B',
+    fontWeight: '500',
+  },
+  supportValueText: {
+    fontSize: fontPercentage(14),
+    color: '#9E9E9E',
     fontWeight: '500',
   },
   profilerightArrow: {

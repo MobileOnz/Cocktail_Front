@@ -1,5 +1,5 @@
 // CocktailDetailScreen.tsx
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Image, ScrollView, Text, View, StyleSheet, Pressable, TouchableOpacity, Share } from 'react-native';
 import { ActivityIndicator, Divider } from 'react-native-paper';
@@ -43,6 +43,11 @@ export function CocktailDetailScreen({ route }: Props) {
 
   const vm = useCocktailDetailViewModel(cocktailId);
   const stay10sTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Hero image: prefer detail variant, fall back to original imageUrl on error
+  // (covers the mock-S3 mode where variant URLs may 404 while real keys are pending).
+  const [heroErrored, setHeroErrored] = useState(false);
+  const [glassErrored, setGlassErrored] = useState(false);
 
   const handleShare = async () => {
     if (!vm.detail) { return; }
@@ -88,7 +93,15 @@ export function CocktailDetailScreen({ route }: Props) {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.imageContainer}>
-        <Image source={{ uri: vm.detail.imageUrl }} style={styles.image} />
+        <Image
+          source={{
+            uri: heroErrored
+              ? vm.detail.imageUrl
+              : (vm.detail.imageUrlDetail ?? vm.detail.imageUrl),
+          }}
+          style={styles.image}
+          onError={() => setHeroErrored(true)}
+        />
 
         {/* 상단 바 전체를 한 View에 묶기 */}
         <View style={[styles.imageHeader, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
@@ -174,7 +187,15 @@ export function CocktailDetailScreen({ route }: Props) {
         {/* 추후 넣기 */}
         <DetailRow label="잔 유형">
           <Text style={styles.valueText}> {vm.detail.glassType}</Text>
-          <Image source={{ uri: vm.detail.glassImageUrl }} style={styles.glassImage} />
+          <Image
+            source={{
+              uri: glassErrored
+                ? vm.detail.glassImageUrl
+                : (vm.detail.glassImageUrlDetail ?? vm.detail.glassImageUrl),
+            }}
+            style={styles.glassImage}
+            onError={() => setGlassErrored(true)}
+          />
         </DetailRow>
       </View>
 
