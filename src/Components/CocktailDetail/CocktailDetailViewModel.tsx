@@ -6,7 +6,7 @@ import instance from '../../tokenRequest/axios_interceptor';
 import Toast from 'react-native-toast-message';
 import { getToken } from '../../tokenRequest/Token';
 import perf from '@react-native-firebase/perf';
-import { stay10sPageCocktailDetail } from '../../analytics/eventProperty';
+import { trackViewCocktailDetail, stay10sPageCocktailDetail } from '../../analytics/eventProperty';
 
 type UseCocktailDetailDeps = {
     repository?: ICocktailDetailRepository;
@@ -77,6 +77,15 @@ const useCocktailDetailViewModel = (id: number, deps?: UseCocktailDetailDeps) =>
         }
     };
 
+    const trackViewDetail = (entryOrigin: string) => {
+        if (!data?.detail) { return; }
+        trackViewCocktailDetail({
+            cocktailId: data.detail.id,
+            cocktailName: data.detail.korName,
+            entryOrigin,
+        });
+    };
+
     const trackStay10s = (entryOrigin: string) => {
         if (!data?.detail) { return; }
         stay10sPageCocktailDetail({
@@ -122,6 +131,7 @@ const useCocktailDetailViewModel = (id: number, deps?: UseCocktailDetailDeps) =>
         bookmarked,
         handleReaction,
         myReaction: data?.myReaction ?? myReaction,
+        trackViewDetail,
         trackStay10s,
     };
 };

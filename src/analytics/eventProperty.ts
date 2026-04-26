@@ -24,18 +24,6 @@ export function trackViewCocktailDetail(params: {
     });
 }
 
-export function startStay3sCocktailDetail(params: {
-    cocktailId: number;
-    cocktailName: string;
-    entryOrigin: string;
-}) {
-    track('stay3s_view_cocktaildetail', {
-        cocktail_id: params.cocktailId,
-        cocktail_name: params.cocktailName,
-        entry_origin: params.entryOrigin,
-    });
-}
-
 export function stay10sPageCocktailDetail(params: {
     cocktailId: number;
     cocktailName: string;
@@ -121,20 +109,6 @@ export function viewPageGuidedetail(params: {
     });
 
 }
-export function stay3sViewGuidedetail(params: {
-    guideId: number;
-    guideTitle: string;
-    guideType: string;
-    entryOrigin: string;
-}) {
-    track('stay3s_view_guidedetail', {
-        guide_id: params.guideId,
-        guide_title: params.guideTitle,
-        guide_type: params.guideType,
-        entry_origin: params.entryOrigin,
-    });
-}
-
 export function completePageGuidedetail(params: {
     guideId: number;
     guideTitle: string;

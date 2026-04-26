@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { di } from '../../DI/Container';
 import { IHomeCocktailRepository } from '../../model/repository/HomeCocktailRepository';
@@ -7,6 +7,7 @@ import { useNavigation } from '@react-navigation/native';
 import { getToken } from '../../tokenRequest/Token';
 import Toast from 'react-native-toast-message';
 import perf from '@react-native-firebase/perf';
+import { trackViewHomeOncePerSession } from '../../analytics/eventProperty';
 
 type UseSearchResultDeps = {
   repository?: IHomeCocktailRepository;
@@ -39,13 +40,27 @@ export const useHomeViewModel = (deps?: UseSearchResultDeps) => {
   const queryClient = useQueryClient();
   const navigation = useNavigation<any>();
   const [isScrolled, setIsScrolled] = useState(false);
+  const hasTrackedHome = useRef(false);
 
-  // ─── useQuery: 캐시된 데이터 즉시 표시 후 백그라운드에서 최신 데이터 fetch ───
+  // ─── useQuery: 캐시된 데이터 즉시 ���시 후 백그라운드에서 최신 ��이터 fetch ───
   const { data, isLoading, error } = useQuery({
     queryKey: ['homeData'],
     queryFn: () => fetchHomeData(repository),
     staleTime: 1000 * 60 * 60, // 1시간
   });
+
+  useEffect(() => {
+    if (!hasTrackedHome.current && !isLoading) {
+      hasTrackedHome.current = true;
+      getToken().then(t => {
+        trackViewHomeOncePerSession({
+          userType: data ? 'return' : 'new',
+          loginStatus: t ? 'logged_in' : 'guest',
+        });
+      });
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoading]);
 
   // 북마크 토글 (낙관적 UI)
   const bookmarked = async (cocktailId: number) => {
