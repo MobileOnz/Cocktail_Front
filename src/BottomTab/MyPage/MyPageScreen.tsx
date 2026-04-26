@@ -13,9 +13,8 @@ import { useToast } from '../../Components/ToastContext';
 import DeviceInfo from 'react-native-device-info';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// TODO: 앱스토어 등록 완료 후 실제 numeric App Store ID 로 교체
-//   (App Store Connect → My Apps → App Information → Apple ID 항목)
-const IOS_APP_STORE_ID = '0000000000';
+// App Store Connect → My Apps → ONZ → App Information → Apple ID
+const IOS_APP_STORE_ID = '6744957084';
 // android applicationId — android/app/build.gradle 에 정의됨
 const ANDROID_PACKAGE_NAME = 'com.cocktail_front';
 
