@@ -25,8 +25,9 @@ export class AppleDataSource implements ISocialAuthDataSource {
 
             const deviceNumber = await DeviceInfo.getUniqueId();
 
+            const BASE_URL = API_BASE_URL || 'http://onz-cocktail.kr/onz';
             const response = await axios.post(
-                `${API_BASE_URL}/api/v2/auth/social-login`,
+                `${BASE_URL}/api/v2/auth/social-login`,
                 {
                     provider: 'apple',
                     accessToken: identityToken,

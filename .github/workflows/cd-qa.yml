@@ -55,10 +55,25 @@ jobs:
       - name: Install JS dependencies
         run: npm install --ignore-scripts
 
+      - name: Apply patches
+        run: npx patch-package
+
+      - name: Create .env file
+        run: |
+          echo "API_BASE_URL=http://onz-cocktail.kr/onz" >> .env
+          echo "GOOGLE_PLACES_API_KEY=AIzaSyDeWHr3QIavBa4RGYwZly8h0sNTfLmQ" >> .env
+          echo "GOOGLE_CLIENT_ID=1058340377075-vt8u6qabph0f0van79eqhkt9j2f1jkbe.apps.googleusercontent.com" >> .env
+          echo "GOOGLE_REDIRECT_URI=com.googleusercontent.apps.1058340377075-vt8u6qabph0f0van79eqhkt9j2f1jkbe:/oauth2redirect/google" >> .env
+
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
+
+      - name: Configure NDK (use pre-installed 28.2.13676358)
+        run: |
+          printf 'sdk.dir=%s\nndk.dir=%s/ndk/28.2.13676358\n' \
+            "${ANDROID_HOME}" "${ANDROID_HOME}" > android/local.properties
 
       - name: Decode keystore
         run: |
@@ -102,6 +117,16 @@ jobs:
       - name: Install JS dependencies
         run: npm install --ignore-scripts
 
+      - name: Apply patches
+        run: npx patch-package
+
+      - name: Create .env file
+        run: |
+          echo "API_BASE_URL=http://onz-cocktail.kr/onz" >> .env
+          echo "GOOGLE_PLACES_API_KEY=AIzaSyDeWHr3QIavBa4RGYwZly8h0sNTfLmQ" >> .env
+          echo "GOOGLE_CLIENT_ID=1058340377075-vt8u6qabph0f0van79eqhkt9j2f1jkbe.apps.googleusercontent.com" >> .env
+          echo "GOOGLE_REDIRECT_URI=com.googleusercontent.apps.1058340377075-vt8u6qabph0f0van79eqhkt9j2f1jkbe:/oauth2redirect/google" >> .env
+
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: '3.3'
@@ -109,9 +134,7 @@ jobs:
           bundler-cache: true
 
       - name: Install CocoaPods
-        run: |
-          bundle exec pod update hermes-engine --no-repo-update --project-directory=ios
-          bundle exec pod install --no-repo-update --project-directory=ios
+        run: bundle exec pod install --no-repo-update --project-directory=ios
 
       - name: Import distribution certificate
         env:

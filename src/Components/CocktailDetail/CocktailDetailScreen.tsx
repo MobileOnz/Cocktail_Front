@@ -44,8 +44,8 @@ export function CocktailDetailScreen({ route }: Props) {
   const vm = useCocktailDetailViewModel(cocktailId);
   const stay10sTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Hero image: prefer detail variant, fall back to original imageUrl on error
-  // (covers the mock-S3 mode where variant URLs may 404 while real keys are pending).
+  // Image variant onError fallback to original imageUrl/glassImageUrl
+  // (covers mock-S3 mode where variant URLs may 404 while real keys are pending).
   const [heroErrored, setHeroErrored] = useState(false);
   const [glassErrored, setGlassErrored] = useState(false);
 
@@ -61,6 +61,7 @@ export function CocktailDetailScreen({ route }: Props) {
 
   useEffect(() => {
     if (!vm.detail) {return;}
+    vm.trackViewDetail('cocktail_detail');
     stay10sTimerRef.current = setTimeout(() => {
       vm.trackStay10s('cocktail_detail');
     }, 10000);

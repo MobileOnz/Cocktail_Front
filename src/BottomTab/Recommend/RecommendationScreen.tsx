@@ -29,11 +29,10 @@ const RecommendationScreen: React.FC<Props> = ({ navigation }) => {
 
   // [버튼] 다음 단계 이동
   const handleConfirmBtn = async () => {
+    submitAmplifyRecommend();
     if (currentStep < 4) {
-      submitAmplifyRecommend();
       setCurrentStep(currentStep + 1);
-    }
-    if (currentStep == 4) {
+    } else {
       navigation.navigate('LoadingVideoScreen', { answers: selectedAnswers });
     }
   };
