@@ -32,7 +32,11 @@ export class RecommendCocktailDataSource {
             imageUrl: dto.imageUrl,
             flavors: dto.flavors,
             moods: dto.moods,
-            isBookmarked: dto.isBookmarked
+            isBookmarked: dto.isBookmarked,
+            imageUrlThumb: dto.imageUrlThumb ?? null,
+            imageUrlDetail: dto.imageUrlDetail ?? null,
+            glassImageUrlThumb: dto.glassImageUrlThumb ?? null,
+            glassImageUrlDetail: dto.glassImageUrlDetail ?? null,
         };
 
     }

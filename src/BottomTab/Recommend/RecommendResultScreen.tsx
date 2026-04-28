@@ -172,7 +172,7 @@ const ResultScreen = ({ data, user }) => {
         >
           <View style={styles.shadowBox}>
             <Image
-              source={{ uri: data.imageUrl }}
+              source={{ uri: data.imageUrlDetail ?? data.imageUrl }}
               style={{ width: '100%', height: '100%', resizeMode: 'cover', borderRadius: 8 }}
             />
           </View>
@@ -202,7 +202,7 @@ const ResultScreen = ({ data, user }) => {
         >
           <View style={styles.shadowBox}>
             <Image
-              source={{ uri: data.imageUrl }}
+              source={{ uri: data.imageUrlDetail ?? data.imageUrl }}
               style={{ width: '100%', height: '100%', resizeMode: 'cover', borderRadius: 8, transform: [{ scaleX: -1 }] }}
             />
           </View>

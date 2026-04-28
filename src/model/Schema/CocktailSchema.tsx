@@ -26,6 +26,13 @@ export const CocktailSchema = z.object({
   glassType: z.string(),
   glassImageUrl: z.string().url(),
   isBookmarked: z.boolean(),
+
+  // Image variants — nullable / optional until S3 image pipeline ships.
+  // Both `null` and absent are tolerated; runtime mappers fall back to imageUrl/glassImageUrl.
+  imageUrlThumb: z.string().url().optional().nullable(),
+  imageUrlDetail: z.string().url().optional().nullable(),
+  glassImageUrlThumb: z.string().url().optional().nullable(),
+  glassImageUrlDetail: z.string().url().optional().nullable(),
 });
 
 export type CocktailListItem = z.infer<typeof CocktailSchema>;
