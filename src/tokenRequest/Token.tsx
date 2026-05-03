@@ -51,10 +51,16 @@ export async function tokenRefresh(): Promise<string | null> {
         },
       });
 
-      const { accessToken, refreshToken: newRefreshToken } = response.data;
-      console.log('[Token] 재발급 성공:', { accessToken: '받음', refreshToken: '받음' });
+      console.log('[Token] reissue 응답 전체:', JSON.stringify(response.data));
+
+      // flat 구조 ({ accessToken, refreshToken }) 또는 중첩 구조 ({ data: { accessToken, refreshToken } }) 모두 대응
+      const payload = response.data?.accessToken ? response.data : response.data?.data;
+      const accessToken = payload?.accessToken;
+      const newRefreshToken = payload?.refreshToken;
+
+      console.log('[Token] 재발급 결과:', { accessToken: accessToken ? '받음' : '없음', refreshToken: newRefreshToken ? '받음' : '없음' });
       if (!accessToken || !newRefreshToken) {
-        console.error('access 또는 refresh 토큰이 응답에 없습니다.');
+        console.error('[Token] access 또는 refresh 토큰이 응답에 없습니다. payload:', JSON.stringify(payload));
         return null;
       }
 

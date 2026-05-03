@@ -7,7 +7,6 @@ import {
   FlatList,
   TouchableOpacity,
   StatusBar,
-  Animated,
   useWindowDimensions,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -40,18 +39,7 @@ const Home = () => {
   const tabBarSpace = heightPercentage(58) + insets.bottom + 12 + 16;
 
 
-  const fadeAnim = useRef(new Animated.Value(0)).current;
-  const animatedColor = fadeAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['#ffffff', '#000000'],
-  });
-  useEffect(() => {
-    Animated.timing(fadeAnim, {
-      toValue: vm.isScrolled ? 1 : 0,
-      duration: 200,
-      useNativeDriver: false,
-    }).start();
-  }, [fadeAnim, vm.isScrolled]);
+  const iconColor = vm.isScrolled ? '#000000' : '#ffffff';
   useEffect(() => {
     if (vm.bestCocktail && vm.bestCocktail.length > 0) {
       vm.bestCocktail.forEach(item => {
@@ -134,13 +122,12 @@ const Home = () => {
             style={styles.customIconButton}
             activeOpacity={0.7}
           >
-            <Animated.Image
+            <Image
               source={require('../../assets/drawable/SharpSearch.png')}
               style={{
                 width: 28,
                 height: 28,
-                tintColor: animatedColor,
-
+                tintColor: iconColor,
               }}
               resizeMode="contain"
             />
@@ -152,12 +139,12 @@ const Home = () => {
             style={styles.customIconButton}
             activeOpacity={0.7}
           >
-            <Animated.Image
+            <Image
               source={require('../../assets/drawable/save.png')}
               style={{
                 width: 15,
                 height: 19,
-                tintColor: animatedColor,
+                tintColor: iconColor,
               }}
               resizeMode="contain"
             />
@@ -174,26 +161,31 @@ const Home = () => {
         scrollEventThrottle={16}
       >
         {/* 메인 사진 */}
-        <View style={styles.randomWrapper}>
-          <View style={styles.mainImageShadow}>
+        <TouchableOpacity
+          activeOpacity={0.9}
+          onPress={() => vm.randomCocktail?.id && navigation.navigate('CocktailDetailScreen', { cocktailId: vm.randomCocktail.id })}
+        >
+          <View style={styles.randomWrapper}>
+            <View style={styles.mainImageShadow}>
 
-            <View style={styles.mainImageClip}>
-              <FastImage
-                source={{ uri: vm.randomCocktail?.image, priority: FastImage.priority.high }}
-                style={styles.mainImage}
-                resizeMode={FastImage.resizeMode.cover}
-              />
-              <LinearGradient
-                colors={['transparent', 'rgba(0,0,0,0.8)']}
-                style={styles.gradientOverlay}
-              />
+              <View style={styles.mainImageClip}>
+                <FastImage
+                  source={{ uri: vm.randomCocktail?.image, priority: FastImage.priority.high }}
+                  style={styles.mainImage}
+                  resizeMode={FastImage.resizeMode.cover}
+                />
+                <LinearGradient
+                  colors={['transparent', 'rgba(0,0,0,0.8)']}
+                  style={styles.gradientOverlay}
+                />
+              </View>
+
             </View>
 
+            <Text style={styles.bannerKoText}>오늘의 칵테일</Text>
+            <Text style={styles.bannerEnText}>{vm.randomCocktail?.engName}</Text>
           </View>
-
-          <Text style={styles.bannerKoText}>오늘의 칵테일</Text>
-          <Text style={styles.bannerEnText}>{vm.randomCocktail?.engName}</Text>
-        </View>
+        </TouchableOpacity>
 
         {/* Best 입문자용 칵테일 */}
 

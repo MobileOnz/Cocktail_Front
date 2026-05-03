@@ -6,7 +6,7 @@ import instance from '../../tokenRequest/axios_interceptor';
 import { useNavigation } from '@react-navigation/native';
 import { getToken } from '../../tokenRequest/Token';
 import Toast from 'react-native-toast-message';
-import perf from '@react-native-firebase/perf';
+import { getPerformance } from '@react-native-firebase/perf';
 import { trackViewHomeOncePerSession } from '../../analytics/eventProperty';
 
 type UseSearchResultDeps = {
@@ -15,7 +15,7 @@ type UseSearchResultDeps = {
 
 // 홈 데이터를 한 번에 fetch하는 함수
 const fetchHomeData = async (repository: IHomeCocktailRepository) => {
-  const trace = await perf().newTrace('HomeScreen_Load');
+  const trace = await getPerformance().newTrace('HomeScreen_Load');
   await trace.start();
   try {
     const [randomCocktail, newCocktail, bestCocktail, refreshList, intermediateList, beginnerList] =
@@ -42,7 +42,6 @@ export const useHomeViewModel = (deps?: UseSearchResultDeps) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const hasTrackedHome = useRef(false);
 
-  // ─── useQuery: 캐시된 데이터 즉시 ���시 후 백그라운드에서 최신 ��이터 fetch ───
   const { data, isLoading, error } = useQuery({
     queryKey: ['homeData'],
     queryFn: () => fetchHomeData(repository),

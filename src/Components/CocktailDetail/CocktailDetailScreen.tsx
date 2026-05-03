@@ -41,8 +41,13 @@ export function CocktailDetailScreen({ route }: Props) {
   const { cocktailId } = route.params;
   const navigation = useNavigation<any>();
 
+  const scrollViewRef = useRef<ScrollView>(null);
   const vm = useCocktailDetailViewModel(cocktailId);
   const stay10sTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    scrollViewRef.current?.scrollTo({ y: 0, animated: false });
+  }, [cocktailId]);
 
   // Image variant onError fallback to original imageUrl/glassImageUrl
   // (covers mock-S3 mode where variant URLs may 404 while real keys are pending).
@@ -92,7 +97,7 @@ export function CocktailDetailScreen({ route }: Props) {
 
   // 정상 렌더링
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView ref={scrollViewRef} style={styles.container}>
       <View style={styles.imageContainer}>
         <Image
           source={{

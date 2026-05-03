@@ -1,7 +1,7 @@
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import React from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ActivityIndicator, Appbar } from 'react-native-paper';
+import { ActivityIndicator } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import { fontPercentage, heightPercentage, widthPercentage } from '../../assets/styles/FigmaScreen';
 import useCocktailBoxViewModel from './CocktailBoxViewModel';
@@ -23,22 +23,12 @@ const CocktailBoxScreen = () => {
 
                 // 상단 헤더를 리스트의 일부로 설정
                 ListHeaderComponent={
-                    <View>
-                        <Appbar.Header style={{ backgroundColor: '#FFF' }}>
-                            <TouchableOpacity style={{ paddingLeft: 20 }}
-                                onPress={() => navigation.goBack()}>
-                                <Icon
-                                    name="chevron-back-sharp"
-                                    size={24}
-                                    color="#000"
-                                    style={{ marginRight: widthPercentage(8) }}
-                                />
-                            </TouchableOpacity>
-                            <View style={{ flex: 0.8, alignItems: 'center' }}>
-                                <Text style={{ fontSize: fontPercentage(16), fontFamily: 'Pretendard-SemiBold', color: '#1B1B1B' }}>칵테일 보관함</Text>
-                            </View>
-
-                        </Appbar.Header>
+                    <View style={styles.header}>
+                        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.headerSide}>
+                            <Icon name="chevron-back-sharp" size={24} color="#000" />
+                        </TouchableOpacity>
+                        <Text style={styles.headerTitle}>칵테일 보관함</Text>
+                        <View style={styles.headerSide} />
                     </View>
                 }
 
@@ -83,6 +73,23 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#FFF',
     },
+    header: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        height: heightPercentage(52),
+        paddingHorizontal: widthPercentage(16),
+        marginBottom: heightPercentage(8),
+    },
+    headerTitle: {
+        fontSize: fontPercentage(16),
+        fontFamily: 'Pretendard-SemiBold',
+        color: '#1B1B1B',
+    },
+    headerSide: {
+        width: widthPercentage(32),
+        alignItems: 'flex-start',
+    },
     // 헤더 관련 스타일 (SearchResultScreen 양식 참고)
     headerContainer: {
         backgroundColor: '#FFF',
@@ -106,11 +113,6 @@ const styles = StyleSheet.create({
         fontWeight: '600',
         fontFamily: 'Pretendard',
         fontSize: fontPercentage(16),
-    },
-    headerTitle: {
-        fontSize: fontPercentage(20),
-        fontWeight: '700',
-        color: '#1B1B1B',
     },
     headerDivider: {
         height: 1,

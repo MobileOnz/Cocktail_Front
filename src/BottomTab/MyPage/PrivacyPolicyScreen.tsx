@@ -1,5 +1,6 @@
 import React from 'react';
-import { Text, ScrollView, StyleSheet, SafeAreaView, View, TouchableOpacity, Image} from 'react-native';
+import { Text, ScrollView, StyleSheet, View, TouchableOpacity, Image} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { widthPercentage, heightPercentage, fontPercentage } from '../../assets/styles/FigmaScreen';
 import { useNavigation } from '@react-navigation/native';
 
@@ -115,7 +116,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: fontPercentage(20),
-    fontWeight: '600',
+    fontFamily: 'Pretendard-SemiBold',
     color: '#1B1B1B',
   },
   backIcon: {
@@ -125,12 +126,13 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: fontPercentage(14),
-    fontWeight: '600',
+    fontFamily: 'Pretendard-SemiBold',
     marginTop: heightPercentage(16),
     color: '#171719',
   },
   sectionContent: {
     fontSize: fontPercentage(12),
+    fontFamily: 'Pretendard-Regular',
     marginTop: heightPercentage(8),
     color: '#171719',
   },

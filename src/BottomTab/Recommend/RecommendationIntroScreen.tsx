@@ -7,7 +7,6 @@ import {
   StyleSheet,
   Image,
   Easing,
-  Platform,
 } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../../Navigation/Navigation';
@@ -49,32 +48,47 @@ const RecommendationIntroScreen: React.FC<Props> = ({ navigation }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const opacity = useRef(new Animated.Value(0)).current;
   const getBottomMargin = () => {
-    if (Platform.OS === 'ios') {
-
-      return insets.bottom > 0 ? insets.bottom + 30 : 32;
-    }
-    return 40;
+    return insets.bottom > 0 ? insets.bottom + 12 : 16;
   };
   useEffect(() => {
+    let isMounted = true;
+    const timeoutIds: ReturnType<typeof setTimeout>[] = [];
+
     const animate = () => {
+      if (!isMounted) { return; }
       Animated.timing(opacity, {
         toValue: 1,
         duration: 400,
         useNativeDriver: true,
-      }).start(() => {
-        setTimeout(() => {
+      }).start(({ finished }) => {
+        if (!finished || !isMounted) { return; }
+        const t1 = setTimeout(() => {
+          if (!isMounted) { return; }
           Animated.timing(opacity, {
             toValue: 0,
             duration: 400,
             useNativeDriver: true,
-          }).start(() => {
-            setCurrentIndex((prev) => (prev + 1) % icons.length);
-            animate();
+          }).start(({ finished: f2 }) => {
+            if (!f2 || !isMounted) { return; }
+            const t2 = setTimeout(() => {
+              if (!isMounted) { return; }
+              setCurrentIndex((prev) => (prev + 1) % icons.length);
+              animate();
+            }, 0);
+            timeoutIds.push(t2);
           });
         }, 800);
+        timeoutIds.push(t1);
       });
     };
+
     animate();
+
+    return () => {
+      isMounted = false;
+      opacity.stopAnimation();
+      timeoutIds.forEach(clearTimeout);
+    };
   }, [opacity]);
 
   const handlePress = () => { //버튼 애니메이션 (누르면 움츠려들었다가 펴지는거)

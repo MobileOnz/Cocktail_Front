@@ -5,7 +5,7 @@ import { di } from '../../DI/Container';
 import instance from '../../tokenRequest/axios_interceptor';
 import Toast from 'react-native-toast-message';
 import { getToken } from '../../tokenRequest/Token';
-import perf from '@react-native-firebase/perf';
+import { getPerformance } from '@react-native-firebase/perf';
 import { trackViewCocktailDetail, stay10sPageCocktailDetail } from '../../analytics/eventProperty';
 
 type UseCocktailDetailDeps = {
@@ -15,7 +15,7 @@ type UseCocktailDetailDeps = {
 type ReactionType = 'RECOMMEND' | 'HARD';
 
 const fetchDetailData = async (id: number, repository: ICocktailDetailRepository) => {
-    const trace = await perf().newTrace('DetailScreen_Load');
+    const trace = await getPerformance().newTrace('DetailScreen_Load');
     await trace.start();
     try {
         const token = await getToken();

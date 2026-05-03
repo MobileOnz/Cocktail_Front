@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { CocktailCard } from '../../model/domain/CocktailCard';
 import axios from 'axios';
-import perf from '@react-native-firebase/perf';
+import { getPerformance } from '@react-native-firebase/perf';
 import { di } from '../../DI/Container';
 import { ISearchRepository } from '../../model/repository/SearchRepository';
 import { DEFAULT_FILTER, FilterState } from '../../Components/BottomSheet/FilterBottomSheet/FilterBottomSheetViewModel';
@@ -16,7 +16,7 @@ const fetchSearchResult = async (
     filter: FilterState,
     repository: ISearchRepository,
 ): Promise<CocktailCard[]> => {
-    const trace = await perf().newTrace('SearchResult_Load');
+    const trace = await getPerformance().newTrace('SearchResult_Load');
     await trace.start();
     try {
         const data = await repository.search(

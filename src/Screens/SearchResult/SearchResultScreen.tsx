@@ -259,13 +259,13 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     justifyContent: 'flex-start',
-    paddingHorizontal: widthPercentage(16),
+    paddingHorizontal: widthPercentage(8),
     marginBottom: 16,
-    gap: 15,
   },
   cardWrapper: {
-    width: widthPercentage(160),
+    width: '50%',
     alignItems: 'center',
+    paddingHorizontal: widthPercentage(8),
   },
 
   emptyContainer: {

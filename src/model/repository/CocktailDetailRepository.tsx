@@ -7,7 +7,7 @@ import { AxiosResponse } from 'axios';
 export interface ICocktailDetailRepository {
   getDetailData(id: number): Promise<CocktailDetail>;
   recommendCocktails(style: string): Promise<CocktailCard[]>;
-  fetchCocktailRecommendations(cocktailId: string): Promise<string>;
+  fetchCocktailRecommendations(cocktailId: string): Promise<string | null>;
   postCocktailRecommendation(cocktailId: string, reactionType: string): Promise<AxiosResponse<any>>;
 }
 

@@ -12,6 +12,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../../Navigation/Navigation';
 import { widthPercentage, heightPercentage, fontPercentage } from '../../assets/styles/FigmaScreen';
 import RecommendationViewModel from './RecommendationViewModel.tsx';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 type RecommendationSreenNavigationProp = StackNavigationProp<
   RootStackParamList,
@@ -25,6 +26,7 @@ interface Props {
 
 
 const RecommendationScreen: React.FC<Props> = ({ navigation }) => {
+  const insets = useSafeAreaInsets();
   const { currentStep, setCurrentStep, selectedAnswers, setSelectedAnswers, submitAmplifyRecommend } = RecommendationViewModel();
 
   // [버튼] 다음 단계 이동
@@ -59,7 +61,7 @@ const RecommendationScreen: React.FC<Props> = ({ navigation }) => {
     <View style={styles.container}>
 
       {/* 상단 뷰 */}
-      <View style={styles.header}>
+      <View style={[styles.header, { marginTop: insets.top + heightPercentage(8) }]}>
         <TouchableOpacity
           onPress={handleBackBtn}
           style={styles.icon}
@@ -102,7 +104,7 @@ const RecommendationScreen: React.FC<Props> = ({ navigation }) => {
 
 
       {/* 바텀 뷰 */}
-      <View style={styles.bottomContainer}>
+      <View style={[styles.bottomContainer, { bottom: insets.bottom + 20 }]}>
         <TouchableOpacity
           style={[
             styles.confirmButton,
@@ -462,7 +464,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: heightPercentage(50),
     paddingHorizontal: widthPercentage(15),
     paddingVertical: widthPercentage(10),
   },
@@ -526,7 +527,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#FFFFFF',
-    bottom: 40,
   },
 
   titleIntroduceText: {
