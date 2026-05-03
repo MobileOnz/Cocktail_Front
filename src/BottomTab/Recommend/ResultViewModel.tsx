@@ -7,7 +7,7 @@ import { AuthRemoteDataSource } from '../../model/DataSource/AuthRemoteDataSourc
 import { User } from '../../model/domain/User';
 
 const ResultViewModel = () => {
-    
+
     const repository = useMemo(
         () =>
             new MemberRepository(
@@ -26,7 +26,7 @@ const ResultViewModel = () => {
         ['light', 'standard', 'special', 'strong', 'classic'],
         ['low', 'medium', 'high'],
     ];
-    
+
     useEffect(() => {
         getMemberInfo();
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -44,7 +44,7 @@ const ResultViewModel = () => {
             recommendFlowId: FLOW_ID,
         });
     };
-    
+
     const getMemberInfo = useCallback(async () => {
         try {
           setLoading(true);
@@ -63,7 +63,7 @@ const ResultViewModel = () => {
       }, [repository]);
 
     return {
-        clickCtaRecommendResult, getMemberInfo, loading, user
+        clickCtaRecommendResult, getMemberInfo, loading, user,
     };
 };
 

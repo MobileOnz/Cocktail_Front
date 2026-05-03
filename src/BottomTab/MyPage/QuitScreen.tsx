@@ -88,7 +88,7 @@ const QuitScreen: React.FC = () => {
 
             </View>
         </View>
-        
+
         {/* 회원 탈퇴 모달 삭제 */}
         {/* <WithdrawBottomSheet
           isVisible={showWithdrawModal}

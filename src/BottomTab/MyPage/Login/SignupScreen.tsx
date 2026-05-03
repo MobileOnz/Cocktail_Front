@@ -323,7 +323,7 @@ const styles = StyleSheet.create({
     fontSize: fontPercentage(16),
     fontWeight: '500',
     color: '#616161',
-    marginTop: heightPercentage(4),    
+    marginTop: heightPercentage(4),
   },
 
   inputContainer: {

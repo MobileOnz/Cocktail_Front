@@ -326,7 +326,7 @@ const ProfileScreen: React.FC<Props> = ({ route }: Props) => {
         </Text>
       </TouchableOpacity> */}
 
-      
+
     </SafeAreaView>
   );
 };

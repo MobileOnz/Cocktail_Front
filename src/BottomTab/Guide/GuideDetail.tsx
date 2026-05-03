@@ -141,7 +141,7 @@ const styles = StyleSheet.create({
     paddingLeft: widthPercentage(16),
     paddingRight: widthPercentage(16),
     paddingBottom: heightPercentage(10),
-    backgroundColor: '#FFFFFF'
+    backgroundColor: '#FFFFFF',
   },
   headerTitle: {
     fontSize: fontPercentage(20),
@@ -155,7 +155,7 @@ const styles = StyleSheet.create({
   },
   centralContainer: {
     flex: 1,
-    backgroundColor: '#FFFFFF'
+    backgroundColor: '#FFFFFF',
   },
   itemImage: {
     width: '100%',

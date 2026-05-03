@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -430,7 +430,7 @@ const styles = StyleSheet.create({
   mainText: {
     fontFamily: 'Pretendard-SemiBold',
     fontWeight: '600',
-    color : '#000000'
+    color : '#000000',
   },
   filterView: {
     flexDirection: 'row',

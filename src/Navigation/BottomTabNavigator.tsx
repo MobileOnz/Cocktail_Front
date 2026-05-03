@@ -132,19 +132,19 @@ const BottomTabNavigator = () => {
           listeners={({ navigation }) => ({
             tabPress: async e => {
               e.preventDefault(); // ❗ 탭 전환 막기
-              
+
               // 로그인 시에만 접근 가능하게 하기
               const loggedIn = await AsyncStorage.getItem('accessToken');
-              console.log(loggedIn)
+              console.log(loggedIn);
               if (!loggedIn) {
                 navigation.navigate('Login', {
-                  redirect: 1
+                  redirect: 1,
                 });
                 return;
               }
-              
+
               navigation.getParent()?.navigate('RecommendIntroScreen');
-            }    
+            },
           })}
         />
 

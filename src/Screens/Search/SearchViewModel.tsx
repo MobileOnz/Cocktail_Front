@@ -67,7 +67,7 @@ export const useSearchViewModel = ({
     }, [initialKeyword, navigateToMap]);
 
 
-    //최근 검색어 불러오기 
+    //최근 검색어 불러오기
     const fetchRecentSearches = useCallback(async () => {
         try {
             const response = await instance.get('/api/v2/cocktails/search/history');
@@ -80,11 +80,11 @@ export const useSearchViewModel = ({
         }
     }, []);
     const executeSearch = useCallback(async (keyword: string) => {
-        if (!keyword.trim()) return;
+        if (!keyword.trim()) {return;}
 
         try {
-            await instance.post(`/api/v2/cocktails/search/history`, {
-                queryText: keyword
+            await instance.post('/api/v2/cocktails/search/history', {
+                queryText: keyword,
             });
 
             await fetchRecentSearches();
@@ -129,34 +129,34 @@ export const useSearchViewModel = ({
     const handleGoBack = () => {
         navigation.goBack();
     };
-    //개별 삭제 
+    //개별 삭제
     const removeRecentSearch = useCallback(async (id: number) => {
         try {
-            const result = await instance.delete(`/api/v2/cocktails/search/history`,
+            const result = await instance.delete('/api/v2/cocktails/search/history',
                 {
-                    data: { id: id }
+                    data: { id: id },
                 }
-            )
+            );
             console.log('삭제 결과:', result.data);
             await fetchRecentSearches();
 
         } catch (error: any) {
-            console.log('문제가 발생했습니다.', error.data)
+            console.log('문제가 발생했습니다.', error.data);
         }
 
 
-    }, [fetchRecentSearches])
+    }, [fetchRecentSearches]);
     const clearAllRecentSearches = useCallback(async () => {
         try {
-            const result = instance.delete(`/api/v2/cocktails/search/history/all`)
+            const result = instance.delete('/api/v2/cocktails/search/history/all');
             console.log(result);
             await fetchRecentSearches();
         } catch (error: any) {
-            console.log('문제가 발생했습니다.', error.data)
+            console.log('문제가 발생했습니다.', error.data);
         }
 
 
-    }, [fetchRecentSearches])
+    }, [fetchRecentSearches]);
 
     return {
         // state

@@ -184,7 +184,7 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
   },
   centralContainer: {
-    flex: 1
+    flex: 1,
   },
 
   listRoot: {

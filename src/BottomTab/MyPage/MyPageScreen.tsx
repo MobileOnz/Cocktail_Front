@@ -240,7 +240,7 @@ const MyPageScreen = () => {
                 <Image source={require('../../assets/drawable/right-chevron.png')} style={styles.profilerightArrow} />
               </TouchableOpacity>
 
-              <TouchableOpacity style={styles.cocktailBox} onPress={() => {navigation.navigate('CocktailBoxScreen' as never)}}>
+              <TouchableOpacity style={styles.cocktailBox} onPress={() => {navigation.navigate('CocktailBoxScreen' as never);}}>
                 <Text style={styles.cocktailBoxText}>나의 칵테일 보관함</Text>
                 <Image source={require('../../assets/drawable/bookmarkCircle.png')} style={styles.cockTailBookmark} />
               </TouchableOpacity>
