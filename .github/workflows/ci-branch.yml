@@ -1,4 +1,4 @@
-name: CI (feat/fix/refactor/ui)
+name: CI (feat/fix/refactor/docs/test/ops)
 
 on:
   push:
@@ -6,7 +6,10 @@ on:
       - 'feat/**'
       - 'fix/**'
       - 'refactor/**'
-      - 'ui/**'
+      - 'docs/**'
+      - 'test/**'
+      - 'ops/**'
+      - 'ui/**'        # 레거시 호환 (신규 작업은 표준 유형 사용)
   pull_request:
     branches:
       - 'Onz_Android'
