@@ -4,7 +4,7 @@ import { CocktailDto } from '../dto/CocktailDto';
 
 export class BookMarksDataSource {
     async fetchBookMarks(): Promise<CocktailDto[]> {
-        const result = await instance.get('/api/v2/cocktails/bookmarks');
+        const result = await instance.get('/api/v2/cocktails/bookmarks', { authPrompt: true });
 
         return result.data?.data?.cocktails as CocktailDto[];
     }

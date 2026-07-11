@@ -56,14 +56,14 @@ export class MemberRemoteDataSource {
 
   async updateUserProfile(data: UserUpdate): Promise<UserUpdateResponse> {
     try {
-      const res = await instance.get(
+      const res = await instance.post(
         `${API_BASE_URL}/api/v2/members/update/member`,
         data
       );
       return res.data;
-
     } catch (error: any) {
-      console.log('MemberReomoteDataSource_updateUserProfile: ', '오류');
+      console.log('MemberRemoteDataSource_updateUserProfile: 오류');
+      throw error;
     }
   }
 

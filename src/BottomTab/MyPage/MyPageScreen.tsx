@@ -111,7 +111,7 @@ const MyPageScreen = () => {
           routes: [
             {
               name: 'BottomTabNavigator',
-              params: { screen: '마이페이지' },
+              params: { screen: '홈' },
             },
           ],
         });
@@ -190,7 +190,7 @@ const MyPageScreen = () => {
   // 현재 화면에서
   const handleLoginPress = () => {
     if (isLoggedIn) {
-      navigation.navigate('ProfileScreen', { user }); // User 객체만 ProfileScreen에 전달
+      navigation.navigate('ProfileScreen', { user: user! }); // User 객체만 ProfileScreen에 전달
     } else {
       navigation.navigate('Login'); // 로그인 화면은 params 없이 이동
     }
@@ -242,6 +242,16 @@ const MyPageScreen = () => {
               <TouchableOpacity style={styles.cocktailBox} onPress={() => {navigation.navigate('CocktailBoxScreen' as never)}}>
                 <Text style={styles.cocktailBoxText}>나의 칵테일 보관함</Text>
                 <Image source={require('../../assets/drawable/bookmarkCircle.png')} style={styles.cockTailBookmark} />
+              </TouchableOpacity>
+
+              {/* VisitedBarsScreen 의 유일한 진입점. 라우트만 등록돼 있고 호출부가 없어 도달 불가였다. */}
+              <TouchableOpacity
+                style={styles.cocktailBox}
+                onPress={() => {navigation.navigate('VisitedBarsScreen' as never)}}
+                accessibilityRole="button"
+                accessibilityLabel="방문한 바 보기"
+              >
+                <Text style={styles.cocktailBoxText}>방문한 바</Text>
               </TouchableOpacity>
             </>
           ) : (

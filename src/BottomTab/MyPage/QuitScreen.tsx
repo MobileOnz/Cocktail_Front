@@ -12,7 +12,7 @@ import MyPageViewModel from './MyPageViewModel';
 import { useToast } from '../../Components/ToastContext';
 
 const QuitScreen: React.FC = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<any>();
   // const [showWithdrawModal, setShowWithdrawModal] = useState(false);
   const {showToast} = useToast();
 
@@ -44,7 +44,7 @@ const QuitScreen: React.FC = () => {
         setProfileUri(null);
 
         navigation.navigate('BottomTabNavigator', {
-          screen: '지도',
+          screen: '홈',
           params: { shouldRefresh: true },
         });
       } else {
@@ -53,8 +53,6 @@ const QuitScreen: React.FC = () => {
 
     } catch (err: any) {
       console.log('🚨 탈퇴 오류:', err.response?.data || err.message);
-    } finally {
-      setShowWithdrawModal(false);
     }
   };
 
