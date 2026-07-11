@@ -24,7 +24,7 @@ const fetchDetailData = async (id: number, repository: ICocktailDetailRepository
             token ? repository.fetchCocktailRecommendations(id.toString()) : Promise.resolve(null),
         ]);
 
-        let recommendedCocktails = [];
+        let recommendedCocktails: any[] = [];
         if (detailData?.style) {
             recommendedCocktails = await repository.recommendCocktails(detailData.style);
         }
@@ -116,7 +116,7 @@ const useCocktailDetailViewModel = (id: number, deps?: UseCocktailDetailDeps) =>
         queryClient.invalidateQueries({ queryKey: ['homeData'] });
 
         try {
-            await instance.post(`/api/v2/cocktails/${cocktailId}/bookmarks`);
+            await instance.post(`/api/v2/cocktails/${cocktailId}/bookmarks`, undefined, { authPrompt: true });
         } catch (error: any) {
             console.error('북마크 처리 중 에러:', error);
             queryClient.invalidateQueries({ queryKey: ['cocktailDetail', id] });

@@ -1,8 +1,8 @@
 // components/CocktailCard.tsx
 import React from 'react';
 import { View, Image, Text, StyleSheet, Pressable } from 'react-native';
-import FastImage from 'react-native-fast-image';
 import PillStyleStatus from '../Components/PillStyleStatus';
+import RemoteImage from './common/RemoteImage';
 import { fontPercentage, heightPercentage, widthPercentage } from '../assets/styles/FigmaScreen';
 
 type Props = {
@@ -29,10 +29,15 @@ const CocktailCard = React.memo(function CocktailCard({
       <Pressable onPress={onPress} style={[styles.card]}>
         {/* 이미지 영역 */}
         <View style={styles.imageWrap}>
-          <FastImage
-            source={{ uri: image, priority: FastImage.priority.normal }}
+          {/* FastImage 는 이미지가 도착하기 전까지 아무것도 그리지 않는다.
+              흰 배경 위에서는 카드 전체가 사라진 것처럼 보였다(QA I-05).
+              RemoteImage 는 로딩/실패에도 같은 크기의 자리를 지킨다. */}
+          <RemoteImage
+            uri={image}
             style={styles.image}
-            resizeMode={FastImage.resizeMode.cover}
+            resizeMode="cover"
+            label={name}
+            tone="light"
           />
 
           {/* 좌상단: 톤 라벨 */}
@@ -88,7 +93,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     width: widthPercentage(160),
     height: heightPercentage(220),
-    resizeMode: 'contain',
   },
   pillWrap: {
     position: 'absolute',

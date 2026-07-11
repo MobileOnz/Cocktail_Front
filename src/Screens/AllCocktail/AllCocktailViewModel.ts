@@ -93,7 +93,7 @@ const useAllCocktailViewModel = (keyword?: string, deps?: UseSearchResultDeps) =
         );
 
         try {
-            await instance.post(`/api/v2/cocktails/${cocktailId}/bookmarks`);
+            await instance.post(`/api/v2/cocktails/${cocktailId}/bookmarks`, undefined, { authPrompt: true });
         } catch {
             Toast.show({ type: 'error', text1: '로그인 후 북마크 사용이 가능합니다.' });
             queryClient.invalidateQueries({ queryKey: ['allCocktails', keyword, appliedFilter] });

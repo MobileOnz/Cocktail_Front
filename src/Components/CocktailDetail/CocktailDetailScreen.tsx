@@ -1,7 +1,7 @@
 // CocktailDetailScreen.tsx
 import React, { useEffect, useRef, useState } from 'react';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { Image, ScrollView, Text, View, StyleSheet, Pressable, TouchableOpacity, Share } from 'react-native';
+import { Image, ScrollView, Text, View, StyleSheet, Pressable, TouchableOpacity, Share, FlatList } from 'react-native';
 import { ActivityIndicator, Divider } from 'react-native-paper';
 
 import PillStyleStatus from '../PillStyleStatus';
@@ -10,7 +10,7 @@ import { useNavigation } from '@react-navigation/native';
 import { fontPercentage, heightPercentage, widthPercentage } from '../../assets/styles/FigmaScreen';
 import useCocktailDetailViewModel from './CocktailDetailViewModel';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { FlatList } from 'react-native-gesture-handler';
+
 import CocktailCard from '../CocktailCard';
 import Icon from 'react-native-vector-icons/Ionicons';
 type Props = NativeStackScreenProps<RootStackParamList, 'CocktailDetailScreen'>;
@@ -203,6 +203,27 @@ export function CocktailDetailScreen({ route }: Props) {
 
       <Divider style={styles.Divider} />
 
+      {/* 만드는 법 — 재료만 있고 제조 단계가 없던 갭을 백엔드 T-07(/steps)로 해소 */}
+      <TouchableOpacity
+        style={styles.stepsCta}
+        activeOpacity={0.9}
+        accessibilityRole="button"
+        accessibilityLabel={`${vm.detail.korName} 만드는 법 보기`}
+        onPress={() =>
+          navigation.navigate('CocktailStepsScreen', {
+            cocktailId: vm.detail!.id,
+            cocktailName: vm.detail!.korName,
+          })
+        }
+      >
+        <View style={styles.stepsCtaTextWrap}>
+          <Text style={styles.stepsCtaTitle}>만드는 법</Text>
+          <Text style={styles.stepsCtaSub}>단계별로 따라 해보세요</Text>
+        </View>
+        <Text style={styles.stepsCtaArrow}>›</Text>
+      </TouchableOpacity>
+
+      <Divider style={styles.Divider} />
 
       <Text style={styles.valueText}>이 칵테일, 입문자도 즐길 수 있을까요?</Text>
       <View style={styles.buttonContainer}>
@@ -250,6 +271,39 @@ export function CocktailDetailScreen({ route }: Props) {
           />
         )}
       />
+
+      {/*
+        가이드 진입점 ③ — 칵테일 상세 하단 "이 칵테일의 이야기".
+        TODO(T-09/T-13): 백엔드 CocktailDetail 에 guidePart(number|null) 필드가 추가되면
+        해당 파트의 GuideDetailScreen 으로 딥하게 보낸다. 그 전까지는 가이드 목록으로 보낸다.
+      */}
+      <Text style={styles.valueText}>이 칵테일의 이야기</Text>
+      <TouchableOpacity
+        style={styles.storyCard}
+        activeOpacity={0.9}
+        accessibilityRole="button"
+        accessibilityLabel="이 칵테일의 이야기 보러가기"
+        onPress={() => {
+          const guidePart = (vm.detail as any)?.guidePart;
+          if (guidePart) {
+            navigation.navigate('GuideDetailScreen', {
+              id: guidePart,
+              src: vm.detail?.imageUrl,
+              title: vm.detail?.korName ?? '칵테일 가이드',
+            });
+          } else {
+            navigation.navigate('GuideScreen');
+          }
+        }}
+      >
+        <Text style={styles.storyCardTitle}>칵테일 가이드에서 더 읽기</Text>
+        <Text style={styles.storyCardBody} numberOfLines={2}>
+          {vm.detail?.originText
+            ? vm.detail.originText
+            : '이 칵테일이 태어난 배경과 바 문화의 이야기를 가이드에서 만나보세요.'}
+        </Text>
+      </TouchableOpacity>
+
       <View style={{ height: heightPercentage(100) }} />
     </ScrollView>
   );
@@ -309,6 +363,48 @@ const styles = StyleSheet.create({
     color: '#1B1B1B',
     fontSize: fontPercentage(16),
     fontWeight: '500',
+  },
+  stepsCta: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginHorizontal: widthPercentage(20),
+    paddingVertical: heightPercentage(14),
+    paddingHorizontal: widthPercentage(16),
+    borderRadius: widthPercentage(12),
+    backgroundColor: '#1B1B1B',
+  },
+  stepsCtaTextWrap: { flex: 1 },
+  stepsCtaTitle: {
+    fontFamily: 'Pretendard-SemiBold',
+    fontSize: fontPercentage(16),
+    color: '#FFFFFF',
+  },
+  stepsCtaSub: {
+    marginTop: heightPercentage(2),
+    fontFamily: 'Pretendard-Regular',
+    fontSize: fontPercentage(13),
+    color: '#BDBDBD',
+  },
+  stepsCtaArrow: { fontSize: fontPercentage(22), color: '#FFFFFF' },
+  storyCard: {
+    marginTop: heightPercentage(12),
+    marginHorizontal: widthPercentage(20),
+    padding: widthPercentage(16),
+    borderRadius: widthPercentage(12),
+    backgroundColor: '#F5F5F5',
+  },
+  storyCardTitle: {
+    fontFamily: 'Pretendard-SemiBold',
+    fontSize: fontPercentage(14),
+    color: '#1B1B1B',
+    marginBottom: heightPercentage(6),
+  },
+  storyCardBody: {
+    fontFamily: 'Pretendard-Regular',
+    fontSize: fontPercentage(13),
+    color: '#616161',
+    lineHeight: fontPercentage(20),
   },
   label: {
     fontFamily: 'Pretendard-Medium',
@@ -417,3 +513,4 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
 });
+export default CocktailDetailScreen;

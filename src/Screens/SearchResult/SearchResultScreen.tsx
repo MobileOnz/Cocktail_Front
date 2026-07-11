@@ -1,6 +1,6 @@
-import { Image, Platform, StyleSheet, Text, View } from 'react-native';
+import { Image, Platform, StyleSheet, Text, View, FlatList } from 'react-native';
 import React, { useRef } from 'react';
-import { FlatList, Pressable, ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
+import { Pressable, ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
 import { ActivityIndicator, Button } from 'react-native-paper';
 import { fontPercentage, heightPercentage, widthPercentage } from '../../assets/styles/FigmaScreen';
 import theme from '../../assets/styles/theme';
@@ -39,9 +39,7 @@ const SearchResultScreen = ({ navigation, route }: Props) => {
           <View>
             {/* 상단 검색바 */}
             <View style={styles.searchContainer}>
-              <TouchableOpacity onPress={() => navigation.navigate('BottomTabNavigator', {
-                screen: '홈',
-              })}>
+              <TouchableOpacity onPress={() => navigation.goBack()}>
                 <Icon name="chevron-back-sharp" size={24} color="#000" style={{ marginRight: widthPercentage(8) }} />
               </TouchableOpacity>
 
@@ -57,7 +55,9 @@ const SearchResultScreen = ({ navigation, route }: Props) => {
                 />
                 <Text style={styles.searchText}>{keyword}</Text>
               </View>
-              <TouchableOpacity onPress={() => navigation.goBack()}>
+              <TouchableOpacity onPress={() => navigation.navigate('BottomTabNavigator', {
+                screen: '레시피북',
+              })}>
                 <EIcon name="close" size={24} color="#000" style={{ marginLeft: widthPercentage(14) }} />
               </TouchableOpacity>
             </View>
@@ -127,7 +127,9 @@ const SearchResultScreen = ({ navigation, route }: Props) => {
               name={item.name}
               type={item.type}
               image={item.image}
+              bookmarked={item.isBookmarked}
               onPress={() => { navigation.navigate('CocktailDetailScreen', { cocktailId: item.id }); }}
+              onToggleBookmark={() => vm.bookmarked(item.id)}
             />
           </View>
         )}
