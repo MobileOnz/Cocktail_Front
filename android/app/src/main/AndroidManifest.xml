@@ -2,7 +2,15 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
 
-    
+    <!-- 주변 바 찾기(거리순 정렬) 및 바 오픈채팅 반경 검증에 필요 -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
+    <!-- 매장 QR 스캔(T-22). 카메라가 없는 기기에서도 앱은 설치 가능해야 하므로 required=false -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
+
+
     <application
         android:name=".MainApplication"
         android:label="@string/app_name"

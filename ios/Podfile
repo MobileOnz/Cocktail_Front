@@ -10,6 +10,11 @@ require_relative '../node_modules/react-native-permissions/scripts/setup.rb'
 platform :ios, '16.0'
 prepare_react_native_project!
 
+# react-native-vision-camera: QR code scanner 만 쓰고 frame processor 는 안 쓴다.
+# frame processor 를 켜면 react-native-worklets-core 를 요구하는데 설치돼 있지 않으므로
+# 비활성화한다. (code scanner 는 frame processor 없이 동작한다.)
+$VCEnableFrameProcessors = false
+
 linkage = ENV['USE_FRAMEWORKS']
 if linkage != nil
   Pod::UI.puts "Configuring Pod with #{linkage}ally linked Frameworks".green

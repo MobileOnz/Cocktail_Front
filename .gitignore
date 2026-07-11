@@ -8,6 +8,9 @@
 .env
 build/
 *.pbxuser
+
+# Local-only (로컬 E2E 플로우 — 커밋 금지)
+.maestro/
 !default.pbxuser
 *.mode1v3
 !default.mode1v3
