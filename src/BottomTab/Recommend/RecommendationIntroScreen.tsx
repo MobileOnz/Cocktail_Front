@@ -92,7 +92,7 @@ const RecommendationIntroScreen: React.FC<Props> = ({ navigation }) => {
         useNativeDriver: true,
       }),
     ]).start(() => {
-      navigation.navigate('RecommendationHome');
+      navigation.navigate('RecommendationScreen');
     });
   };
 
@@ -131,6 +131,8 @@ const RecommendationIntroScreen: React.FC<Props> = ({ navigation }) => {
             });
           }}
           style={styles.backButton}
+          accessibilityRole="button"
+          accessibilityLabel="뒤로 가기"
         >
           <Image
             source={require('../../assets/drawable/left-chevron.png')}

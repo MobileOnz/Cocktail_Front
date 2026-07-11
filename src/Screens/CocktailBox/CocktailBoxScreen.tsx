@@ -1,11 +1,11 @@
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View, FlatList } from 'react-native';
 import React from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ActivityIndicator, Appbar } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import { fontPercentage, heightPercentage, widthPercentage } from '../../assets/styles/FigmaScreen';
 import useCocktailBoxViewModel from './CocktailBoxViewModel';
-import { FlatList } from 'react-native-gesture-handler';
+
 import CocktailCard from '../../Components/CocktailCard';
 import Icon from 'react-native-vector-icons/Ionicons';
 const CocktailBoxScreen = () => {

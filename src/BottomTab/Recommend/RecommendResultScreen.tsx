@@ -37,7 +37,7 @@ const RecommendResultScreen: React.FC<Props> = ({ navigation, route }) => {
             screen: '홈',
           },
         },
-        { name: 'RecommendIntroScreen' },
+        { name: 'RecommendationIntro' },
       ],
     });
   };
@@ -112,7 +112,7 @@ const RecommendResultScreen: React.FC<Props> = ({ navigation, route }) => {
 };
 
 // 결과 화면
-const ResultScreen = ({ data, user }) => {
+const ResultScreen = ({ data, user }: { data: any; user: any }) => {
   const ABV_LABEL: Record<string, string> = {
     WEAK: '약함',
     MEDIUM: '보통',

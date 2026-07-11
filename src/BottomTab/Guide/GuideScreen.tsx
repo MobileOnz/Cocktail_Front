@@ -13,6 +13,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../../Navigation/Navigation';
 import { widthPercentage, heightPercentage, fontPercentage } from '../../assets/styles/FigmaScreen';
+import RemoteImage from '../../Components/common/RemoteImage';
 import GuideDetailViewModel from './GuideDetailViewModel';
 import { GuideSummary } from '../../model/domain/GuideSummary';
 
@@ -22,10 +23,12 @@ type GuideSreenNavigationProp = StackNavigationProp<
 >;
 
 interface Props {
-  navigation: GuideSreenNavigationProp;
+  navigation: GuideSreenNavigationProp | any;
+  /** RecipeBookScreen 안에 세그먼트로 들어갈 때 자체 헤더/세이프에어리어를 생략한다. */
+  embedded?: boolean;
 }
 
-const GuideScreen: React.FC<Props> = ({ navigation }) => {
+const GuideScreen: React.FC<Props> = ({ navigation, embedded = false }) => {
   const [viewType, setviewType] = useState(0);   // 보기 방식
   const { guideList, getGuideList, loading } = GuideDetailViewModel();
 
@@ -50,15 +53,20 @@ const GuideScreen: React.FC<Props> = ({ navigation }) => {
     setviewType(viewType === 0 ? 1 : 0);
   };
 
-  return (
-    <SafeAreaView style={styles.rootContainer}>
-      {/* 상단 뷰 */}
-      <View style={styles.header}>
+  const Root: React.ComponentType<any> = embedded ? View : SafeAreaView;
 
-        <Text style={styles.headerTitle}>콘텐츠</Text>
+  return (
+    <Root style={styles.rootContainer}>
+      {/* 상단 뷰 — embedded 일 때는 제목을 부모(RecipeBookScreen)가 그리므로 보기전환 버튼만 남긴다 */}
+      <View style={[styles.header, embedded && styles.headerEmbedded]}>
+
+        {!embedded && <Text style={styles.headerTitle}>칵테일 가이드</Text>}
 
         <TouchableOpacity
           onPress={handleViewType}
+          accessibilityRole="button"
+          accessibilityLabel={viewType === 0 ? '그리드 보기로 전환' : '리스트 보기로 전환'}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
           {viewType === 0 ? (
           <Image
@@ -83,7 +91,7 @@ const GuideScreen: React.FC<Props> = ({ navigation }) => {
           )
         )}
       </View>
-    </SafeAreaView>
+    </Root>
   );
 
 };
@@ -105,7 +113,19 @@ const ListView = ({ data, navigation } : {
           style={styles.listItem}
           onPress={() => navigation.navigate('GuideDetailScreen', {id: item.part, src: item.imageUrl, title: item.title})}
         >
-          <Image source={{ uri: item.imageUrl}} style={styles.listImage} />
+          {/* 흰 글씨를 사진 위에 얹는 카드다. 사진이 늦게 오면 흰 배경 + 흰 글씨가 되어
+              화면이 통째로 백지로 보였다(QA I-09). 어두운 플레이스홀더가 그 사이를 메운다. */}
+          <RemoteImage
+            uri={item.imageUrl}
+            style={styles.listImage}
+            resizeMode="cover"
+            tone="dark"
+            glyphSize={44}
+            accessibilityLabel={item.title}
+          />
+
+          {/* 이미지가 밝아도 글씨가 읽히도록 하단 스크림을 깐다. */}
+          <View style={styles.scrim} pointerEvents="none" />
 
           <View style={styles.bottomTextContainer}>
               <View style={styles.tagContainer}>
@@ -140,7 +160,16 @@ const GridView = ({ data, navigation }
           style={styles.gridItem}
           onPress={() => navigation.navigate('GuideDetailScreen', {id: item.part, src: item.imageUrl, title: item.title})}
         >
-            <Image source={{ uri: item.imageUrl}} style={styles.gridImage} />
+            <RemoteImage
+              uri={item.imageUrl}
+              style={styles.gridImage}
+              resizeMode="cover"
+              tone="dark"
+              glyphSize={30}
+              accessibilityLabel={item.title}
+            />
+
+            <View style={styles.scrimGrid} pointerEvents="none" />
 
             <View style={styles.bottomGrideTextContainer}>
                 <View style={styles.tagGridContainer}>
@@ -173,6 +202,10 @@ const styles = StyleSheet.create({
     paddingRight: widthPercentage(16),
     paddingBottom: heightPercentage(10),
   },
+  headerEmbedded: {
+    justifyContent: 'flex-end',
+    paddingTop: heightPercentage(8),
+  },
   headerTitle: {
     fontSize: fontPercentage(20),
     color: '#1B1B1B',
@@ -201,7 +234,27 @@ const styles = StyleSheet.create({
     width: '100%',
     height: heightPercentage(436),
     borderRadius: 8,
-    resizeMode: 'cover',
+  },
+  // 사진 하단을 살짝 눌러 흰 글씨의 대비를 확보한다.
+  scrim: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: heightPercentage(140),
+    borderBottomLeftRadius: 8,
+    borderBottomRightRadius: 8,
+    backgroundColor: 'rgba(0,0,0,0.35)',
+  },
+  scrimGrid: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: 80,
+    borderBottomLeftRadius: 8,
+    borderBottomRightRadius: 8,
+    backgroundColor: 'rgba(0,0,0,0.35)',
   },
 
   bottomTextContainer: {
@@ -242,7 +295,6 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 212,
     borderRadius: 8,
-    resizeMode: 'cover',
   },
   bottomGrideTextContainer: {
     position: 'absolute',

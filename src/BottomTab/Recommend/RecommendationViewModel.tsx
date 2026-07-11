@@ -13,7 +13,7 @@ const RecommendationViewModel = () => {
     // []);
 
     const [currentStep, setCurrentStep] = useState(0);
-    const [selectedAnswers, setSelectedAnswers] = useState([null, null, null, null, null]);
+    const [selectedAnswers, setSelectedAnswers] = useState<(number | null)[]>([null, null, null, null, null]);
     const OPTIONS = [
         ['sweet', 'sparkling', 'citrus', 'tropical', 'bitter', 'spicy', 'herbal'],
         ['meal_time', 'romantic', 'party', 'casual', 'modern', 'classic'],

@@ -33,7 +33,7 @@ const RecommendationScreen: React.FC<Props> = ({ navigation }) => {
     if (currentStep < 4) {
       setCurrentStep(currentStep + 1);
     } else {
-      navigation.navigate('LoadingVideoScreen', { answers: selectedAnswers });
+      navigation.navigate('LoadingVideoScreen', { answers: selectedAnswers as number[] });
     }
   };
 
@@ -122,8 +122,14 @@ const RecommendationScreen: React.FC<Props> = ({ navigation }) => {
 
 export default RecommendationScreen;
 
+interface QuestionProps {
+  currentStep: number;
+  selectedAnswers: (number | null)[];
+  onSelectQuestion: (answerId: number) => void;
+}
+
 // 1단계 질문
-const Question1 = ({ currentStep, selectedAnswers, onSelectQuestion }) => {
+const Question1: React.FC<QuestionProps> = ({ currentStep, selectedAnswers, onSelectQuestion }) => {
 
   const questions = [
     {
@@ -185,7 +191,7 @@ const Question1 = ({ currentStep, selectedAnswers, onSelectQuestion }) => {
 };
 
 // 2단계 질문
-const Question2 = ({ currentStep, selectedAnswers, onSelectQuestion }) => {
+const Question2: React.FC<QuestionProps> = ({ currentStep, selectedAnswers, onSelectQuestion }) => {
 
   const questions = [
     {
@@ -242,7 +248,7 @@ const Question2 = ({ currentStep, selectedAnswers, onSelectQuestion }) => {
 };
 
 // 3단계 질문
-const Question3 = ({ currentStep, selectedAnswers, onSelectQuestion }) => {
+const Question3: React.FC<QuestionProps> = ({ currentStep, selectedAnswers, onSelectQuestion }) => {
   const questions = [
     {
       id: 1,
@@ -295,7 +301,7 @@ const Question3 = ({ currentStep, selectedAnswers, onSelectQuestion }) => {
 };
 
 // 4단계 질문
-const Question4 = ({ currentStep, selectedAnswers, onSelectQuestion }) => {
+const Question4: React.FC<QuestionProps> = ({ currentStep, selectedAnswers, onSelectQuestion }) => {
 
   const questions = [
     {
@@ -353,7 +359,7 @@ const Question4 = ({ currentStep, selectedAnswers, onSelectQuestion }) => {
 };
 
 // 5단계 질문
-const Question5 = ({ currentStep, selectedAnswers, onSelectQuestion }) => {
+const Question5: React.FC<QuestionProps> = ({ currentStep, selectedAnswers, onSelectQuestion }) => {
 
   const questions = [
     {
@@ -397,8 +403,17 @@ const Question5 = ({ currentStep, selectedAnswers, onSelectQuestion }) => {
   );
 };
 
+interface QuestionBoxProps {
+  id: number;
+  currentId: (number | null)[];
+  icon: any;
+  title: string;
+  subTitle?: string;
+  step: number;
+  onPress: () => void;
+}
 
-const QuestionBox = ({ id, currentId, icon, title, subTitle, step, onPress }) => {
+const QuestionBox: React.FC<QuestionBoxProps> = ({ id, currentId, icon, title, subTitle, step, onPress }) => {
 
   let boxStyle = styles.commonInnerBox;
 
@@ -425,7 +440,12 @@ const QuestionBox = ({ id, currentId, icon, title, subTitle, step, onPress }) =>
   );
 };
 
-const ProgressBar = ({ currentStep, totalSteps }) => {
+interface ProgressBarProps {
+  currentStep: number;
+  totalSteps: number;
+}
+
+const ProgressBar: React.FC<ProgressBarProps> = ({ currentStep, totalSteps }) => {
   const progressAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {

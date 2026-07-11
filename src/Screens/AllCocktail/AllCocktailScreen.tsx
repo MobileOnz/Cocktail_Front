@@ -1,24 +1,38 @@
 // AllCocktailScreen.tsx
 
 import React, { useCallback, useMemo, useRef } from 'react';
-import { StyleSheet, View, Pressable, ScrollView, TouchableOpacity, Platform } from 'react-native';
+import { StyleSheet, View, Pressable, ScrollView, TouchableOpacity, Platform, Image, FlatList } from 'react-native';
 import { ActivityIndicator, Button, Text } from 'react-native-paper';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useTabBarSpace } from '../../lib/layout';
 import { fontPercentage, heightPercentage, widthPercentage } from '../../assets/styles/FigmaScreen';
-import { FlatList } from 'react-native-gesture-handler';
 import theme from '../../assets/styles/theme';
 import OpenBottomSheet, { OpenBottomSheetHandle } from '../../Components/BottomSheet/OpenBottomSheet';
 import CocktailCard from '../../Components/CocktailCard';
 import { CocktailCard as CocktailCardModel } from '../../model/domain/CocktailCard';
 import FilterBottomSheet, { FilterBottomSheetRef } from '../../Components/BottomSheet/FilterBottomSheet/FilterBottomSheet';
 import useAllCocktailViewModel from './AllCocktailViewModel';
+import ErrorState from '../../Components/common/ErrorState';
+import EmptyState from '../../Components/common/EmptyState';
+import SkeletonList from '../../Components/common/SkeletonList';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../Navigation/Navigation';
 import MIcon from 'react-native-vector-icons/MaterialCommunityIcons';
-import Icon from 'react-native-vector-icons/Ionicons';
-type Props = NativeStackScreenProps<RootStackParamList, 'AllCocktailScreen'>;
 
-const AllCocktailScreen = ({ navigation }: Props) => {
+type StackProps = NativeStackScreenProps<RootStackParamList, 'AllCocktailScreen'>;
+
+/**
+ * embedded=true 이면 RecipeBookScreen 이 헤더(제목+검색)를 대신 그리므로
+ * 자체 헤더와 상단 세이프에어리어 여백을 생략한다. 필터 칩은 그대로 유지.
+ */
+type Props = Omit<Partial<StackProps>, 'navigation'> & {
+    navigation: StackProps['navigation'] | any;
+    embedded?: boolean;
+};
+
+const AllCocktailScreen = ({ navigation, embedded = false }: Props) => {
+    const insets = useSafeAreaInsets();
+    const tabBarSpace = useTabBarSpace();
     const vm = useAllCocktailViewModel();
     const filterRef = useRef<FilterBottomSheetRef>(null);
     const bottomSheetRef = useRef<OpenBottomSheetHandle>(null);
@@ -72,39 +86,47 @@ const AllCocktailScreen = ({ navigation }: Props) => {
 
     const ListHeaderComponent = null;
 
+    // 로딩 / 에러 / 빈 상태를 구분한다.
+    // 이전에는 vm.error 를 계산만 하고 렌더하지 않아, 조회 실패가 "결과 없음"으로 보였다.
     const ListEmptyComponent = useMemo(
-        () => (
-            <View style={styles.emptyContainer}>
-                {vm.loading && <ActivityIndicator size="large" />}
-                {!vm.loading && (
-                    <>
-                        <Text style={styles.text}>아직 준비된 칵테일이 없네요.</Text>
-                        <Text style={styles.text}>다른 필터를 선택해보시겠어요?</Text>
-                    </>
-                )}
-            </View>
-        ),
-        [vm.loading],
+        () => {
+            if (vm.loading) { return <SkeletonList count={4} variant="card" />; }
+            if (vm.error) { return <ErrorState message={vm.error} onRetry={vm.refetch} compact />; }
+            return (
+                <EmptyState
+                    title="아직 준비된 칵테일이 없네요"
+                    description="다른 필터를 선택해보시겠어요?"
+                    compact
+                />
+            );
+        },
+        [vm.loading, vm.error, vm.refetch],
     );
 
     return (
-        <SafeAreaView style={styles.safeArea} edges={['top']}>
+        <View style={styles.container}>
             {/* 고정 헤더 영역 */}
-            <View style={styles.stickyHeader}>
-                <View style={styles.header}>
-                    <TouchableOpacity onPress={() => navigation.goBack()}>
-                        <Icon
-                            name="chevron-back-sharp"
-                            size={24}
-                            color="#000"
-                            style={{ marginRight: widthPercentage(8) }}
-                        />
-                    </TouchableOpacity>
-                    <View style={styles.titleContainer}>
-                        <Text style={styles.titleText}>칵테일 리스트</Text>
-                    </View>
-                    <View style={{ width: 24 }} />
+            <View style={[styles.stickyHeader, { paddingTop: embedded ? 0 : insets.top }]}>
+            {!embedded && (
+            <View style={styles.header}>
+                <View style={styles.titleWrapper}>
+                    <Text style={styles.libraryTitle}>칵테일 레시피</Text>
+                    <Text style={styles.librarySubtitle}>방대한 데이터로 만나는 완벽한 한 잔</Text>
                 </View>
+                <TouchableOpacity
+                    onPress={() => (navigation as any).navigate('SearchScreen')}
+                    style={styles.searchCircleButton}
+                    accessibilityRole="button"
+                    accessibilityLabel="칵테일 검색"
+                >
+                    <Image
+                        source={require('../../assets/drawable/SharpSearch.png')}
+                        style={styles.searchIcon}
+                        resizeMode="contain"
+                    />
+                </TouchableOpacity>
+            </View>
+            )}
                 <ScrollView
                     horizontal
                     showsHorizontalScrollIndicator={false}
@@ -157,7 +179,7 @@ const AllCocktailScreen = ({ navigation }: Props) => {
                 columnWrapperStyle={styles.row}
                 style={{ flex: 1 }}
                 showsVerticalScrollIndicator={false}
-                contentContainerStyle={styles.listContent}
+                contentContainerStyle={[styles.listContent, { paddingBottom: tabBarSpace }]}
                 initialNumToRender={6}
                 maxToRenderPerBatch={4}
                 windowSize={5}
@@ -192,13 +214,17 @@ const AllCocktailScreen = ({ navigation }: Props) => {
                     onClose={() => bottomSheetRef.current?.close()}
                 />
             </OpenBottomSheet>
-        </SafeAreaView>
+        </View>
     );
 };
 
 export default AllCocktailScreen;
 
 const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: theme.background,
+    },
     safeArea: {
         flex: 1,
         backgroundColor: theme.background,
@@ -208,27 +234,47 @@ const styles = StyleSheet.create({
         zIndex: 10,
     },
     header: {
-        padding: 10,
+        paddingHorizontal: 20,
+        paddingVertical: 16,
         flexDirection: 'row',
-        alignItems: 'center',
+        alignItems: 'flex-start',
         justifyContent: 'space-between',
     },
-    titleContainer: {
+    titleWrapper: {
         flex: 1,
-        alignItems: 'center',
     },
-    titleText: {
-        fontFamily: 'Pretendard-Medium',
-        fontSize: fontPercentage(16),
-        color: '#000',
+    libraryTitle: {
+        fontFamily: 'Pretendard-Bold',
+        fontSize: fontPercentage(24),
+        color: '#1a1a1a',
+        marginBottom: 4,
+    },
+    librarySubtitle: {
+        fontFamily: 'Pretendard-Regular',
+        fontSize: fontPercentage(13),
+        color: '#888',
+    },
+    searchCircleButton: {
+        width: 44,
+        height: 44,
+        borderRadius: 22,
+        backgroundColor: '#f5f5f5',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 4,
+    },
+    searchIcon: {
+        width: 22,
+        height: 22,
+        tintColor: '#1a1a1a',
     },
     filterView: {
         flexDirection: 'row',
         alignItems: 'center',
-        paddingHorizontal: widthPercentage(8),
-        paddingVertical: 4,
+        paddingHorizontal: 20,
+        paddingVertical: 8,
         gap: 8,
-        paddingBottom: 20,
+        paddingBottom: 24,
     },
     filterButtonContent: {
         flexDirection: 'row-reverse',
@@ -267,9 +313,7 @@ const styles = StyleSheet.create({
         fontSize: fontPercentage(14),
         color: '#FFFFFF',
     },
-    listContent: {
-        paddingBottom: 24,
-    },
+    listContent: {},
     row: {
         flexDirection: 'row',
         justifyContent: 'center',

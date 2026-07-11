@@ -25,9 +25,13 @@ import { useHomeViewModel } from './CocktailListViewModel';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import PuzzlePiece from '../../configs/CurvedImage';
 import LinearGradient from 'react-native-linear-gradient';
+import { Menu } from 'react-native-paper';
+import instance from '../../tokenRequest/axios_interceptor';
+
 const Home = () => {
-
-
+  const [menuVisible, setMenuVisible] = useState(false);
+  const openMenu = () => setMenuVisible(true);
+  const closeMenu = () => setMenuVisible(false);
 
 
   const [pageIndex, setPageIndex] = useState(0);
@@ -38,6 +42,14 @@ const Home = () => {
   const insets = useSafeAreaInsets();
   // 탭바 높이(58) + 탭바 bottom(insets.bottom + 12) + 여유 여백(16)
   const tabBarSpace = heightPercentage(58) + insets.bottom + 12 + 16;
+
+  // 뉴스 프리뷰 데이터
+  const [newsPreview, setNewsPreview] = useState<any[]>([]);
+  useEffect(() => {
+    instance.get('/api/v2/news').then(res => {
+      setNewsPreview((res.data?.data ?? []).slice(0, 3));
+    }).catch(() => {});
+  }, []);
 
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -114,7 +126,7 @@ const Home = () => {
 
       {/* 상단 헤더 */}
       <StatusBar barStyle={vm.isScrolled ? 'dark-content' : 'light-content'} backgroundColor={vm.isScrolled ? '#ffffff' : '#000000'} />
-      <Appbar.Header style={[, { marginLeft: widthPercentage(16), backgroundColor: vm.isScrolled ? '#fff' : '#000' }]}>
+      <Appbar.Header style={[{ marginLeft: widthPercentage(16), backgroundColor: vm.isScrolled ? '#fff' : '#000' }]}>
         {/* 왼쪽 로고 */}
         <Image
           source={
@@ -128,40 +140,48 @@ const Home = () => {
         {/* 오른쪽 아이콘 */}
         <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: widthPercentage(8) }}>
 
-          {/* 검색 버튼 */}
-          <TouchableOpacity
-            onPress={() => navigation.navigate('SearchScreen')}
-            style={styles.customIconButton}
-            activeOpacity={0.7}
+          {/* 메뉴 버튼 */}
+          <Menu
+            visible={menuVisible}
+            onDismiss={closeMenu}
+            contentStyle={{ backgroundColor: '#fff', borderRadius: 12 }}
+            anchor={
+              <TouchableOpacity
+                onPress={openMenu}
+                style={styles.customIconButton}
+                activeOpacity={0.7}
+              >
+                <Animated.Image
+                  source={require('../../assets/drawable/optionbutton.png')}
+                  style={{
+                    width: 24,
+                    height: 24,
+                    tintColor: animatedColor,
+                  }}
+                  resizeMode="contain"
+                />
+              </TouchableOpacity>
+            }
           >
-            <Animated.Image
-              source={require('../../assets/drawable/SharpSearch.png')}
-              style={{
-                width: 28,
-                height: 28,
-                tintColor: animatedColor,
-
+            <Menu.Item
+              onPress={() => {
+                closeMenu();
+                navigation.navigate('MyPageScreen');
               }}
-              resizeMode="contain"
+              title="내 정보"
+              titleStyle={{ fontFamily: 'Pretendard-Medium', fontSize: fontPercentage(14) }}
+              leadingIcon={() => <MaterialIcons name="person-outline" size={20} color="#000" />}
             />
-          </TouchableOpacity>
-
-          {/* 저장 버튼 */}
-          <TouchableOpacity
-            onPress={() => vm.bookMarkCheck()}
-            style={styles.customIconButton}
-            activeOpacity={0.7}
-          >
-            <Animated.Image
-              source={require('../../assets/drawable/save.png')}
-              style={{
-                width: 15,
-                height: 19,
-                tintColor: animatedColor,
+            <Menu.Item
+              onPress={() => {
+                closeMenu();
+                navigation.navigate('CocktailBoxScreen');
               }}
-              resizeMode="contain"
+              title="저장한 내역"
+              titleStyle={{ fontFamily: 'Pretendard-Medium', fontSize: fontPercentage(14) }}
+              leadingIcon={() => <MaterialIcons name="bookmark-border" size={20} color="#000" />}
             />
-          </TouchableOpacity>
+          </Menu>
         </View>
       </Appbar.Header>
 
@@ -191,16 +211,41 @@ const Home = () => {
 
           </View>
 
-          <Text style={styles.bannerKoText}>오늘의 칵테일</Text>
-          <Text style={styles.bannerEnText}>{vm.randomCocktail?.engName}</Text>
+          <View style={styles.bannerTextContainer}>
+            <Text style={styles.bannerKoText}>오늘의 칵테일</Text>
+            <Text style={styles.bannerEnText}>{vm.randomCocktail?.engName}</Text>
+          </View>
         </View>
 
-        {/* Best 입문자용 칵테일 */}
+        {/* 칵테일 추천 버튼 (Wide Horizontal) */}
+        <TouchableOpacity
+          style={styles.recommendButtonWide}
+          onPress={() => navigation.navigate('RecommendationIntro')}
+          activeOpacity={0.9}
+        >
+          <LinearGradient
+            colors={['#1A1A1A', '#333333']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={styles.recommendGradientWide}
+          >
+            <View style={styles.recommendContent}>
+              <View>
+                <Text style={styles.recommendSubtitle}>취향 맞춤 추천</Text>
+                <Text style={styles.recommendTitle}>나에게 맞는 칵테일 추천 받기</Text>
+              </View>
+              <View style={styles.recommendIconCircle}>
+                <MaterialIcons name="local-bar" color="#FF6B00" size={24} />
+              </View>
+            </View>
+          </LinearGradient>
+        </TouchableOpacity>
 
+        {/* 인기 칵테일 섹션 */}
         <View style={styles.bestSectionWrapper}>
-          <Text variant="bodyLarge" style={[styles.mainText, { marginLeft: widthPercentage(16), marginBottom: heightPercentage(16) }]}>
-            Best 입문자용 칵테일
-          </Text>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.mainText}>인기 칵테일</Text>
+          </View>
           <FlatList
             data={vm.bestCocktail}
             extraData={vm.bestCocktail}
@@ -214,6 +259,59 @@ const Home = () => {
             showsHorizontalScrollIndicator={false}
             renderItem={renderBestItem}
           />
+        </View>
+
+        {/* 칵테일 뉴스 프리뷰 — 뉴스 전용 탭은 폐지됐고 홈이 피드를 흡수한다 */}
+        {newsPreview.length > 0 && (
+        <View style={styles.newsPreviewContainer}>
+          <View style={styles.newsHeader}>
+            <Text style={styles.mainText}>최신 칵테일 뉴스</Text>
+            <TouchableOpacity
+              onPress={() => navigation.navigate('NewsScreen')}
+              accessibilityRole="button"
+              accessibilityLabel="칵테일 뉴스 전체보기"
+            >
+              <Text style={styles.moreText}>전체보기</Text>
+            </TouchableOpacity>
+          </View>
+          {newsPreview.map((item: any) => (
+            <TouchableOpacity
+              key={item.id}
+              style={styles.newsPreviewItem}
+              onPress={() => navigation.navigate('NewsDetailScreen', { newsId: item.id, preview: item })}
+              accessibilityRole="button"
+              accessibilityLabel={`${item.title} 뉴스 열기`}
+            >
+              <View style={styles.newsDot} />
+              <Text style={styles.newsPreviewTitle} numberOfLines={1}>{item.title}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+        )}
+
+        {/* 칵테일 가이드 — 가이드 진입점 ② (홈 피드 인터리브) */}
+        <View style={styles.newsPreviewContainer}>
+          <View style={styles.newsHeader}>
+            <Text style={styles.mainText}>칵테일 가이드</Text>
+            <TouchableOpacity
+              onPress={() => navigation.navigate('GuideScreen')}
+              accessibilityRole="button"
+              accessibilityLabel="칵테일 가이드 전체보기"
+            >
+              <Text style={styles.moreText}>전체보기</Text>
+            </TouchableOpacity>
+          </View>
+          <TouchableOpacity
+            style={styles.newsPreviewItem}
+            onPress={() => navigation.navigate('GuideScreen')}
+            accessibilityRole="button"
+            accessibilityLabel="칵테일 가이드 보러가기"
+          >
+            <View style={styles.newsDot} />
+            <Text style={styles.newsPreviewTitle} numberOfLines={1}>
+              칵테일과 바에 얽힌 이야기, 처음부터 차근차근
+            </Text>
+          </TouchableOpacity>
         </View>
 
         {/* 새로 업데이트 된 칵테일 리스트 */}
@@ -231,7 +329,7 @@ const Home = () => {
             </Text>
 
             <TouchableOpacity
-              onPress={() => { navigation.navigate('AllCocktailScreen' as never); }}
+              onPress={() => { navigation.navigate('레시피북' as never); }}
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',
@@ -387,7 +485,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   bannerImage: {
-    width: '20%',
+    width: widthPercentage(100),
     height: heightPercentage(40),
   },
   mainImageShadow: {
@@ -414,31 +512,114 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 32,
     overflow: 'hidden',
   },
-  bannerKoText: {
-    fontFamily: 'Pretendard-SemiBold',
+  bannerTextContainer: {
     position: 'absolute',
-    bottom: 95,
+    bottom: 40,
     left: 24,
     right: 24,
-    textAlign: 'center',
+    alignItems: 'center',
+  },
+  bannerKoText: {
+    fontFamily: 'Pretendard-SemiBold',
     color: '#fff',
     fontSize: fontPercentage(18),
     fontWeight: '600',
+    marginBottom: 4,
   },
   bannerEnText: {
-    position: 'absolute',
     fontFamily: 'NotoSerif-BoldItalic',
-    bottom: 60,
-    left: 24,
-    right: 24,
+    color: 'rgba(255,255,255,0.7)',
+    fontSize: fontPercentage(22),
+    fontStyle: 'italic',
+  },
+  recommendButtonWide: {
+    marginHorizontal: widthPercentage(16),
+    marginTop: -20,
+    borderRadius: 16,
+    overflow: 'hidden',
+    elevation: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 10,
+    zIndex: 10,
+  },
+  recommendGradientWide: {
+    paddingVertical: heightPercentage(20),
+    paddingHorizontal: widthPercentage(20),
+  },
+  recommendContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  recommendSubtitle: {
+    color: '#FF6B00',
+    fontSize: fontPercentage(12),
+    fontFamily: 'Pretendard-Bold',
+    marginBottom: 4,
+  },
+  recommendTitle: {
     color: '#fff',
-    textAlign: 'center',
-    fontSize: fontPercentage(20),
+    fontSize: fontPercentage(17),
+    fontFamily: 'Pretendard-SemiBold',
+  },
+  recommendIconCircle: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  bestSectionWrapper: {
+    paddingTop: heightPercentage(32),
+  },
+  sectionHeader: {
+    paddingHorizontal: widthPercentage(16),
+    marginBottom: heightPercentage(16),
   },
   mainText: {
-    fontFamily: 'Pretendard-SemiBold',
-    fontWeight: '600',
-    color : '#000000'
+    fontSize: fontPercentage(20),
+    fontFamily: 'Pretendard-Bold',
+    fontWeight: '700',
+    color: '#000000',
+  },
+  newsPreviewContainer: {
+    marginTop: heightPercentage(48),
+    paddingHorizontal: widthPercentage(16),
+  },
+  newsHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: heightPercentage(16),
+  },
+  moreText: {
+    fontSize: fontPercentage(14),
+    color: '#616161',
+    fontWeight: '500',
+  },
+  newsPreviewItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: heightPercentage(12),
+    backgroundColor: '#F8F8F8',
+    padding: 12,
+    borderRadius: 8,
+  },
+  newsDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: '#FF6B00',
+    marginRight: 10,
+  },
+  newsPreviewTitle: {
+    fontSize: fontPercentage(14),
+    color: '#333',
+    fontWeight: '500',
+    flex: 1,
   },
   filterView: {
     flexDirection: 'row',
@@ -499,10 +680,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginLeft: 4,
-  },
-  bestSectionWrapper: {
-    alignItems: 'flex-start',
-    paddingTop: heightPercentage(51),
   },
   card: {
     width: widthPercentage(160),

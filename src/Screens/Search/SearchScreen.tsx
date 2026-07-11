@@ -17,6 +17,7 @@ import {
 } from '../../assets/styles/FigmaScreen';
 import { RootStackParamList } from '../../Navigation/Navigation';
 import { useSearchViewModel } from '../Search/SearchViewModel';
+import EmptyState from '../../Components/common/EmptyState';
 import FIcon from 'react-native-vector-icons/Feather';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { TextInput } from 'react-native-paper';
@@ -112,6 +113,14 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation, route }) => {
           <FlatList
             data={recentSearches}
             keyExtractor={(item) => item.id.toString()}
+            ListEmptyComponent={
+              <EmptyState
+                title="최근 검색어가 없어요"
+                description="칵테일 이름이나 재료로 검색해보세요."
+                emoji="🔍"
+                compact
+              />
+            }
             renderItem={({ item }) => (
               <View style={styles.recentItem}>
                 <TouchableOpacity
@@ -132,6 +141,14 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation, route }) => {
       {/* 검색어 입력 중: 자동완성 추천 목록 */}
       {searchText.length > 0 && (
         <View style={styles.content}>
+          {suggestions.length === 0 && (
+            <EmptyState
+              title="일치하는 칵테일이 없어요"
+              description="다른 키워드로 검색해보시겠어요?"
+              emoji="🔍"
+              compact
+            />
+          )}
           {suggestions.map((item, index) => (
             <TouchableOpacity
               style={styles.suggestionItem}
