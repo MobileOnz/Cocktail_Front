@@ -28,7 +28,7 @@ const ProfileScreen: React.FC<Props> = ({ route }: Props) => {
   const { user } = route.params;
   console.log(user);
 
-  const navigation = useNavigation();
+  const navigation = useNavigation<any>();
   const { loading, nickname, setNickname, profileUri, setProfileUri, handleProfileImageChange, updateUserProfile } = MyPageViewModel();
   // const [newNickname, setNewNickname] = useState('');
   // const [initialProfileUri, setInitialProfileUri] = useState<string | null>(user.profileUrl || null);
@@ -334,7 +334,7 @@ const ProfileScreen: React.FC<Props> = ({ route }: Props) => {
 export default ProfileScreen;
 
 
-const renderAccountItem = (text: string, iconUrl: string) => {
+const renderAccountItem = (text: string, iconUrl: any) => {
   return (
     <View style={styles.accountItem}>
       <Image

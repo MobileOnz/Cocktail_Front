@@ -1,6 +1,7 @@
 
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, ImageBackground, Platform } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, ImageBackground, Platform, ScrollView, StatusBar } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { StackScreenProps } from '@react-navigation/stack';
 import { heightPercentage, widthPercentage, fontPercentage } from '../../../assets/styles/FigmaScreen';
 import { RootStackParamList } from '../../../Navigation/Navigation';
@@ -32,7 +33,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation, route }) => {
                   screen: '홈',
                 },
               },
-              { name: 'RecommendIntroScreen' }],
+              { name: 'RecommendationIntro' }],
           });
           return;
 
@@ -87,7 +88,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation, route }) => {
                   screen: '홈',
                 },
               },
-              { name: 'RecommendIntroScreen' }],
+              { name: 'RecommendationIntro' }],
           });
           return;
         }
@@ -174,7 +175,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation, route }) => {
                   screen: '홈',
                 },
               },
-              { name: 'RecommendIntroScreen' }],
+              { name: 'RecommendationIntro' }],
           });
           return;
         }
@@ -223,7 +224,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation, route }) => {
             index: 0,
             routes: [
               { name: 'BottomTabNavigator', params: { screen: '홈' } },
-              { name: 'RecommendIntroScreen' },
+              { name: 'RecommendationIntro' },
             ],
           });
           return;
@@ -270,63 +271,75 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation, route }) => {
       style={styles.background}
       resizeMode="cover"
     >
-      <View style={styles.container}>
-        {/* X 버튼 (닫기) */}
-        <TouchableOpacity
-          style={styles.closeButton}
-          onPress={() => navigation.goBack()}
+      <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
+      <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
+        {/* 뒤로가기 — 앱 전체가 좌상단 화살표로 통일되어 있다 (I-08) */}
+        <View style={styles.header}>
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => navigation.goBack()}
+            accessibilityRole="button"
+            accessibilityLabel="뒤로 가기"
+            hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+          >
+            <Icon name="chevron-back" size={26} color="#FFFFFF" />
+          </TouchableOpacity>
+        </View>
+
+        {/* 세로가 좁은 기기에서도 Apple 버튼이 잘리면 안 된다 (앱스토어 심사 요건).
+            버튼 묶음을 absolute 로 띄우지 않고, 스크롤 가능한 흐름 안에 둔다. */}
+        <ScrollView
+          style={styles.scroll}
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+          bounces={false}
         >
-          <Image
-            source={require('../../../assets/drawable/CloseCircle.png')}
-            style={styles.closeIcon}
-          />
-        </TouchableOpacity>
+          <Text style={styles.title}>
+            칵테일의 시작, 한 잔에 담긴{'\n'}새로운 경험을 발견하세요
+          </Text>
 
-        {/* 로그인 안내 문구 */}
-        <Text style={styles.title}>
-          칵테일의 시작, 한 잔에 담긴{'\n'}새로운 경험을 발견하세요
-        </Text>
+          <View style={styles.spacer} />
 
-        {/* 로그인 버튼 */}
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.loginButton} onPress={kakaoLogin}>
-            <Image
-              source={require('../../../assets/drawable/kakao_button.png')}
-              style={styles.buttonImage}
-            />
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.loginButton} onPress={naverLogin}>
-            <Image
-              source={require('../../../assets/drawable/naver_button.png')}
-              style={styles.buttonImage}
-            />
-          </TouchableOpacity>
-
-          {/* google로그인 버튼 */}
-          {Platform.OS === 'android' && (
-
-            <TouchableOpacity
-              style={styles.loginButton}
-              onPress={googleLogin}
-            >
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity style={styles.loginButton} onPress={kakaoLogin}>
               <Image
-                source={require('../../../assets/drawable/google_button.png')}
+                source={require('../../../assets/drawable/kakao_button.png')}
                 style={styles.buttonImage}
               />
             </TouchableOpacity>
-          )}
 
-          {/* Apple 버튼 */}
-          {Platform.OS === 'ios' && (
-            <TouchableOpacity style={[styles.loginButton, styles.appleButton]} onPress={appleLogin}>
-              <Icon name="logo-apple" size={20} color="#000" style={styles.appleIcon} />
-              <Text style={styles.appleButtonText}>Apple로 로그인</Text>
+            <TouchableOpacity style={styles.loginButton} onPress={naverLogin}>
+              <Image
+                source={require('../../../assets/drawable/naver_button.png')}
+                style={styles.buttonImage}
+              />
             </TouchableOpacity>
-          )}
 
-        </View>
-      </View>
+            {/* google로그인 버튼 */}
+            {Platform.OS === 'android' && (
+
+              <TouchableOpacity
+                style={styles.loginButton}
+                onPress={googleLogin}
+              >
+                <Image
+                  source={require('../../../assets/drawable/google_button.png')}
+                  style={styles.buttonImage}
+                />
+              </TouchableOpacity>
+            )}
+
+            {/* Apple 버튼 */}
+            {Platform.OS === 'ios' && (
+              <TouchableOpacity style={[styles.loginButton, styles.appleButton]} onPress={appleLogin}>
+                <Icon name="logo-apple" size={20} color="#000" style={styles.appleIcon} />
+                <Text style={styles.appleButtonText}>Apple로 로그인</Text>
+              </TouchableOpacity>
+            )}
+
+          </View>
+        </ScrollView>
+      </SafeAreaView>
     </ImageBackground>
 
   );
@@ -338,27 +351,37 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
-  container: {
+  safeArea: {
     flex: 1,
+  },
+  header: {
+    flexDirection: 'row',
     alignItems: 'center',
-    paddingTop: heightPercentage(50),
+    height: heightPercentage(44),
+    paddingHorizontal: widthPercentage(8),
   },
-  closeButton: {
-    position: 'absolute',
-    top: heightPercentage(11),
-    right: widthPercentage(13),
+  backButton: {
+    padding: widthPercentage(4),
   },
-  closeIcon: {
-    width: widthPercentage(30),
-    height: heightPercentage(30),
-    marginTop: heightPercentage(50),
+  scroll: {
+    flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
+    alignItems: 'center',
+    paddingBottom: heightPercentage(24),
+  },
+  /** 제목과 버튼 사이를 밀어내되, 세로가 모자라면 먼저 줄어드는 건 이 여백이다. */
+  spacer: {
+    flex: 1,
+    minHeight: heightPercentage(24),
   },
   title: {
     fontSize: fontPercentage(22),
     fontWeight: '600',
     textAlign: 'center',
     color: '#FFFFFF',
-    marginTop: heightPercentage(92),
+    marginTop: heightPercentage(48),
     lineHeight: fontPercentage(22 * 1.364),
     letterSpacing: fontPercentage(-1.94),
 
@@ -370,10 +393,9 @@ const styles = StyleSheet.create({
     marginTop: heightPercentage(20),
   },
   buttonContainer: {
-    position: 'absolute',
-    bottom: 52,
     width: '100%',
     alignItems: 'center',
+    paddingBottom: heightPercentage(20),
   },
   loginButton: {
     width: widthPercentage(343),
