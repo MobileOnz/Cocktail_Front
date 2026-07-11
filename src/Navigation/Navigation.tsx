@@ -3,18 +3,16 @@ import React, { memo } from 'react';
 import { NavigationContainer, LinkingOptions } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import LoginScreen from '../BottomTab/MyPage/Login/Login';
-import Home from '../BottomTab/Cocktail_List/CocktailListScreen';
+import Home from '../BottomTab/Home/HomeFeedScreen';
 import SearchScreen from '../Screens/Search/SearchScreen';
 import BottomTabNavigator from './BottomTabNavigator';
-import LoadingScreen from '../Screens/LoadingScreen';
-import ResultScreen from '../Screens/ResultScreen';
 import SignupScreen from '../BottomTab/MyPage/Login/SignupScreen';
 import ProfileScreen from '../BottomTab/MyPage/ProfileScreen';
 import TermsAndConditionsScreen from '../BottomTab/MyPage/TermsAndConditionsScreen';
 import QuitScreen from '../BottomTab/MyPage/QuitScreen';
 import PrivacyPolicyScreen from '../BottomTab/MyPage/PrivacyPolicyScreen';
 import InquiryFormScreen from '../BottomTab/MyPage/Inquiry/InquiryFormScreen';
-import { CocktailDetailScreen } from '../Components/CocktailDetail/CocktailDetailScreen';
+import CocktailDetailScreen from '../Components/CocktailDetail/CocktailDetailScreen';
 import RecommendationScreen from '../BottomTab/Recommend/RecommendationScreen';
 import GuideScreen from '../BottomTab/Guide/GuideScreen';
 import GuideDetailScreen from '../BottomTab/Guide/GuideDetail';
@@ -26,6 +24,9 @@ import RecommendResultScreen from '../BottomTab/Recommend/RecommendResultScreen'
 import { User } from '../model/domain/User';
 import { CocktailDetail } from '../model/domain/CocktailDetail';
 import AllCocktailScreen from '../Screens/AllCocktail/AllCocktailScreen';
+import NewsScreen from '../BottomTab/News/NewsScreen';
+import NewsDetailScreen from '../Screens/News/NewsDetailScreen';
+import CocktailStepsScreen from '../Screens/Cocktail/CocktailStepsScreen';
 import OnboardingScreen from '../Screens/Onboarding/OnboardingScreen';
 
 interface NavigationProps {
@@ -35,9 +36,9 @@ interface NavigationProps {
 
 export type BottomTabParamList = {
   홈: undefined;
-  '칵테일 백과': undefined;
-  '맞춤 추천': undefined;
-  마이페이지: undefined;
+  가이드: undefined;
+  레시피북: undefined;
+  바: undefined;
 };
 export type RootStackParamList = {
   Onboarding: undefined;
@@ -51,26 +52,14 @@ export type RootStackParamList = {
     };
   };
   AllCocktailScreen: undefined;
-  RecommendationFlow: undefined;
-  LoadingScreen: {
-    alcholType: number;
-    tasteCategoryId: number;
-    tasteDetailId: number;
-    nickname: string;
-  };
-  ResultScreen: {
-    cocktailImage: any;
-    nickname: string;
-    cocktailName: string;
-    cocktailDescription: string;
-  };
+  RecommendationIntro: undefined;
+  RecommendationScreen: undefined;
   RecommendResultScreen: {
     result: CocktailDetail,
     answers: number[]
   };
   ProfileScreen: { user: User };
   QuitScreen: undefined;
-  RecommendationIntro: undefined;
   LoadingVideoScreen: { answers: number[] };
   GuideScreen: undefined;
   GuideDetailScreen: {
@@ -82,10 +71,18 @@ export type RootStackParamList = {
   TermsAndConditionsScreen: undefined;
   PrivacyPolicyScreen: undefined;
   CocktailDetailScreen: { cocktailId: number }
-  SearchResultScreen: { keyword: string }
-  CocktailBoxScreen: undefined
-  InquiryFormScreen: undefined
-
+  SearchResultScreen: { keyword: string };
+  CocktailBoxScreen: undefined;
+  InquiryFormScreen: undefined;
+  BarDetailScreen: { slug: string };
+  VisitedBarsScreen: undefined;
+  BarMenuScreen: { slug: string; barName?: string; notice?: string };
+  QrScanScreen: { slug: string; barName?: string };
+  BarChatScreen: { slug: string; barName?: string };
+  NewsScreen: undefined;
+  NewsDetailScreen: { newsId: number; preview?: any };
+  CocktailStepsScreen: { cocktailId: number; cocktailName?: string };
+  MyPageScreen: undefined;
 };
 const Stack = createStackNavigator<RootStackParamList>();
 
@@ -98,6 +95,10 @@ const linking: LinkingOptions<RootStackParamList> = {
         parse: {
           cocktailId: (id: string) => Number(id),
         },
+      },
+      // QR 플래카드가 인코딩하는 유니버설 링크. 기본 카메라 앱으로 찍어도 여기로 들어온다.
+      BarMenuScreen: {
+        path: 'v/:slug',
       },
     },
   },
@@ -119,8 +120,13 @@ const Navigation: React.FC<NavigationProps> = memo(({ isOnboarded, setIsOnboarde
             <Stack.Screen name="CocktailDetailScreen" component={CocktailDetailScreen} />
             <Stack.Screen name="SearchScreen" component={SearchScreen} />
             <Stack.Screen name="SearchResultScreen" component={SearchResultScreen} />
-            <Stack.Screen name="RecommendationHome" component={RecommendationScreen} />
-            <Stack.Screen name="RecommendIntroScreen" component={RecommendationIntroScreen} />
+            <Stack.Screen name="RecommendationScreen" component={RecommendationScreen} />
+            <Stack.Screen name="RecommendationIntro" component={RecommendationIntroScreen} />
+            <Stack.Screen name="BarDetailScreen" component={require('../Screens/Bar/BarDetailScreen').default} />
+            <Stack.Screen name="VisitedBarsScreen" component={require('../Screens/Bar/VisitedBarsScreen').default} />
+            <Stack.Screen name="BarMenuScreen" component={require('../Screens/Bar/BarMenuScreen').default} />
+            <Stack.Screen name="QrScanScreen" component={require('../Screens/Bar/QrScanScreen').default} />
+            <Stack.Screen name="BarChatScreen" component={require('../Screens/Bar/BarChatScreen').default} />
             <Stack.Screen name="LoadingVideoScreen" component={LoadingVideoScreen} />
             <Stack.Screen name="RecommendResultScreen" component={RecommendResultScreen} />
             <Stack.Screen name="GuideScreen" component={GuideScreen} />
@@ -133,8 +139,10 @@ const Navigation: React.FC<NavigationProps> = memo(({ isOnboarded, setIsOnboarde
             <Stack.Screen name="TermsAndConditionsScreen" component={TermsAndConditionsScreen} />
             <Stack.Screen name="PrivacyPolicyScreen" component={PrivacyPolicyScreen} />
             <Stack.Screen name="InquiryFormScreen" component={InquiryFormScreen} />
-            <Stack.Screen name="LoadingScreen" component={LoadingScreen} />
-            <Stack.Screen name="ResultScreen" component={ResultScreen} />
+            <Stack.Screen name="MyPageScreen" component={require('../BottomTab/MyPage/MyPageScreen').default} />
+            <Stack.Screen name="NewsScreen" component={NewsScreen} />
+            <Stack.Screen name="NewsDetailScreen" component={NewsDetailScreen} />
+            <Stack.Screen name="CocktailStepsScreen" component={CocktailStepsScreen} />
           </>
         ) : (
           //  2. 온보딩이 안 된 경우 (인증/온보딩 스택)
