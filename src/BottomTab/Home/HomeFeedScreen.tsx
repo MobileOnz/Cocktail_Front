@@ -20,7 +20,7 @@ import { fontPercentage, heightPercentage, widthPercentage } from '../../assets/
 import instance from '../../tokenRequest/axios_interceptor';
 import { unwrap, toUserMessage } from '../../lib/api';
 import { colors, fonts, fontSize, radius, spacing } from '../../lib/theme';
-import type { FeedItem, Hero, MainResponse } from '../../types/api';
+import type { FeedItem, Hero, MainResponse, NewsCard, NewsFeedResponse } from '../../types/api';
 import ErrorState from '../../Components/common/ErrorState';
 import EmptyState from '../../Components/common/EmptyState';
 import SkeletonList from '../../Components/common/SkeletonList';
@@ -53,6 +53,10 @@ const HomeFeedScreen = () => {
   // main.feed 에는 type:'cocktail' 이 없어, 레시피북(칵테일) 내용을 홈에 혼합하기 위해
   // 칵테일 목록을 따로 불러 '인기 레시피' 섹션으로 붙인다. 보조 섹션이라 실패해도 조용히 비운다.
   const [cocktails, setCocktails] = useState<HomeCocktail[]>([]);
+  // 추천 CTA와 '인기 레시피' 사이의 '최신 칵테일 뉴스' 가로 하이라이트.
+  // /api/v2/main 피드에도 뉴스가 섞이지만, 여기선 최신 N건만 가로로 미리 보여준다.
+  // 보조 섹션이라 실패해도 조용히 비운다(홈 본 피드에는 영향 없음).
+  const [latestNews, setLatestNews] = useState<NewsCard[]>([]);
 
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -105,6 +109,20 @@ const HomeFeedScreen = () => {
       .then(res => {
         const content: HomeCocktail[] = res?.data?.data?.content ?? [];
         if (alive) { setCocktails(content); }
+      })
+      .catch(() => { /* 홈 보조 섹션 — 실패 시 무시 */ });
+    return () => { alive = false; };
+  }, []);
+
+  // 최신 칵테일 뉴스 (가로 하이라이트). NewsScreen 과 동일하게 /api/v2/news 를 쓰고
+  // 최신순으로 내려오므로 앞에서 N건만 취한다. 보조 섹션이라 실패해도 조용히 비운다.
+  useEffect(() => {
+    let alive = true;
+    instance
+      .get('/api/v2/news')
+      .then(res => {
+        const data = unwrap<NewsFeedResponse>(res);
+        if (alive) { setLatestNews((data.items ?? []).slice(0, 10)); }
       })
       .catch(() => { /* 홈 보조 섹션 — 실패 시 무시 */ });
     return () => { alive = false; };
@@ -183,6 +201,44 @@ const HomeFeedScreen = () => {
         <Text style={styles.recommendCtaText}>나에게 맞는 칵테일 추천 받기</Text>
         <Text style={styles.recommendCtaArrow}>›</Text>
       </TouchableOpacity>
+
+      {latestNews.length > 0 && (
+        <View>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>최신 칵테일 뉴스</Text>
+            <TouchableOpacity
+              onPress={() => navigation.navigate('NewsScreen')}
+              accessibilityRole="button"
+              accessibilityLabel="최신 칵테일 뉴스 전체보기"
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            >
+              <Text style={styles.sectionMore}>전체보기</Text>
+            </TouchableOpacity>
+          </View>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.cocktailRow}
+          >
+            {latestNews.map(n => (
+              <TouchableOpacity
+                key={`latest-news-${n.id}`}
+                style={styles.newsHCard}
+                activeOpacity={0.9}
+                onPress={() => openNews(n.id)}
+                accessibilityRole="button"
+                accessibilityLabel={`뉴스 ${n.title} 열기`}
+              >
+                {!!n.imageUrl && (
+                  <Image source={{ uri: n.imageUrl }} style={styles.newsHImage} resizeMode="cover" />
+                )}
+                <Text style={styles.newsHCategory} numberOfLines={1}>{n.categoryLabel ?? '뉴스'}</Text>
+                <Text style={styles.newsHTitle} numberOfLines={2}>{n.title}</Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
+      )}
 
       {cocktails.length > 0 && (
         <View>
@@ -393,6 +449,28 @@ const styles = StyleSheet.create({
     fontFamily: fonts.semibold,
     fontSize: fontPercentage(fontSize.sm),
     color: colors.text,
+  },
+
+  // 최신 칵테일 뉴스 가로 카드 — 뉴스는 제목이 길어 레시피 카드보다 넓게 둔다.
+  newsHCard: { width: widthPercentage(200) },
+  newsHImage: {
+    width: widthPercentage(200),
+    height: widthPercentage(112),
+    borderRadius: radius.md,
+    backgroundColor: colors.skeleton,
+    marginBottom: heightPercentage(spacing.sm),
+  },
+  newsHCategory: {
+    fontFamily: fonts.bold,
+    fontSize: fontPercentage(fontSize.xs),
+    color: colors.accent,
+    marginBottom: heightPercentage(spacing.xs),
+  },
+  newsHTitle: {
+    fontFamily: fonts.semibold,
+    fontSize: fontPercentage(fontSize.sm),
+    color: colors.text,
+    lineHeight: fontPercentage(18),
   },
 
   heroCard: {
