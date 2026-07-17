@@ -47,6 +47,7 @@ import {
   needsReauth,
 } from '../../services/ChatTransport';
 import { createChatTransport } from '../../services/SseTransport';
+import { dark } from '../../lib/theme';
 
 const SESSION_HEADER = 'X-Onz-Bar-Session';
 
@@ -76,15 +77,15 @@ function formatTime(iso: string): string {
 /** 배지 문구. 사용자는 SSE 라는 말을 알 필요가 없다. */
 function badgeOf(state: ConnectionState, kind: TransportKind): { text: string; color: string } {
   if (state === 'open') {
-    return { text: '연결됨', color: '#3ddc84' };
+    return { text: '연결됨', color: dark.success };
   }
   if (state === 'polling') {
-    return { text: kind === 'poll' ? '폴링' : '연결됨', color: '#e0a341' };
+    return { text: kind === 'poll' ? '폴링' : '연결됨', color: dark.warning };
   }
   if (state === 'connecting' || state === 'reconnecting') {
-    return { text: '재연결중', color: '#e0a341' };
+    return { text: '재연결중', color: dark.warning };
   }
-  return { text: '연결 끊김', color: '#8a8a8a' };
+  return { text: '연결 끊김', color: dark.textTertiary };
 }
 
 const BarChatScreen: React.FC = () => {
@@ -383,7 +384,7 @@ const BarChatScreen: React.FC = () => {
 
       {phase === 'loading' && (
         <View style={styles.center}>
-          <ActivityIndicator color="#fff" />
+          <ActivityIndicator color={dark.text} />
           <Text style={styles.hintText}>세션 확인 중…</Text>
         </View>
       )}
@@ -434,7 +435,7 @@ const BarChatScreen: React.FC = () => {
               value={input}
               onChangeText={setInput}
               placeholder={session ? `${session.nickname} (으)로 참여 중` : '메시지를 입력하세요'}
-              placeholderTextColor="#666"
+              placeholderTextColor={dark.textMuted}
               multiline
               maxLength={500}
             />
@@ -472,7 +473,7 @@ const BarChatScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#000' },
+  container: { flex: 1, backgroundColor: dark.bg },
   flex: { flex: 1 },
   header: {
     flexDirection: 'row',
@@ -480,13 +481,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 10,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: '#222',
+    borderBottomColor: dark.border,
   },
   backBtn: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center' },
-  backIcon: { color: '#fff', fontSize: 20 },
+  backIcon: { color: dark.text, fontSize: 20 },
   headerCenter: { flex: 1 },
-  headerTitle: { color: '#fff', fontSize: 17, fontWeight: '600' },
-  headerSub: { color: '#666', fontSize: 11, marginTop: 2 },
+  headerTitle: { color: dark.text, fontSize: 17, fontWeight: '600' },
+  headerSub: { color: dark.textMuted, fontSize: 11, marginTop: 2 },
   badge: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -494,54 +495,54 @@ const styles = StyleSheet.create({
     paddingHorizontal: 9,
     paddingVertical: 5,
     borderRadius: 20,
-    backgroundColor: '#141414',
+    backgroundColor: dark.surface,
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: '#2a2a2a',
+    borderColor: dark.borderStrong,
   },
   dot: { width: 6, height: 6, borderRadius: 3 },
-  badgeText: { color: '#aaa', fontSize: 11 },
+  badgeText: { color: dark.textTertiary, fontSize: 11 },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 24 },
-  hintText: { color: '#888', fontSize: 13, marginTop: 12 },
-  errorText: { color: '#ddd', fontSize: 14, textAlign: 'center', lineHeight: 21 },
-  devText: { color: '#5a5a5a', fontSize: 11, marginTop: 10 },
+  hintText: { color: dark.textTertiary, fontSize: 13, marginTop: 12 },
+  errorText: { color: dark.textSecondary, fontSize: 14, textAlign: 'center', lineHeight: 21 },
+  devText: { color: dark.textMuted, fontSize: 11, marginTop: 10 },
   retryBtn: {
     marginTop: 20,
     paddingHorizontal: 22,
     paddingVertical: 12,
     borderRadius: 10,
-    backgroundColor: '#1a1a1a',
+    backgroundColor: dark.surfaceHigh,
     borderWidth: 1,
-    borderColor: '#2a2a2a',
+    borderColor: dark.borderStrong,
   },
-  retryText: { color: '#fff', fontSize: 14, fontWeight: '600' },
+  retryText: { color: dark.text, fontSize: 14, fontWeight: '600' },
   listContent: { padding: 12, paddingBottom: 4 },
   empty: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingTop: 80 },
-  emptyText: { color: '#666', fontSize: 13 },
+  emptyText: { color: dark.textMuted, fontSize: 13 },
   messageRow: { marginBottom: 10, flexDirection: 'row' },
   rowMine: { justifyContent: 'flex-end' },
   rowOther: { justifyContent: 'flex-start' },
   bubble: { maxWidth: '78%', borderRadius: 14, paddingHorizontal: 12, paddingVertical: 8 },
   bubbleOther: {
-    backgroundColor: '#1a1a1a',
+    backgroundColor: dark.surfaceHigh,
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: '#262626',
+    borderColor: dark.border,
     borderTopLeftRadius: 4,
   },
-  bubbleMine: { backgroundColor: '#fff', borderTopRightRadius: 4 },
-  nickname: { color: '#9a9a9a', fontSize: 11, fontWeight: '600', marginBottom: 3 },
-  content: { color: '#eee', fontSize: 14, lineHeight: 20 },
-  contentMine: { color: '#000' },
-  time: { color: '#555', fontSize: 10, marginTop: 4, alignSelf: 'flex-end' },
-  timeMine: { color: '#888' },
+  bubbleMine: { backgroundColor: dark.text, borderTopRightRadius: 4 },
+  nickname: { color: dark.textTertiary, fontSize: 11, fontWeight: '600', marginBottom: 3 },
+  content: { color: dark.textSecondary, fontSize: 14, lineHeight: 20 },
+  contentMine: { color: dark.textOnLight },
+  time: { color: dark.textMuted, fontSize: 10, marginTop: 4, alignSelf: 'flex-end' },
+  timeMine: { color: dark.textTertiary },
   hiddenRow: { marginBottom: 10, alignItems: 'center' },
   hiddenText: {
-    color: '#555',
+    color: dark.textMuted,
     fontSize: 12,
     fontStyle: 'italic',
     paddingVertical: 6,
     paddingHorizontal: 12,
     borderRadius: 10,
-    backgroundColor: '#0f0f0f',
+    backgroundColor: dark.surface,
   },
   inputBar: {
     flexDirection: 'row',
@@ -549,21 +550,21 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingTop: 8,
     borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: '#222',
+    borderTopColor: dark.border,
     gap: 8,
   },
   input: {
     flex: 1,
     minHeight: 40,
     maxHeight: 120,
-    backgroundColor: '#111',
+    backgroundColor: dark.surface,
     borderRadius: 10,
     paddingHorizontal: 12,
     paddingVertical: 10,
-    color: '#fff',
+    color: dark.text,
     fontSize: 14,
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: '#262626',
+    borderColor: dark.border,
   },
   sendBtn: {
     paddingHorizontal: 16,
@@ -571,27 +572,27 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 10,
-    backgroundColor: '#fff',
+    backgroundColor: dark.text,
   },
-  sendBtnDisabled: { backgroundColor: '#333' },
-  sendText: { color: '#000', fontSize: 14, fontWeight: '700' },
+  sendBtnDisabled: { backgroundColor: dark.surfaceActive },
+  sendText: { color: dark.textOnLight, fontSize: 14, fontWeight: '700' },
   modalBackdrop: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.7)',
+    backgroundColor: dark.overlay,
     alignItems: 'center',
     justifyContent: 'center',
     padding: 32,
   },
   modalCard: {
     width: '100%',
-    backgroundColor: '#141414',
+    backgroundColor: dark.surface,
     borderRadius: 14,
     paddingVertical: 8,
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: '#2a2a2a',
+    borderColor: dark.borderStrong,
   },
   modalTitle: {
-    color: '#fff',
+    color: dark.text,
     fontSize: 14,
     fontWeight: '700',
     paddingHorizontal: 16,
@@ -601,16 +602,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 14,
     borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: '#242424',
+    borderTopColor: dark.border,
   },
-  reasonText: { color: '#ddd', fontSize: 15 },
+  reasonText: { color: dark.textSecondary, fontSize: 15 },
   cancelRow: {
     paddingHorizontal: 16,
     paddingVertical: 14,
     borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: '#242424',
+    borderTopColor: dark.border,
   },
-  cancelText: { color: '#888', fontSize: 15, textAlign: 'center' },
+  cancelText: { color: dark.textTertiary, fontSize: 15, textAlign: 'center' },
 });
 
 export default BarChatScreen;

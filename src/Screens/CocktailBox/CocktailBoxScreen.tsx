@@ -24,7 +24,7 @@ const CocktailBoxScreen = () => {
                 // 상단 헤더를 리스트의 일부로 설정
                 ListHeaderComponent={
                     <View>
-                        <Appbar.Header style={{ backgroundColor: '#FFF' }}>
+                        <Appbar.Header style={{ backgroundColor: '#FFFFFF' }}>
                             <TouchableOpacity style={{ paddingLeft: 20 }}
                                 onPress={() => navigation.goBack()}>
                                 <Icon
@@ -81,11 +81,11 @@ export default CocktailBoxScreen;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#FFF',
+        backgroundColor: '#FFFFFF',
     },
     // 헤더 관련 스타일 (SearchResultScreen 양식 참고)
     headerContainer: {
-        backgroundColor: '#FFF',
+        backgroundColor: '#FFFFFF',
         marginBottom: 10,
     },
     headerContent: {

@@ -17,6 +17,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import instance from '../../tokenRequest/axios_interceptor';
 import RemoteImage from '../../Components/common/RemoteImage';
+import { dark } from '../../lib/theme';
 
 interface BarDetail {
   id: number;
@@ -95,14 +96,14 @@ const BarDetailScreen: React.FC = () => {
   if (loading) {
     return (
       <View style={[styles.container, styles.center]}>
-        <ActivityIndicator color="#fff" />
+        <ActivityIndicator color={dark.text} />
       </View>
     );
   }
   if (!bar) {
     return (
       <View style={[styles.container, styles.center]}>
-        <Text style={{ color: '#888' }}>바 정보를 찾을 수 없습니다</Text>
+        <Text style={{ color: dark.textTertiary }}>바 정보를 찾을 수 없습니다</Text>
       </View>
     );
   }
@@ -110,11 +111,11 @@ const BarDetailScreen: React.FC = () => {
   return (
     <>
       {/* 검정 배경. 딥링크로 목록을 거치지 않고 바로 들어와도 시계/배터리가 보여야 한다. */}
-      <StatusBar barStyle="light-content" backgroundColor="#000000" />
+      <StatusBar barStyle="light-content" backgroundColor={dark.bg} />
     <ScrollView style={styles.container} contentContainerStyle={{ paddingTop: insets.top, paddingBottom: insets.bottom + 32 }}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
-          <Text style={{ color: '#fff', fontSize: 20 }}>←</Text>
+          <Text style={{ color: dark.text, fontSize: 20 }}>←</Text>
         </TouchableOpacity>
       </View>
 
@@ -148,7 +149,7 @@ const BarDetailScreen: React.FC = () => {
             </Text>
           </TouchableOpacity>
           <TouchableOpacity style={[styles.actionBtn, styles.primaryBtn]} onPress={openMenu}>
-            <Text style={[styles.actionText, { color: '#000' }]}>메뉴 보기</Text>
+            <Text style={[styles.actionText, { color: dark.textOnLight }]}>메뉴 보기</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.actionBtn} onPress={openChat}>
             <Text style={styles.actionText}>오픈채팅 입장</Text>
@@ -182,37 +183,37 @@ const BarDetailScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#000' },
+  container: { flex: 1, backgroundColor: dark.bg },
   center: { alignItems: 'center', justifyContent: 'center' },
   header: { paddingHorizontal: 16, paddingTop: 12 },
   backBtn: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center' },
-  hero: { width: '100%', height: 220, backgroundColor: '#161616' },
+  hero: { width: '100%', height: 220, backgroundColor: dark.surfaceHigh },
   body: { padding: 20 },
-  name: { color: '#fff', fontSize: 26, fontWeight: '700' },
-  nameEn: { color: '#aaa', fontSize: 14, marginTop: 4 },
-  description: { color: '#ccc', fontSize: 14, lineHeight: 22, marginTop: 12 },
+  name: { color: dark.text, fontSize: 26, fontWeight: '700' },
+  nameEn: { color: dark.textTertiary, fontSize: 14, marginTop: 4 },
+  description: { color: dark.textSecondary, fontSize: 14, lineHeight: 22, marginTop: 12 },
   row: { flexDirection: 'row', alignItems: 'flex-start', marginTop: 14, gap: 12 },
-  kAddr: { color: '#888', fontSize: 13, width: 40 },
-  vAddr: { color: '#ccc', fontSize: 13, flex: 1 },
+  kAddr: { color: dark.textTertiary, fontSize: 13, width: 40 },
+  vAddr: { color: dark.textSecondary, fontSize: 13, flex: 1 },
   actions: { marginTop: 24, gap: 10 },
   actionBtn: {
     paddingVertical: 14,
     borderRadius: 12,
-    backgroundColor: '#1a1a1a',
+    backgroundColor: dark.surfaceHigh,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#2a2a2a',
+    borderColor: dark.borderStrong,
   },
-  actionBtnActive: { backgroundColor: '#1f1f1f', borderColor: '#fff' },
-  actionTextActive: { color: '#fff' },
-  primaryBtn: { backgroundColor: '#fff', borderColor: '#fff' },
-  disabledBtn: { backgroundColor: '#0c0c0c', borderColor: '#1a1a1a' },
-  actionText: { color: '#fff', fontSize: 15, fontWeight: '600' },
+  actionBtnActive: { backgroundColor: dark.surfaceHigh, borderColor: dark.text },
+  actionTextActive: { color: dark.text },
+  primaryBtn: { backgroundColor: dark.text, borderColor: dark.text },
+  disabledBtn: { backgroundColor: dark.surface, borderColor: dark.surfaceHigh },
+  actionText: { color: dark.text, fontSize: 15, fontWeight: '600' },
   section: { marginTop: 28 },
-  sectionTitle: { color: '#fff', fontSize: 16, fontWeight: '600', marginBottom: 12 },
+  sectionTitle: { color: dark.text, fontSize: 16, fontWeight: '600', marginBottom: 12 },
   sigCard: { width: 130 },
-  sigImg: { width: 130, height: 130, borderRadius: 12, backgroundColor: '#1a1a1a' },
-  sigName: { color: '#ddd', fontSize: 13, marginTop: 8 },
+  sigImg: { width: 130, height: 130, borderRadius: 12, backgroundColor: dark.surfaceHigh },
+  sigName: { color: dark.textSecondary, fontSize: 13, marginTop: 8 },
 });
 
 export default BarDetailScreen;

@@ -476,7 +476,7 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ currentStep, totalSteps }) =>
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffff',
+    backgroundColor: '#FFFFFF',
   },
   header: {
     flexDirection: 'row',
@@ -498,7 +498,7 @@ const styles = StyleSheet.create({
   },
 
   question: {
-    fontFamily: 'Pretandard-SemiBold',
+    fontFamily: 'Pretendard-SemiBold',
     fontSize: fontPercentage(16),
     color: '#1B1B1B',
     marginLeft: widthPercentage(12),
@@ -506,7 +506,7 @@ const styles = StyleSheet.create({
 
   subquestion: {
     fontSize: fontPercentage(12),
-    fontFamily: 'Pretandard-SemiBold',
+    fontFamily: 'Pretendard-SemiBold',
     color: '#616161',
     marginLeft: widthPercentage(12),
   },
@@ -536,7 +536,7 @@ const styles = StyleSheet.create({
   confirmButtonText: {
     fontSize: fontPercentage(16),
     color: '#FFFFFF',
-    fontFamily: 'Pretandard-SemiBold',
+    fontFamily: 'Pretendard-SemiBold',
     textAlign: 'center',
   },
 
@@ -553,14 +553,14 @@ const styles = StyleSheet.create({
 
     fontSize: fontPercentage(20),
     color: '#1B1B1B',
-    fontFamily: 'Pretandard-SemiBold',
+    fontFamily: 'Pretendard-SemiBold',
     textAlign: 'center',
   },
 
   description: {
     fontSize: fontPercentage(14),
     color: '#BDBDBD',
-    fontFamily: 'Pretandard-SemiBold',
+    fontFamily: 'Pretendard-SemiBold',
     textAlign: 'center',
     paddingBottom: heightPercentage(20),
   },

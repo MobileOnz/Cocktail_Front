@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 
 import { FilterState, useFilterBottomSheetViewModel } from './FilterBottomSheetViewModel';
-import theme from '../../../assets/styles/theme';
+import { colors } from '../../../lib/theme';
 import { heightPercentage } from '../../../assets/styles/FigmaScreen';
 
 
@@ -257,7 +257,7 @@ const styles = StyleSheet.create({
     borderRadius: 999,
     borderWidth: 1,
     borderColor: '#E0E0E0',
-    backgroundColor: theme.background,
+    backgroundColor: colors.bg,
   },
   tagSelected: {
     backgroundColor: '#111111',
@@ -273,7 +273,7 @@ const styles = StyleSheet.create({
   },
   footer: {
     paddingTop: 12,
-    backgroundColor: theme.background,
+    backgroundColor: colors.bg,
     flexDirection: 'row',
     columnGap: 12,
     borderTopWidth: 1,
@@ -289,7 +289,7 @@ const styles = StyleSheet.create({
     borderColor: '#D0D0D0',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: theme.background,
+    backgroundColor: colors.bg,
   },
   applyButton: {
     flex: 1,

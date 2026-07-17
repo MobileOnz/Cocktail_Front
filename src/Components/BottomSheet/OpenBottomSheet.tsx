@@ -13,7 +13,7 @@ import BottomSheet, {
     BottomSheetScrollView,
 } from '@gorhom/bottom-sheet';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import theme from '../../assets/styles/theme';
+import { colors } from '../../lib/theme';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 type OpenBottomSheetProps = {
@@ -59,7 +59,7 @@ const OpenBottomSheet = forwardRef<OpenBottomSheetHandle, OpenBottomSheetProps>(
 
                 return (
                     <BottomSheetFooter {...props} bottomInset={0}>
-                        <SafeAreaView edges={['bottom']} style={{ backgroundColor: theme.background }}>
+                        <SafeAreaView edges={['bottom']} style={{ backgroundColor: colors.bg }}>
                             {footer}
                         </SafeAreaView>
                     </BottomSheetFooter>
@@ -81,8 +81,8 @@ const OpenBottomSheet = forwardRef<OpenBottomSheetHandle, OpenBottomSheetProps>(
                 enableOverDrag={false}
                 enableHandlePanningGesture={false}
                 enableContentPanningGesture={false} // “시트 드래그” 막기
-                backgroundStyle={{ backgroundColor: theme.background }}
-                handleIndicatorStyle={{ backgroundColor: theme.background }}
+                backgroundStyle={{ backgroundColor: colors.bg }}
+                handleIndicatorStyle={{ backgroundColor: colors.bg }}
             >
                 <View style={styles.fixedHeader}>
                     <TouchableOpacity

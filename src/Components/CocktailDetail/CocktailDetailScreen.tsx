@@ -34,6 +34,13 @@ const DetailRow = ({
   );
 };
 
+// 백엔드 enum 이 그대로 노출되던 것(WEAK 등)을 한글로.
+const ABV_LABEL: Record<string, string> = {
+  WEAK: '약함',
+  MEDIUM: '보통',
+  STRONG: '강함',
+};
+
 export function CocktailDetailScreen({ route }: Props) {
 
   const insets = useSafeAreaInsets();
@@ -109,7 +116,7 @@ export function CocktailDetailScreen({ route }: Props) {
           {/* 왼쪽: 뒤로가기 */}
           <TouchableOpacity onPress={() => navigation.goBack()}
           >
-            <Icon name="chevron-back-sharp" size={24} color="#fff" style={{ marginRight: widthPercentage(30) }} />
+            <Icon name="chevron-back-sharp" size={24} color="#FFFFFF" style={{ marginRight: widthPercentage(30) }} />
           </TouchableOpacity>
 
 
@@ -130,14 +137,14 @@ export function CocktailDetailScreen({ route }: Props) {
                     : require('../../assets/drawable/save.png')
                 }
                 style={[{ marginRight: 20 }, vm.detail?.isBookmarked ?
-                  { width: 20, height: 20, tintColor: '#FFF' }
+                  { width: 20, height: 20, tintColor: '#FFFFFF' }
                   : { width: 20, height: 20 }]}
                 resizeMode="contain"
               />
             </TouchableOpacity>
 
             <TouchableOpacity onPress={handleShare} style={{ marginRight: 10 }}>
-              <Icon name="share-social-outline" size={24} color={'#fff'} />
+              <Icon name="share-social-outline" size={24} color={'#FFFFFF'} />
             </TouchableOpacity>
 
           </View>
@@ -160,7 +167,7 @@ export function CocktailDetailScreen({ route }: Props) {
         <Divider style={styles.sectionDivider} />
 
         <DetailRow label="도수">
-          <Text style={styles.valueText}> {vm.detail.abvBand}</Text>
+          <Text style={styles.valueText}> {ABV_LABEL[vm.detail.abvBand] ?? vm.detail.abvBand}</Text>
         </DetailRow>
         <DetailRow label="맛">
           <Text style={styles.valueText}>
@@ -230,13 +237,13 @@ export function CocktailDetailScreen({ route }: Props) {
         <Pressable style={[styles.button,
         vm.myReaction === 'RECOMMEND' && { backgroundColor: '#333' }]}
           onPress={() => { vm.handleReaction('RECOMMEND'); }}>
-          <Text style={[styles.text, vm.myReaction === 'RECOMMEND' && { color: '#FFF' }]}>
+          <Text style={[styles.text, vm.myReaction === 'RECOMMEND' && { color: '#FFFFFF' }]}>
             추천해요 🍸</Text>
         </Pressable>
         <Pressable style={[styles.button,
         vm.myReaction === 'HARD' && { backgroundColor: '#333' }]}
           onPress={() => { vm.handleReaction('HARD'); }}>
-          <Text style={[styles.text, vm.myReaction === 'HARD' && { color: '#FFF' }]}>
+          <Text style={[styles.text, vm.myReaction === 'HARD' && { color: '#FFFFFF' }]}>
             조금 어려워요🤔</Text>
         </Pressable>
       </View>
@@ -450,7 +457,7 @@ const styles = StyleSheet.create({
     bottom: 40,
     fontWeight: '600',
     fontSize: fontPercentage(20),
-    color: '#FFF',
+    color: '#FFFFFF',
   },
   engText: {
     fontFamily: 'NotoSerif-BoldItalic',
@@ -458,7 +465,7 @@ const styles = StyleSheet.create({
     left: 20,
     bottom: 75,
     fontSize: fontPercentage(20),
-    color: '#FFF',
+    color: '#FFFFFF',
   },
   imageHeader: {
     position: 'absolute',

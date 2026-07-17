@@ -178,7 +178,7 @@ const BarListScreen: React.FC = () => {
       ) : (
         <FlatList
           contentContainerStyle={{ paddingBottom: tabBarSpace }}
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#fff" />}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#FFFFFF" />}
           data={bars}
           keyExtractor={(item) => String(item.id)}
           ItemSeparatorComponent={() => <View style={styles.separator} />}
@@ -198,7 +198,7 @@ const BarListScreen: React.FC = () => {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#000' },
-  title: { color: '#fff', fontSize: 28, fontWeight: '700', paddingHorizontal: 20, marginBottom: 16 },
+  title: { color: '#FFFFFF', fontSize: 28, fontWeight: '700', paddingHorizontal: 20, marginBottom: 16 },
   segmentBar: {
     flexDirection: 'row',
     gap: 8,
@@ -211,7 +211,7 @@ const styles = StyleSheet.create({
     borderRadius: 999,
     backgroundColor: '#1a1a1a',
   },
-  segmentActive: { backgroundColor: '#fff' },
+  segmentActive: { backgroundColor: '#FFFFFF' },
   segmentText: { color: '#aaa', fontSize: 13, fontWeight: '500' },
   segmentTextActive: { color: '#000' },
   row: {
@@ -221,13 +221,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 18,
   },
-  rowName: { color: '#fff', fontSize: 17, fontWeight: '500', flex: 1 },
+  rowName: { color: '#FFFFFF', fontSize: 17, fontWeight: '500', flex: 1 },
   rowMeta: { color: '#aaa', fontSize: 13 },
   separator: { height: 1, backgroundColor: '#1a1a1a', marginHorizontal: 20 },
   empty: { padding: 48, alignItems: 'center' },
   emptyText: { color: '#888', fontSize: 14 },
   retryBtn: { marginTop: 16, paddingHorizontal: 16, paddingVertical: 10, backgroundColor: '#222', borderRadius: 8 },
-  retryText: { color: '#fff', fontSize: 13 },
+  retryText: { color: '#FFFFFF', fontSize: 13 },
 });
 
 export default BarListScreen;

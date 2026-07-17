@@ -13,6 +13,7 @@ import { widthPercentage, heightPercentage, fontPercentage } from '../../assets/
 import PagerView from 'react-native-pager-view';
 import GuideDetailViewModel from './GuideDetailViewModel';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { stripMarkdownEmphasis } from '../../lib/text';
 
 type GuideDetailSreenNavigationProp = StackNavigationProp<
   RootStackParamList,
@@ -104,8 +105,8 @@ const GuideDetailScreen: React.FC<Props> = ({ navigation, route}) => {
                             paddingTop: heightPercentage(20),
                         }}
                     >
-                        <Text style={styles.titleText}>{page.subtitle}</Text>
-                        <Text style={styles.subText}>{page.description}</Text>
+                        <Text style={styles.titleText}>{stripMarkdownEmphasis(page.subtitle)}</Text>
+                        <Text style={styles.subText}>{stripMarkdownEmphasis(page.description)}</Text>
                     </View>
                 </View>
             ))}
@@ -164,7 +165,7 @@ const styles = StyleSheet.create({
   },
   bottomContainer: {
     flex: 1,
-    backgroundColor: '#ffffffff',
+    backgroundColor: '#FFFFFF',
   },
   titleText: {
     fontSize: fontPercentage(20),

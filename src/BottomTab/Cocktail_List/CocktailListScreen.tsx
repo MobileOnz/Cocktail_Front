@@ -13,7 +13,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import FastImage from 'react-native-fast-image';
 import { Appbar, Divider, Text } from 'react-native-paper';
-import theme from '../../assets/styles/theme';
+import { colors } from '../../lib/theme';
 import { fontPercentage, heightPercentage, widthPercentage } from '../../assets/styles/FigmaScreen';
 
 import { truncate } from 'lodash';
@@ -55,7 +55,7 @@ const Home = () => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const animatedColor = fadeAnim.interpolate({
     inputRange: [0, 1],
-    outputRange: ['#ffffff', '#000000'],
+    outputRange: ['#FFFFFF', '#000000'],
   });
   useEffect(() => {
     Animated.timing(fadeAnim, {
@@ -101,7 +101,7 @@ const Home = () => {
             source={item.isBookmarked
               ? require('../../assets/drawable/full_save.png')
               : require('../../assets/drawable/save.png')}
-            style={item.isBookmarked ? { width: 20, height: 20, tintColor: '#FFF' } : { width: 20, height: 20 }}
+            style={item.isBookmarked ? { width: 20, height: 20, tintColor: '#FFFFFF' } : { width: 20, height: 20 }}
             resizeMode="contain"
           />
         </TouchableOpacity>
@@ -125,8 +125,8 @@ const Home = () => {
     <View style={styles.container}>
 
       {/* 상단 헤더 */}
-      <StatusBar barStyle={vm.isScrolled ? 'dark-content' : 'light-content'} backgroundColor={vm.isScrolled ? '#ffffff' : '#000000'} />
-      <Appbar.Header style={[{ marginLeft: widthPercentage(16), backgroundColor: vm.isScrolled ? '#fff' : '#000' }]}>
+      <StatusBar barStyle={vm.isScrolled ? 'dark-content' : 'light-content'} backgroundColor={vm.isScrolled ? '#FFFFFF' : '#000000'} />
+      <Appbar.Header style={[{ marginLeft: widthPercentage(16), backgroundColor: vm.isScrolled ? '#FFFFFF' : '#000' }]}>
         {/* 왼쪽 로고 */}
         <Image
           source={
@@ -144,7 +144,7 @@ const Home = () => {
           <Menu
             visible={menuVisible}
             onDismiss={closeMenu}
-            contentStyle={{ backgroundColor: '#fff', borderRadius: 12 }}
+            contentStyle={{ backgroundColor: '#FFFFFF', borderRadius: 12 }}
             anchor={
               <TouchableOpacity
                 onPress={openMenu}
@@ -464,7 +464,7 @@ const Home = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: theme.background,
+    backgroundColor: colors.bg,
 
   },
   newCocktailName: {
@@ -521,7 +521,7 @@ const styles = StyleSheet.create({
   },
   bannerKoText: {
     fontFamily: 'Pretendard-SemiBold',
-    color: '#fff',
+    color: '#FFFFFF',
     fontSize: fontPercentage(18),
     fontWeight: '600',
     marginBottom: 4,
@@ -560,7 +560,7 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   recommendTitle: {
-    color: '#fff',
+    color: '#FFFFFF',
     fontSize: fontPercentage(17),
     fontFamily: 'Pretendard-SemiBold',
   },
@@ -645,7 +645,7 @@ const styles = StyleSheet.create({
     marginBottom: heightPercentage(10),
   },
   chipUnselected: {
-    backgroundColor: theme.background,
+    backgroundColor: colors.bg,
     borderColor: '#E0E0E0',
   },
   chipLabel: {
@@ -710,7 +710,7 @@ const styles = StyleSheet.create({
   bestTitleText: {
     fontFamily: 'Pretendard-SemiBold',
     fontSize: fontPercentage(16),
-    color: '#FFF',
+    color: '#FFFFFF',
     textAlign: 'left',
   },
   bestBookmarkButton: {

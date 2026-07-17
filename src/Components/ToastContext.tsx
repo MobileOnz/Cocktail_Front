@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
     zIndex: 999,
   },
   toastText: {
-    color: '#fff',
+    color: '#FFFFFF',
     fontSize: 14,
   },
 });
