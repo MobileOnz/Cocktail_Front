@@ -6,7 +6,7 @@ import { ActivityIndicator, Button, Text } from 'react-native-paper';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTabBarSpace } from '../../lib/layout';
 import { fontPercentage, heightPercentage, widthPercentage } from '../../assets/styles/FigmaScreen';
-import theme from '../../assets/styles/theme';
+import { colors } from '../../lib/theme';
 import OpenBottomSheet, { OpenBottomSheetHandle } from '../../Components/BottomSheet/OpenBottomSheet';
 import CocktailCard from '../../Components/CocktailCard';
 import { CocktailCard as CocktailCardModel } from '../../model/domain/CocktailCard';
@@ -223,14 +223,14 @@ export default AllCocktailScreen;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: theme.background,
+        backgroundColor: colors.bg,
     },
     safeArea: {
         flex: 1,
-        backgroundColor: theme.background,
+        backgroundColor: colors.bg,
     },
     stickyHeader: {
-        backgroundColor: theme.background,
+        backgroundColor: colors.bg,
         zIndex: 10,
     },
     header: {
@@ -291,7 +291,7 @@ const styles = StyleSheet.create({
         elevation: 0,
     },
     chipUnselected: {
-        backgroundColor: theme.background,
+        backgroundColor: colors.bg,
         borderColor: '#E0E0E0',
     },
     chipSelected: {
@@ -341,7 +341,7 @@ const styles = StyleSheet.create({
         gap: 12,
         paddingHorizontal: 16,
         paddingVertical: 12,
-        backgroundColor: theme.background,
+        backgroundColor: colors.bg,
         borderTopWidth: 1,
         borderTopColor: '#EEE',
         ...Platform.select({

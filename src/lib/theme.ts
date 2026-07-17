@@ -38,7 +38,28 @@ export const colors = {
   overlay: 'rgba(0, 0, 0, 0.4)',
 } as const;
 
-/** Pretendard. 주의: 코드베이스에 'Pretandard' 오타가 11곳 있다(별도 티켓). */
+/**
+ * 다크(나이트 무드) 팔레트 — 바 도메인 화면(BarList/BarDetail/BarChat/QrScan)용.
+ * 기존 화면들에 흩어져 있던 근사 회색들을 역할별로 통합한 값이다(디자인 변경 아님).
+ */
+export const dark = {
+  bg: '#000000',
+  surface: '#141414', // 입력창·배지·모달 (기존 #0f0f0f/#111/#141414)
+  surfaceHigh: '#1A1A1A', // 버블·버튼·이미지 플레이스홀더 (기존 #161616/#1a1a1a/#1f1f1f)
+  surfaceActive: '#333333', // 비활성 버튼 등
+  border: '#262626', // (기존 #222/#242424/#262626)
+  borderStrong: '#2A2A2A',
+  text: '#FFFFFF',
+  textSecondary: '#DDDDDD', // (기존 #ccc/#ddd/#eee)
+  textTertiary: '#9A9A9A', // (기존 #888/#8a8a8a/#9a9a9a/#aaa)
+  textMuted: '#5A5A5A', // (기존 #555/#5a5a5a/#666)
+  textOnLight: '#000000', // 흰 배경 버튼 위 텍스트
+  warning: '#E0A341',
+  success: '#3DDC84',
+  overlay: 'rgba(0, 0, 0, 0.7)',
+} as const;
+
+/** Pretendard. */
 export const fonts = {
   regular: 'Pretendard-Regular',
   medium: 'Pretendard-Medium',

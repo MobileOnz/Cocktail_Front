@@ -269,7 +269,7 @@ const styles = StyleSheet.create({
   resultInfoSubText: {
     flex: 4,
     fontSize: fontPercentage(16),
-    fontFamily: 'Pretandard-Medium',
+    fontFamily: 'Pretendard-Medium',
     color: '#FFFFFF',
     textAlign: 'left',
     flexWrap: 'wrap',
@@ -309,13 +309,13 @@ const styles = StyleSheet.create({
     marginLeft: widthPercentage(20),
     fontSize: fontPercentage(20),
     color: '#FFFFFF',
-    fontFamily: 'Pretandard-SemiBold',
+    fontFamily: 'Pretendard-SemiBold',
   },
 
   titleIntroduceText: {
     fontSize: fontPercentage(20),
     color: '#1B1B1B',
-    fontFamily: 'Pretandard-SemiBold',
+    fontFamily: 'Pretendard-SemiBold',
     textAlign: 'center',
   },
 
@@ -332,7 +332,7 @@ const styles = StyleSheet.create({
   description: {
     fontSize: fontPercentage(14),
     color: '#BDBDBD',
-    fontFamily: 'Pretandard-Medium',
+    fontFamily: 'Pretendard-Medium',
     textAlign: 'center',
     paddingBottom: heightPercentage(20),
   },
@@ -398,12 +398,12 @@ const styles = StyleSheet.create({
   },
 
   bottomBtnLeftText: {
-    fontFamily: 'Pretandard-SemiBold',
+    fontFamily: 'Pretendard-SemiBold',
     fontSize: fontPercentage(14),
     color: '#1B1B1B',
   },
   bottomBtnRightText: {
-    fontFamily: 'Pretandard-SemiBold',
+    fontFamily: 'Pretendard-SemiBold',
     fontSize: fontPercentage(14),
     color: '#FFFFFF',
   },

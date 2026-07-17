@@ -9,6 +9,7 @@ import type { NewsCard, NewsFeedResponse } from '../../types/api';
 import ErrorState from '../../Components/common/ErrorState';
 import EmptyState from '../../Components/common/EmptyState';
 import SkeletonList from '../../Components/common/SkeletonList';
+import { formatDate } from '../../lib/date';
 
 const CATEGORIES = [
   { id: 'ALL', label: '최신' },
@@ -64,10 +65,10 @@ const NewsScreen = () => {
           {/* 라벨은 서버가 내려주는 categoryLabel 을 쓴다(프론트 하드코딩 매핑 제거). */}
           <Text style={styles.newsCategoryText}>{item.categoryLabel}</Text>
           <Text style={styles.newsDate}>
-            {item.publishedAt ? new Date(item.publishedAt).toLocaleDateString() : ''}
+            {formatDate(item.publishedAt)}
           </Text>
         </View>
-        <Text style={styles.newsTitle}>{item.title}</Text>
+        <Text style={styles.newsTitle} lineBreakStrategyIOS="hangul-word" textBreakStrategy="balanced">{item.title}</Text>
         {/* 백엔드에 author 는 없다. 출처는 source. */}
         {!!item.source && <Text style={styles.newsAuthor}>{item.source}</Text>}
       </View>
@@ -126,7 +127,7 @@ const styles = StyleSheet.create({
   header: {
     paddingHorizontal: 20,
     paddingBottom: 15,
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
   },
   headerTitle: {
     fontSize: fontPercentage(22),
@@ -134,7 +135,7 @@ const styles = StyleSheet.create({
     color: '#000',
   },
   tabBar: {
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
     borderBottomWidth: 1,
     borderBottomColor: '#F1F3F5',
   },
@@ -158,7 +159,7 @@ const styles = StyleSheet.create({
     color: '#495057',
   },
   tabLabelActive: {
-    color: '#fff',
+    color: '#FFFFFF',
   },
   scrollContent: {
     padding: 16,
@@ -167,7 +168,7 @@ const styles = StyleSheet.create({
   newsCard: {
     marginBottom: 20,
     borderRadius: 16,
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.05,

@@ -142,7 +142,7 @@ const VisitedBarsScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff' },
+  container: { flex: 1, backgroundColor: '#FFFFFF' },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -166,7 +166,7 @@ const styles = StyleSheet.create({
   empty: { padding: 48, alignItems: 'center' },
   emptyText: { color: '#888', fontSize: 14 },
   retryBtn: { marginTop: 16, paddingHorizontal: 16, paddingVertical: 10, backgroundColor: '#222', borderRadius: 8 },
-  retryText: { color: '#fff', fontSize: 13 },
+  retryText: { color: '#FFFFFF', fontSize: 13 },
 });
 
 export default VisitedBarsScreen;

@@ -26,18 +26,12 @@ import EmptyState from '../../Components/common/EmptyState';
 import SkeletonList from '../../Components/common/SkeletonList';
 import TopRightMenu from '../../Components/common/TopRightMenu';
 import { useTabBarSpace } from '../../lib/layout';
+import { formatDate } from '../../lib/date';
 
 /** 홈 '인기 레시피' 가로 섹션 카드. 레시피북(칵테일) 내용을 홈 피드에 혼합한다. */
 type HomeCocktail = { id: number; korName: string; imageUrl?: string | null };
 
 const PAGE_SIZE = 20;
-
-const formatDate = (iso?: string | null): string => {
-  if (!iso) { return ''; }
-  const d = new Date(iso);
-  if (isNaN(d.getTime())) { return ''; }
-  return d.toLocaleDateString();
-};
 
 /** feed 아이템은 news/guide 가 섞이므로 타입+식별자 조합으로 키를 만든다. */
 const feedKey = (item: FeedItem): string =>
@@ -233,7 +227,7 @@ const HomeFeedScreen = () => {
                   <Image source={{ uri: n.imageUrl }} style={styles.newsHImage} resizeMode="cover" />
                 )}
                 <Text style={styles.newsHCategory} numberOfLines={1}>{n.categoryLabel ?? '뉴스'}</Text>
-                <Text style={styles.newsHTitle} numberOfLines={2}>{n.title}</Text>
+                <Text style={styles.newsHTitle} numberOfLines={2} lineBreakStrategyIOS="hangul-word" textBreakStrategy="balanced">{n.title}</Text>
               </TouchableOpacity>
             ))}
           </ScrollView>
@@ -310,7 +304,7 @@ const HomeFeedScreen = () => {
           )}
           <View style={styles.guideBody}>
             <Text style={styles.guideBadge}>가이드 · Part {item.part}</Text>
-            <Text style={styles.guideTitle} numberOfLines={2}>{item.title}</Text>
+            <Text style={styles.guideTitle} numberOfLines={2} lineBreakStrategyIOS="hangul-word" textBreakStrategy="balanced">{item.title}</Text>
           </View>
         </TouchableOpacity>
       );
@@ -334,7 +328,7 @@ const HomeFeedScreen = () => {
             <Text style={styles.newsCategory}>{item.categoryLabel ?? '뉴스'}</Text>
             <Text style={styles.newsDate}>{formatDate(item.publishedAt)}</Text>
           </View>
-          <Text style={styles.newsTitle} numberOfLines={2}>{item.title}</Text>
+          <Text style={styles.newsTitle} numberOfLines={2} lineBreakStrategyIOS="hangul-word" textBreakStrategy="balanced">{item.title}</Text>
           {!!item.summary && (
             <Text style={styles.newsSummary} numberOfLines={2}>{item.summary}</Text>
           )}

@@ -9,7 +9,7 @@ import {
   Image,
 } from 'react-native';
 import { StackScreenProps } from '@react-navigation/stack';
-import theme from '../../assets/styles/theme';
+import { colors } from '../../lib/theme';
 import {
   widthPercentage,
   heightPercentage,
@@ -47,7 +47,7 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation, route }) => {
 
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor={theme.background} />
+      <StatusBar barStyle="dark-content" backgroundColor={colors.bg} />
 
       {/* 상단 검색 바 영역 */}
       <View style={styles.header}>

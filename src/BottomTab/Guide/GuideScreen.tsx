@@ -274,12 +274,12 @@ const styles = StyleSheet.create({
   },
 
   listBadge: {
-    color: '#ffffffff',
+    color: '#FFFFFF',
     fontSize: fontPercentage(12),
     fontWeight: '500',
   },
   listText: {
-    color: '#ffffffff',
+    color: '#FFFFFF',
     fontSize: fontPercentage(22),
     fontWeight: '600',
     marginTop: heightPercentage(10),
@@ -312,12 +312,12 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
   },
   listGridBadge: {
-    color: '#ffffffff',
+    color: '#FFFFFF',
     fontSize: fontPercentage(10),
     fontWeight: '500',
   },
   listGridText: {
-    color: '#ffffffff',
+    color: '#FFFFFF',
     fontSize: fontPercentage(14),
     fontWeight: '600',
     marginTop: heightPercentage(6),

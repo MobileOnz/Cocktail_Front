@@ -59,7 +59,7 @@ const CocktailCard = React.memo(function CocktailCard({
                   : require('../assets/drawable/save.png')      // 비어있는 이미지
               }
               style={bookmarked ?
-                { width: 20, height: 20, tintColor: '#FFF' }
+                { width: 20, height: 20, tintColor: '#FFFFFF' }
                 : { width: 20, height: 20 }}
               resizeMode="contain"
             />

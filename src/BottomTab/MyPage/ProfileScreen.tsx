@@ -296,7 +296,7 @@ const ProfileScreen: React.FC<Props> = ({ route }: Props) => {
                   <Text
                     style={[
                       styles.accessoryDoneText,
-                      colorScheme === 'dark' && { color: '#fff' },
+                      colorScheme === 'dark' && { color: '#FFFFFF' },
                     ]}
                   >
                     완료
@@ -478,7 +478,7 @@ const styles = StyleSheet.create({
     height: heightPercentage(32),
     borderRadius: 8,
     borderColor: '#E0E0E0',
-    backgroundColor: '#ffffffff',
+    backgroundColor: '#FFFFFF',
     borderWidth: 1,
     justifyContent: 'center',
     paddingVertical: heightPercentage(8),

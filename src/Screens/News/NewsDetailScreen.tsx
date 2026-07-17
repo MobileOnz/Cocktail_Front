@@ -22,13 +22,7 @@ import { RootStackParamList } from '../../Navigation/Navigation';
 import Markdown from 'react-native-markdown-display';
 import ErrorState from '../../Components/common/ErrorState';
 import SkeletonList from '../../Components/common/SkeletonList';
-
-const formatDate = (iso?: string | null): string => {
-  if (!iso) { return ''; }
-  const d = new Date(iso);
-  if (isNaN(d.getTime())) { return ''; }
-  return `${d.getFullYear()}. ${d.getMonth() + 1}. ${d.getDate()}`;
-};
+import { formatDate } from '../../lib/date';
 
 const NewsDetailScreen = () => {
   const insets = useSafeAreaInsets();
@@ -105,7 +99,7 @@ const NewsDetailScreen = () => {
 
           <View style={styles.body}>
             <Text style={styles.category}>{detail.categoryLabel}</Text>
-            <Text style={styles.title}>{detail.title}</Text>
+            <Text style={styles.title} lineBreakStrategyIOS="hangul-word" textBreakStrategy="balanced">{detail.title}</Text>
 
             <View style={styles.metaRow}>
               {/* 백엔드에 author 는 없다. source 가 출처다. */}

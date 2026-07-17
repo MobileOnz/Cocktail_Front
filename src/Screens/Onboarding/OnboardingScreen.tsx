@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { View, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView } from 'react-native';
 import { Text, Button, RadioButton } from 'react-native-paper';
-import theme from '../../assets/styles/theme';
+import { colors } from '../../lib/theme';
 import UseOnboarindViewModel from './OnboarindViewModel';
 
 const OnboardingScreen = ({ setIsOnboarded }: any) => {
@@ -106,7 +106,7 @@ const OnboardingScreen = ({ setIsOnboarded }: any) => {
 };
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: theme.background },
+    container: { flex: 1, backgroundColor: colors.bg },
     content: { paddingHorizontal: 24, paddingTop: 40 },
     header: { marginBottom: 40 },
     titleText: {
@@ -148,7 +148,7 @@ const styles = StyleSheet.create({
         borderRadius: 25,
         borderWidth: 1,
         borderColor: '#E0E0E0',
-        backgroundColor: '#fff',
+        backgroundColor: '#FFFFFF',
         minWidth: '30%',
         alignItems: 'center',
     },
@@ -160,12 +160,12 @@ const styles = StyleSheet.create({
     },
     selectedChipText: {
         fontFamily: 'Pretendard-Medium',
-        color: '#fff',
+        color: '#FFFFFF',
         fontWeight: '600',
     },
 
     // 하단 버튼 스타일
-    footer: { padding: 20, backgroundColor: '#fff' },
+    footer: { padding: 20, backgroundColor: '#FFFFFF' },
     startButton: { borderRadius: 12, height: 56, justifyContent: 'center' },
     buttonActive: { backgroundColor: '#333' },
     buttonDisabled: { backgroundColor: '#E0E0E0' },
@@ -173,7 +173,7 @@ const styles = StyleSheet.create({
         fontFamily: 'Pretendard-Medium',
         fontSize: 16,
         fontWeight: '700',
-        color: '#fff',
+        color: '#FFFFFF',
     },
 });
 

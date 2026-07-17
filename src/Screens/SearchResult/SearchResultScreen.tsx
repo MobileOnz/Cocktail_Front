@@ -3,7 +3,7 @@ import React, { useRef } from 'react';
 import { Pressable, ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
 import { ActivityIndicator, Button } from 'react-native-paper';
 import { fontPercentage, heightPercentage, widthPercentage } from '../../assets/styles/FigmaScreen';
-import theme from '../../assets/styles/theme';
+import { colors } from '../../lib/theme';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../Navigation/Navigation';
 import CocktailCard from '../../Components/CocktailCard';
@@ -168,7 +168,7 @@ export default SearchResultScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: theme.background,
+    backgroundColor: colors.bg,
   },
   closeButton: {
     padding: 10,
@@ -233,7 +233,7 @@ const styles = StyleSheet.create({
     elevation: 0, // 버튼 그림자 제거 (필요시)
   },
   chipUnselected: {
-    backgroundColor: theme.background,
+    backgroundColor: colors.bg,
     borderColor: '#E0E0E0',
   },
   chipSelected: {
@@ -281,11 +281,11 @@ const styles = StyleSheet.create({
     gap: 12,
     paddingHorizontal: 16,
     paddingVertical: 12,
-    backgroundColor: theme.background,
+    backgroundColor: colors.bg,
 
 
     borderTopWidth: 1,
-    borderTopColor: '#FFF',
+    borderTopColor: '#FFFFFF',
 
 
     ...Platform.select({
@@ -313,7 +313,7 @@ const styles = StyleSheet.create({
     borderColor: '#D0D0D0',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: theme.background,
+    backgroundColor: colors.bg,
   },
   applyButton: {
     flex: 2,
