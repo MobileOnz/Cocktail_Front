@@ -44,9 +44,13 @@ const NewsScreen = () => {
 
   useEffect(() => { fetchNews(); }, [fetchNews]);
 
+  // API 가 오래된 순으로 내려오므로 최신순으로 뒤집어 보여준다.
+  const sortedNews = [...news].sort(
+    (a, b) => new Date(b.publishedAt ?? 0).getTime() - new Date(a.publishedAt ?? 0).getTime(),
+  );
   const filteredNews = selectedCategory === 'ALL'
-    ? news
-    : news.filter(item => item.category === selectedCategory);
+    ? sortedNews
+    : sortedNews.filter(item => item.category === selectedCategory);
 
   const renderNewsItem = ({ item }: { item: NewsCard }) => (
     <TouchableOpacity

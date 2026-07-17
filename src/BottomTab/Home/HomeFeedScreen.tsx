@@ -1,7 +1,7 @@
 // HomeFeedScreen.tsx (T-21)
 // 탭1 홈 — GET /api/v2/main 한 번으로 [추천 히어로 + 뉴스/가이드 인터리브 피드]를 그린다.
 // 무한 스크롤(nextCursor) + pull-to-refresh. 이전 CocktailListScreen 의 6개 병렬 호출을 대체.
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useEffect, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -108,15 +108,22 @@ const HomeFeedScreen = () => {
     return () => { alive = false; };
   }, []);
 
-  // 최신 칵테일 뉴스 (가로 하이라이트). NewsScreen 과 동일하게 /api/v2/news 를 쓰고
-  // 최신순으로 내려오므로 앞에서 N건만 취한다. 보조 섹션이라 실패해도 조용히 비운다.
+  // 최신 칵테일 뉴스 (가로 하이라이트). NewsScreen 과 동일하게 /api/v2/news 를 쓴다.
+  // 보조 섹션이라 실패해도 조용히 비운다.
   useEffect(() => {
     let alive = true;
     instance
       .get('/api/v2/news')
       .then(res => {
         const data = unwrap<NewsFeedResponse>(res);
-        if (alive) { setLatestNews((data.items ?? []).slice(0, 10)); }
+        if (alive) {
+          // API 가 오래된 순으로 내려와 '최신' 레일에 가장 오래된 기사가 실리던 문제 —
+          // publishedAt 내림차순으로 정렬한 뒤 앞 10건을 쓴다.
+          const sorted = [...(data.items ?? [])].sort(
+            (a, b) => new Date(b.publishedAt ?? 0).getTime() - new Date(a.publishedAt ?? 0).getTime(),
+          );
+          setLatestNews(sorted.slice(0, 10));
+        }
       })
       .catch(() => { /* 홈 보조 섹션 — 실패 시 무시 */ });
     return () => { alive = false; };
@@ -129,6 +136,14 @@ const HomeFeedScreen = () => {
       fetchPage(cursor, 'more');
     }
   }, [cursor, loadingMore, loading, refreshing, fetchPage]);
+
+  // '최신 칵테일 뉴스' 가로 레일에 이미 보인 뉴스는 세로 피드에서 뺀다.
+  // 같은 기사·같은 썸네일이 한 화면에 두 번 보이던 중복(디자인 리뷰 P2-6) 제거.
+  const visibleFeed = useMemo(() => {
+    if (latestNews.length === 0) { return feed; }
+    const shownNewsIds = new Set(latestNews.map(n => n.id));
+    return feed.filter(item => !(item.type === 'news' && shownNewsIds.has(item.id)));
+  }, [feed, latestNews]);
 
   const openNews = useCallback(
     (id: number) => navigation.navigate('NewsDetailScreen', { newsId: id }),
@@ -271,7 +286,7 @@ const HomeFeedScreen = () => {
         </View>
       )}
 
-      {feed.length > 0 && (
+      {visibleFeed.length > 0 && (
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>지금 읽어볼 이야기</Text>
           {/* 전체 뉴스 목록(NewsScreen)의 유일한 진입점. 없애면 카테고리 필터에 도달할 수 없다. */}
@@ -369,7 +384,7 @@ const HomeFeedScreen = () => {
     <SafeAreaView style={styles.container} edges={['top']}>
       <StatusBar barStyle="dark-content" backgroundColor={colors.bg} />
       <FlatList
-        data={feed}
+        data={visibleFeed}
         keyExtractor={feedKey}
         renderItem={renderItem}
         ListHeaderComponent={ListHeader}

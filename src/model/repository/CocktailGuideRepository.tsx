@@ -14,6 +14,7 @@ export class CocktailGuideRepository {
         part: item.part,
         title: item.title,
         imageUrl: item.imageUrl,
+        category: item.category ?? null,
     }));
 
   }
