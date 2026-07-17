@@ -16,6 +16,7 @@ import { widthPercentage, heightPercentage, fontPercentage } from '../../assets/
 import RemoteImage from '../../Components/common/RemoteImage';
 import GuideDetailViewModel from './GuideDetailViewModel';
 import { GuideSummary } from '../../model/domain/GuideSummary';
+import { colors } from '../../lib/theme';
 
 type GuideSreenNavigationProp = StackNavigationProp<
   RootStackParamList,
@@ -30,7 +31,29 @@ interface Props {
 
 const GuideScreen: React.FC<Props> = ({ navigation, embedded = false }) => {
   const [viewType, setviewType] = useState(0);   // 보기 방식
+  // null = 전체. 카테고리 목록은 서버 데이터에서 등장 순서대로 뽑는다 —
+  // 어드민에서 카테고리를 추가하면 앱 수정 없이 탭이 늘어난다.
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const { guideList, getGuideList, loading } = GuideDetailViewModel();
+
+  const categories = React.useMemo(() => {
+    const seen: string[] = [];
+    let hasUncategorized = false;
+    guideList.forEach(g => {
+      const c = g.category?.trim();
+      if (c) {
+        if (!seen.includes(c)) { seen.push(c); }
+      } else {
+        hasUncategorized = true;
+      }
+    });
+    return hasUncategorized && seen.length > 0 ? [...seen, '기타'] : seen;
+  }, [guideList]);
+
+  const filteredList = React.useMemo(() => {
+    if (selectedCategory === null) { return guideList; }
+    return guideList.filter(g => (g.category?.trim() || '기타') === selectedCategory);
+  }, [guideList, selectedCategory]);
 
   useEffect(() => {
     getGuideList();
@@ -82,12 +105,32 @@ const GuideScreen: React.FC<Props> = ({ navigation, embedded = false }) => {
         </TouchableOpacity>
       </View>
 
+      {categories.length >= 2 && (
+        <View style={styles.categoryBar}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.categoryBarContent}>
+            {[null, ...categories].map(cat => (
+              <TouchableOpacity
+                key={cat ?? '전체'}
+                style={[styles.categoryChip, selectedCategory === cat && styles.categoryChipActive]}
+                onPress={() => setSelectedCategory(cat)}
+                accessibilityRole="button"
+                accessibilityState={{ selected: selectedCategory === cat }}
+              >
+                <Text style={[styles.categoryLabel, selectedCategory === cat && styles.categoryLabelActive]}>
+                  {cat ?? '전체'}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
+      )}
+
       <View style={styles.centralContainer}>
         {!loading && (
           viewType === 0 ? (
-            <ListView data={guideList} navigation={navigation} />
+            <ListView data={filteredList} navigation={navigation} />
           ) : (
-            <GridView data={guideList} navigation={navigation} />
+            <GridView data={filteredList} navigation={navigation} />
           )
         )}
       </View>
@@ -218,6 +261,31 @@ const styles = StyleSheet.create({
   },
   centralContainer: {
     flex: 1
+  },
+  categoryBar: {
+    backgroundColor: colors.bg,
+  },
+  categoryBarContent: {
+    paddingHorizontal: widthPercentage(16),
+    paddingVertical: heightPercentage(4),
+  },
+  categoryChip: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    marginRight: 8,
+    backgroundColor: colors.bgMuted,
+  },
+  categoryChipActive: {
+    backgroundColor: colors.bgInverse,
+  },
+  categoryLabel: {
+    fontSize: fontPercentage(14),
+    fontFamily: 'Pretendard-Medium',
+    color: colors.textSecondary,
+  },
+  categoryLabelActive: {
+    color: colors.textInverse,
   },
 
   listRoot: {
