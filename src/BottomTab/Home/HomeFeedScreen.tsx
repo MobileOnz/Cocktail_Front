@@ -443,8 +443,8 @@ const styles = StyleSheet.create({
 
   cocktailRow: {
     paddingHorizontal: widthPercentage(spacing.lg),
-    paddingVertical: heightPercentage(spacing.xs),
-    gap: widthPercentage(spacing.md),
+    paddingVertical: heightPercentage(spacing.sm),
+    gap: widthPercentage(spacing.lg),
   },
   cocktailCard: { width: widthPercentage(120) },
   cocktailImage: {
@@ -489,7 +489,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.bgMuted,
   },
   heroImage: { width: '100%', height: heightPercentage(220), backgroundColor: colors.skeleton },
-  heroBody: { padding: widthPercentage(spacing.lg) },
+  heroBody: { padding: widthPercentage(spacing.xl) },
   heroEyebrow: {
     fontFamily: fonts.semibold,
     fontSize: fontPercentage(fontSize.xs),
@@ -510,7 +510,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     marginHorizontal: widthPercentage(spacing.lg),
-    marginTop: heightPercentage(spacing.lg),
+    marginTop: heightPercentage(spacing.xxl),
     paddingHorizontal: widthPercentage(spacing.lg),
     paddingVertical: heightPercentage(spacing.lg),
     borderRadius: radius.md,
@@ -528,8 +528,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     marginHorizontal: widthPercentage(spacing.lg),
-    marginTop: heightPercentage(spacing.xxl),
-    marginBottom: heightPercentage(spacing.md),
+    marginTop: heightPercentage(spacing.xxxl + spacing.sm),
+    marginBottom: heightPercentage(spacing.lg),
   },
   sectionTitle: {
     fontFamily: fonts.bold,
@@ -544,7 +544,7 @@ const styles = StyleSheet.create({
 
   newsCard: {
     marginHorizontal: widthPercentage(spacing.lg),
-    marginBottom: heightPercentage(spacing.lg),
+    marginBottom: heightPercentage(spacing.xxl),
     borderRadius: radius.lg,
     backgroundColor: colors.bg,
     borderWidth: 1,
@@ -582,7 +582,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginHorizontal: widthPercentage(spacing.lg),
-    marginBottom: heightPercentage(spacing.lg),
+    marginBottom: heightPercentage(spacing.xxl),
     padding: widthPercentage(spacing.md),
     borderRadius: radius.lg,
     backgroundColor: colors.bgSubtle,

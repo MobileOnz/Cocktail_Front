@@ -4,7 +4,6 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
-  Image,
   ScrollView,
   FlatList,
   ActivityIndicator,
@@ -30,7 +29,10 @@ interface Props {
 }
 
 const GuideScreen: React.FC<Props> = ({ navigation, embedded = false }) => {
-  const [viewType, setviewType] = useState(0);   // 보기 방식
+  // 보기 방식: 0=카드(큰 썸네일) / 1=그리드 / 2=줄글(텍스트 리스트)
+  const [viewType, setviewType] = useState(0);
+  // 정렬: part 순(기본) / 제목 가나다순
+  const [sortMode, setSortMode] = useState<'part' | 'name'>('part');
   // null = 전체. 카테고리 목록은 서버 데이터에서 등장 순서대로 뽑는다 —
   // 어드민에서 카테고리를 추가하면 앱 수정 없이 탭이 늘어난다.
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -55,6 +57,16 @@ const GuideScreen: React.FC<Props> = ({ navigation, embedded = false }) => {
     return guideList.filter(g => (g.category?.trim() || '기타') === selectedCategory);
   }, [guideList, selectedCategory]);
 
+  const displayList = React.useMemo(() => {
+    const arr = [...filteredList];
+    if (sortMode === 'name') {
+      arr.sort((a, b) => a.title.localeCompare(b.title, 'ko'));
+    } else {
+      arr.sort((a, b) => a.part - b.part);
+    }
+    return arr;
+  }, [filteredList, sortMode]);
+
   useEffect(() => {
     getGuideList();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -72,10 +84,6 @@ const GuideScreen: React.FC<Props> = ({ navigation, embedded = false }) => {
     );
   }
 
-  const handleViewType = () => {
-    setviewType(viewType === 0 ? 1 : 0);
-  };
-
   const Root: React.ComponentType<any> = embedded ? View : SafeAreaView;
 
   return (
@@ -85,24 +93,35 @@ const GuideScreen: React.FC<Props> = ({ navigation, embedded = false }) => {
 
         {!embedded && <Text style={styles.headerTitle}>칵테일 가이드</Text>}
 
-        <TouchableOpacity
-          onPress={handleViewType}
-          accessibilityRole="button"
-          accessibilityLabel={viewType === 0 ? '그리드 보기로 전환' : '리스트 보기로 전환'}
-          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-        >
-          {viewType === 0 ? (
-          <Image
-            source={require('../../assets/drawable/viewMenu.png')}
-            style={styles.icon}
-          />
-        ) : (
-          <Image
-            source={require('../../assets/drawable/gridType.png')}
-            style={styles.icon}
-          />
-        )}
-        </TouchableOpacity>
+        <View style={styles.controls}>
+          <TouchableOpacity
+            onPress={() => setSortMode(m => (m === 'part' ? 'name' : 'part'))}
+            style={styles.sortBtn}
+            accessibilityRole="button"
+            accessibilityLabel={sortMode === 'part' ? '가나다순으로 정렬' : '기본순으로 정렬'}
+            hitSlop={{ top: 10, bottom: 10, left: 6, right: 6 }}
+          >
+            <Text style={styles.sortText}>{sortMode === 'part' ? '기본순' : '가나다순'} ↕</Text>
+          </TouchableOpacity>
+          <View style={styles.viewSeg}>
+            {([
+              { mode: 0, glyph: '▤', label: '카드 보기' },
+              { mode: 1, glyph: '▦', label: '그리드 보기' },
+              { mode: 2, glyph: '☰', label: '줄글 보기' },
+            ] as const).map(v => (
+              <TouchableOpacity
+                key={v.mode}
+                onPress={() => setviewType(v.mode)}
+                style={[styles.viewSegBtn, viewType === v.mode && styles.viewSegBtnActive]}
+                accessibilityRole="button"
+                accessibilityLabel={v.label}
+                accessibilityState={{ selected: viewType === v.mode }}
+              >
+                <Text style={[styles.viewSegGlyph, viewType === v.mode && styles.viewSegGlyphActive]}>{v.glyph}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
       </View>
 
       {categories.length >= 2 && (
@@ -128,9 +147,11 @@ const GuideScreen: React.FC<Props> = ({ navigation, embedded = false }) => {
       <View style={styles.centralContainer}>
         {!loading && (
           viewType === 0 ? (
-            <ListView data={filteredList} navigation={navigation} />
+            <ListView data={displayList} navigation={navigation} />
+          ) : viewType === 1 ? (
+            <GridView data={displayList} navigation={navigation} />
           ) : (
-            <GridView data={filteredList} navigation={navigation} />
+            <CompactView data={displayList} navigation={navigation} />
           )
         )}
       </View>
@@ -227,6 +248,36 @@ const GridView = ({ data, navigation }
   );
 };
 
+const CompactView = ({ data, navigation } : {
+  data: GuideSummary[],
+  navigation: any
+}) => {
+  return (
+    <ScrollView
+      style={styles.listRoot}
+      contentContainerStyle={{ paddingBottom: heightPercentage(100) }}
+      showsVerticalScrollIndicator={false}
+    >
+      {data.map((item: GuideSummary) => (
+        <TouchableOpacity
+          key={item.part}
+          style={styles.compactRow}
+          onPress={() => navigation.navigate('GuideDetailScreen', { id: item.part, src: item.imageUrl, title: item.title })}
+          accessibilityRole="button"
+          accessibilityLabel={`가이드 ${item.title} 열기`}
+        >
+          <Text style={styles.compactBadge}>Part.{getPart(item.part)}</Text>
+          <View style={styles.compactBody}>
+            <Text style={styles.compactTitle} numberOfLines={1}>{item.title}</Text>
+            {item.category ? <Text style={styles.compactCategory}>{item.category}</Text> : null}
+          </View>
+          <Text style={styles.compactChevron}>›</Text>
+        </TouchableOpacity>
+      ))}
+    </ScrollView>
+  );
+};
+
 const getPart = (value: number) => {
   return Math.floor(value / 100);
 };
@@ -261,6 +312,81 @@ const styles = StyleSheet.create({
   },
   centralContainer: {
     flex: 1
+  },
+  controls: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: widthPercentage(10),
+  },
+  sortBtn: {
+    paddingHorizontal: widthPercentage(4),
+    paddingVertical: 4,
+  },
+  sortText: {
+    fontSize: fontPercentage(13),
+    fontFamily: 'Pretendard-Medium',
+    color: colors.textSecondary,
+  },
+  viewSeg: {
+    flexDirection: 'row',
+    backgroundColor: colors.bgMuted,
+    borderRadius: 8,
+    padding: 2,
+  },
+  viewSegBtn: {
+    paddingHorizontal: widthPercentage(8),
+    paddingVertical: 4,
+    borderRadius: 6,
+  },
+  viewSegBtnActive: {
+    backgroundColor: colors.bg,
+  },
+  viewSegGlyph: {
+    fontSize: fontPercentage(14),
+    color: colors.textTertiary,
+  },
+  viewSegGlyphActive: {
+    color: colors.text,
+  },
+  compactRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: heightPercentage(14),
+    borderBottomWidth: 1,
+    borderBottomColor: colors.divider,
+    gap: widthPercentage(10),
+  },
+  compactBadge: {
+    fontSize: fontPercentage(12),
+    fontFamily: 'Pretendard-SemiBold',
+    color: colors.textTertiary,
+    width: widthPercentage(48),
+  },
+  compactBody: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: widthPercentage(8),
+  },
+  compactTitle: {
+    flexShrink: 1,
+    fontSize: fontPercentage(15),
+    fontFamily: 'Pretendard-Medium',
+    color: colors.text,
+  },
+  compactCategory: {
+    fontSize: fontPercentage(11),
+    fontFamily: 'Pretendard-Medium',
+    color: colors.textTertiary,
+    backgroundColor: colors.bgMuted,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
+    overflow: 'hidden',
+  },
+  compactChevron: {
+    fontSize: fontPercentage(18),
+    color: colors.textDisabled,
   },
   categoryBar: {
     backgroundColor: colors.bg,
