@@ -113,7 +113,7 @@ const HomeFeedScreen = () => {
   useEffect(() => {
     let alive = true;
     instance
-      .get('/api/v2/news')
+      .get('/api/v2/magazine')
       .then(res => {
         const data = unwrap<NewsFeedResponse>(res);
         if (alive) {

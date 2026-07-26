@@ -44,6 +44,68 @@ export interface NewsFeedResponse {
   nextCursor: string | null;
 }
 
+/* ── 매거진(블록형 콘텐츠) ──
+ * 목록 GET /api/v2/magazine 은 NewsFeedResponse 와 동일 형태({items,nextCursor}),
+ * items 는 NewsCard 와 필드 호환(imageUrl/categoryLabel/source). 목록은 별도 타입 불필요.
+ * 상세 GET /api/v2/magazine/{id} 만 아래 블록 구조로 온다.
+ * content/refs/titleLines 는 서버가 원본 JSON(@JsonRawValue)으로 방출 → axios 가 실제 배열/객체로 파싱한다.
+ * 블록 내부 키는 snake_case(name_en, cocktail_id) 유지. */
+export interface MagazineMark {
+  text: string;
+  style: 'bold' | string;
+}
+export interface CocktailSpecRow {
+  k: string;
+  v: string;
+}
+export type MagazineBlock =
+  | { type: 'paragraph'; text: string; marks?: MagazineMark[] }
+  | { type: 'heading'; level?: number; text: string }
+  | { type: 'quote'; text: string; cite?: string }
+  | {
+      type: 'cocktail_spec';
+      name?: string;
+      name_en?: string;
+      image?: string;
+      cocktail_id?: number | null;
+      specs?: CocktailSpecRow[];
+    }
+  // 미지원 타입은 렌더러가 스킵한다.
+  | { type: string; [key: string]: unknown };
+
+export interface MagazineSource {
+  title: string;
+  url: string;
+}
+export interface MagazineRefs {
+  sources?: MagazineSource[];
+  related_article_slugs?: string[];
+  cocktail_ids?: number[];
+}
+
+/** GET /api/v2/magazine/{id} → data */
+export interface MagazineDetail {
+  id: number;
+  slug: string;
+  title: string;
+  titleLines: string[] | null;
+  dek: string | null;
+  category: string;
+  subcategory: string | null;
+  heroImage: string | null;
+  coverImage: string | null;
+  thumbnail: string | null;
+  imageCaption: string | null;
+  authorName: string | null;
+  content: MagazineBlock[];
+  refs: MagazineRefs | null;
+  readingTimeMin: number | null;
+  viewCount: number;
+  /** ISO-8601 LocalDateTime, 타임존 없음. */
+  publishedAt: string;
+  tags: string[];
+}
+
 /** GET /api/v2/cocktails/{id}/steps → data[] */
 export interface CocktailStep {
   stepOrder: number;

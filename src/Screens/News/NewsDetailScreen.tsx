@@ -1,6 +1,6 @@
-// NewsDetailScreen.tsx (T-21)
-// GET /api/v2/news/{id} → 이미지·제목·출처·발행일·본문.
-// 진입 시 POST /api/v2/news/{id}/read 로 조회수 기록(실패해도 화면은 진행).
+// NewsDetailScreen.tsx — 매거진 상세(라우트 이름은 호환 위해 유지).
+// GET /api/v2/magazine/{id} → 블록 content 를 MagazineBlockRenderer 로 렌더.
+// 진입 시 POST /api/v2/magazine/{id}/read 로 조회수 기록(실패해도 화면은 진행).
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   View,
@@ -17,9 +17,9 @@ import { fontPercentage, heightPercentage, widthPercentage } from '../../assets/
 import instance from '../../tokenRequest/axios_interceptor';
 import { unwrap, toUserMessage, fireAndForget } from '../../lib/api';
 import { colors, fonts, fontSize, radius, spacing } from '../../lib/theme';
-import type { NewsDetail } from '../../types/api';
+import type { MagazineDetail } from '../../types/api';
 import { RootStackParamList } from '../../Navigation/Navigation';
-import Markdown from 'react-native-markdown-display';
+import MagazineBlockRenderer from './MagazineBlockRenderer';
 import ErrorState from '../../Components/common/ErrorState';
 import SkeletonList from '../../Components/common/SkeletonList';
 import { formatDate } from '../../lib/date';
@@ -30,7 +30,7 @@ const NewsDetailScreen = () => {
   const route = useRoute<RouteProp<RootStackParamList, 'NewsDetailScreen'>>();
   const { newsId } = route.params;
 
-  const [detail, setDetail] = useState<NewsDetail | null>(null);
+  const [detail, setDetail] = useState<MagazineDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const mounted = useRef(true);
@@ -42,19 +42,18 @@ const NewsDetailScreen = () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await instance.get(`/api/v2/news/${newsId}`);
-      const data = unwrap<NewsDetail>(res);
+      const res = await instance.get(`/api/v2/magazine/${newsId}`);
+      const data = unwrap<MagazineDetail>(res);
       if (!mounted.current) { return; }
       setDetail(data);
 
-      // 조회수 기록은 한 번만. 실패해도 사용자 흐름을 막지 않는다.
       if (!readSent.current) {
         readSent.current = true;
-        fireAndForget(instance.post(`/api/v2/news/${newsId}/read`));
+        fireAndForget(instance.post(`/api/v2/magazine/${newsId}/read`));
       }
     } catch (e) {
       if (!mounted.current) { return; }
-      setError(toUserMessage(e, '뉴스를 불러오지 못했습니다.'));
+      setError(toUserMessage(e, '글을 불러오지 못했습니다.'));
     } finally {
       if (mounted.current) { setLoading(false); }
     }
@@ -62,9 +61,17 @@ const NewsDetailScreen = () => {
 
   useEffect(() => { load(); }, [load]);
 
-  const openSource = () => {
-    if (detail?.sourceUrl) { Linking.openURL(detail.sourceUrl).catch(() => {}); }
+  const openSource = (url: string) => {
+    Linking.openURL(url).catch(() => {});
   };
+
+  const goCocktail = (cocktailId: number) => {
+    navigation.navigate('CocktailDetailScreen', { cocktailId });
+  };
+
+  const titleText = detail?.titleLines && detail.titleLines.length > 0
+    ? detail.titleLines.join('\n')
+    : detail?.title ?? '';
 
   return (
     <View style={styles.container}>
@@ -77,7 +84,7 @@ const NewsDetailScreen = () => {
         >
           <Text style={styles.backChevron}>‹</Text>
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>뉴스</Text>
+        <Text style={styles.headerTitle}>매거진</Text>
         <View style={styles.headerSpacer} />
       </View>
 
@@ -86,94 +93,58 @@ const NewsDetailScreen = () => {
       ) : error ? (
         <ErrorState message={error} onRetry={load} />
       ) : !detail ? (
-        <ErrorState message="뉴스를 찾을 수 없습니다." />
+        <ErrorState message="글을 찾을 수 없습니다." />
       ) : (
         <ScrollView
           contentContainerStyle={{ paddingBottom: insets.bottom + heightPercentage(spacing.xxxl) }}
           showsVerticalScrollIndicator={false}
         >
-          {/* imageUrl 은 null 일 수 있다(시드 데이터 전부 null). 없으면 이미지 영역을 생략. */}
-          {!!detail.imageUrl && (
-            <Image source={{ uri: detail.imageUrl }} style={styles.hero} resizeMode="cover" />
+          {!!detail.heroImage && (
+            <>
+              <Image source={{ uri: detail.heroImage }} style={styles.hero} resizeMode="cover" />
+              {!!detail.imageCaption && <Text style={styles.caption}>{detail.imageCaption}</Text>}
+            </>
           )}
 
           <View style={styles.body}>
-            <Text style={styles.category}>{detail.categoryLabel}</Text>
-            <Text style={styles.title} lineBreakStrategyIOS="hangul-word" textBreakStrategy="balanced">{detail.title}</Text>
+            {!!detail.subcategory && <Text style={styles.category}>{detail.subcategory}</Text>}
+            <Text style={styles.title} lineBreakStrategyIOS="hangul-word" textBreakStrategy="balanced">
+              {titleText}
+            </Text>
 
             <View style={styles.metaRow}>
-              {/* 백엔드에 author 는 없다. source 가 출처다. */}
-              {!!detail.source && <Text style={styles.source}>{detail.source}</Text>}
-              {!!detail.source && !!detail.publishedAt && <Text style={styles.metaDot}>·</Text>}
-              {!!detail.publishedAt && (
-                <Text style={styles.date}>{formatDate(detail.publishedAt)}</Text>
-              )}
+              {!!detail.authorName && <Text style={styles.source}>{detail.authorName}</Text>}
+              {!!detail.authorName && !!detail.publishedAt && <Text style={styles.metaDot}>·</Text>}
+              {!!detail.publishedAt && <Text style={styles.date}>{formatDate(detail.publishedAt)}</Text>}
             </View>
 
-            {!!detail.summary && <Text style={styles.summary}>{detail.summary}</Text>}
+            {!!detail.dek && <Text style={styles.summary}>{detail.dek}</Text>}
 
-            {/* 본문은 마크다운이다. 이전에는 Text 로 그대로 뿌려 '# 테스트 본문' 이
-                그대로 찍혔다(QA I-10). */}
-            {detail.content ? (
-              <Markdown style={markdownStyles}>{detail.content}</Markdown>
-            ) : (
-              <Text style={styles.content}>본문이 아직 준비되지 않았습니다.</Text>
+            <MagazineBlockRenderer blocks={detail.content} onCocktailPress={goCocktail} />
+
+            {detail.tags && detail.tags.length > 0 && (
+              <View style={styles.tagRow}>
+                {detail.tags.map((t, i) => (
+                  <View key={i} style={styles.tagChip}><Text style={styles.tagText}>#{t}</Text></View>
+                ))}
+              </View>
             )}
 
-            {/* sourceUrl 은 현재 시드에서 전부 null. 있을 때만 노출. */}
-            {!!detail.sourceUrl && (
-              <TouchableOpacity
-                style={styles.sourceButton}
-                onPress={openSource}
-                accessibilityRole="link"
-                accessibilityLabel="원문 보기"
-              >
-                <Text style={styles.sourceButtonText}>원문 보기</Text>
-              </TouchableOpacity>
+            {detail.refs?.sources && detail.refs.sources.length > 0 && (
+              <View style={styles.sources}>
+                <Text style={styles.sourcesTitle}>출처</Text>
+                {detail.refs.sources.map((s, i) => (
+                  <TouchableOpacity key={i} onPress={() => openSource(s.url)} accessibilityRole="link">
+                    <Text style={styles.sourceLink}>· {s.title}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
             )}
           </View>
         </ScrollView>
       )}
     </View>
   );
-};
-
-// react-native-markdown-display 는 Text/View 스타일 객체를 요소별로 받는다.
-// 기존 본문 톤(colors.text / lineHeight)을 유지하면서 heading 계층만 살린다.
-const markdownStyles = {
-  body: {
-    color: colors.text,
-    fontFamily: fonts.regular,
-    fontSize: fontPercentage(fontSize.md),
-    lineHeight: heightPercentage(26),
-  },
-  heading1: {
-    color: colors.text,
-    fontFamily: fonts.bold,
-    fontSize: fontPercentage(fontSize.xl),
-    lineHeight: heightPercentage(32),
-    marginTop: heightPercentage(spacing.lg),
-    marginBottom: heightPercentage(spacing.sm),
-  },
-  heading2: {
-    color: colors.text,
-    fontFamily: fonts.bold,
-    fontSize: fontPercentage(fontSize.lg),
-    lineHeight: heightPercentage(28),
-    marginTop: heightPercentage(spacing.md),
-    marginBottom: heightPercentage(spacing.xs),
-  },
-  heading3: {
-    color: colors.text,
-    fontFamily: fonts.medium,
-    fontSize: fontPercentage(fontSize.md),
-    marginTop: heightPercentage(spacing.md),
-  },
-  strong: { fontFamily: fonts.bold },
-  em: { fontStyle: 'italic' as const },
-  bullet_list: { marginVertical: heightPercentage(spacing.xs) },
-  link: { color: colors.accent, textDecorationLine: 'underline' as const },
-  hr: { backgroundColor: colors.border, height: 1, marginVertical: heightPercentage(spacing.lg) },
 };
 
 export default NewsDetailScreen;
@@ -189,15 +160,18 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: colors.divider,
   },
-  backChevron: {
-    fontSize: fontPercentage(30),
-    color: colors.text,
-    lineHeight: fontPercentage(32),
-  },
+  backChevron: { fontSize: fontPercentage(30), color: colors.text, lineHeight: fontPercentage(32) },
   headerTitle: { fontFamily: fonts.semibold, fontSize: fontPercentage(fontSize.lg), color: colors.text },
   headerSpacer: { width: widthPercentage(spacing.xl) },
 
   hero: { width: '100%', height: heightPercentage(220), backgroundColor: colors.skeleton },
+  caption: {
+    fontFamily: fonts.regular,
+    fontSize: fontPercentage(fontSize.xs),
+    color: colors.textTertiary,
+    paddingHorizontal: widthPercentage(spacing.xl),
+    paddingTop: heightPercentage(spacing.sm),
+  },
   body: { padding: widthPercentage(spacing.xl) },
   category: {
     fontFamily: fonts.bold,
@@ -230,24 +204,36 @@ const styles = StyleSheet.create({
     borderLeftColor: colors.border,
     marginBottom: heightPercentage(spacing.xl),
   },
-  content: {
-    fontFamily: fonts.regular,
-    fontSize: fontPercentage(fontSize.base),
-    color: colors.text,
-    lineHeight: fontPercentage(26),
+  tagRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginTop: heightPercentage(spacing.xl),
   },
-  sourceButton: {
-    marginTop: heightPercentage(spacing.xxl),
-    alignSelf: 'flex-start',
-    paddingHorizontal: widthPercentage(spacing.lg),
-    paddingVertical: heightPercentage(spacing.sm + 2),
+  tagChip: {
+    backgroundColor: colors.bgSubtle,
     borderRadius: radius.pill,
-    borderWidth: 1,
-    borderColor: colors.borderStrong,
+    paddingHorizontal: widthPercentage(spacing.md),
+    paddingVertical: heightPercentage(spacing.xs),
+    marginRight: widthPercentage(spacing.sm),
+    marginBottom: heightPercentage(spacing.sm),
   },
-  sourceButtonText: {
+  tagText: { fontFamily: fonts.medium, fontSize: fontPercentage(fontSize.xs), color: colors.textSecondary },
+  sources: {
+    marginTop: heightPercentage(spacing.xxl),
+    borderTopWidth: 1,
+    borderTopColor: colors.divider,
+    paddingTop: heightPercentage(spacing.lg),
+  },
+  sourcesTitle: {
     fontFamily: fonts.semibold,
     fontSize: fontPercentage(fontSize.sm),
-    color: colors.text,
+    color: colors.textSecondary,
+    marginBottom: heightPercentage(spacing.sm),
+  },
+  sourceLink: {
+    fontFamily: fonts.regular,
+    fontSize: fontPercentage(fontSize.sm),
+    color: colors.accent,
+    lineHeight: fontPercentage(22),
   },
 });

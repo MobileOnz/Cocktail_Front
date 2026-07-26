@@ -13,9 +13,9 @@ import { formatDate } from '../../lib/date';
 
 const CATEGORIES = [
   { id: 'ALL', label: '최신' },
-  { id: 'BEGINNER', label: '초심자용' },
-  { id: 'CARTOON', label: '카툰' },
-  { id: 'EXPERT', label: '정보글' },
+  { id: 'STORY', label: '스토리' },
+  { id: 'MOOD', label: '무드' },
+  { id: 'BASE', label: '베이스' },
 ];
 
 const NewsScreen = () => {
@@ -30,9 +30,8 @@ const NewsScreen = () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await instance.get('/api/v2/news');
-      // data 는 배열이 아니라 { items, nextCursor } 객체다. 이전 코드는 res.data.data 를
-      // 배열로 가정해 목록이 조용히 비어 있었다.
+      const res = await instance.get('/api/v2/magazine');
+      // 매거진 목록도 뉴스와 동일 봉투 { items, nextCursor } 다.
       const data = unwrap<NewsFeedResponse>(res);
       setNews(data.items ?? []);
     } catch (e) {
@@ -82,7 +81,7 @@ const NewsScreen = () => {
   return (
     <View style={styles.container}>
       <View style={[styles.header, { paddingTop: insets.top + 10 }]}>
-        <Text style={styles.headerTitle}>칵테일 뉴스</Text>
+        <Text style={styles.headerTitle}>매거진</Text>
       </View>
 
       <View style={styles.tabBar}>
