@@ -10,11 +10,12 @@ export class CocktailGuideRepository {
   async guideList(): Promise<GuideSummary[]> {
     const res = await this.cocktailGuideDataSource.guideList();
 
-    return res.data.map(item => ({
-        part: item.part,
+    // 매거진 GUIDE 카테고리에서 온다. part 는 V12 에서 magazine.id 로 보존됨.
+    return (res.data.items ?? []).map(item => ({
+        part: item.id,
         title: item.title,
-        imageUrl: item.imageUrl,
-        category: item.category ?? null,
+        imageUrl: item.imageUrl ?? '',
+        category: item.categoryLabel ?? null,
     }));
 
   }

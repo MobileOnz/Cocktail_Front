@@ -23,8 +23,10 @@ export class CocktailGuideDataSource  {
 
     async guideList(): Promise<GuideListResponseDto> {
         try {
-            const res = await instance.get(`${API_BASE_URL}/api/v2/cocktails/guide/list`);
-            console.log('CocktailGuideDataSource_guideList 응답: ', res.data);
+            // 가이드 목록은 매거진 GUIDE 카테고리에서 온다(V12 흡수).
+            const res = await instance.get(`${API_BASE_URL}/api/v2/magazine`, {
+                params: { category: 'GUIDE' },
+            });
             return res.data;
         } catch(e) {
             console.error('guideList 실패:', e);

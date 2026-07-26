@@ -61,6 +61,7 @@ export interface CocktailSpecRow {
 export type MagazineBlock =
   | { type: 'paragraph'; text: string; marks?: MagazineMark[] }
   | { type: 'heading'; level?: number; text: string }
+  | { type: 'image'; src: string; caption?: string }
   | { type: 'quote'; text: string; cite?: string }
   | {
       type: 'cocktail_spec';

@@ -175,7 +175,7 @@ const ListView = ({ data, navigation } : {
           activeOpacity={0.95}
           key={item.part}
           style={styles.listItem}
-          onPress={() => navigation.navigate('GuideDetailScreen', {id: item.part, src: item.imageUrl, title: item.title})}
+          onPress={() => navigation.navigate('NewsDetailScreen', { newsId: item.part })}
         >
           {/* 흰 글씨를 사진 위에 얹는 카드다. 사진이 늦게 오면 흰 배경 + 흰 글씨가 되어
               화면이 통째로 백지로 보였다(QA I-09). 어두운 플레이스홀더가 그 사이를 메운다. */}
@@ -222,7 +222,7 @@ const GridView = ({ data, navigation }
           activeOpacity={0.9}
           key={item.part}
           style={styles.gridItem}
-          onPress={() => navigation.navigate('GuideDetailScreen', {id: item.part, src: item.imageUrl, title: item.title})}
+          onPress={() => navigation.navigate('NewsDetailScreen', { newsId: item.part })}
         >
             <RemoteImage
               uri={item.imageUrl}
@@ -262,7 +262,7 @@ const CompactView = ({ data, navigation } : {
         <TouchableOpacity
           key={item.part}
           style={styles.compactRow}
-          onPress={() => navigation.navigate('GuideDetailScreen', { id: item.part, src: item.imageUrl, title: item.title })}
+          onPress={() => navigation.navigate('NewsDetailScreen', { newsId: item.part })}
           accessibilityRole="button"
           accessibilityLabel={`가이드 ${item.title} 열기`}
         >

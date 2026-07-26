@@ -46,8 +46,8 @@ const Home = () => {
   // 뉴스 프리뷰 데이터
   const [newsPreview, setNewsPreview] = useState<any[]>([]);
   useEffect(() => {
-    instance.get('/api/v2/magazine').then(res => {
-      // 매거진 목록은 뉴스와 동일 봉투({items,nextCursor}).
+    instance.get('/api/v2/magazine', { params: { category: 'STORY' } }).then(res => {
+      // 매거진 목록은 뉴스와 동일 봉투({items,nextCursor}). 뉴스 자리는 STORY 만.
       setNewsPreview((res.data?.data?.items ?? []).slice(0, 3));
     }).catch(() => {});
   }, []);
