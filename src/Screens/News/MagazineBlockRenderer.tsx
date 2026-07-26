@@ -54,6 +54,13 @@ const MagazineBlockRenderer = ({ blocks, onCocktailPress }: Props) => {
           }
           case 'heading':
             return <Text key={i} style={styles.heading}>{b.text}</Text>;
+          case 'image':
+            return b.src ? (
+              <View key={i}>
+                <Image source={{ uri: b.src }} style={styles.blockImage} resizeMode="cover" />
+                {!!b.caption && <Text style={styles.blockImageCaption}>{b.caption}</Text>}
+              </View>
+            ) : null;
           case 'quote':
             return (
               <View key={i} style={styles.quote}>
@@ -109,6 +116,20 @@ const styles = StyleSheet.create({
     marginBottom: heightPercentage(spacing.md),
   },
   bold: { fontFamily: fonts.bold },
+  blockImage: {
+    width: '100%',
+    height: heightPercentage(200),
+    borderRadius: radius.md,
+    backgroundColor: colors.skeleton,
+    marginVertical: heightPercentage(spacing.md),
+  },
+  blockImageCaption: {
+    fontFamily: fonts.regular,
+    fontSize: fontPercentage(fontSize.xs),
+    color: colors.textTertiary,
+    marginTop: -heightPercentage(spacing.xs),
+    marginBottom: heightPercentage(spacing.md),
+  },
   heading: {
     fontFamily: fonts.bold,
     fontSize: fontPercentage(fontSize.lg),

@@ -30,8 +30,8 @@ const NewsScreen = () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await instance.get('/api/v2/magazine');
-      // 매거진 목록도 뉴스와 동일 봉투 { items, nextCursor } 다.
+      const res = await instance.get('/api/v2/magazine', { params: { category: 'STORY' } });
+      // 매거진 목록도 뉴스와 동일 봉투 { items, nextCursor } 다. 뉴스 자리는 STORY 만.
       const data = unwrap<NewsFeedResponse>(res);
       setNews(data.items ?? []);
     } catch (e) {
