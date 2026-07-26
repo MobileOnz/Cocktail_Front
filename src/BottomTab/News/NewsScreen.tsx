@@ -12,10 +12,9 @@ import SkeletonList from '../../Components/common/SkeletonList';
 import { formatDate } from '../../lib/date';
 
 const CATEGORIES = [
-  { id: 'ALL', label: '최신' },
+  { id: 'ALL', label: '전체' },
   { id: 'STORY', label: '스토리' },
-  { id: 'MOOD', label: '무드' },
-  { id: 'BASE', label: '베이스' },
+  { id: 'GUIDE', label: '가이드' },
 ];
 
 const NewsScreen = () => {
@@ -30,8 +29,8 @@ const NewsScreen = () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await instance.get('/api/v2/magazine', { params: { category: 'STORY' } });
-      // 매거진 목록도 뉴스와 동일 봉투 { items, nextCursor } 다. 뉴스 자리는 STORY 만.
+      const res = await instance.get('/api/v2/magazine');
+      // 매거진 탭: 전체 카테고리(스토리/가이드…). 상단 탭으로 클라이언트 필터. 봉투는 { items, nextCursor }.
       const data = unwrap<NewsFeedResponse>(res);
       setNews(data.items ?? []);
     } catch (e) {
