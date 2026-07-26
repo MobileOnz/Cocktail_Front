@@ -2,7 +2,7 @@ import React from 'react';
 import { View } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Home from '../BottomTab/Home/HomeFeedScreen';
-import GuideScreen from '../BottomTab/Guide/GuideScreen';
+import NewsScreen from '../BottomTab/News/NewsScreen';
 import RecipeBookScreen from '../Screens/RecipeBook/RecipeBookScreen';
 import BarListScreen from '../BottomTab/Bar/BarListScreen';
 import HomeIcon from '../assets/drawable/Home.svg';
@@ -20,7 +20,7 @@ const Tab = createBottomTabNavigator<BottomTabParamList>();
 // 바 탭이 홈과 같은 집 모양(NearBar.svg)이라 구분이 안 됐다 → 칵테일 잔으로 교체.
 export const ICON_PATH = {
   홈: HomeIcon,
-  가이드: GuideIcon,
+  매거진: GuideIcon,
   레시피북: BookIcon,
   바: CocktailIcon,
 } as const;
@@ -75,7 +75,7 @@ const BottomTabNavigator = () => {
         })}
       >
         <Tab.Screen name="홈" component={Home} options={{ headerShown: false }} />
-        <Tab.Screen name="가이드" component={GuideScreen} options={{ headerShown: false }} />
+        <Tab.Screen name="매거진" component={NewsScreen} options={{ headerShown: false }} />
         <Tab.Screen name="레시피북" component={RecipeBookScreen} options={{ headerShown: false }} />
         <Tab.Screen name="바" component={BarListScreen} options={{ headerShown: false }} />
       </Tab.Navigator>

@@ -36,7 +36,7 @@ interface NavigationProps {
 
 export type BottomTabParamList = {
   홈: undefined;
-  가이드: undefined;
+  매거진: undefined;
   레시피북: undefined;
   바: undefined;
 };
