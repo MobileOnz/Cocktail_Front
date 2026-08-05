@@ -1,0 +1,72 @@
+name: Diag – App Store Connect 접근 진단
+
+# 수동 실행 전용 진단 워크플로.
+# altool 이 "Cannot determine the Apple ID from Bundle ID ..." 로 실패하는 원인을 좁히기 위해,
+# 현재 ASC API 키가 실제로 어떤 앱을 볼 수 있는지 조회한다. 빌드는 하지 않는다(수초 소요).
+# 원인 파악 후 삭제해도 무방하다.
+
+on:
+  workflow_dispatch:
+  # workflow_dispatch 는 파일이 기본 브랜치에 있어야 동작한다. main 을 건드리지 않기 위해
+  # 이 파일이 바뀔 때만 Onz_Android push 로 실행되게 한다.
+  push:
+    branches: [Onz_Android]
+    paths: ['.github/workflows/diag-asc.yml']
+
+jobs:
+  probe:
+    name: ASC API 키가 보는 앱 목록
+    runs-on: ubuntu-latest
+    steps:
+      - name: Query App Store Connect
+        env:
+          API_KEY_CONTENT: ${{ secrets.APP_STORE_CONNECT_API_KEY_CONTENT }}
+          API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+        run: |
+          python3 -m pip install --quiet "pyjwt[crypto]" requests
+
+          echo "$API_KEY_CONTENT" | python3 -c "import base64,sys; sys.stdout.buffer.write(base64.b64decode(sys.stdin.read().replace('\n','').replace('\r','').replace(' ','')))" > /tmp/key.p8
+
+          python3 <<'PY'
+          import os, time, jwt, requests
+
+          key = open('/tmp/key.p8').read()
+          kid, iss = os.environ['API_KEY_ID'], os.environ['API_ISSUER_ID']
+
+          token = jwt.encode(
+              {"iss": iss, "iat": int(time.time()), "exp": int(time.time()) + 600,
+               "aud": "appstoreconnect-v1"},
+              key, algorithm="ES256", headers={"kid": kid, "typ": "JWT"})
+
+          h = {"Authorization": f"Bearer {token}"}
+
+          r = requests.get("https://api.appstoreconnect.apple.com/v1/apps",
+                           headers=h, params={"limit": 200}, timeout=60)
+          print("== /v1/apps ==", r.status_code)
+          if r.status_code != 200:
+              print(r.text[:1500]); raise SystemExit(1)
+
+          apps = r.json().get("data", [])
+          print(f"이 키가 볼 수 있는 앱: {len(apps)}개")
+          for a in apps:
+              at = a["attributes"]
+              print(f"  - id={a['id']}  bundleId={at.get('bundleId')}  name={at.get('name')}  sku={at.get('sku')}")
+
+          target = "org.reactjs.native.example.Cocktail-Front"
+          hit = [a for a in apps if a["attributes"].get("bundleId") == target]
+          print()
+          print(f"'{target}' 일치: {'있음 (id=' + hit[0]['id'] + ')' if hit else '없음 ← altool 실패 원인'}")
+
+          # 개발자 포털에 등록된 Bundle ID 목록(앱 레코드와 별개)
+          r2 = requests.get("https://api.appstoreconnect.apple.com/v1/bundleIds",
+                            headers=h, params={"limit": 200}, timeout=60)
+          print()
+          print("== /v1/bundleIds ==", r2.status_code)
+          if r2.status_code == 200:
+              for b in r2.json().get("data", []):
+                  bt = b["attributes"]
+                  print(f"  - {bt.get('identifier')}  ({bt.get('name')}, {bt.get('platform')})")
+          else:
+              print(r2.text[:600])
+          PY
