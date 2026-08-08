@@ -62,7 +62,7 @@ jobs:
         run: |
           # QA 내부배포: 로컬 BE(신규 바/뉴스/채팅 포함)를 cloudflared 터널로 노출한 임시 URL.
           # 프로덕션(onz-cocktail.kr)에는 아직 신규 기능이 없어 임시로 터널을 바라보게 함.
-          echo "API_BASE_URL=https://year-stick-before-when.trycloudflare.com/onz" >> .env
+          echo "API_BASE_URL=https://insert-department-productions-apparel.trycloudflare.com/onz" >> .env
           echo "GOOGLE_PLACES_API_KEY=AIzaSyDeWHr3QIavBa4RGYwZly8h0sNTfLmQ" >> .env
           echo "GOOGLE_CLIENT_ID=1058340377075-vt8u6qabph0f0van79eqhkt9j2f1jkbe.apps.googleusercontent.com" >> .env
           echo "GOOGLE_REDIRECT_URI=com.googleusercontent.apps.1058340377075-vt8u6qabph0f0van79eqhkt9j2f1jkbe:/oauth2redirect/google" >> .env
@@ -125,7 +125,7 @@ jobs:
       - name: Create .env file
         run: |
           # Android 잡과 동일한 QA 터널을 바라본다. URL 은 sync_qa_url.sh 가 자동 갱신한다.
-          echo "API_BASE_URL=https://year-stick-before-when.trycloudflare.com/onz" >> .env
+          echo "API_BASE_URL=https://insert-department-productions-apparel.trycloudflare.com/onz" >> .env
           echo "GOOGLE_PLACES_API_KEY=AIzaSyDeWHr3QIavBa4RGYwZly8h0sNTfLmQ" >> .env
           echo "GOOGLE_CLIENT_ID=1058340377075-vt8u6qabph0f0van79eqhkt9j2f1jkbe.apps.googleusercontent.com" >> .env
           echo "GOOGLE_REDIRECT_URI=com.googleusercontent.apps.1058340377075-vt8u6qabph0f0van79eqhkt9j2f1jkbe:/oauth2redirect/google" >> .env
