@@ -19,11 +19,17 @@ concurrency:
 #   ANDROID_KEY_PASSWORD            - 키 비밀번호
 #   FIREBASE_TOKEN                  - firebase login:ci 로 발급
 #   FIREBASE_ANDROID_APP_ID         - 1:513269758316:android:8f3b11afa11de306391b49
+#   FIREBASE_IOS_APP_ID             - 1:513269758316:ios:66fdd942934a6d90391b49
+#                                     (없으면 iOS Firebase 배포만 건너뛴다)
 #
 # [iOS]
 #   IOS_DIST_CERT_P12_BASE64        - 배포용 .p12 인증서 base64
 #   IOS_DIST_CERT_PASSWORD          - .p12 비밀번호
 #   IOS_APP_STORE_PROFILE_BASE64    - App Store 배포 프로비저닝 프로파일 base64
+#   IOS_ADHOC_PROFILE_BASE64        - Ad Hoc 프로비저닝 프로파일 base64 (선택)
+#                                     Firebase 배포용. 테스터 기기 UDID 가 등록된
+#                                     프로파일이어야 하고, 기기가 늘 때마다 재발급·갱신.
+#                                     base64 -i AdHoc.mobileprovision | pbcopy
 #   APPLE_TEAM_ID                   - Apple Developer Team ID
 #   APP_STORE_CONNECT_API_KEY_ID    - ASC API Key ID
 #   APP_STORE_CONNECT_API_ISSUER_ID - ASC API Issuer ID
@@ -103,7 +109,7 @@ jobs:
   # iOS → TestFlight
   # ──────────────────────────────────────────────
   ios-testflight:
-    name: iOS → TestFlight
+    name: iOS → TestFlight (+ Firebase, 시크릿 있을 때만)
     runs-on: macos-latest
 
     env:
@@ -261,6 +267,89 @@ jobs:
             --file $(find $RUNNER_TEMP/ipa -name "*.ipa" | head -1) \
             --apiKey "$API_KEY_ID" \
             --apiIssuer "$API_ISSUER_ID"
+
+      # ── Firebase App Distribution (선택) ────────────────────────────
+      # TestFlight 는 테스터를 App Store Connect 팀에 넣어야 해서, 팀 계정을
+      # 줄 수 없는 사람에게는 못 돌린다. 그런 테스터용으로 같은 아카이브를
+      # ad-hoc 으로 한 번 더 export 해서 Firebase 로 보낸다.
+      #
+      # ad-hoc 은 기기 UDID 가 프로파일에 박혀 있어야만 설치된다. 테스터가
+      # 늘면 Apple Developer 포털에서 UDID 를 추가하고 프로파일을 재발급해
+      # IOS_ADHOC_PROFILE_BASE64 를 갱신해야 한다. 그 품이 싫으면 TestFlight 다.
+      #
+      # 두 시크릿이 없으면 통째로 건너뛴다. TestFlight 경로는 영향받지 않는다.
+      - name: Check Firebase iOS secrets
+        id: fb_ios
+        env:
+          ADHOC_PROFILE: ${{ secrets.IOS_ADHOC_PROFILE_BASE64 }}
+          FIREBASE_IOS_APP_ID: ${{ secrets.FIREBASE_IOS_APP_ID }}
+        run: |
+          if [ -n "$ADHOC_PROFILE" ] && [ -n "$FIREBASE_IOS_APP_ID" ]; then
+            echo "ready=true" >> $GITHUB_OUTPUT
+          else
+            echo "ready=false" >> $GITHUB_OUTPUT
+            echo "::notice::IOS_ADHOC_PROFILE_BASE64 또는 FIREBASE_IOS_APP_ID 가 없어 Firebase iOS 배포를 건너뜁니다."
+          fi
+
+      - name: Import ad-hoc provisioning profile
+        if: steps.fb_ios.outputs.ready == 'true'
+        env:
+          PROFILE_BASE64: ${{ secrets.IOS_ADHOC_PROFILE_BASE64 }}
+        run: |
+          PP_PATH=$RUNNER_TEMP/adhoc.mobileprovision
+          echo "$PROFILE_BASE64" | python3 -c "import base64,sys; sys.stdout.buffer.write(base64.b64decode(sys.stdin.read().replace('\n','').replace('\r','').replace(' ','')))" > $PP_PATH
+
+          PP_UUID=$(/usr/libexec/PlistBuddy -c "Print :UUID" \
+            /dev/stdin <<< $(security cms -D -i $PP_PATH))
+
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles/$PP_UUID.mobileprovision
+
+          # 프로파일에 박힌 기기 수를 남겨둔다. "설치가 안 된다"는 문의는
+          # 십중팔구 그 기기 UDID 가 여기 없는 경우라, 로그만 보고 판별된다.
+          security cms -D -i $PP_PATH > $RUNNER_TEMP/adhoc.plist
+          DEVICE_COUNT=$(/usr/libexec/PlistBuddy -c "Print :ProvisionedDevices" $RUNNER_TEMP/adhoc.plist 2>/dev/null | grep -cE '^\s{4}[0-9a-fA-F]' || true)
+          echo "ad-hoc 프로파일 UUID=$PP_UUID / 등록된 기기 ${DEVICE_COUNT:-0}대"
+
+          echo "ADHOC_PROFILE_UUID=$PP_UUID" >> $GITHUB_ENV
+
+      # 아카이브를 다시 만들지 않는다. exportArchive 가 지정한 프로파일로 다시
+      # 서명하므로, TestFlight 용으로 만든 .xcarchive 를 그대로 재사용한다.
+      # (여기서 아카이브를 또 뜨면 잡 시간이 두 배가 된다)
+      - name: Export IPA (ad-hoc)
+        if: steps.fb_ios.outputs.ready == 'true'
+        run: |
+          cat > $RUNNER_TEMP/ExportOptionsAdHoc.plist << PLIST
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0"><dict>
+            <key>method</key><string>ad-hoc</string>
+            <key>teamID</key><string>${{ secrets.APPLE_TEAM_ID }}</string>
+            <key>signingStyle</key><string>manual</string>
+            <key>signingCertificate</key><string>iPhone Distribution</string>
+            <key>provisioningProfiles</key><dict>
+              <key>org.reactjs.native.example.Cocktail-Front</key><string>${ADHOC_PROFILE_UUID}</string>
+            </dict>
+          </dict></plist>
+          PLIST
+
+          xcodebuild -exportArchive \
+            -archivePath $RUNNER_TEMP/Cocktail_Front.xcarchive \
+            -exportOptionsPlist $RUNNER_TEMP/ExportOptionsAdHoc.plist \
+            -exportPath $RUNNER_TEMP/ipa-adhoc
+
+          echo "ADHOC_IPA=$(find $RUNNER_TEMP/ipa-adhoc -name '*.ipa' | head -1)" >> $GITHUB_ENV
+
+      - name: Upload to Firebase App Distribution
+        if: steps.fb_ios.outputs.ready == 'true'
+        uses: wzieba/Firebase-Distribution-Github-Action@v1
+        with:
+          appId: ${{ secrets.FIREBASE_IOS_APP_ID }}
+          token: ${{ secrets.FIREBASE_TOKEN }}
+          groups: testers
+          file: ${{ env.ADHOC_IPA }}
+          releaseNotes: |
+            Branch: ${{ github.ref_name }} Commit: ${{ github.sha }}
 
       - name: Cleanup keychain
         if: always()
