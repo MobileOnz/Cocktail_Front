@@ -21,7 +21,13 @@ type Segment = { t: string; bold: boolean };
 
 /** marks(bold 구간)를 반영해 문자열을 세그먼트로 쪼갠다. marks 는 본문의 부분 문자열이다. */
 function splitByMarks(text: string, marks?: MagazineMark[]): Segment[] {
-  const bolds = (marks ?? []).filter(m => m.style === 'bold').map(m => m.text).filter(Boolean);
+  // content 는 서버가 JSONB 원본을 그대로 흘려보내는 값이라(@JsonRawValue) 스키마 보장이 없다.
+  // marks 가 배열이 아니면 `?? []` 로는 못 막고 .filter 에서 throw → 루트 ErrorBoundary 가
+  // 앱 전체를 리셋한다. 기사 하나의 데이터 오류로 앱이 죽으면 안 된다.
+  const bolds = (Array.isArray(marks) ? marks : [])
+    .filter(m => m && m.style === 'bold')
+    .map(m => m.text)
+    .filter((t): t is string => typeof t === 'string' && t.length > 0);
   if (bolds.length === 0) { return [{ t: text, bold: false }]; }
   let segments: Segment[] = [{ t: text, bold: false }];
   for (const b of bolds) {
@@ -48,11 +54,11 @@ type Props = {
 const MagazineBlockRenderer = ({ blocks, onCocktailPress }: Props) => {
   return (
     <View>
-      {(blocks ?? []).map((block, i) => {
+      {(Array.isArray(blocks) ? blocks : []).map((block, i) => {
         const b = block as any;
         switch (b.type) {
           case 'paragraph': {
-            const segments = splitByMarks(String(b.text ?? ''), b.marks);
+            const segments = splitByMarks(typeof b.text === 'string' ? b.text : String(b.text ?? ''), b.marks);
             return (
               <Text key={i} style={styles.paragraph} {...koreanBreak}>
                 {segments.map((s, j) => (
@@ -62,7 +68,12 @@ const MagazineBlockRenderer = ({ blocks, onCocktailPress }: Props) => {
             );
           }
           case 'heading':
-            return <Text key={i} style={styles.heading} {...koreanBreak}>{b.text}</Text>;
+            // 보조기술이 기사 목차를 읽으려면 헤더로 노출돼야 한다.
+            return (
+              <Text key={i} style={styles.heading} accessibilityRole="header" {...koreanBreak}>
+                {b.text}
+              </Text>
+            );
           case 'image':
             return b.src ? (
               <View key={i}>
@@ -207,6 +218,6 @@ const styles = StyleSheet.create({
     marginTop: heightPercentage(spacing.md),
     fontFamily: fonts.semibold,
     fontSize: fontPercentage(fontSize.sm),
-    color: colors.accent,
+    color: colors.accentText,
   },
 });

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, FlatList, ActivityIndicator } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -10,6 +10,7 @@ import ErrorState from '../../Components/common/ErrorState';
 import EmptyState from '../../Components/common/EmptyState';
 import SkeletonList from '../../Components/common/SkeletonList';
 import { formatDate } from '../../lib/date';
+import { colors, fonts } from '../../lib/theme';
 
 /** 서버 기본값과 맞춘다(BE: MagazineService.DEFAULT_SIZE). */
 const PAGE_SIZE = 20;
@@ -30,6 +31,10 @@ const NewsScreen = () => {
   // null = 아직 안 불러옴, undefined 로 두지 않는다. 마지막 페이지면 서버가 null 을 준다.
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [loadingMore, setLoadingMore] = useState(false);
+  // 카테고리를 바꾸면 이전 카테고리로 나갔던 요청의 응답이 뒤늦게 도착할 수 있다.
+  // 세대 번호를 붙여, 지금 보고 있는 카테고리의 응답이 아니면 버린다.
+  // (없으면 '스토리' 탭에 '가이드' 글이 섞이고 커서까지 남의 것으로 덮인다)
+  const generation = useRef(0);
 
   /**
    * 매거진 목록.
@@ -45,18 +50,21 @@ const NewsScreen = () => {
   }, []);
 
   const loadFirstPage = useCallback(async (category: string) => {
+    const gen = ++generation.current;
     setLoading(true);
     setError(null);
     try {
       const data = await fetchPage(category, null);
+      if (gen !== generation.current) { return; }
       setNews(data.items ?? []);
       setNextCursor(data.nextCursor ?? null);
     } catch (e) {
+      if (gen !== generation.current) { return; }
       setError(toUserMessage(e, '매거진을 불러오지 못했습니다.'));
       setNews([]);
       setNextCursor(null);
     } finally {
-      setLoading(false);
+      if (gen === generation.current) { setLoading(false); }
     }
   }, [fetchPage]);
 
@@ -64,16 +72,19 @@ const NewsScreen = () => {
     // nextCursor 가 null 이면 마지막 페이지다. loadingMore 가드가 없으면
     // onEndReached 가 스크롤 한 번에 여러 번 불려 같은 페이지를 중복으로 붙인다.
     if (!nextCursor || loadingMore || loading) { return; }
+    const gen = generation.current;
     setLoadingMore(true);
     try {
       const data = await fetchPage(selectedCategory, nextCursor);
+      // 응답이 오는 사이 카테고리가 바뀌었으면 이 페이지는 남의 것이다.
+      if (gen !== generation.current) { return; }
       setNews(prev => [...prev, ...(data.items ?? [])]);
       setNextCursor(data.nextCursor ?? null);
     } catch {
       // 다음 페이지 실패는 이미 보고 있는 목록을 지울 이유가 없다. 커서만 멈춘다.
-      setNextCursor(null);
+      if (gen === generation.current) { setNextCursor(null); }
     } finally {
-      setLoadingMore(false);
+      if (gen === generation.current) { setLoadingMore(false); }
     }
   }, [nextCursor, loadingMore, loading, selectedCategory, fetchPage]);
 
@@ -101,9 +112,24 @@ const NewsScreen = () => {
             {formatDate(item.publishedAt)}
           </Text>
         </View>
-        <Text style={styles.newsTitle} lineBreakStrategyIOS="hangul-word" textBreakStrategy="balanced">{item.title}</Text>
-        {/* 백엔드에 author 는 없다. 출처는 source. */}
-        {!!item.source && <Text style={styles.newsAuthor}>{item.source}</Text>}
+        {/* source 는 전 건이 'onz 에디터' 라 카드에서 변별력이 0 이었다 → 요약으로 교체.
+            요약이 비면(가이드 유래 글) 제목을 3줄까지 풀어 카드 높이를 벌충한다. */}
+        <Text
+          style={styles.newsTitle}
+          numberOfLines={item.summary ? 2 : 3}
+          lineBreakStrategyIOS="hangul-word"
+          textBreakStrategy="balanced">
+          {item.title}
+        </Text>
+        {!!item.summary && (
+          <Text
+            style={styles.newsSummary}
+            numberOfLines={2}
+            lineBreakStrategyIOS="hangul-word"
+            textBreakStrategy="balanced">
+            {item.summary}
+          </Text>
+        )}
       </View>
     </TouchableOpacity>
   );
@@ -206,15 +232,15 @@ const styles = StyleSheet.create({
     padding: 16,
     paddingBottom: 100,
   },
+  // iOS 에서 overflow:'hidden' 은 masksToBounds 라 그림자를 통째로 잘라낸다.
+  // 그림자가 안 보이면 카드(#FFFFFF)와 배경(#F8F9FA)의 명도차가 2% 뿐이라 경계가 사라진다.
+  // 썸네일이 거의 없는 현재 데이터에선 그림자보다 테두리가 정직하다.
   newsCard: {
     marginBottom: 20,
     borderRadius: 16,
-    backgroundColor: '#FFFFFF',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.05,
-    shadowRadius: 10,
-    elevation: 2,
+    backgroundColor: colors.bg,
+    borderWidth: 1,
+    borderColor: colors.border,
     overflow: 'hidden',
   },
   newsImage: {
@@ -233,7 +259,7 @@ const styles = StyleSheet.create({
   },
   newsCategoryText: {
     fontSize: fontPercentage(12),
-    color: '#FF6B00',
+    color: colors.accentText,
     fontFamily: 'Pretendard-Bold',
   },
   newsDate: {
@@ -246,6 +272,13 @@ const styles = StyleSheet.create({
     color: '#212529',
     marginBottom: 8,
     lineHeight: 24,
+  },
+  newsSummary: {
+    marginTop: 6,
+    fontFamily: fonts.regular,
+    fontSize: fontPercentage(14),
+    lineHeight: fontPercentage(21),
+    color: colors.textSecondary,
   },
   newsAuthor: {
     fontSize: fontPercentage(13),

@@ -20,6 +20,7 @@ import { colors, fonts, fontSize, radius, spacing } from '../../lib/theme';
 import type { MagazineDetail } from '../../types/api';
 import { RootStackParamList } from '../../Navigation/Navigation';
 import MagazineBlockRenderer from './MagazineBlockRenderer';
+import ErrorBoundary from '../../Components/common/ErrorBoundary';
 import ErrorState from '../../Components/common/ErrorState';
 import SkeletonList from '../../Components/common/SkeletonList';
 import { formatDate } from '../../lib/date';
@@ -108,7 +109,11 @@ const NewsDetailScreen = () => {
 
           <View style={styles.body}>
             {!!detail.subcategory && <Text style={styles.category}>{detail.subcategory}</Text>}
-            <Text style={styles.title} lineBreakStrategyIOS="hangul-word" textBreakStrategy="balanced">
+            <Text
+              style={styles.title}
+              accessibilityRole="header"
+              lineBreakStrategyIOS="hangul-word"
+              textBreakStrategy="balanced">
               {titleText}
             </Text>
 
@@ -120,7 +125,15 @@ const NewsDetailScreen = () => {
 
             {!!detail.dek && <Text style={styles.summary}>{detail.dek}</Text>}
 
-            <MagazineBlockRenderer blocks={detail.content} onCocktailPress={goCocktail} />
+            {/* 본문 블록은 서버 JSONB 원본이라 형태를 보장할 수 없다.
+                여기서 막지 않으면 루트 ErrorBoundary 까지 올라가 앱 전체가 리셋된다. */}
+            <ErrorBoundary
+              fallback={() => (
+                <Text style={styles.summary}>본문을 표시할 수 없습니다.</Text>
+              )}
+            >
+              <MagazineBlockRenderer blocks={detail.content} onCocktailPress={goCocktail} />
+            </ErrorBoundary>
 
             {detail.tags && detail.tags.length > 0 && (
               <View style={styles.tagRow}>
@@ -176,7 +189,7 @@ const styles = StyleSheet.create({
   category: {
     fontFamily: fonts.bold,
     fontSize: fontPercentage(fontSize.xs),
-    color: colors.accent,
+    color: colors.accentText,
     marginBottom: heightPercentage(spacing.sm),
   },
   // 본문 소제목(heading)이 22 로 커졌으므로 기사 제목은 그보다 확실히 위여야 한다.
@@ -237,7 +250,7 @@ const styles = StyleSheet.create({
   sourceLink: {
     fontFamily: fonts.regular,
     fontSize: fontPercentage(fontSize.sm),
-    color: colors.accent,
+    color: colors.accentText,
     lineHeight: fontPercentage(22),
   },
 });

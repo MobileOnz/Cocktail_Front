@@ -18,12 +18,17 @@ export const colors = {
   // 텍스트
   text: '#1B1B1B',
   textSecondary: '#616161',
-  textTertiary: '#868E96',
+  // 흰 배경 3.32:1 / bgSubtle 3.15:1 로 WCAG AA(4.5:1) 미달이었다.
+  // 두 배경 모두 통과하는 값으로 올림 (흰 5.02:1 / bgSubtle 4.76:1).
+  textTertiary: '#697077',
   textDisabled: '#BDBDBD',
   textInverse: '#FFFFFF',
 
   // 브랜드 / 강조
+  /** 면·아이콘 등 비텍스트 전용. 흰 배경에서 2.86:1 이라 글자색으로 쓰면 AA 미달이다. */
   accent: '#FF6B00',
+  /** 액센트 색 글자용. 같은 주황 계열을 유지하되 대비를 확보 (흰 4.76:1 / bgSubtle 4.52:1). */
+  accentText: '#C24F00',
 
   // 경계 / 구분
   border: '#EEEEEE',
@@ -62,7 +67,9 @@ export const bar = {
   borderStrong: '#E0E0E0',
   text: '#1B1B1B',
   textSecondary: '#616161',
-  textTertiary: '#868E96',
+  // 흰 배경 3.32:1 / bgSubtle 3.15:1 로 WCAG AA(4.5:1) 미달이었다.
+  // 두 배경 모두 통과하는 값으로 올림 (흰 5.02:1 / bgSubtle 4.76:1).
+  textTertiary: '#697077',
   textMuted: '#ADB5BD',
   textOnLight: '#FFFFFF', // 채움 버튼(bar.text 배경) 위 텍스트
   warning: '#A66A00', // 흰 배경에서 대비 확보 (다크의 #E0A341 는 흰 위에서 안 읽힌다)
