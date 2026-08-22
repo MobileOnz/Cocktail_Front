@@ -189,6 +189,8 @@ const AllCocktailScreen = ({ navigation, embedded = false }: Props) => {
 
             <OpenBottomSheet
                 ref={bottomSheetRef}
+                // 레시피북 탭에 박혀 있을 때(embedded)만 떠 있는 탭바가 푸터를 덮는다.
+                avoidTabBar={embedded}
                 footer={
                     <View style={styles.footer}>
                         <Pressable style={styles.resetButton} onPress={() => filterRef.current?.reset()}>

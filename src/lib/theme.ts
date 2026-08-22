@@ -39,24 +39,35 @@ export const colors = {
 } as const;
 
 /**
- * 다크(나이트 무드) 팔레트 — 바 도메인 화면(BarList/BarDetail/BarChat/QrScan)용.
- * 기존 화면들에 흩어져 있던 근사 회색들을 역할별로 통합한 값이다(디자인 변경 아님).
+ * 바 도메인 팔레트 — BarList / BarDetail / BarChat.
+ *
+ * 원래는 이 도메인만 나이트 무드(검정)였는데, 나머지 탭이 전부 라이트라
+ * "앱이 두 개처럼 보인다"는 지적이 디자인 리뷰(2026-07-17 P1-2)와 데모 QA 양쪽에서 나왔다.
+ * → 역할 키는 그대로 두고 값만 라이트로 뒤집었다. 화면 코드는 손대지 않아도 되고,
+ *   나중에 나이트 무드를 되살리려면 이 객체의 값만 되돌리면 된다.
+ *
+ * 역할이 뒤집혀도 의미가 유지되는 점에 유의:
+ *   text 는 '전경색'이라 버튼 채움색(backgroundColor: bar.text)으로도 쓰인다.
+ *   그 위 글자색이 textOnLight 다. 다크에선 흰버튼+검은글자, 라이트에선 검은버튼+흰글자로
+ *   자연스럽게 뒤집힌다.
+ *
+ * QrScanScreen 은 여기 해당하지 않는다 — 카메라 뷰파인더라 검정 배경이 맞다.
  */
-export const dark = {
-  bg: '#000000',
-  surface: '#141414', // 입력창·배지·모달 (기존 #0f0f0f/#111/#141414)
-  surfaceHigh: '#1A1A1A', // 버블·버튼·이미지 플레이스홀더 (기존 #161616/#1a1a1a/#1f1f1f)
-  surfaceActive: '#333333', // 비활성 버튼 등
-  border: '#262626', // (기존 #222/#242424/#262626)
-  borderStrong: '#2A2A2A',
-  text: '#FFFFFF',
-  textSecondary: '#DDDDDD', // (기존 #ccc/#ddd/#eee)
-  textTertiary: '#9A9A9A', // (기존 #888/#8a8a8a/#9a9a9a/#aaa)
-  textMuted: '#5A5A5A', // (기존 #555/#5a5a5a/#666)
-  textOnLight: '#000000', // 흰 배경 버튼 위 텍스트
-  warning: '#E0A341',
-  success: '#3DDC84',
-  overlay: 'rgba(0, 0, 0, 0.7)',
+export const bar = {
+  bg: '#FFFFFF',
+  surface: '#F8F9FA', // 입력창·배지·모달
+  surfaceHigh: '#F1F3F5', // 버블·버튼·이미지 플레이스홀더 (surface 보다 한 단 진하게)
+  surfaceActive: '#DEE2E6', // 비활성 버튼 등
+  border: '#EEEEEE',
+  borderStrong: '#E0E0E0',
+  text: '#1B1B1B',
+  textSecondary: '#616161',
+  textTertiary: '#868E96',
+  textMuted: '#ADB5BD',
+  textOnLight: '#FFFFFF', // 채움 버튼(bar.text 배경) 위 텍스트
+  warning: '#A66A00', // 흰 배경에서 대비 확보 (다크의 #E0A341 는 흰 위에서 안 읽힌다)
+  success: '#1B9E4B',
+  overlay: 'rgba(0, 0, 0, 0.4)',
 } as const;
 
 /** Pretendard. */

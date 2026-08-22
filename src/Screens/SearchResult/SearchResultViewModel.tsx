@@ -8,6 +8,7 @@ import { ISearchRepository } from '../../model/repository/SearchRepository';
 import { DEFAULT_FILTER, FilterState } from '../../Components/BottomSheet/FilterBottomSheet/FilterBottomSheetViewModel';
 import instance from '../../tokenRequest/axios_interceptor';
 import Toast from 'react-native-toast-message';
+import { isAuthError } from '../../lib/auth';
 
 type UseSearchResultDeps = {
     repository?: ISearchRepository;
@@ -73,8 +74,13 @@ const useSearchResultViewModel = (keyword: string, deps?: UseSearchResultDeps) =
 
         try {
             await instance.post(`/api/v2/cocktails/${cocktailId}/bookmarks`, undefined, { authPrompt: true });
-        } catch {
-            Toast.show({ type: 'error', text1: '로그인 후 북마크 사용이 가능합니다.' });
+        } catch (e) {
+            // 인증 실패면 인터셉터가 이미 로그인 화면으로 보냈다 — 여기선 이유만 알린다.
+            // 네트워크/서버 오류에까지 "로그인 후..." 를 띄우면 원인을 오해하게 된다.
+            Toast.show({
+                type: 'error',
+                text1: isAuthError(e) ? '로그인 후 북마크 사용이 가능합니다.' : '북마크를 반영하지 못했어요.',
+            });
             queryClient.invalidateQueries({ queryKey: ['searchResult', keyword, appliedFilter] });
         }
     }, [queryClient, keyword, appliedFilter]);

@@ -17,7 +17,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import instance from '../../tokenRequest/axios_interceptor';
 import RemoteImage from '../../Components/common/RemoteImage';
-import { dark } from '../../lib/theme';
+import { bar as barTheme } from '../../lib/theme';
+import { ensureLoggedIn, isAuthError, promptLogin } from '../../lib/auth';
 
 interface BarDetail {
   id: number;
@@ -62,6 +63,11 @@ const BarDetailScreen: React.FC = () => {
 
   const toggleVisit = async () => {
     if (!bar || visiting) return;
+    // 방문 기록은 계정에 쌓이는 데이터다 → 요청을 던져 401 을 받고 나서 알리는 대신,
+    // 누르는 순간 로그인 화면으로 안내한다.
+    if (!(await ensureLoggedIn(navigation, '방문한 바를 기록하려면 로그인해주세요.'))) {
+      return;
+    }
     setVisiting(true);
     try {
       if (bar.isVisited) {
@@ -72,10 +78,12 @@ const BarDetailScreen: React.FC = () => {
         setBar({ ...bar, isVisited: true });
       }
     } catch (e: any) {
-      Alert.alert(
-        '오류',
-        e?.response?.data?.msg ?? '방문 체크에 실패했습니다 (로그인이 필요할 수 있습니다)',
-      );
+      // 토큰이 있었는데도 서버가 거절한 경우(만료·회수) 역시 로그인으로 보낸다.
+      if (isAuthError(e)) {
+        promptLogin(navigation, '로그인이 만료됐어요. 다시 로그인해주세요.');
+        return;
+      }
+      Alert.alert('오류', e?.response?.data?.msg ?? '방문 체크에 실패했습니다');
     } finally {
       setVisiting(false);
     }
@@ -96,14 +104,14 @@ const BarDetailScreen: React.FC = () => {
   if (loading) {
     return (
       <View style={[styles.container, styles.center]}>
-        <ActivityIndicator color={dark.text} />
+        <ActivityIndicator color={barTheme.text} />
       </View>
     );
   }
   if (!bar) {
     return (
       <View style={[styles.container, styles.center]}>
-        <Text style={{ color: dark.textTertiary }}>바 정보를 찾을 수 없습니다</Text>
+        <Text style={{ color: barTheme.textTertiary }}>바 정보를 찾을 수 없습니다</Text>
       </View>
     );
   }
@@ -111,11 +119,11 @@ const BarDetailScreen: React.FC = () => {
   return (
     <>
       {/* 검정 배경. 딥링크로 목록을 거치지 않고 바로 들어와도 시계/배터리가 보여야 한다. */}
-      <StatusBar barStyle="light-content" backgroundColor={dark.bg} />
+      <StatusBar barStyle="dark-content" backgroundColor={barTheme.bg} />
     <ScrollView style={styles.container} contentContainerStyle={{ paddingTop: insets.top, paddingBottom: insets.bottom + 32 }}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
-          <Text style={{ color: dark.text, fontSize: 20 }}>←</Text>
+          <Text style={{ color: barTheme.text, fontSize: 20 }}>←</Text>
         </TouchableOpacity>
       </View>
 
@@ -125,7 +133,6 @@ const BarDetailScreen: React.FC = () => {
         uri={bar.heroImage}
         style={styles.hero}
         resizeMode="cover"
-        tone="dark"
         glyphSize={56}
         label={bar.nameKo}
         accessibilityLabel={`${bar.nameKo} 대표 사진`}
@@ -149,7 +156,7 @@ const BarDetailScreen: React.FC = () => {
             </Text>
           </TouchableOpacity>
           <TouchableOpacity style={[styles.actionBtn, styles.primaryBtn]} onPress={openMenu}>
-            <Text style={[styles.actionText, { color: dark.textOnLight }]}>메뉴 보기</Text>
+            <Text style={[styles.actionText, { color: barTheme.textOnLight }]}>메뉴 보기</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.actionBtn} onPress={openChat}>
             <Text style={styles.actionText}>오픈채팅 입장</Text>
@@ -166,7 +173,6 @@ const BarDetailScreen: React.FC = () => {
                     uri={c.image}
                     style={styles.sigImg}
                     resizeMode="cover"
-                    tone="dark"
                     glyphSize={28}
                     accessibilityLabel={c.name}
                   />
@@ -183,37 +189,37 @@ const BarDetailScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: dark.bg },
+  container: { flex: 1, backgroundColor: barTheme.bg },
   center: { alignItems: 'center', justifyContent: 'center' },
   header: { paddingHorizontal: 16, paddingTop: 12 },
   backBtn: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center' },
-  hero: { width: '100%', height: 220, backgroundColor: dark.surfaceHigh },
+  hero: { width: '100%', height: 220, backgroundColor: barTheme.surfaceHigh },
   body: { padding: 20 },
-  name: { color: dark.text, fontSize: 26, fontWeight: '700' },
-  nameEn: { color: dark.textTertiary, fontSize: 14, marginTop: 4 },
-  description: { color: dark.textSecondary, fontSize: 14, lineHeight: 22, marginTop: 12 },
+  name: { color: barTheme.text, fontSize: 26, fontWeight: '700' },
+  nameEn: { color: barTheme.textTertiary, fontSize: 14, marginTop: 4 },
+  description: { color: barTheme.textSecondary, fontSize: 14, lineHeight: 22, marginTop: 12 },
   row: { flexDirection: 'row', alignItems: 'flex-start', marginTop: 14, gap: 12 },
-  kAddr: { color: dark.textTertiary, fontSize: 13, width: 40 },
-  vAddr: { color: dark.textSecondary, fontSize: 13, flex: 1 },
+  kAddr: { color: barTheme.textTertiary, fontSize: 13, width: 40 },
+  vAddr: { color: barTheme.textSecondary, fontSize: 13, flex: 1 },
   actions: { marginTop: 24, gap: 10 },
   actionBtn: {
     paddingVertical: 14,
     borderRadius: 12,
-    backgroundColor: dark.surfaceHigh,
+    backgroundColor: barTheme.surfaceHigh,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: dark.borderStrong,
+    borderColor: barTheme.borderStrong,
   },
-  actionBtnActive: { backgroundColor: dark.surfaceHigh, borderColor: dark.text },
-  actionTextActive: { color: dark.text },
-  primaryBtn: { backgroundColor: dark.text, borderColor: dark.text },
-  disabledBtn: { backgroundColor: dark.surface, borderColor: dark.surfaceHigh },
-  actionText: { color: dark.text, fontSize: 15, fontWeight: '600' },
+  actionBtnActive: { backgroundColor: barTheme.surfaceHigh, borderColor: barTheme.text },
+  actionTextActive: { color: barTheme.text },
+  primaryBtn: { backgroundColor: barTheme.text, borderColor: barTheme.text },
+  disabledBtn: { backgroundColor: barTheme.surface, borderColor: barTheme.surfaceHigh },
+  actionText: { color: barTheme.text, fontSize: 15, fontWeight: '600' },
   section: { marginTop: 28 },
-  sectionTitle: { color: dark.text, fontSize: 16, fontWeight: '600', marginBottom: 12 },
+  sectionTitle: { color: barTheme.text, fontSize: 16, fontWeight: '600', marginBottom: 12 },
   sigCard: { width: 130 },
-  sigImg: { width: 130, height: 130, borderRadius: 12, backgroundColor: dark.surfaceHigh },
-  sigName: { color: dark.textSecondary, fontSize: 13, marginTop: 8 },
+  sigImg: { width: 130, height: 130, borderRadius: 12, backgroundColor: barTheme.surfaceHigh },
+  sigName: { color: barTheme.textSecondary, fontSize: 13, marginTop: 8 },
 });
 
 export default BarDetailScreen;

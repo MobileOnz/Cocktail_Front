@@ -187,11 +187,12 @@ const styles = StyleSheet.create({
     , textAlign: 'center',
   },
   searchContainer: {
-
     paddingHorizontal: widthPercentage(16),
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: heightPercentage(50),
+    // SafeAreaView edges={['top']} 가 이미 상태바를 비켜준다.
+    // 여기 있던 marginTop: 50 은 그 위에 또 얹혀서 검색바를 과하게 밀어내렸다.
+    marginTop: heightPercentage(8),
     paddingBottom: heightPercentage(10),
   },
   resetIcon: {

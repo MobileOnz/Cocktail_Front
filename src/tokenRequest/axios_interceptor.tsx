@@ -3,6 +3,7 @@ import { getToken, tokenRefresh } from './Token';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-toast-message';
+import { navigateToLogin } from '../lib/navigationRef';
 
 const BASE_URL = API_BASE_URL || 'http://onz-cocktail.kr/onz';
 console.log('[Axios] BASE_URL:', BASE_URL);
@@ -26,6 +27,23 @@ const instance = axios.create({
 const requiresAuth = (url?: string): boolean =>
   !!url && (url.includes('bookmarks') || url.includes('user'));
 
+/**
+ * 인증 때문에 거부했다는 표식을 단 에러.
+ * 호출부가 "로그인 문제"와 "네트워크/서버 문제"를 구분해 다른 문구를 보여줄 수 있어야 한다.
+ */
+const authRejection = (message: string): Error => {
+  const err = new Error(message) as Error & { isAuthError?: boolean };
+  err.isAuthError = true;
+  return err;
+};
+
+/**
+ * 로그인이 필요하다고 알리고, 로그인 화면까지 데려간다.
+ *
+ * 예전에는 토스트만 띄웠다. 사용자가 '로그인이 필요하다'는 사실은 알아도
+ * 로그인 화면이 우상단 메뉴 안에 있어서 스스로 찾아가야 했다(데모 QA 지적).
+ * 토스트는 이유를 설명하는 용도로 남기고, 이동은 여기서 처리한다.
+ */
 const promptLogin = (message: string) => {
   Toast.show({
     type: 'info',
@@ -33,6 +51,7 @@ const promptLogin = (message: string) => {
     visibilityTime: 3000,
     autoHide: true,
   });
+  navigateToLogin();
 };
 
 instance.interceptors.request.use(
@@ -45,7 +64,7 @@ instance.interceptors.request.use(
       if (config.authPrompt) {
         promptLogin('로그인이 필요한 서비스입니다.');
       }
-      return Promise.reject(new Error('No Token'));
+      return Promise.reject(authRejection('No Token'));
     }
 
     if (!(config.data instanceof FormData)) {
@@ -75,7 +94,7 @@ instance.interceptors.response.use(
         if (originalRequest.authPrompt) {
           promptLogin('로그인을 해주세요.');
         }
-        return Promise.reject(new Error('리프레시 실패, 재로그인 필요'));
+        return Promise.reject(authRejection('리프레시 실패, 재로그인 필요'));
       }
 
       originalRequest.headers.Authorization = newAccessToken;

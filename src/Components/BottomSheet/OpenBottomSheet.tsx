@@ -14,12 +14,21 @@ import BottomSheet, {
 } from '@gorhom/bottom-sheet';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors } from '../../lib/theme';
+import { TAB_BAR_GAP, TAB_BAR_HEIGHT } from '../../lib/layout';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 type OpenBottomSheetProps = {
     children: React.ReactNode;
     snapPoints?: (string | number)[];
     footer?: React.ReactNode;
+    /**
+     * 떠 있는 하단 탭바가 깔려 있는 화면인지.
+     *
+     * 탭바는 네비게이터가 화면 위에 absolute 로 얹기 때문에 시트 푸터(초기화/적용하기)를 덮는다.
+     * 탭 화면에서 열리는 시트는 true 로 줘서 버튼을 탭바 위로 밀어 올린다.
+     * 스택 화면(탭바 없음)에서는 false 여야 한다 — 아니면 아래가 텅 빈다.
+     */
+    avoidTabBar?: boolean;
 };
 
 export type OpenBottomSheetHandle = {
@@ -28,10 +37,12 @@ export type OpenBottomSheetHandle = {
 };
 
 const OpenBottomSheet = forwardRef<OpenBottomSheetHandle, OpenBottomSheetProps>(
-    ({ children, snapPoints, footer }, ref) => {
+    ({ children, snapPoints, footer, avoidTabBar = false }, ref) => {
         const bottomSheetRef = useRef<BottomSheet>(null);
         const insets = useSafeAreaInsets();
-        const FOOTER_GAP = 220 + insets.bottom;
+        // SafeAreaView 가 insets.bottom 은 이미 먹으므로 탭바가 실제로 더 잡아먹는 만큼만 더한다.
+        const tabBarClearance = avoidTabBar ? TAB_BAR_GAP + TAB_BAR_HEIGHT + 8 : 0;
+        const FOOTER_GAP = 220 + insets.bottom + tabBarClearance;
 
 
         const _snapPoints = useMemo(() => snapPoints ?? ['80%'], [snapPoints]);
@@ -59,13 +70,16 @@ const OpenBottomSheet = forwardRef<OpenBottomSheetHandle, OpenBottomSheetProps>(
 
                 return (
                     <BottomSheetFooter {...props} bottomInset={0}>
-                        <SafeAreaView edges={['bottom']} style={{ backgroundColor: colors.bg }}>
+                        <SafeAreaView
+                            edges={['bottom']}
+                            style={{ backgroundColor: colors.bg, paddingBottom: tabBarClearance }}
+                        >
                             {footer}
                         </SafeAreaView>
                     </BottomSheetFooter>
                 );
             },
-            [footer],
+            [footer, tabBarClearance],
         );
 
         return (

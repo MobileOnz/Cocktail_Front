@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, FlatList } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, FlatList, ActivityIndicator } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { fontPercentage } from '../../assets/styles/FigmaScreen';
@@ -10,6 +10,9 @@ import ErrorState from '../../Components/common/ErrorState';
 import EmptyState from '../../Components/common/EmptyState';
 import SkeletonList from '../../Components/common/SkeletonList';
 import { formatDate } from '../../lib/date';
+
+/** 서버 기본값과 맞춘다(BE: MagazineService.DEFAULT_SIZE). */
+const PAGE_SIZE = 20;
 
 const CATEGORIES = [
   { id: 'ALL', label: '전체' },
@@ -24,31 +27,59 @@ const NewsScreen = () => {
   const [selectedCategory, setSelectedCategory] = useState('ALL');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  // null = 아직 안 불러옴, undefined 로 두지 않는다. 마지막 페이지면 서버가 null 을 준다.
+  const [nextCursor, setNextCursor] = useState<string | null>(null);
+  const [loadingMore, setLoadingMore] = useState(false);
 
-  const fetchNews = useCallback(async () => {
+  /**
+   * 매거진 목록.
+   *
+   * 예전엔 전량을 받아 클라이언트에서 정렬·필터했다. 글이 늘수록 첫 진입이 느려지는 구조라
+   * 서버 커서 페이지네이션으로 옮겼다. 정렬(최신순)과 카테고리 필터도 서버가 한다.
+   */
+  const fetchPage = useCallback(async (category: string, cursor: string | null) => {
+    const res = await instance.get('/api/v2/magazine', {
+      params: { category, size: PAGE_SIZE, ...(cursor ? { cursor } : {}) },
+    });
+    return unwrap<NewsFeedResponse>(res);
+  }, []);
+
+  const loadFirstPage = useCallback(async (category: string) => {
     setLoading(true);
     setError(null);
     try {
-      const res = await instance.get('/api/v2/magazine');
-      // 매거진 탭: 전체 카테고리(스토리/가이드…). 상단 탭으로 클라이언트 필터. 봉투는 { items, nextCursor }.
-      const data = unwrap<NewsFeedResponse>(res);
+      const data = await fetchPage(category, null);
       setNews(data.items ?? []);
+      setNextCursor(data.nextCursor ?? null);
     } catch (e) {
-      setError(toUserMessage(e, '뉴스를 불러오지 못했습니다.'));
+      setError(toUserMessage(e, '매거진을 불러오지 못했습니다.'));
+      setNews([]);
+      setNextCursor(null);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [fetchPage]);
 
-  useEffect(() => { fetchNews(); }, [fetchNews]);
+  const loadMore = useCallback(async () => {
+    // nextCursor 가 null 이면 마지막 페이지다. loadingMore 가드가 없으면
+    // onEndReached 가 스크롤 한 번에 여러 번 불려 같은 페이지를 중복으로 붙인다.
+    if (!nextCursor || loadingMore || loading) { return; }
+    setLoadingMore(true);
+    try {
+      const data = await fetchPage(selectedCategory, nextCursor);
+      setNews(prev => [...prev, ...(data.items ?? [])]);
+      setNextCursor(data.nextCursor ?? null);
+    } catch {
+      // 다음 페이지 실패는 이미 보고 있는 목록을 지울 이유가 없다. 커서만 멈춘다.
+      setNextCursor(null);
+    } finally {
+      setLoadingMore(false);
+    }
+  }, [nextCursor, loadingMore, loading, selectedCategory, fetchPage]);
 
-  // API 가 오래된 순으로 내려오므로 최신순으로 뒤집어 보여준다.
-  const sortedNews = [...news].sort(
-    (a, b) => new Date(b.publishedAt ?? 0).getTime() - new Date(a.publishedAt ?? 0).getTime(),
-  );
-  const filteredNews = selectedCategory === 'ALL'
-    ? sortedNews
-    : sortedNews.filter(item => item.category === selectedCategory);
+  useEffect(() => { loadFirstPage(selectedCategory); }, [selectedCategory, loadFirstPage]);
+
+  const fetchNews = useCallback(() => loadFirstPage(selectedCategory), [loadFirstPage, selectedCategory]);
 
   const renderNewsItem = ({ item }: { item: NewsCard }) => (
     <TouchableOpacity
@@ -103,11 +134,16 @@ const NewsScreen = () => {
         <ErrorState message={error} onRetry={fetchNews} />
       ) : (
         <FlatList
-          data={filteredNews}
+          data={news}
           keyExtractor={item => item.id.toString()}
           renderItem={renderNewsItem}
           contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 120 }]}
           showsVerticalScrollIndicator={false}
+          onEndReached={loadMore}
+          onEndReachedThreshold={0.5}
+          ListFooterComponent={
+            loadingMore ? <ActivityIndicator style={styles.footerSpinner} /> : null
+          }
           ListEmptyComponent={
             <EmptyState
               title="해당 카테고리의 뉴스가 없습니다"
@@ -162,6 +198,9 @@ const styles = StyleSheet.create({
   },
   tabLabelActive: {
     color: '#FFFFFF',
+  },
+  footerSpinner: {
+    paddingVertical: 20,
   },
   scrollContent: {
     padding: 16,

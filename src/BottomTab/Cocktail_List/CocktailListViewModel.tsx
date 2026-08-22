@@ -93,7 +93,9 @@ export const useHomeViewModel = (deps?: UseSearchResultDeps) => {
   const bookMarkCheck = async () => {
     const token = await getToken();
     if (!token) {
+      // 알리기만 하고 끝내면 사용자는 로그인 화면을 스스로 찾아가야 한다(데모 QA 지적).
       Toast.show({ type: 'error', text1: '로그인이 필요한 서비스 입니다.' });
+      navigation.navigate('Login');
       return;
     }
     navigation.navigate('CocktailBoxScreen');

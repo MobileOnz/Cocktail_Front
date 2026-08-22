@@ -19,6 +19,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { useTabBarSpace } from '../../lib/layout';
+import { bar as barTheme, fonts } from '../../lib/theme';
 import Geolocation from 'react-native-geolocation-service';
 import ErrorState from '../../Components/common/ErrorState';
 import EmptyState from '../../Components/common/EmptyState';
@@ -142,9 +143,8 @@ const BarListScreen: React.FC = () => {
 
   return (
     <View style={[styles.container, { paddingTop: insets.top + 12 }]}>
-      {/* 검정 배경 화면 — 시계/배터리가 검정 글씨면 보이지 않는다 (I-13).
-          스택으로 push 되는 바 상세도 검정 배경이라 이 설정이 그대로 유지된다. */}
-      <StatusBar barStyle="light-content" backgroundColor="#000000" />
+      {/* 바 도메인도 라이트로 통일됐다 → 상태바 글씨는 어둡게. 상세 화면도 같은 설정이다. */}
+      <StatusBar barStyle="dark-content" backgroundColor={barTheme.bg} />
       <Text style={styles.title}>바</Text>
 
       <View style={styles.segmentBar}>
@@ -163,7 +163,7 @@ const BarListScreen: React.FC = () => {
       {loading && bars.length === 0 ? (
         <SkeletonList count={5} variant="row" />
       ) : error ? (
-        <ErrorState message={error} onRetry={() => fetchBars(sort)} tone="dark" />
+        <ErrorState message={error} onRetry={() => fetchBars(sort)} />
       ) : bars.length === 0 ? (
         <EmptyState
           title={sort === 'distance' ? '근처에 등록된 바가 없어요' : '등록된 바가 없습니다'}
@@ -173,12 +173,11 @@ const BarListScreen: React.FC = () => {
               : '조금 뒤에 다시 확인해주세요.'
           }
           emoji="📍"
-          tone="dark"
         />
       ) : (
         <FlatList
           contentContainerStyle={{ paddingBottom: tabBarSpace }}
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#FFFFFF" />}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={barTheme.textTertiary} />}
           data={bars}
           keyExtractor={(item) => String(item.id)}
           ItemSeparatorComponent={() => <View style={styles.separator} />}
@@ -196,9 +195,17 @@ const BarListScreen: React.FC = () => {
   );
 };
 
+// 색은 bar 팔레트, 서체는 Pretendard 로 맞춘다.
+// 이 화면만 fontWeight 로 시스템 폰트를 쓰고 있어서 다른 탭과 글자 모양이 달랐다.
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#000' },
-  title: { color: '#FFFFFF', fontSize: 28, fontWeight: '700', paddingHorizontal: 20, marginBottom: 16 },
+  container: { flex: 1, backgroundColor: barTheme.bg },
+  title: {
+    color: barTheme.text,
+    fontSize: 28,
+    fontFamily: fonts.bold,
+    paddingHorizontal: 20,
+    marginBottom: 16,
+  },
   segmentBar: {
     flexDirection: 'row',
     gap: 8,
@@ -209,11 +216,11 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 14,
     borderRadius: 999,
-    backgroundColor: '#1a1a1a',
+    backgroundColor: barTheme.surfaceHigh,
   },
-  segmentActive: { backgroundColor: '#FFFFFF' },
-  segmentText: { color: '#aaa', fontSize: 13, fontWeight: '500' },
-  segmentTextActive: { color: '#000' },
+  segmentActive: { backgroundColor: barTheme.text },
+  segmentText: { color: barTheme.textTertiary, fontSize: 13, fontFamily: fonts.medium },
+  segmentTextActive: { color: barTheme.textOnLight },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -221,13 +228,19 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 18,
   },
-  rowName: { color: '#FFFFFF', fontSize: 17, fontWeight: '500', flex: 1 },
-  rowMeta: { color: '#aaa', fontSize: 13 },
-  separator: { height: 1, backgroundColor: '#1a1a1a', marginHorizontal: 20 },
+  rowName: { color: barTheme.text, fontSize: 17, fontFamily: fonts.medium, flex: 1 },
+  rowMeta: { color: barTheme.textTertiary, fontSize: 13, fontFamily: fonts.regular },
+  separator: { height: 1, backgroundColor: barTheme.border, marginHorizontal: 20 },
   empty: { padding: 48, alignItems: 'center' },
-  emptyText: { color: '#888', fontSize: 14 },
-  retryBtn: { marginTop: 16, paddingHorizontal: 16, paddingVertical: 10, backgroundColor: '#222', borderRadius: 8 },
-  retryText: { color: '#FFFFFF', fontSize: 13 },
+  emptyText: { color: barTheme.textTertiary, fontSize: 14, fontFamily: fonts.regular },
+  retryBtn: {
+    marginTop: 16,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    backgroundColor: barTheme.surfaceHigh,
+    borderRadius: 8,
+  },
+  retryText: { color: barTheme.text, fontSize: 13, fontFamily: fonts.medium },
 });
 
 export default BarListScreen;

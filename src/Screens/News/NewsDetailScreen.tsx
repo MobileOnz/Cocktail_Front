@@ -179,11 +179,13 @@ const styles = StyleSheet.create({
     color: colors.accent,
     marginBottom: heightPercentage(spacing.sm),
   },
+  // 본문 소제목(heading)이 22 로 커졌으므로 기사 제목은 그보다 확실히 위여야 한다.
   title: {
     fontFamily: fonts.bold,
-    fontSize: fontPercentage(fontSize.xxl),
+    fontSize: fontPercentage(fontSize.hero),
     color: colors.text,
-    lineHeight: fontPercentage(31),
+    lineHeight: fontPercentage(34),
+    letterSpacing: -0.5,
   },
   metaRow: {
     flexDirection: 'row',
@@ -194,11 +196,13 @@ const styles = StyleSheet.create({
   source: { fontFamily: fonts.medium, fontSize: fontPercentage(fontSize.sm), color: colors.textSecondary },
   metaDot: { marginHorizontal: widthPercentage(spacing.sm), color: colors.textDisabled },
   date: { fontFamily: fonts.regular, fontSize: fontPercentage(fontSize.sm), color: colors.textTertiary },
+  // 리드문도 읽는 텍스트다 — 본문(17)보다 한 단 아래인 16 으로 두되 행간은 넉넉히.
   summary: {
     fontFamily: fonts.medium,
-    fontSize: fontPercentage(fontSize.base),
+    fontSize: fontPercentage(fontSize.md),
     color: colors.textSecondary,
-    lineHeight: fontPercentage(24),
+    lineHeight: fontPercentage(27),
+    letterSpacing: -0.3,
     paddingLeft: widthPercentage(spacing.md),
     borderLeftWidth: 3,
     borderLeftColor: colors.border,

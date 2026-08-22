@@ -1,6 +1,7 @@
 // Navigation.tsx
 import React, { memo } from 'react';
 import { NavigationContainer, LinkingOptions } from '@react-navigation/native';
+import { navigationRef } from '../lib/navigationRef';
 import { createStackNavigator } from '@react-navigation/stack';
 import LoginScreen from '../BottomTab/MyPage/Login/Login';
 import Home from '../BottomTab/Home/HomeFeedScreen';
@@ -106,7 +107,7 @@ const linking: LinkingOptions<RootStackParamList> = {
 
 const Navigation: React.FC<NavigationProps> = memo(({ isOnboarded, setIsOnboarded }) => {
   return (
-    <NavigationContainer linking={linking}>
+    <NavigationContainer ref={navigationRef} linking={linking}>
       <Stack.Navigator
         screenOptions={{ headerShown: false }}
         // 초기 경로를 명시적으로 설정하여 엔진이 길을 잃지 않게 합니다.

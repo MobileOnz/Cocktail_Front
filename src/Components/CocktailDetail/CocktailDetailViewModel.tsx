@@ -4,6 +4,7 @@ import { ICocktailDetailRepository } from '../../model/repository/CocktailDetail
 import { di } from '../../DI/Container';
 import instance from '../../tokenRequest/axios_interceptor';
 import Toast from 'react-native-toast-message';
+import { navigateToLogin } from '../../lib/navigationRef';
 import { getToken } from '../../tokenRequest/Token';
 import perf from '@react-native-firebase/perf';
 import { trackViewCocktailDetail, stay10sPageCocktailDetail } from '../../analytics/eventProperty';
@@ -56,7 +57,9 @@ const useCocktailDetailViewModel = (id: number, deps?: UseCocktailDetailDeps) =>
     const checkToken = async () => {
         const token = await getToken();
         if (!token) {
+            // 이 훅에는 navigation 이 없어서 전역 ref 로 이동한다.
             Toast.show({ type: 'error', text1: '로그인이 필요합니다.' });
+            navigateToLogin();
             return false;
         }
         return true;

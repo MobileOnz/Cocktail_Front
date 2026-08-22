@@ -1,11 +1,14 @@
 // 레이아웃 상수 / 훅.
 // 하단 탭바는 떠 있는(absolute) 알약 모양이라 스크롤 컨테이너가 자기 밑을 스스로 비워줘야 한다.
-// BottomTabNavigator 의 tabBarStyle 과 반드시 같이 움직인다 — 한쪽만 바꾸면 마지막 항목이 가려진다.
+// 높이/간격은 이 파일이 단일 출처이고 BottomTabNavigator 가 import 해서 쓴다.
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { heightPercentage } from '../assets/styles/FigmaScreen';
 
-/** BottomTabNavigator tabBarStyle.height 와 동일해야 한다. */
-export const TAB_BAR_HEIGHT = heightPercentage(58);
+/**
+ * 탭바 높이의 단일 출처. BottomTabNavigator 가 이 값을 import 해서 tabBarStyle.height 로 쓴다.
+ * (예전엔 여기 58, 네비게이터에 60 이 각각 하드코딩돼 2pt 어긋나 있었다.)
+ */
+export const TAB_BAR_HEIGHT = heightPercentage(60);
 
 /** BottomTabNavigator tabBarStyle.bottom = insets.bottom + TAB_BAR_GAP */
 export const TAB_BAR_GAP = 12;

@@ -1,6 +1,7 @@
 import React from 'react';
-import { View } from 'react-native';
+import { View, Platform, StyleSheet } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { BlurView } from '@react-native-community/blur';
 import Home from '../BottomTab/Home/HomeFeedScreen';
 import NewsScreen from '../BottomTab/News/NewsScreen';
 import RecipeBookScreen from '../Screens/RecipeBook/RecipeBookScreen';
@@ -12,7 +13,7 @@ import CocktailIcon from '../assets/drawable/Cocktail.svg';
 import { BottomTabParamList } from './Navigation';
 import { colors, fonts } from '../lib/theme';
 
-import { heightPercentage } from '../assets/styles/FigmaScreen';
+import { TAB_BAR_HEIGHT, TAB_BAR_GAP } from '../lib/layout';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const Tab = createBottomTabNavigator<BottomTabParamList>();
@@ -25,18 +26,53 @@ export const ICON_PATH = {
   바: CocktailIcon,
 } as const;
 
+/**
+ * 탭바 배경.
+ *
+ * 이력: 처음엔 반투명이었는데 밑의 카드·텍스트가 그대로 비쳐 판독성을 해쳤고(2026-07-17 리뷰 P1-1),
+ * 그래서 불투명으로 덮었다. 이번엔 QA 에서 "원래 의도인 투명"을 요청받아 blur 로 절충한다.
+ * blur 는 밑 콘텐츠를 뭉개서 대비를 확보하므로 투명감과 판독성을 동시에 만족한다.
+ *
+ * Android 의 BlurView 는 실시간 blur 비용이 크고 기기 편차가 심하다 → 반투명 솔리드로 근사한다.
+ */
+const TabBarBackground = () => {
+  if (Platform.OS === 'ios') {
+    return (
+      <BlurView
+        style={StyleSheet.absoluteFill}
+        blurType="light"
+        blurAmount={20}
+        // 손쉬운 사용 > 투명도 줄이기 를 켠 사용자는 blur 가 렌더되지 않는다. 그 경우의 대체 색.
+        reducedTransparencyFallbackColor={colors.bg}
+      />
+    );
+  }
+  return <View style={[StyleSheet.absoluteFill, styles.androidTabBarBackground]} />;
+};
+
+const styles = StyleSheet.create({
+  root: { flex: 1 },
+  // 안드로이드용 blur 근사값. 완전 불투명은 아니어서 밑 콘텐츠의 색조가 살짝 비친다.
+  androidTabBarBackground: { backgroundColor: 'rgba(255, 255, 255, 0.94)' },
+});
+
 const BottomTabNavigator = () => {
   const insets = useSafeAreaInsets();
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={styles.root}>
       <Tab.Navigator
         initialRouteName="홈"
         screenOptions={({ route }) => ({
-          // 반투명 blur 배경은 밑의 콘텐츠가 비쳐 판독성을 해쳤다 → 불투명 배경 + 레이블.
+          // 아이콘만으로는 홈/바 구분이 안 됐다 → 레이블 유지.
           tabBarShowLabel: true,
+          // 탭 전환이 굼뜨게 느껴진다는 QA 피드백.
+          // 비활성 탭 화면이 계속 살아 있으면(홈 3개·바 2개의 fetch 이펙트, 리스트 리렌더)
+          // 전환 프레임을 그려야 할 JS 스레드를 같이 물고 있다. 화면 밖 탭은 얼려 둔다.
+          freezeOnBlur: true,
           tabBarActiveTintColor: colors.text,
           tabBarInactiveTintColor: colors.textTertiary,
+          tabBarBackground: TabBarBackground,
           tabBarLabelStyle: {
             fontSize: 11,
             fontFamily: fonts.medium,
@@ -44,8 +80,9 @@ const BottomTabNavigator = () => {
           tabBarStyle: {
             position: 'absolute',
             marginHorizontal: 10,
-            bottom: insets.bottom + 12,
-            backgroundColor: colors.bg,
+            bottom: insets.bottom + TAB_BAR_GAP,
+            // 배경은 tabBarBackground(blur) 가 그린다. 여기서 칠하면 blur 를 덮어버린다.
+            backgroundColor: 'transparent',
             borderTopWidth: 0,
             borderWidth: 1,
             borderColor: colors.border,
@@ -54,14 +91,14 @@ const BottomTabNavigator = () => {
             shadowOpacity: 0.12,
             shadowRadius: 15,
             elevation: 8,
-            height: heightPercentage(60),
+            height: TAB_BAR_HEIGHT,
             borderRadius: 999,
             overflow: 'hidden',
             paddingBottom: 0,
             paddingTop: 0,
           },
           tabBarItemStyle: {
-            height: heightPercentage(60),
+            height: TAB_BAR_HEIGHT,
             paddingVertical: 8,
             flexDirection: 'column',
             justifyContent: 'center',

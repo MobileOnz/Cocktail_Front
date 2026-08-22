@@ -47,7 +47,8 @@ import {
   needsReauth,
 } from '../../services/ChatTransport';
 import { createChatTransport } from '../../services/SseTransport';
-import { dark } from '../../lib/theme';
+import { bar as barTheme } from '../../lib/theme';
+import { isAuthError } from '../../lib/auth';
 
 const SESSION_HEADER = 'X-Onz-Bar-Session';
 
@@ -77,15 +78,15 @@ function formatTime(iso: string): string {
 /** 배지 문구. 사용자는 SSE 라는 말을 알 필요가 없다. */
 function badgeOf(state: ConnectionState, kind: TransportKind): { text: string; color: string } {
   if (state === 'open') {
-    return { text: '연결됨', color: dark.success };
+    return { text: '연결됨', color: barTheme.success };
   }
   if (state === 'polling') {
-    return { text: kind === 'poll' ? '폴링' : '연결됨', color: dark.warning };
+    return { text: kind === 'poll' ? '폴링' : '연결됨', color: barTheme.warning };
   }
   if (state === 'connecting' || state === 'reconnecting') {
-    return { text: '재연결중', color: dark.warning };
+    return { text: '재연결중', color: barTheme.warning };
   }
-  return { text: '연결 끊김', color: dark.textTertiary };
+  return { text: '연결 끊김', color: barTheme.textTertiary };
 }
 
 const BarChatScreen: React.FC = () => {
@@ -98,6 +99,8 @@ const BarChatScreen: React.FC = () => {
 
   const [phase, setPhase] = useState<Phase>('loading');
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  // denied 인 이유가 '로그인 없음'인지. 그렇다면 '다시 시도'가 아니라 로그인으로 보내야 한다.
+  const [needsLogin, setNeedsLogin] = useState(false);
   const [session, setSession] = useState<BarSession | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [blocked, setBlocked] = useState<Set<string>>(new Set());
@@ -165,6 +168,7 @@ const BarChatScreen: React.FC = () => {
       setErrorMsg(err.message);
       return;
     }
+    setNeedsLogin(isAuthError(err));
     setPhase('denied');
     setErrorMsg(err.message);
   }, []);
@@ -175,8 +179,9 @@ const BarChatScreen: React.FC = () => {
     }
     const token = await getToken();
     if (!token) {
+      setNeedsLogin(true);
       setPhase('denied');
-      setErrorMsg('로그인이 필요해요');
+      setErrorMsg('오픈채팅은 로그인한 사용자만 참여할 수 있어요.');
       return;
     }
     transportRef.current?.stop();
@@ -384,7 +389,7 @@ const BarChatScreen: React.FC = () => {
 
       {phase === 'loading' && (
         <View style={styles.center}>
-          <ActivityIndicator color={dark.text} />
+          <ActivityIndicator color={barTheme.text} />
           <Text style={styles.hintText}>세션 확인 중…</Text>
         </View>
       )}
@@ -406,9 +411,17 @@ const BarChatScreen: React.FC = () => {
       {phase === 'denied' && (
         <View style={styles.center}>
           <Text style={styles.errorText}>{errorMsg ?? '채팅에 입장할 수 없어요'}</Text>
-          <TouchableOpacity style={styles.retryBtn} onPress={() => { loadSession(); }}>
-            <Text style={styles.retryText}>다시 시도</Text>
-          </TouchableOpacity>
+          {needsLogin ? (
+            <TouchableOpacity
+              style={styles.retryBtn}
+              onPress={() => (navigation as any).navigate('Login')}>
+              <Text style={styles.retryText}>로그인하러 가기</Text>
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity style={styles.retryBtn} onPress={() => { loadSession(); }}>
+              <Text style={styles.retryText}>다시 시도</Text>
+            </TouchableOpacity>
+          )}
         </View>
       )}
 
@@ -435,7 +448,7 @@ const BarChatScreen: React.FC = () => {
               value={input}
               onChangeText={setInput}
               placeholder={session ? `${session.nickname} (으)로 참여 중` : '메시지를 입력하세요'}
-              placeholderTextColor={dark.textMuted}
+              placeholderTextColor={barTheme.textMuted}
               multiline
               maxLength={500}
             />
@@ -473,7 +486,7 @@ const BarChatScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: dark.bg },
+  container: { flex: 1, backgroundColor: barTheme.bg },
   flex: { flex: 1 },
   header: {
     flexDirection: 'row',
@@ -481,13 +494,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 10,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: dark.border,
+    borderBottomColor: barTheme.border,
   },
   backBtn: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center' },
-  backIcon: { color: dark.text, fontSize: 20 },
+  backIcon: { color: barTheme.text, fontSize: 20 },
   headerCenter: { flex: 1 },
-  headerTitle: { color: dark.text, fontSize: 17, fontWeight: '600' },
-  headerSub: { color: dark.textMuted, fontSize: 11, marginTop: 2 },
+  headerTitle: { color: barTheme.text, fontSize: 17, fontWeight: '600' },
+  headerSub: { color: barTheme.textMuted, fontSize: 11, marginTop: 2 },
   badge: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -495,54 +508,54 @@ const styles = StyleSheet.create({
     paddingHorizontal: 9,
     paddingVertical: 5,
     borderRadius: 20,
-    backgroundColor: dark.surface,
+    backgroundColor: barTheme.surface,
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: dark.borderStrong,
+    borderColor: barTheme.borderStrong,
   },
   dot: { width: 6, height: 6, borderRadius: 3 },
-  badgeText: { color: dark.textTertiary, fontSize: 11 },
+  badgeText: { color: barTheme.textTertiary, fontSize: 11 },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 24 },
-  hintText: { color: dark.textTertiary, fontSize: 13, marginTop: 12 },
-  errorText: { color: dark.textSecondary, fontSize: 14, textAlign: 'center', lineHeight: 21 },
-  devText: { color: dark.textMuted, fontSize: 11, marginTop: 10 },
+  hintText: { color: barTheme.textTertiary, fontSize: 13, marginTop: 12 },
+  errorText: { color: barTheme.textSecondary, fontSize: 14, textAlign: 'center', lineHeight: 21 },
+  devText: { color: barTheme.textMuted, fontSize: 11, marginTop: 10 },
   retryBtn: {
     marginTop: 20,
     paddingHorizontal: 22,
     paddingVertical: 12,
     borderRadius: 10,
-    backgroundColor: dark.surfaceHigh,
+    backgroundColor: barTheme.surfaceHigh,
     borderWidth: 1,
-    borderColor: dark.borderStrong,
+    borderColor: barTheme.borderStrong,
   },
-  retryText: { color: dark.text, fontSize: 14, fontWeight: '600' },
+  retryText: { color: barTheme.text, fontSize: 14, fontWeight: '600' },
   listContent: { padding: 12, paddingBottom: 4 },
   empty: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingTop: 80 },
-  emptyText: { color: dark.textMuted, fontSize: 13 },
+  emptyText: { color: barTheme.textMuted, fontSize: 13 },
   messageRow: { marginBottom: 10, flexDirection: 'row' },
   rowMine: { justifyContent: 'flex-end' },
   rowOther: { justifyContent: 'flex-start' },
   bubble: { maxWidth: '78%', borderRadius: 14, paddingHorizontal: 12, paddingVertical: 8 },
   bubbleOther: {
-    backgroundColor: dark.surfaceHigh,
+    backgroundColor: barTheme.surfaceHigh,
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: dark.border,
+    borderColor: barTheme.border,
     borderTopLeftRadius: 4,
   },
-  bubbleMine: { backgroundColor: dark.text, borderTopRightRadius: 4 },
-  nickname: { color: dark.textTertiary, fontSize: 11, fontWeight: '600', marginBottom: 3 },
-  content: { color: dark.textSecondary, fontSize: 14, lineHeight: 20 },
-  contentMine: { color: dark.textOnLight },
-  time: { color: dark.textMuted, fontSize: 10, marginTop: 4, alignSelf: 'flex-end' },
-  timeMine: { color: dark.textTertiary },
+  bubbleMine: { backgroundColor: barTheme.text, borderTopRightRadius: 4 },
+  nickname: { color: barTheme.textTertiary, fontSize: 11, fontWeight: '600', marginBottom: 3 },
+  content: { color: barTheme.textSecondary, fontSize: 14, lineHeight: 20 },
+  contentMine: { color: barTheme.textOnLight },
+  time: { color: barTheme.textMuted, fontSize: 10, marginTop: 4, alignSelf: 'flex-end' },
+  timeMine: { color: barTheme.textTertiary },
   hiddenRow: { marginBottom: 10, alignItems: 'center' },
   hiddenText: {
-    color: dark.textMuted,
+    color: barTheme.textMuted,
     fontSize: 12,
     fontStyle: 'italic',
     paddingVertical: 6,
     paddingHorizontal: 12,
     borderRadius: 10,
-    backgroundColor: dark.surface,
+    backgroundColor: barTheme.surface,
   },
   inputBar: {
     flexDirection: 'row',
@@ -550,21 +563,21 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingTop: 8,
     borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: dark.border,
+    borderTopColor: barTheme.border,
     gap: 8,
   },
   input: {
     flex: 1,
     minHeight: 40,
     maxHeight: 120,
-    backgroundColor: dark.surface,
+    backgroundColor: barTheme.surface,
     borderRadius: 10,
     paddingHorizontal: 12,
     paddingVertical: 10,
-    color: dark.text,
+    color: barTheme.text,
     fontSize: 14,
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: dark.border,
+    borderColor: barTheme.border,
   },
   sendBtn: {
     paddingHorizontal: 16,
@@ -572,27 +585,27 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 10,
-    backgroundColor: dark.text,
+    backgroundColor: barTheme.text,
   },
-  sendBtnDisabled: { backgroundColor: dark.surfaceActive },
-  sendText: { color: dark.textOnLight, fontSize: 14, fontWeight: '700' },
+  sendBtnDisabled: { backgroundColor: barTheme.surfaceActive },
+  sendText: { color: barTheme.textOnLight, fontSize: 14, fontWeight: '700' },
   modalBackdrop: {
     flex: 1,
-    backgroundColor: dark.overlay,
+    backgroundColor: barTheme.overlay,
     alignItems: 'center',
     justifyContent: 'center',
     padding: 32,
   },
   modalCard: {
     width: '100%',
-    backgroundColor: dark.surface,
+    backgroundColor: barTheme.surface,
     borderRadius: 14,
     paddingVertical: 8,
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: dark.borderStrong,
+    borderColor: barTheme.borderStrong,
   },
   modalTitle: {
-    color: dark.text,
+    color: barTheme.text,
     fontSize: 14,
     fontWeight: '700',
     paddingHorizontal: 16,
@@ -602,16 +615,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 14,
     borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: dark.border,
+    borderTopColor: barTheme.border,
   },
-  reasonText: { color: dark.textSecondary, fontSize: 15 },
+  reasonText: { color: barTheme.textSecondary, fontSize: 15 },
   cancelRow: {
     paddingHorizontal: 16,
     paddingVertical: 14,
     borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: dark.border,
+    borderTopColor: barTheme.border,
   },
-  cancelText: { color: dark.textTertiary, fontSize: 15, textAlign: 'center' },
+  cancelText: { color: barTheme.textTertiary, fontSize: 15, textAlign: 'center' },
 });
 
 export default BarChatScreen;
