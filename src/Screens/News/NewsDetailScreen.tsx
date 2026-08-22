@@ -137,8 +137,17 @@ const NewsDetailScreen = () => {
 
             {detail.tags && detail.tags.length > 0 && (
               <View style={styles.tagRow}>
+                {/* 태그를 누르면 매거진 목록이 그 태그로 걸러진다. 읽고 나서 비슷한 글로 넘어가는 통로다. */}
                 {detail.tags.map((t, i) => (
-                  <View key={i} style={styles.tagChip}><Text style={styles.tagText}>#{t}</Text></View>
+                  <TouchableOpacity
+                    key={i}
+                    style={styles.tagChip}
+                    onPress={() => navigation.navigate('BottomTabNavigator', { screen: '매거진', params: { tag: t } })}
+                    accessibilityRole="button"
+                    accessibilityLabel={`${t} 태그로 매거진 보기`}
+                  >
+                    <Text style={styles.tagText}>#{t}</Text>
+                  </TouchableOpacity>
                 ))}
               </View>
             )}

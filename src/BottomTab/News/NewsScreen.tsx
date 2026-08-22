@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, FlatList, ActivityIndicator } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
-import { fontPercentage } from '../../assets/styles/FigmaScreen';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import { fontPercentage, heightPercentage } from '../../assets/styles/FigmaScreen';
 import instance from '../../tokenRequest/axios_interceptor';
 import { unwrap, toUserMessage } from '../../lib/api';
 import type { NewsCard, NewsFeedResponse } from '../../types/api';
@@ -10,7 +10,7 @@ import ErrorState from '../../Components/common/ErrorState';
 import EmptyState from '../../Components/common/EmptyState';
 import SkeletonList from '../../Components/common/SkeletonList';
 import { formatDate } from '../../lib/date';
-import { colors, fonts } from '../../lib/theme';
+import { colors, fonts, radius } from '../../lib/theme';
 
 /** 서버 기본값과 맞춘다(BE: MagazineService.DEFAULT_SIZE). */
 const PAGE_SIZE = 20;
@@ -24,8 +24,12 @@ const CATEGORIES = [
 const NewsScreen = () => {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<any>();
+  const route = useRoute<any>();
   const [news, setNews] = useState<NewsCard[]>([]);
   const [selectedCategory, setSelectedCategory] = useState('ALL');
+  // QA: "매거진 해시태그를 검색·필터링에 쓸 수 있으면 좋겠다" → 상단 칩으로 노출한다.
+  const [tags, setTags] = useState<string[]>([]);
+  const [selectedTag, setSelectedTag] = useState<string | null>(route.params?.tag ?? null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   // null = 아직 안 불러옴, undefined 로 두지 않는다. 마지막 페이지면 서버가 null 을 준다.
@@ -35,6 +39,7 @@ const NewsScreen = () => {
   // 세대 번호를 붙여, 지금 보고 있는 카테고리의 응답이 아니면 버린다.
   // (없으면 '스토리' 탭에 '가이드' 글이 섞이고 커서까지 남의 것으로 덮인다)
   const generation = useRef(0);
+  const tagRef = useRef<string | null>(null);
 
   /**
    * 매거진 목록.
@@ -42,9 +47,14 @@ const NewsScreen = () => {
    * 예전엔 전량을 받아 클라이언트에서 정렬·필터했다. 글이 늘수록 첫 진입이 느려지는 구조라
    * 서버 커서 페이지네이션으로 옮겼다. 정렬(최신순)과 카테고리 필터도 서버가 한다.
    */
-  const fetchPage = useCallback(async (category: string, cursor: string | null) => {
+  const fetchPage = useCallback(async (category: string, tag: string | null, cursor: string | null) => {
     const res = await instance.get('/api/v2/magazine', {
-      params: { category, size: PAGE_SIZE, ...(cursor ? { cursor } : {}) },
+      params: {
+        category,
+        size: PAGE_SIZE,
+        ...(tag ? { tag } : {}),
+        ...(cursor ? { cursor } : {}),
+      },
     });
     return unwrap<NewsFeedResponse>(res);
   }, []);
@@ -54,7 +64,7 @@ const NewsScreen = () => {
     setLoading(true);
     setError(null);
     try {
-      const data = await fetchPage(category, null);
+      const data = await fetchPage(category, tagRef.current, null);
       if (gen !== generation.current) { return; }
       setNews(data.items ?? []);
       setNextCursor(data.nextCursor ?? null);
@@ -75,7 +85,7 @@ const NewsScreen = () => {
     const gen = generation.current;
     setLoadingMore(true);
     try {
-      const data = await fetchPage(selectedCategory, nextCursor);
+      const data = await fetchPage(selectedCategory, selectedTag, nextCursor);
       // 응답이 오는 사이 카테고리가 바뀌었으면 이 페이지는 남의 것이다.
       if (gen !== generation.current) { return; }
       setNews(prev => [...prev, ...(data.items ?? [])]);
@@ -86,9 +96,30 @@ const NewsScreen = () => {
     } finally {
       if (gen === generation.current) { setLoadingMore(false); }
     }
-  }, [nextCursor, loadingMore, loading, selectedCategory, fetchPage]);
+  }, [nextCursor, loadingMore, loading, selectedCategory, selectedTag, fetchPage]);
 
-  useEffect(() => { loadFirstPage(selectedCategory); }, [selectedCategory, loadFirstPage]);
+  useEffect(() => {
+    instance.get('/api/v2/magazine/tags')
+      .then(res => setTags(unwrap<string[]>(res) ?? []))
+      .catch(() => setTags([]));   // 태그는 부가 기능이다. 실패해도 목록은 보여야 한다.
+  }, []);
+
+  // 상세에서 태그를 눌러 들어오면 그 태그로 걸러 보여준다.
+  // 파라미터가 '새로 온 값'일 때만 반영한다 — selectedTag 를 의존성에 넣으면
+  // 사용자가 칩으로 태그를 바꾼 직후 라우트 파라미터가 그걸 도로 덮어쓴다.
+  const appliedRouteTag = useRef<string | null | undefined>(route.params?.tag);
+  useEffect(() => {
+    const t = route.params?.tag ?? null;
+    if (t !== appliedRouteTag.current) {
+      appliedRouteTag.current = t;
+      setSelectedTag(t);
+    }
+  }, [route.params?.tag]);
+
+  useEffect(() => {
+    tagRef.current = selectedTag;
+    loadFirstPage(selectedCategory);
+  }, [selectedCategory, selectedTag, loadFirstPage]);
 
   const fetchNews = useCallback(() => loadFirstPage(selectedCategory), [loadFirstPage, selectedCategory]);
 
@@ -143,8 +174,8 @@ const NewsScreen = () => {
       <View style={styles.tabBar}>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.tabBarContent}>
           {CATEGORIES.map(cat => (
-            <TouchableOpacity 
-              key={cat.id} 
+            <TouchableOpacity
+              key={cat.id}
               style={[styles.tabItem, selectedCategory === cat.id && styles.tabItemActive]}
               onPress={() => setSelectedCategory(cat.id)}
             >
@@ -153,6 +184,28 @@ const NewsScreen = () => {
           ))}
         </ScrollView>
       </View>
+
+      {tags.length > 0 && (
+        <View style={styles.tagBar}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.tagBarContent}>
+            {tags.map(t => {
+              const on = selectedTag === t;
+              return (
+                <TouchableOpacity
+                  key={t}
+                  style={[styles.tagChip, on && styles.tagChipActive]}
+                  onPress={() => setSelectedTag(on ? null : t)}
+                  accessibilityRole="button"
+                  accessibilityState={{ selected: on }}
+                  accessibilityLabel={`${t} 태그 ${on ? '해제' : '적용'}`}
+                >
+                  <Text style={[styles.tagChipText, on && styles.tagChipTextActive]}>#{t}</Text>
+                </TouchableOpacity>
+              );
+            })}
+          </ScrollView>
+        </View>
+      )}
 
       {loading ? (
         <SkeletonList count={3} variant="card" />
@@ -172,8 +225,8 @@ const NewsScreen = () => {
           }
           ListEmptyComponent={
             <EmptyState
-              title="해당 카테고리의 뉴스가 없습니다"
-              description="다른 카테고리를 살펴보시겠어요?"
+              title={selectedTag ? `#${selectedTag} 글이 없습니다` : '해당 카테고리의 글이 없습니다'}
+              description={selectedTag ? '태그를 해제하거나 다른 태그를 골라보세요.' : '다른 카테고리를 살펴보시겠어요?'}
               emoji="📰"
             />
           }
@@ -225,6 +278,35 @@ const styles = StyleSheet.create({
   tabLabelActive: {
     color: '#FFFFFF',
   },
+  tagBar: {
+    borderBottomWidth: 1,
+    borderBottomColor: colors.divider,
+  },
+  tagBarContent: {
+    paddingHorizontal: 16,
+    paddingBottom: 12,
+    columnGap: 8,
+  },
+  tagChip: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: radius.pill,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: colors.bg,
+  },
+  tagChipActive: {
+    backgroundColor: colors.text,
+    borderColor: colors.text,
+  },
+  tagChipText: {
+    fontFamily: fonts.medium,
+    fontSize: fontPercentage(13),
+    color: colors.textSecondary,
+  },
+  tagChipTextActive: {
+    color: colors.textInverse,
+  },
   footerSpinner: {
     paddingVertical: 20,
   },
@@ -243,10 +325,14 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
     overflow: 'hidden',
   },
+  // QA: 풀블리드가 답답하다 → 카드 안쪽으로 물리고 모서리를 둥글린다.
   newsImage: {
-    width: '100%',
-    height: 200,
-    backgroundColor: '#E9ECEF',
+    marginHorizontal: 12,
+    marginTop: 12,
+    width: undefined,
+    height: heightPercentage(170),
+    borderRadius: radius.md,
+    backgroundColor: colors.skeleton,
   },
   newsContent: {
     padding: 16,

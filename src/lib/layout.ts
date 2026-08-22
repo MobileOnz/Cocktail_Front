@@ -10,8 +10,11 @@ import { heightPercentage } from '../assets/styles/FigmaScreen';
  */
 export const TAB_BAR_HEIGHT = heightPercentage(60);
 
-/** BottomTabNavigator tabBarStyle.bottom = insets.bottom + TAB_BAR_GAP */
-export const TAB_BAR_GAP = 12;
+/**
+ * BottomTabNavigator tabBarStyle.bottom = insets.bottom + TAB_BAR_GAP
+ * QA: 12 는 홈 인디케이터에서 너무 떠 보인다("위치가 어색") → 6 으로 낮춘다.
+ */
+export const TAB_BAR_GAP = 6;
 
 /** 탭바와 마지막 항목 사이 숨쉴 틈. */
 const BREATHING_ROOM = 16;
