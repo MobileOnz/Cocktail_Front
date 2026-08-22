@@ -6,6 +6,7 @@ import { RootStackParamList } from '../../Navigation/Navigation';
 import VideoViewModel from './VideoViewModel';
 import {fontPercentage } from '../../assets/styles/FigmaScreen';
 import { useToast } from '../../Components/ToastContext';
+import { fonts } from '../../lib/theme';
 
 type RecommendationLoadingVideoScreenNavigationProp = StackNavigationProp<
   RootStackParamList,
@@ -148,7 +149,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: fontPercentage(22),
-    fontWeight: '600',
+    fontFamily: fonts.medium,
     color: 'white',
     textAlign: 'center',
   },

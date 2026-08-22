@@ -209,7 +209,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   sectionTitle: {
-    fontFamily: 'Pretendard-Medium',
+    fontFamily: 'Pretendard-Regular',
     fontSize: 15,
     color: '#1B1B1B',
     marginBottom: 10,

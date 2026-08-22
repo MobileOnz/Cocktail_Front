@@ -174,17 +174,15 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   searchText: {
-    fontFamily: 'Pretendard-Medium',
+    fontFamily: 'Pretendard-Regular',
     fontSize: fontPercentage(16),
     color: '#000',
     marginLeft: 8,
   },
   text: {
     color: '#BDBDBD',
-    fontFamily: 'Pretendard-Medium',
-    fontSize: fontPercentage(16),
-    fontWeight: '600'
-    , textAlign: 'center',
+    fontFamily: 'Pretendard-Regular',
+    fontSize: fontPercentage(16), textAlign: 'center',
   },
   searchContainer: {
     paddingHorizontal: widthPercentage(16),
@@ -328,12 +326,10 @@ const styles = StyleSheet.create({
     fontFamily: 'Pretendard-Medium',
     fontSize: 14,
     color: '#444444',
-    fontWeight: '500',
   },
   applyText: {
     fontFamily: 'Pretendard-Medium',
     fontSize: 14,
     color: '#FFFFFF',
-    fontWeight: '600',
   },
 });

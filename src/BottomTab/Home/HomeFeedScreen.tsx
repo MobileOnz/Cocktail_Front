@@ -517,11 +517,11 @@ const styles = StyleSheet.create({
     backgroundColor: colors.bgInverse,
   },
   recommendCtaText: {
-    fontFamily: fonts.semibold,
+    fontFamily: fonts.medium,
     fontSize: fontPercentage(fontSize.base),
     color: colors.textInverse,
   },
-  recommendCtaArrow: { fontSize: fontPercentage(fontSize.xl), color: colors.textInverse },
+  recommendCtaArrow: { fontFamily: fonts.regular, fontSize: fontPercentage(fontSize.xl), color: colors.textInverse },
 
   sectionHeader: {
     flexDirection: 'row',
@@ -563,9 +563,9 @@ const styles = StyleSheet.create({
     fontSize: fontPercentage(fontSize.xs),
     color: colors.accent,
   },
-  newsDate: { fontFamily: fonts.regular, fontSize: fontPercentage(fontSize.xs), color: colors.textDisabled },
+  newsDate: { fontFamily: fonts.regular, fontSize: fontPercentage(fontSize.xs), color: colors.textTertiary },
   newsTitle: {
-    fontFamily: fonts.semibold,
+    fontFamily: fonts.medium,
     fontSize: fontPercentage(fontSize.lg),
     color: colors.text,
     lineHeight: fontPercentage(24),
@@ -602,7 +602,7 @@ const styles = StyleSheet.create({
     marginBottom: heightPercentage(spacing.xs),
   },
   guideTitle: {
-    fontFamily: fonts.semibold,
+    fontFamily: fonts.medium,
     fontSize: fontPercentage(fontSize.base),
     color: colors.text,
     lineHeight: fontPercentage(21),

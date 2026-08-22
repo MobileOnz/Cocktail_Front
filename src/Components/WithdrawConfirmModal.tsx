@@ -88,12 +88,12 @@ const styles = StyleSheet.create({
   cancelText: {
     fontSize: fontPercentage(16),
     color: '#7D7A6F',
-    fontFamily: 'Pretendard-Medium',
+    fontFamily: 'Pretendard-Regular',
   },
   confirmText: {
     fontSize: fontPercentage(16),
     color: '#FF5A5A',
-    fontFamily: 'Pretendard-Medium',
+    fontFamily: 'Pretendard-Regular',
   },
 });
 

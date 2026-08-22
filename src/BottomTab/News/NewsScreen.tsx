@@ -263,12 +263,13 @@ const styles = StyleSheet.create({
     fontFamily: 'Pretendard-Bold',
   },
   newsDate: {
+    fontFamily: fonts.regular,
     fontSize: fontPercentage(12),
     color: '#ADB5BD',
   },
   newsTitle: {
     fontSize: fontPercentage(17),
-    fontFamily: 'Pretendard-SemiBold',
+    fontFamily: 'Pretendard-Medium',
     color: '#212529',
     marginBottom: 8,
     lineHeight: 24,
@@ -291,6 +292,7 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     color: '#ADB5BD',
+    fontFamily: fonts.regular,
     fontSize: fontPercentage(15),
   },
 });

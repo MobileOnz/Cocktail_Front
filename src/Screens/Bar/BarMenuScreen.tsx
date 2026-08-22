@@ -323,11 +323,11 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: colors.divider,
   },
-  back: { fontSize: fontPercentage(30), color: colors.text, lineHeight: fontPercentage(32) },
+  back: { fontFamily: fonts.regular, fontSize: fontPercentage(30), color: colors.text, lineHeight: fontPercentage(32) },
   headerTitle: {
     flex: 1,
     textAlign: 'center',
-    fontFamily: fonts.semibold,
+    fontFamily: fonts.medium,
     fontSize: fontPercentage(fontSize.lg),
     color: colors.text,
   },
@@ -358,7 +358,7 @@ const styles = StyleSheet.create({
   },
   gateTextWrap: { flex: 1 },
   gateTitle: {
-    fontFamily: fonts.semibold,
+    fontFamily: fonts.medium,
     fontSize: fontPercentage(fontSize.md),
     color: colors.textInverse,
   },
@@ -366,10 +366,10 @@ const styles = StyleSheet.create({
     marginTop: heightPercentage(spacing.xs),
     fontFamily: fonts.regular,
     fontSize: fontPercentage(fontSize.xs),
-    color: colors.textDisabled,
+    color: colors.textTertiary,
     lineHeight: fontPercentage(18),
   },
-  gateArrow: { fontSize: fontPercentage(fontSize.xl), color: colors.textInverse },
+  gateArrow: { fontFamily: fonts.regular, fontSize: fontPercentage(fontSize.xl), color: colors.textInverse },
 
   gateL2: {
     flexDirection: 'row',
@@ -401,7 +401,7 @@ const styles = StyleSheet.create({
   sectionSub: {
     fontFamily: fonts.regular,
     fontSize: fontPercentage(fontSize.xs),
-    color: colors.textDisabled,
+    color: colors.textTertiary,
     marginTop: heightPercentage(2),
   },
 
@@ -414,11 +414,11 @@ const styles = StyleSheet.create({
   },
   itemUnavailable: { opacity: 0.45 },
   itemText: { flex: 1, paddingRight: widthPercentage(spacing.md) },
-  itemName: { fontFamily: fonts.semibold, fontSize: fontPercentage(fontSize.base), color: colors.text },
+  itemName: { fontFamily: fonts.medium, fontSize: fontPercentage(fontSize.base), color: colors.text },
   itemNameEn: {
     fontFamily: fonts.regular,
     fontSize: fontPercentage(fontSize.xs),
-    color: colors.textDisabled,
+    color: colors.textTertiary,
     marginTop: 1,
   },
   itemDesc: {
@@ -437,7 +437,7 @@ const styles = StyleSheet.create({
 
   priceCol: { alignItems: 'flex-end', minWidth: widthPercentage(96) },
   price: { fontFamily: fonts.bold, fontSize: fontPercentage(fontSize.base), color: colors.text },
-  lock: { fontSize: fontPercentage(fontSize.sm) },
+  lock: { fontFamily: fonts.regular, fontSize: fontPercentage(fontSize.sm) },
   band: {
     marginTop: 2,
     fontFamily: fonts.medium,
@@ -465,7 +465,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   chatButtonText: {
-    fontFamily: fonts.semibold,
+    fontFamily: fonts.medium,
     fontSize: fontPercentage(fontSize.md),
     color: colors.textInverse,
   },

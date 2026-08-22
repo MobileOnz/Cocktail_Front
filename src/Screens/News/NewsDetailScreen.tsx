@@ -173,8 +173,8 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: colors.divider,
   },
-  backChevron: { fontSize: fontPercentage(30), color: colors.text, lineHeight: fontPercentage(32) },
-  headerTitle: { fontFamily: fonts.semibold, fontSize: fontPercentage(fontSize.lg), color: colors.text },
+  backChevron: { fontFamily: fonts.regular, fontSize: fontPercentage(30), color: colors.text, lineHeight: fontPercentage(32) },
+  headerTitle: { fontFamily: fonts.medium, fontSize: fontPercentage(fontSize.lg), color: colors.text },
   headerSpacer: { width: widthPercentage(spacing.xl) },
 
   hero: { width: '100%', height: heightPercentage(220), backgroundColor: colors.skeleton },
@@ -207,11 +207,11 @@ const styles = StyleSheet.create({
     marginBottom: heightPercentage(spacing.xl),
   },
   source: { fontFamily: fonts.medium, fontSize: fontPercentage(fontSize.sm), color: colors.textSecondary },
-  metaDot: { marginHorizontal: widthPercentage(spacing.sm), color: colors.textDisabled },
+  metaDot: { marginHorizontal: widthPercentage(spacing.sm), color: colors.textTertiary },
   date: { fontFamily: fonts.regular, fontSize: fontPercentage(fontSize.sm), color: colors.textTertiary },
   // 리드문도 읽는 텍스트다 — 본문(17)보다 한 단 아래인 16 으로 두되 행간은 넉넉히.
   summary: {
-    fontFamily: fonts.medium,
+    fontFamily: fonts.regular,
     fontSize: fontPercentage(fontSize.md),
     color: colors.textSecondary,
     lineHeight: fontPercentage(27),

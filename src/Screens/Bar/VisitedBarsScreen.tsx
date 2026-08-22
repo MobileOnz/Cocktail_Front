@@ -15,6 +15,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import instance from '../../tokenRequest/axios_interceptor';
+import { fonts } from '../../lib/theme';
 
 interface VisitItem {
   id: number;
@@ -151,8 +152,8 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   backBtn: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center' },
-  backArrow: { color: '#1B1B1B', fontSize: 22 },
-  title: { color: '#1B1B1B', fontSize: 18, fontWeight: '600' },
+  backArrow: { color: '#1B1B1B', fontFamily: fonts.regular, fontSize: 22 },
+  title: { color: '#1B1B1B', fontSize: 18, fontFamily: fonts.medium,},
   row: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -160,13 +161,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 18,
   },
-  rowName: { color: '#1B1B1B', fontSize: 16, fontWeight: '500', flex: 1 },
-  rowMeta: { color: '#9E9E9E', fontSize: 13 },
+  rowName: { color: '#1B1B1B', fontSize: 16, fontFamily: fonts.regular, flex: 1 },
+  rowMeta: { color: '#9E9E9E', fontFamily: fonts.regular, fontSize: 13 },
   separator: { height: 1, backgroundColor: '#F0F0F0', marginHorizontal: 20 },
   empty: { padding: 48, alignItems: 'center' },
-  emptyText: { color: '#888', fontSize: 14 },
+  emptyText: { color: '#888', fontFamily: fonts.regular, fontSize: 14 },
   retryBtn: { marginTop: 16, paddingHorizontal: 16, paddingVertical: 10, backgroundColor: '#222', borderRadius: 8 },
-  retryText: { color: '#FFFFFF', fontSize: 13 },
+  retryText: { color: '#FFFFFF', fontFamily: fonts.regular, fontSize: 13 },
 });
 
 export default VisitedBarsScreen;

@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, TouchableWithoutFeedback, Platform } from 'react-native';
 import { widthPercentage, heightPercentage, fontPercentage, getResponsiveHeight } from '../assets/styles/FigmaScreen';
+import { fonts } from '../lib/theme';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
@@ -54,7 +55,7 @@ const styles = StyleSheet.create({
   },
   message: {
     fontSize: fontPercentage(16),
-    fontWeight: '700',
+    fontFamily: fonts.bold,
     paddingTop : heightPercentage(24),
     paddingBottom : 24,
 
@@ -77,7 +78,7 @@ const styles = StyleSheet.create({
   },
   cancelText: {
     color: '#B9B6AD',
-    fontWeight: '500',
+    fontFamily: fonts.regular,
     fontSize: fontPercentage(16),
   },
   button: {
@@ -92,7 +93,7 @@ const styles = StyleSheet.create({
   },
   confirmText: {
     color: '#FF465C',
-    fontWeight: '500',
+    fontFamily: fonts.regular,
     fontSize: fontPercentage(16),
   },
 });

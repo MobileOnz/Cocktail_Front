@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
     padding: widthPercentage(spacing.xxl),
     backgroundColor: colors.bg,
   },
-  emoji: { fontSize: fontPercentage(40), marginBottom: heightPercentage(spacing.lg) },
+  emoji: { fontFamily: fonts.regular, fontSize: fontPercentage(40), marginBottom: heightPercentage(spacing.lg) },
   title: {
     fontFamily: fonts.bold,
     fontSize: fontPercentage(fontSize.lg),
@@ -95,7 +95,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.bgInverse,
   },
   buttonText: {
-    fontFamily: fonts.semibold,
+    fontFamily: fonts.medium,
     fontSize: fontPercentage(fontSize.base),
     color: colors.textInverse,
   },

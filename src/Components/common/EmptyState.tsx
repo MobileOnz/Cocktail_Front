@@ -56,9 +56,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: widthPercentage(spacing.xl),
   },
   compact: { paddingVertical: heightPercentage(spacing.xxxl) },
-  emoji: { fontSize: fontPercentage(32), marginBottom: heightPercentage(spacing.md) },
+  emoji: { fontFamily: fonts.regular, fontSize: fontPercentage(32), marginBottom: heightPercentage(spacing.md) },
   title: {
-    fontFamily: fonts.semibold,
+    fontFamily: fonts.medium,
     fontSize: fontPercentage(fontSize.md),
     color: colors.text,
     textAlign: 'center',
@@ -85,7 +85,7 @@ const styles = StyleSheet.create({
     color: colors.text,
   },
   titleOnDark: { color: colors.textInverse },
-  descriptionOnDark: { color: colors.textDisabled },
+  descriptionOnDark: { color: colors.textTertiary },
   actionButtonOnDark: { borderColor: colors.textSecondary },
   actionTextOnDark: { color: colors.textInverse },
 });

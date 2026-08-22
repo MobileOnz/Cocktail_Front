@@ -205,7 +205,7 @@ const styles = StyleSheet.create({
   searchInput: {
     flex: 1,
     padding: 0,
-    fontFamily: fonts.medium,
+    fontFamily: fonts.regular,
     fontSize: fontPercentage(fontSize.md),
     color: colors.text,
   },
@@ -221,7 +221,7 @@ const styles = StyleSheet.create({
     marginBottom: heightPercentage(20),
   },
   recentTitle: {
-    fontFamily: fonts.semibold,
+    fontFamily: fonts.medium,
     fontSize: fontPercentage(fontSize.xl),
     color: colors.text,
   },
@@ -237,7 +237,7 @@ const styles = StyleSheet.create({
     paddingVertical: heightPercentage(12),
   },
   recentText: {
-    fontFamily: fonts.medium,
+    fontFamily: fonts.regular,
     fontSize: fontPercentage(fontSize.md),
     color: colors.textSecondary,
   },

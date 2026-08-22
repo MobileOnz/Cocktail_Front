@@ -47,7 +47,7 @@ import {
   needsReauth,
 } from '../../services/ChatTransport';
 import { createChatTransport } from '../../services/SseTransport';
-import { bar as barTheme } from '../../lib/theme';
+import { bar as barTheme, fonts } from '../../lib/theme';
 import { isAuthError } from '../../lib/auth';
 
 const SESSION_HEADER = 'X-Onz-Bar-Session';
@@ -497,10 +497,10 @@ const styles = StyleSheet.create({
     borderBottomColor: barTheme.border,
   },
   backBtn: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center' },
-  backIcon: { color: barTheme.text, fontSize: 20 },
+  backIcon: { color: barTheme.text, fontFamily: fonts.regular, fontSize: 20 },
   headerCenter: { flex: 1 },
-  headerTitle: { color: barTheme.text, fontSize: 17, fontWeight: '600' },
-  headerSub: { color: barTheme.textMuted, fontSize: 11, marginTop: 2 },
+  headerTitle: { color: barTheme.text, fontSize: 17, fontFamily: fonts.medium,},
+  headerSub: { color: barTheme.textMuted, fontFamily: fonts.regular, fontSize: 11, marginTop: 2 },
   badge: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -513,11 +513,11 @@ const styles = StyleSheet.create({
     borderColor: barTheme.borderStrong,
   },
   dot: { width: 6, height: 6, borderRadius: 3 },
-  badgeText: { color: barTheme.textTertiary, fontSize: 11 },
+  badgeText: { color: barTheme.textTertiary, fontFamily: fonts.regular, fontSize: 11 },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 24 },
-  hintText: { color: barTheme.textTertiary, fontSize: 13, marginTop: 12 },
-  errorText: { color: barTheme.textSecondary, fontSize: 14, textAlign: 'center', lineHeight: 21 },
-  devText: { color: barTheme.textMuted, fontSize: 11, marginTop: 10 },
+  hintText: { color: barTheme.textTertiary, fontFamily: fonts.regular, fontSize: 13, marginTop: 12 },
+  errorText: { color: barTheme.textSecondary, fontFamily: fonts.regular, fontSize: 14, textAlign: 'center', lineHeight: 21 },
+  devText: { color: barTheme.textMuted, fontFamily: fonts.regular, fontSize: 11, marginTop: 10 },
   retryBtn: {
     marginTop: 20,
     paddingHorizontal: 22,
@@ -527,10 +527,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: barTheme.borderStrong,
   },
-  retryText: { color: barTheme.text, fontSize: 14, fontWeight: '600' },
+  retryText: { color: barTheme.text, fontSize: 14, fontFamily: fonts.semibold,},
   listContent: { padding: 12, paddingBottom: 4 },
   empty: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingTop: 80 },
-  emptyText: { color: barTheme.textMuted, fontSize: 13 },
+  emptyText: { color: barTheme.textMuted, fontFamily: fonts.regular, fontSize: 13 },
   messageRow: { marginBottom: 10, flexDirection: 'row' },
   rowMine: { justifyContent: 'flex-end' },
   rowOther: { justifyContent: 'flex-start' },
@@ -542,16 +542,16 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 4,
   },
   bubbleMine: { backgroundColor: barTheme.text, borderTopRightRadius: 4 },
-  nickname: { color: barTheme.textTertiary, fontSize: 11, fontWeight: '600', marginBottom: 3 },
-  content: { color: barTheme.textSecondary, fontSize: 14, lineHeight: 20 },
+  nickname: { color: barTheme.textTertiary, fontSize: 11, fontFamily: fonts.semibold, marginBottom: 3 },
+  content: { color: barTheme.textSecondary, fontFamily: fonts.regular, fontSize: 14, lineHeight: 20 },
   contentMine: { color: barTheme.textOnLight },
-  time: { color: barTheme.textMuted, fontSize: 10, marginTop: 4, alignSelf: 'flex-end' },
+  time: { color: barTheme.textMuted, fontFamily: fonts.regular, fontSize: 10, marginTop: 4, alignSelf: 'flex-end' },
   timeMine: { color: barTheme.textTertiary },
   hiddenRow: { marginBottom: 10, alignItems: 'center' },
   hiddenText: {
     color: barTheme.textMuted,
+    fontFamily: fonts.regular,
     fontSize: 12,
-    fontStyle: 'italic',
     paddingVertical: 6,
     paddingHorizontal: 12,
     borderRadius: 10,
@@ -575,6 +575,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 10,
     color: barTheme.text,
+    fontFamily: fonts.regular,
     fontSize: 14,
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: barTheme.border,
@@ -588,7 +589,7 @@ const styles = StyleSheet.create({
     backgroundColor: barTheme.text,
   },
   sendBtnDisabled: { backgroundColor: barTheme.surfaceActive },
-  sendText: { color: barTheme.textOnLight, fontSize: 14, fontWeight: '700' },
+  sendText: { color: barTheme.textOnLight, fontSize: 14, fontFamily: fonts.bold,},
   modalBackdrop: {
     flex: 1,
     backgroundColor: barTheme.overlay,
@@ -607,7 +608,7 @@ const styles = StyleSheet.create({
   modalTitle: {
     color: barTheme.text,
     fontSize: 14,
-    fontWeight: '700',
+    fontFamily: fonts.bold,
     paddingHorizontal: 16,
     paddingVertical: 12,
   },
@@ -617,14 +618,14 @@ const styles = StyleSheet.create({
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: barTheme.border,
   },
-  reasonText: { color: barTheme.textSecondary, fontSize: 15 },
+  reasonText: { color: barTheme.textSecondary, fontFamily: fonts.regular, fontSize: 15 },
   cancelRow: {
     paddingHorizontal: 16,
     paddingVertical: 14,
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: barTheme.border,
   },
-  cancelText: { color: barTheme.textTertiary, fontSize: 15, textAlign: 'center' },
+  cancelText: { color: barTheme.textTertiary, fontFamily: fonts.regular, fontSize: 15, textAlign: 'center' },
 });
 
 export default BarChatScreen;

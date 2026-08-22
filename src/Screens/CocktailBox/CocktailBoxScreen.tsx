@@ -8,6 +8,7 @@ import useCocktailBoxViewModel from './CocktailBoxViewModel';
 
 import CocktailCard from '../../Components/CocktailCard';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { fonts } from '../../lib/theme';
 const CocktailBoxScreen = () => {
     const navigation = useNavigation<any>();
     const vm = useCocktailBoxViewModel();
@@ -103,13 +104,12 @@ const styles = StyleSheet.create({
     },
     text: {
         color: '#BDBDBD',
-        fontWeight: '600',
         fontFamily: 'Pretendard',
         fontSize: fontPercentage(16),
     },
     headerTitle: {
         fontSize: fontPercentage(20),
-        fontWeight: '700',
+        fontFamily: fonts.bold,
         color: '#1B1B1B',
     },
     headerDivider: {
@@ -143,13 +143,13 @@ const styles = StyleSheet.create({
     },
     emptyTitle: {
         fontSize: fontPercentage(16),
-        fontWeight: '600',
+        fontFamily: fonts.medium,
         color: '#1B1B1B',
         marginBottom: 4,
     },
     emptySub: {
         fontSize: fontPercentage(14),
         color: '#BDBDBD',
-        fontWeight: '500',
+        fontFamily: fonts.medium,
     },
 });

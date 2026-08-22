@@ -25,6 +25,7 @@ import { SignUpRequest } from '../../../model/domain/SignupRequest';
 import DeviceInfo from 'react-native-device-info';
 import { useToast } from '../../../Components/ToastContext';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { fonts } from '../../../lib/theme';
 
 // const server = API_BASE_URL;
 type SignupScreenRouteProp = RouteProp<RootStackParamList, 'SignupScreen'>;
@@ -77,8 +78,8 @@ const SignupScreen: React.FC<SignupScreenProps> = ({ navigation }) => {
     if (boldText === '(필수)') {
       return (
         <Text style={styles.individualAgreementText}>
-          <Text style={{ fontWeight: '600', fontSize: fontPercentage(16) }}>{boldText}</Text>
-          <Text style={{ fontWeight: '500', fontSize: fontPercentage(16) }}>{afterText}</Text>
+          <Text style={{ fontFamily: fonts.semibold, fontSize: fontPercentage(16) }}>{boldText}</Text>
+          <Text style={{ fontFamily: fonts.medium, fontSize: fontPercentage(16) }}>{afterText}</Text>
         </Text>
       );
     }
@@ -315,13 +316,13 @@ const styles = StyleSheet.create({
   },
   welcomeTitle: {
     fontSize: fontPercentage(22),
-    fontWeight: '600',
+    fontFamily: fonts.medium,
     color: '#1B1B1B',
     marginTop: heightPercentage(24),
   },
   description: {
     fontSize: fontPercentage(16),
-    fontWeight: '500',
+    fontFamily: fonts.regular,
     color: '#616161',
     marginTop: heightPercentage(4),    
   },
@@ -338,7 +339,7 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     fontSize: fontPercentage(16),
-    fontWeight: '500',
+    fontFamily: fonts.regular,
     color: '#2D2D2D',
   },
   clearIcon: {
@@ -366,9 +367,10 @@ const styles = StyleSheet.create({
   agreementText: {
     fontSize: fontPercentage(16),
     color: '#2D2D2D',
-    fontWeight: 'bold',
+    fontFamily: fonts.bold,
   },
   individualAgreementText: {
+    fontFamily: fonts.regular,
     fontSize: fontPercentage(14),
     color: '#2D2D2D',
     flex: 1,
@@ -399,12 +401,12 @@ const styles = StyleSheet.create({
   startButtonText: {
     fontSize: fontPercentage(16),
     color: '#FAFAFA',
-    fontWeight: '600',
+    fontFamily: fonts.medium,
   },
   startButtonTextDisabled: {
     fontSize: fontPercentage(16),
     color: '#FAFAFA',
-    fontWeight: '600',
+    fontFamily: fonts.medium,
   },
   detailBox: {
     padding: widthPercentage(10),
@@ -412,6 +414,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   detailText: {
+    fontFamily: fonts.regular,
     fontSize: fontPercentage(14),
     color: '#2D2D2D',
   },
@@ -455,7 +458,7 @@ const styles = StyleSheet.create({
   startText: {
     fontSize: fontPercentage(16),
     color: '#FFFFFF',
-    fontWeight: '600',
+    fontFamily: fonts.medium,
   },
 });
 

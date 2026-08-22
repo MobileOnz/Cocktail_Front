@@ -17,7 +17,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import instance from '../../tokenRequest/axios_interceptor';
 import RemoteImage from '../../Components/common/RemoteImage';
-import { bar as barTheme } from '../../lib/theme';
+import { bar as barTheme, fonts } from '../../lib/theme';
 import { ensureLoggedIn, isAuthError, promptLogin } from '../../lib/auth';
 
 interface BarDetail {
@@ -195,12 +195,12 @@ const styles = StyleSheet.create({
   backBtn: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center' },
   hero: { width: '100%', height: 220, backgroundColor: barTheme.surfaceHigh },
   body: { padding: 20 },
-  name: { color: barTheme.text, fontSize: 26, fontWeight: '700' },
-  nameEn: { color: barTheme.textTertiary, fontSize: 14, marginTop: 4 },
-  description: { color: barTheme.textSecondary, fontSize: 14, lineHeight: 22, marginTop: 12 },
+  name: { color: barTheme.text, fontSize: 26, fontFamily: fonts.bold,},
+  nameEn: { color: barTheme.textTertiary, fontFamily: fonts.regular, fontSize: 14, marginTop: 4 },
+  description: { color: barTheme.textSecondary, fontFamily: fonts.regular, fontSize: 14, lineHeight: 22, marginTop: 12 },
   row: { flexDirection: 'row', alignItems: 'flex-start', marginTop: 14, gap: 12 },
-  kAddr: { color: barTheme.textTertiary, fontSize: 13, width: 40 },
-  vAddr: { color: barTheme.textSecondary, fontSize: 13, flex: 1 },
+  kAddr: { color: barTheme.textTertiary, fontFamily: fonts.regular, fontSize: 13, width: 40 },
+  vAddr: { color: barTheme.textSecondary, fontFamily: fonts.regular, fontSize: 13, flex: 1 },
   actions: { marginTop: 24, gap: 10 },
   actionBtn: {
     paddingVertical: 14,
@@ -214,12 +214,12 @@ const styles = StyleSheet.create({
   actionTextActive: { color: barTheme.text },
   primaryBtn: { backgroundColor: barTheme.text, borderColor: barTheme.text },
   disabledBtn: { backgroundColor: barTheme.surface, borderColor: barTheme.surfaceHigh },
-  actionText: { color: barTheme.text, fontSize: 15, fontWeight: '600' },
+  actionText: { color: barTheme.text, fontSize: 15, fontFamily: fonts.medium,},
   section: { marginTop: 28 },
-  sectionTitle: { color: barTheme.text, fontSize: 16, fontWeight: '600', marginBottom: 12 },
+  sectionTitle: { color: barTheme.text, fontSize: 16, fontFamily: fonts.medium, marginBottom: 12 },
   sigCard: { width: 130 },
   sigImg: { width: 130, height: 130, borderRadius: 12, backgroundColor: barTheme.surfaceHigh },
-  sigName: { color: barTheme.textSecondary, fontSize: 13, marginTop: 8 },
+  sigName: { color: barTheme.textSecondary, fontFamily: fonts.regular, fontSize: 13, marginTop: 8 },
 });
 
 export default BarDetailScreen;

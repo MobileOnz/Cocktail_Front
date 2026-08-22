@@ -110,9 +110,8 @@ const styles = StyleSheet.create({
     content: { paddingHorizontal: 24, paddingTop: 40 },
     header: { marginBottom: 40 },
     titleText: {
-        fontFamily: 'Pretendard-Medium',
+        fontFamily: 'Pretendard-Regular',
         fontSize: 24,
-        fontWeight: '700',
         marginBottom: 12,
         color: '#000',
     },
@@ -124,9 +123,8 @@ const styles = StyleSheet.create({
     },
     section: { marginBottom: 32 },
     sectionTitle: {
-        fontFamily: 'Pretendard-Medium',
+        fontFamily: 'Pretendard-Regular',
         fontSize: 16,
-        fontWeight: '600',
         marginBottom: 16,
         color: '#000',
     },
@@ -135,7 +133,7 @@ const styles = StyleSheet.create({
     radioGroup: { flexDirection: 'row', alignItems: 'center', gap: 10 },
     radioItem: { flexDirection: 'row', alignItems: 'center', marginRight: 8 },
     radioLabel: {
-        fontFamily: 'Pretendard-Medium',
+        fontFamily: 'Pretendard-Regular',
         fontSize: 15,
         color: '#333',
     },
@@ -159,9 +157,8 @@ const styles = StyleSheet.create({
         color: '#333',
     },
     selectedChipText: {
-        fontFamily: 'Pretendard-Medium',
+        fontFamily: 'Pretendard-SemiBold',
         color: '#FFFFFF',
-        fontWeight: '600',
     },
 
     // 하단 버튼 스타일
@@ -170,9 +167,8 @@ const styles = StyleSheet.create({
     buttonActive: { backgroundColor: '#333' },
     buttonDisabled: { backgroundColor: '#E0E0E0' },
     buttonLabel: {
-        fontFamily: 'Pretendard-Medium',
+        fontFamily: 'Pretendard-Regular',
         fontSize: 16,
-        fontWeight: '700',
         color: '#FFFFFF',
     },
 });

@@ -14,6 +14,7 @@ import PagerView from 'react-native-pager-view';
 import GuideDetailViewModel from './GuideDetailViewModel';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { stripMarkdownEmphasis } from '../../lib/text';
+import { fonts } from '../../lib/theme';
 
 type GuideDetailSreenNavigationProp = StackNavigationProp<
   RootStackParamList,
@@ -147,7 +148,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: fontPercentage(20),
     color: '#1B1B1B',
-    fontWeight: '600',
+    fontFamily: fonts.medium,
   },
   icon: {
     width: widthPercentage(24),
@@ -170,13 +171,13 @@ const styles = StyleSheet.create({
   titleText: {
     fontSize: fontPercentage(20),
     color: '#1B1B1B',
-    fontWeight: '600',
+    fontFamily: fonts.medium,
   },
   subText: {
     marginTop: heightPercentage(8),
     fontSize: fontPercentage(16),
     color: '#616161',
-    fontWeight: '500',
+    fontFamily: fonts.regular,
   },
   indicatorContainer: {
     flexDirection: 'row',

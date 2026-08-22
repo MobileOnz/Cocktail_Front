@@ -44,7 +44,6 @@ const styles = StyleSheet.create({
   label: {
     fontFamily: 'Pretendard-SemiBold',
     color: '#FFFFFF',
-    fontWeight: '600',
     fontSize: fontPercentage(10),
   },
 });

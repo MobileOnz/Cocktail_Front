@@ -11,6 +11,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../../Navigation/Navigation';
 import { widthPercentage, heightPercentage, fontPercentage } from '../../assets/styles/FigmaScreen';
 import ResultViewModel from './ResultViewModel';
+import { fonts } from '../../lib/theme';
 
 type RecommendResultSreenNavigationProp = StackNavigationProp<
   RootStackParamList,
@@ -261,6 +262,7 @@ const styles = StyleSheet.create({
 
   resultInfoTitleText: {
     flex: 1,
+    fontFamily: fonts.regular,
     fontSize: fontPercentage(14),
     color: '#BDBDBD',
 
@@ -269,7 +271,7 @@ const styles = StyleSheet.create({
   resultInfoSubText: {
     flex: 4,
     fontSize: fontPercentage(16),
-    fontFamily: 'Pretendard-Medium',
+    fontFamily: 'Pretendard-Regular',
     color: '#FFFFFF',
     textAlign: 'left',
     flexWrap: 'wrap',
@@ -300,7 +302,7 @@ const styles = StyleSheet.create({
     marginLeft: widthPercentage(20),
     fontSize: fontPercentage(20),
     color: '#FFFFFF',
-    fontFamily: 'NotoSerif-SemiBoldItalic',
+    fontFamily: 'Pretendard-SemiBold',
   },
 
   resultTitleText: {
@@ -309,13 +311,13 @@ const styles = StyleSheet.create({
     marginLeft: widthPercentage(20),
     fontSize: fontPercentage(20),
     color: '#FFFFFF',
-    fontFamily: 'Pretendard-SemiBold',
+    fontFamily: 'Pretendard-Medium',
   },
 
   titleIntroduceText: {
     fontSize: fontPercentage(20),
     color: '#1B1B1B',
-    fontFamily: 'Pretendard-SemiBold',
+    fontFamily: 'Pretendard-Medium',
     textAlign: 'center',
   },
 

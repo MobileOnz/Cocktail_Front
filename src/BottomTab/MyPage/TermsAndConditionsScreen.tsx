@@ -2,6 +2,7 @@ import React from 'react';
 import { Text, ScrollView, StyleSheet, SafeAreaView, View, TouchableOpacity, Image} from 'react-native';
 import { widthPercentage, heightPercentage, fontPercentage } from '../../assets/styles/FigmaScreen';
 import { useNavigation } from '@react-navigation/native';
+import { fonts } from '../../lib/theme';
 
 
 const TermsAndConditionsScreen = () => {
@@ -115,7 +116,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: fontPercentage(20),
-    fontWeight: '600',
+    fontFamily: fonts.medium,
     color: '#1B1B1B',
   },
   backIcon: {
@@ -125,11 +126,12 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: fontPercentage(14),
-    fontWeight: '600',
+    fontFamily: fonts.semibold,
     marginTop: heightPercentage(16),
     color: '#171719',
   },
   sectionContent: {
+    fontFamily: fonts.regular,
     fontSize: fontPercentage(12),
     marginTop: heightPercentage(8),
     color: '#171719',

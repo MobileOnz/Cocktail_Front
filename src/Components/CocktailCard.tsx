@@ -109,9 +109,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   title: {
-    fontFamily: 'Pretendard-Medium',
+    fontFamily: 'Pretendard-Regular',
     fontSize: fontPercentage(16),
-    fontWeight: '500',
     color: '#1B1B1B',
     paddingHorizontal: 10,
     paddingVertical: 10,

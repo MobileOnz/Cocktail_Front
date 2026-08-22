@@ -196,11 +196,11 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: colors.divider,
   },
-  backChevron: { fontSize: fontPercentage(30), color: colors.text, lineHeight: fontPercentage(32) },
+  backChevron: { fontFamily: fonts.regular, fontSize: fontPercentage(30), color: colors.text, lineHeight: fontPercentage(32) },
   headerTitle: {
     flex: 1,
     textAlign: 'center',
-    fontFamily: fonts.semibold,
+    fontFamily: fonts.medium,
     fontSize: fontPercentage(fontSize.lg),
     color: colors.text,
   },
@@ -291,7 +291,7 @@ const styles = StyleSheet.create({
   },
   madeButtonDone: { backgroundColor: colors.textSecondary },
   madeButtonText: {
-    fontFamily: fonts.semibold,
+    fontFamily: fonts.medium,
     fontSize: fontPercentage(fontSize.md),
     color: colors.textInverse,
   },

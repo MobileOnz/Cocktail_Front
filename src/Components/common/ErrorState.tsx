@@ -56,9 +56,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: widthPercentage(spacing.xl),
   },
   compact: { paddingVertical: heightPercentage(spacing.xxxl) },
-  icon: { fontSize: fontPercentage(28), marginBottom: heightPercentage(spacing.md) },
+  icon: { fontFamily: fonts.regular, fontSize: fontPercentage(28), marginBottom: heightPercentage(spacing.md) },
   message: {
-    fontFamily: fonts.medium,
+    fontFamily: fonts.regular,
     fontSize: fontPercentage(fontSize.base),
     color: colors.textSecondary,
     textAlign: 'center',
@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
     fontSize: fontPercentage(fontSize.sm),
     color: colors.textInverse,
   },
-  messageOnDark: { color: colors.textDisabled },
+  messageOnDark: { color: colors.textTertiary },
   retryButtonOnDark: { backgroundColor: colors.bg },
   retryTextOnDark: { color: colors.text },
 });

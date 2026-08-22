@@ -77,8 +77,18 @@ export const bar = {
   overlay: 'rgba(0, 0, 0, 0.4)',
 } as const;
 
-/** Pretendard. */
+/**
+ * Pretendard. 9종이 전부 번들돼 있지만 여기 노출한 것만 쓴다.
+ *
+ * 굵기는 **파일명으로만** 지정한다. fontWeight 를 같이 주면
+ *  - iOS: 무시된다(해당 패밀리에 얼굴이 하나뿐이라 최근접 선택지가 자기 자신).
+ *  - Android: 700 이상이면 `Pretendard-Medium_bold.otf` 를 찾다 실패해 Roboto 합성 볼드로 떨어진다.
+ *
+ * light 는 15px 이상에서만 쓴다. Pretendard 한글은 Noto Sans CJK 파생이라
+ * 작은 크기에서 Light 를 쓰면 받침·겹자음이 먼저 뭉갠다.
+ */
 export const fonts = {
+  light: 'Pretendard-Light',
   regular: 'Pretendard-Regular',
   medium: 'Pretendard-Medium',
   semibold: 'Pretendard-SemiBold',

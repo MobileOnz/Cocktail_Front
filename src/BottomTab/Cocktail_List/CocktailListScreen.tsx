@@ -13,7 +13,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import FastImage from 'react-native-fast-image';
 import { Appbar, Divider, Text } from 'react-native-paper';
-import { colors } from '../../lib/theme';
+import { colors, fonts } from '../../lib/theme';
 import { fontPercentage, heightPercentage, widthPercentage } from '../../assets/styles/FigmaScreen';
 
 import { truncate } from 'lodash';
@@ -342,7 +342,7 @@ const Home = () => {
                 fontSize: fontPercentage(14),
                 includeFontPadding: false,
                 textAlignVertical: 'center',
-                fontWeight: '500',
+                fontFamily: fonts.medium,
               }}>
                 더보기
               </Text>
@@ -471,8 +471,7 @@ const styles = StyleSheet.create({
   newCocktailName: {
     fontSize: fontPercentage(16),
     color : '#000000',
-    fontWeight: '500',
-    fontFamily: 'Pretendard-Medium',
+    fontFamily: 'Pretendard-Regular',
   },
   gradientOverlay: {
     position: 'absolute',
@@ -521,14 +520,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   bannerKoText: {
-    fontFamily: 'Pretendard-SemiBold',
+    fontFamily: 'Pretendard-Medium',
     color: '#FFFFFF',
     fontSize: fontPercentage(18),
-    fontWeight: '600',
     marginBottom: 4,
   },
   bannerEnText: {
-    fontFamily: 'NotoSerif-BoldItalic',
+    fontFamily: 'Pretendard-Bold',
     color: 'rgba(255,255,255,0.7)',
     fontSize: fontPercentage(22),
     fontStyle: 'italic',
@@ -563,7 +561,7 @@ const styles = StyleSheet.create({
   recommendTitle: {
     color: '#FFFFFF',
     fontSize: fontPercentage(17),
-    fontFamily: 'Pretendard-SemiBold',
+    fontFamily: 'Pretendard-Medium',
   },
   recommendIconCircle: {
     width: 44,
@@ -583,7 +581,6 @@ const styles = StyleSheet.create({
   mainText: {
     fontSize: fontPercentage(20),
     fontFamily: 'Pretendard-Bold',
-    fontWeight: '700',
     color: '#000000',
   },
   newsPreviewContainer: {
@@ -599,7 +596,7 @@ const styles = StyleSheet.create({
   moreText: {
     fontSize: fontPercentage(14),
     color: '#616161',
-    fontWeight: '500',
+    fontFamily: fonts.medium,
   },
   newsPreviewItem: {
     flexDirection: 'row',
@@ -619,7 +616,7 @@ const styles = StyleSheet.create({
   newsPreviewTitle: {
     fontSize: fontPercentage(14),
     color: '#333',
-    fontWeight: '500',
+    fontFamily: fonts.medium,
     flex: 1,
   },
   filterView: {
@@ -650,13 +647,14 @@ const styles = StyleSheet.create({
     borderColor: '#E0E0E0',
   },
   chipLabel: {
+    fontFamily: fonts.regular,
     fontSize: 10,
     lineHeight: 11,
     color: '#333333',
   },
   titleText: {
     fontSize: 18,
-    fontWeight: '600',
+    fontFamily: fonts.medium,
     color: '#222',
   },
   mainImage: {
@@ -695,10 +693,9 @@ const styles = StyleSheet.create({
     right: 0,
   },
   bestRankText: {
-    fontFamily: 'NotoSerif-BoldItalic',
+    fontFamily: 'Pretendard-Bold',
     fontStyle: 'italic',
     fontSize: fontPercentage(24),
-    fontWeight: '700',
     color: '#000',
   },
   bestTitleWrapper: {
@@ -709,7 +706,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
   },
   bestTitleText: {
-    fontFamily: 'Pretendard-SemiBold',
+    fontFamily: 'Pretendard-Medium',
     fontSize: fontPercentage(16),
     color: '#FFFFFF',
     textAlign: 'left',

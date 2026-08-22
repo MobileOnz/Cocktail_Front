@@ -15,7 +15,7 @@ import { widthPercentage, heightPercentage, fontPercentage } from '../../assets/
 import RemoteImage from '../../Components/common/RemoteImage';
 import GuideDetailViewModel from './GuideDetailViewModel';
 import { GuideSummary } from '../../model/domain/GuideSummary';
-import { colors } from '../../lib/theme';
+import { colors, fonts } from '../../lib/theme';
 
 type GuideSreenNavigationProp = StackNavigationProp<
   RootStackParamList,
@@ -303,7 +303,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: fontPercentage(20),
     color: '#1B1B1B',
-    fontWeight: '600',
+    fontFamily: fonts.medium,
   },
   icon: {
     width: widthPercentage(24),
@@ -342,6 +342,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.bg,
   },
   viewSegGlyph: {
+    fontFamily: fonts.regular,
     fontSize: fontPercentage(14),
     color: colors.textTertiary,
   },
@@ -371,7 +372,7 @@ const styles = StyleSheet.create({
   compactTitle: {
     flexShrink: 1,
     fontSize: fontPercentage(15),
-    fontFamily: 'Pretendard-Medium',
+    fontFamily: 'Pretendard-Regular',
     color: colors.text,
   },
   compactCategory: {
@@ -385,8 +386,9 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   compactChevron: {
+    fontFamily: fonts.regular,
     fontSize: fontPercentage(18),
-    color: colors.textDisabled,
+    color: colors.textTertiary,
   },
   categoryBar: {
     backgroundColor: colors.bg,
@@ -470,12 +472,12 @@ const styles = StyleSheet.create({
   listBadge: {
     color: '#FFFFFF',
     fontSize: fontPercentage(12),
-    fontWeight: '500',
+    fontFamily: fonts.medium,
   },
   listText: {
     color: '#FFFFFF',
     fontSize: fontPercentage(22),
-    fontWeight: '600',
+    fontFamily: fonts.medium,
     marginTop: heightPercentage(10),
   },
   // 그리드 UI
@@ -508,12 +510,12 @@ const styles = StyleSheet.create({
   listGridBadge: {
     color: '#FFFFFF',
     fontSize: fontPercentage(10),
-    fontWeight: '500',
+    fontFamily: fonts.medium,
   },
   listGridText: {
     color: '#FFFFFF',
     fontSize: fontPercentage(14),
-    fontWeight: '600',
+    fontFamily: fonts.semibold,
     marginTop: heightPercentage(6),
   },
 

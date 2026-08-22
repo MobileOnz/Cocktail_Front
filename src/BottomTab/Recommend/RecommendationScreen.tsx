@@ -498,7 +498,7 @@ const styles = StyleSheet.create({
   },
 
   question: {
-    fontFamily: 'Pretendard-SemiBold',
+    fontFamily: 'Pretendard-Medium',
     fontSize: fontPercentage(16),
     color: '#1B1B1B',
     marginLeft: widthPercentage(12),
@@ -536,7 +536,7 @@ const styles = StyleSheet.create({
   confirmButtonText: {
     fontSize: fontPercentage(16),
     color: '#FFFFFF',
-    fontFamily: 'Pretendard-SemiBold',
+    fontFamily: 'Pretendard-Medium',
     textAlign: 'center',
   },
 
@@ -553,7 +553,7 @@ const styles = StyleSheet.create({
 
     fontSize: fontPercentage(20),
     color: '#1B1B1B',
-    fontFamily: 'Pretendard-SemiBold',
+    fontFamily: 'Pretendard-Medium',
     textAlign: 'center',
   },
 

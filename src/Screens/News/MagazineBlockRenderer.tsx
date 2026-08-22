@@ -170,10 +170,9 @@ const styles = StyleSheet.create({
     marginVertical: heightPercentage(spacing.md),
   },
   quoteText: {
-    fontFamily: fonts.medium,
+    fontFamily: fonts.regular,
     fontSize: fontPercentage(fontSize.md),
     color: colors.textSecondary,
-    fontStyle: 'italic',
     lineHeight: fontPercentage(28),
     letterSpacing: -0.3,
   },

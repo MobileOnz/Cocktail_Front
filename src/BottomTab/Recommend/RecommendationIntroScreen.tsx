@@ -209,7 +209,7 @@ const styles = StyleSheet.create({
 
   },
   descriptionFirst: {
-    fontFamily: 'Pretendard-SemiBold',
+    fontFamily: 'Pretendard-Medium',
     fontSize: fontPercentage(20),
     color: '#1B1B1B',
     textAlign: 'center',
@@ -240,7 +240,7 @@ const styles = StyleSheet.create({
   confirmButtonText: {
     fontSize: fontPercentage(16),
     color: '#FFFFFF',
-    fontFamily: 'Pretendard-Medium',
+    fontFamily: 'Pretendard-Regular',
   },
   confirmButtonContainer: {
     position: 'absolute',

@@ -211,7 +211,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: fontPercentage(fontSize.base),
     color: colors.text,
-    fontFamily: fonts.medium,
+    fontFamily: fonts.regular,
   },
   rowTextAccent: {
     fontFamily: fonts.bold,

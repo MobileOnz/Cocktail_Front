@@ -13,6 +13,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import CocktailCard from '../CocktailCard';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { fonts } from '../../lib/theme';
 type Props = NativeStackScreenProps<RootStackParamList, 'CocktailDetailScreen'>;
 
 const DetailRow = ({
@@ -339,9 +340,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   text: {
-    fontFamily: 'Pretendard-Medium',
+    fontFamily: 'Pretendard-Regular',
     fontSize: fontPercentage(16),
-    fontWeight: '600',
     color: '#1B1B1B',
   },
   sectionDivider: {
@@ -366,10 +366,9 @@ const styles = StyleSheet.create({
   },
   valueText: {
     marginLeft: widthPercentage(20),
-    fontFamily: 'Pretendard-Medium',
+    fontFamily: 'Pretendard-Regular',
     color: '#1B1B1B',
     fontSize: fontPercentage(16),
-    fontWeight: '500',
   },
   stepsCta: {
     flexDirection: 'row',
@@ -383,7 +382,7 @@ const styles = StyleSheet.create({
   },
   stepsCtaTextWrap: { flex: 1 },
   stepsCtaTitle: {
-    fontFamily: 'Pretendard-SemiBold',
+    fontFamily: 'Pretendard-Medium',
     fontSize: fontPercentage(16),
     color: '#FFFFFF',
   },
@@ -393,7 +392,7 @@ const styles = StyleSheet.create({
     fontSize: fontPercentage(13),
     color: '#BDBDBD',
   },
-  stepsCtaArrow: { fontSize: fontPercentage(22), color: '#FFFFFF' },
+  stepsCtaArrow: { fontFamily: fonts.regular, fontSize: fontPercentage(22), color: '#FFFFFF' },
   storyCard: {
     marginTop: heightPercentage(12),
     marginHorizontal: widthPercentage(20),
@@ -417,7 +416,6 @@ const styles = StyleSheet.create({
     fontFamily: 'Pretendard-Medium',
     width: widthPercentage(60),
     fontSize: fontPercentage(12),
-    fontWeight: '500',
     color: '#616161',
   },
   contentWrapper: {
@@ -451,16 +449,15 @@ const styles = StyleSheet.create({
     resizeMode: 'cover',
   },
   korText: {
-    fontFamily: 'Pretendard-SemiBold',
+    fontFamily: 'Pretendard-Medium',
     position: 'absolute',
     left: 20,
     bottom: 40,
-    fontWeight: '600',
     fontSize: fontPercentage(20),
     color: '#FFFFFF',
   },
   engText: {
-    fontFamily: 'NotoSerif-BoldItalic',
+    fontFamily: 'Pretendard-Bold',
     position: 'absolute',
     left: 20,
     bottom: 75,
@@ -489,7 +486,6 @@ const styles = StyleSheet.create({
   fontStyle: {
     fontFamily: 'Pretendard-Medium',
     fontSize: 12,
-    fontWeight: '700',
     color: '#616161',
     marginRight: widthPercentage(10),
   },
@@ -500,9 +496,10 @@ const styles = StyleSheet.create({
 
   // 섹션 제목 공통
   sectionTitle: {
-    fontFamily: 'Pretendard-Medium',
+    // fontWeight:'700' 을 함께 주면 Android 가 Pretendard-Medium_bold.otf 를 찾다 실패해
+    // Roboto 합성 볼드로 떨어진다. 굵기는 파일명으로만 지정한다.
+    fontFamily: 'Pretendard-Bold',
     marginTop: 16,
-    fontWeight: '700',
   },
 
   // 스토리 본문

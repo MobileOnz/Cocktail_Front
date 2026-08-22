@@ -10,6 +10,7 @@ import {
 import { widthPercentage, heightPercentage, fontPercentage } from '../../assets/styles/FigmaScreen';
 import MyPageViewModel from './MyPageViewModel';
 import { useToast } from '../../Components/ToastContext';
+import { fonts } from '../../lib/theme';
 
 const QuitScreen: React.FC = () => {
   const navigation = useNavigation<any>();
@@ -131,7 +132,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: fontPercentage(20),
-    fontWeight: '600',
+    fontFamily: fonts.medium,
     color: '#1B1B1B',
   },
   backIcon: {
@@ -148,13 +149,13 @@ const styles = StyleSheet.create({
     marginTop: heightPercentage(28),
     fontSize: fontPercentage(22),
     color: '#1B1B1B',
-    fontWeight: '600',
+    fontFamily: fonts.medium,
   },
   subTitle: {
     marginTop: heightPercentage(4),
     fontSize: fontPercentage(16),
     color: '#616161',
-    fontWeight: '500',
+    fontFamily: fonts.regular,
   },
   quitClueContainer: {
     backgroundColor: '#F5F5F5',
@@ -164,13 +165,13 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   quitClueTitle: {
-    fontWeight: '600',
+    fontFamily: fonts.semibold,
     fontSize: fontPercentage(14),
     color: '#FF465C',
     marginLeft: widthPercentage(2),
   },
   quitClueSubTitle: {
-    fontWeight: '500',
+    fontFamily: fonts.medium,
     fontSize: fontPercentage(14),
     color: '#1B1B1B',
     marginTop: heightPercentage(14),
@@ -188,7 +189,7 @@ const styles = StyleSheet.create({
   },
   quitText: {
     fontSize: fontPercentage(16),
-    fontWeight: '600',
+    fontFamily: fonts.medium,
     color: '#FFFFFF',
   },
 });

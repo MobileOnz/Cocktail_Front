@@ -4,6 +4,7 @@ import CustomAlertModal from './CustomAlertModal';
 import { widthPercentage, heightPercentage, fontPercentage } from '../assets/styles/FigmaScreen';
 import Popover from 'react-native-popover-view';
 import { Portal } from 'react-native-paper';
+import { fonts } from '../lib/theme';
 
 
 interface MoreOptionMenuProps {
@@ -130,7 +131,7 @@ const styles = StyleSheet.create({
   },
   menuText: {
     fontSize: fontPercentage(14),
-    fontWeight: '500',
+    fontFamily: fonts.medium,
     color: '#2D2D2D',
     marginLeft: 8,
   },

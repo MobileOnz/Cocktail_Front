@@ -30,6 +30,7 @@ import {
 } from 'react-native';
 import { API_BASE_URL } from '@env';
 import instance from '../../tokenRequest/axios_interceptor';
+import { fonts } from '../../lib/theme';
 
 export type RemoteImageTone = 'dark' | 'light';
 
@@ -149,7 +150,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   glyph: { opacity: 0.9 },
-  label: { fontSize: 12, marginTop: 6, textAlign: 'center' },
+  label: { fontFamily: fonts.regular, fontSize: 12, marginTop: 6, textAlign: 'center' },
 });
 
 export default RemoteImage;

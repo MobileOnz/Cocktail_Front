@@ -334,9 +334,8 @@ const styles = StyleSheet.create({
     },
     text: {
         color: '#BDBDBD',
-        fontFamily: 'Pretendard-Medium',
+        fontFamily: 'Pretendard-Regular',
         fontSize: fontPercentage(16),
-        fontWeight: '600',
     },
     footer: {
         flexDirection: 'row',
@@ -393,6 +392,5 @@ const styles = StyleSheet.create({
         fontFamily: 'Pretendard-Medium',
         fontSize: 14,
         color: '#FFFFFF',
-        fontWeight: '600',
     },
 });

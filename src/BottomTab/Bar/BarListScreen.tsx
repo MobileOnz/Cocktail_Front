@@ -228,7 +228,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 18,
   },
-  rowName: { color: barTheme.text, fontSize: 17, fontFamily: fonts.medium, flex: 1 },
+  rowName: { color: barTheme.text, fontSize: 17, fontFamily: fonts.regular, flex: 1 },
   rowMeta: { color: barTheme.textTertiary, fontSize: 13, fontFamily: fonts.regular },
   separator: { height: 1, backgroundColor: barTheme.border, marginHorizontal: 20 },
   empty: { padding: 48, alignItems: 'center' },

@@ -366,11 +366,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: widthPercentage(spacing.lg),
     paddingBottom: heightPercentage(spacing.md),
   },
-  close: { fontSize: fontPercentage(22), color: colors.textInverse },
+  close: { fontFamily: fonts.regular, fontSize: fontPercentage(22), color: colors.textInverse },
   headerTitle: {
     flex: 1,
     textAlign: 'center',
-    fontFamily: fonts.semibold,
+    fontFamily: fonts.medium,
     fontSize: fontPercentage(fontSize.lg),
     color: colors.textInverse,
   },
@@ -380,9 +380,9 @@ const styles = StyleSheet.create({
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   centerText: {
     marginTop: heightPercentage(spacing.md),
-    fontFamily: fonts.medium,
+    fontFamily: fonts.regular,
     fontSize: fontPercentage(fontSize.base),
-    color: colors.textDisabled,
+    color: colors.textTertiary,
   },
 
   scanArea: { flex: 1, alignItems: 'center', justifyContent: 'center' },
@@ -399,7 +399,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontFamily: fonts.medium,
     fontSize: fontPercentage(fontSize.sm),
-    color: colors.textDisabled,
+    color: colors.textTertiary,
   },
   devHint: {
     marginTop: heightPercentage(spacing.md),

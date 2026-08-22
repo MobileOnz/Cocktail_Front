@@ -9,6 +9,7 @@ import { useToast } from '../../../Components/ToastContext';
 import AuthViewModel from './AuthViewModel';
 import { AuthError, AuthErrorType } from '../../../model/domain/AuthError';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { fonts } from '../../../lib/theme';
 type LoginScreenProps = StackScreenProps<RootStackParamList, 'Login'>;
 
 const LoginScreen: React.FC<LoginScreenProps> = ({ navigation, route }) => {
@@ -378,7 +379,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: fontPercentage(22),
-    fontWeight: '600',
+    fontFamily: fonts.medium,
     textAlign: 'center',
     color: '#FFFFFF',
     marginTop: heightPercentage(48),
@@ -420,8 +421,7 @@ const styles = StyleSheet.create({
   appleButtonText: {
     color: '#000000',
     fontSize: fontPercentage(15),
-    fontFamily: 'Pretendard-Medium',
-    fontWeight: '600',
+    fontFamily: 'Pretendard-Regular',
   },
 });
 

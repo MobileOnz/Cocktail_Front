@@ -12,6 +12,7 @@ import WithdrawConfirmModal from '../../Components/WithdrawConfirmModal';
 import { useToast } from '../../Components/ToastContext';
 import DeviceInfo from 'react-native-device-info';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { fonts } from '../../lib/theme';
 
 // App Store Connect → My Apps → ONZ → App Information → Apple ID
 const IOS_APP_STORE_ID = '6744957084';
@@ -365,7 +366,7 @@ const styles = StyleSheet.create({
   },
   topTitleText: {
     fontSize: fontPercentage(20),
-    fontWeight: '600',
+    fontFamily: fonts.medium,
     color: '#1B1B1B',
   },
   profileInfoContainer: {
@@ -387,13 +388,14 @@ const styles = StyleSheet.create({
   userNickNmText: {
     fontSize: fontPercentage(16),
     color: '#1B1B1B',
-    fontWeight: '600',
+    fontFamily: fonts.medium,
     flex: 1,
   },
   withdrawText: {
     marginTop: heightPercentage(27),
     color: '#7D7A6F',
     textDecorationLine: 'underline',
+    fontFamily: fonts.regular,
     fontSize: fontPercentage(14),
     alignSelf: 'flex-start',
     marginLeft: widthPercentage(24),
@@ -413,7 +415,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: fontPercentage(16),
     color: '#FFFFFF',
-    fontWeight: '600',
+    fontFamily: fonts.medium,
   },
   loginContainer: {
     justifyContent: 'center',
@@ -427,13 +429,13 @@ const styles = StyleSheet.create({
   },
   loginText: {
     fontSize: fontPercentage(16),
-    fontWeight: '600',
+    fontFamily: fonts.medium,
     color: '#FFFFFF',
   },
   supportTitle: {
     fontSize: fontPercentage(14),
     color: '#BDBDBD',
-    fontWeight: '500',
+    fontFamily: fonts.medium,
     paddingHorizontal: widthPercentage(16),
     paddingVertical: heightPercentage(8),
     marginTop: heightPercentage(24),
@@ -442,7 +444,7 @@ const styles = StyleSheet.create({
   supportSecondTitle: {
     fontSize: fontPercentage(14),
     color: '#BDBDBD',
-    fontWeight: '500',
+    fontFamily: fonts.medium,
     paddingHorizontal: widthPercentage(16),
     paddingVertical: heightPercentage(8),
     marginTop: heightPercentage(16),
@@ -464,12 +466,12 @@ const styles = StyleSheet.create({
   supportText: {
     fontSize: fontPercentage(16),
     color: '#1B1B1B',
-    fontWeight: '500',
+    fontFamily: fonts.regular,
   },
   supportValueText: {
     fontSize: fontPercentage(14),
     color: '#9E9E9E',
-    fontWeight: '500',
+    fontFamily: fonts.medium,
   },
   profilerightArrow: {
     width: widthPercentage(24),
