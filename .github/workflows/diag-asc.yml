@@ -59,6 +59,42 @@ jobs:
           print(f"'{target}' 일치: {'있음 (id=' + hit[0]['id'] + ')' if hit else '없음 ← altool 실패 원인'}")
 
           # 개발자 포털에 등록된 Bundle ID 목록(앱 레코드와 별개)
+          # ── TestFlight 빌드 상태 ──────────────────────────────────────────
+          # "업로드는 됐는데 폰에 안 뜬다" 를 가르는 정보: 처리 상태와 테스터 그룹 연결.
+          APP_ID = "6744957084"
+          rb = requests.get(f"https://api.appstoreconnect.apple.com/v1/apps/{APP_ID}/builds",
+                            headers=h, params={"limit": 8}, timeout=60)
+          print("== builds ==", rb.status_code)
+          if rb.status_code == 200:
+              for b in rb.json().get("data", []):
+                  a = b["attributes"]
+                  print(f"  build {a.get('version')}  state={a.get('processingState')}  "
+                        f"expired={a.get('expired')}  uploaded={a.get('uploadedDate')}")
+                  bid = b["id"]
+                  rg = requests.get(f"https://api.appstoreconnect.apple.com/v1/builds/{bid}/betaGroups",
+                                    headers=h, timeout=60)
+                  groups = [g["attributes"].get("name") for g in rg.json().get("data", [])] if rg.status_code == 200 else [f"err{rg.status_code}"]
+                  print(f"      테스터 그룹: {groups if groups else '없음 (아무에게도 배포 안 됨)'}")
+                  rd = requests.get(f"https://api.appstoreconnect.apple.com/v1/builds/{bid}/buildBetaDetail",
+                                    headers=h, timeout=60)
+                  if rd.status_code == 200 and rd.json().get("data"):
+                      da = rd.json()["data"]["attributes"]
+                      print(f"      내부배포={da.get('internalBuildState')}  외부배포={da.get('externalBuildState')}")
+          else:
+              print(rb.text[:400])
+
+          # 내부 테스터 그룹과 인원
+          rgs = requests.get(f"https://api.appstoreconnect.apple.com/v1/apps/{APP_ID}/betaGroups",
+                             headers=h, params={"limit": 20}, timeout=60)
+          print("== betaGroups ==", rgs.status_code)
+          if rgs.status_code == 200:
+              for g in rgs.json().get("data", []):
+                  ga = g["attributes"]
+                  rt = requests.get(f"https://api.appstoreconnect.apple.com/v1/betaGroups/{g['id']}/betaTesters",
+                                    headers=h, params={"limit": 50}, timeout=60)
+                  testers = [t["attributes"].get("email") for t in rt.json().get("data", [])] if rt.status_code == 200 else []
+                  print(f"  {ga.get('name')}  내부={ga.get('isInternalGroup')}  테스터 {len(testers)}명: {testers}")
+
           r2 = requests.get("https://api.appstoreconnect.apple.com/v1/bundleIds",
                             headers=h, params={"limit": 200}, timeout=60)
           print()
