@@ -45,8 +45,22 @@ override func application(
     return true
   }
 
-  // ✅ 기타 기본 처리 (super)
-  return super.application(application, open: url, options: options)
+  // 나머지는 React Native 로 넘긴다.
+  //
+  // 예전엔 여기서 super 를 불렀는데, RCTAppDelegate 에는 application(_:open:options:) 가
+  // 없다. 없는 셀렉터를 super 로 부르니 doesNotRecognizeSelector → SIGABRT 로 앱이 죽었다.
+  // 그래서 소셜 로그인이 아닌 모든 딥링크(onzcocktail://, QR 커스텀 스킴)가 크래시했다.
+  return RCTLinkingManager.application(application, open: url, options: options)
+}
+
+// 유니버설 링크(https://onz-cocktail.kr/...)도 같은 경로로 넘긴다.
+override func application(
+  _ application: UIApplication,
+  continue userActivity: NSUserActivity,
+  restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void
+) -> Bool {
+  return RCTLinkingManager.application(
+    application, continue: userActivity, restorationHandler: restorationHandler)
 }
 
 
