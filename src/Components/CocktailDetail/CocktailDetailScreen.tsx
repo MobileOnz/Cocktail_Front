@@ -2,7 +2,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Image, ScrollView, Text, View, StyleSheet, Pressable, TouchableOpacity, Share, FlatList } from 'react-native';
-import { ActivityIndicator, Divider } from 'react-native-paper';
+import { ActivityIndicator } from 'react-native-paper';
 
 import PillStyleStatus from '../PillStyleStatus';
 import { RootStackParamList } from '../../Navigation/Navigation';
@@ -28,6 +28,34 @@ type Props = NativeStackScreenProps<RootStackParamList, 'CocktailDetailScreen'>;
  *
  * → 라벨을 위로 올리고 값은 전폭을 쓴다. 짧은 값도 같은 리듬을 따르므로 목록이 고르게 읽힌다.
  */
+/**
+ * 섹션 한 덩어리.
+ *
+ * 예전엔 12pt 짜리 회색 슬래브(#e8e8e8)가 유일한 구분자여서, 섹션 사이가
+ * '경계'가 아니라 '앱이 끊긴 빈칸'처럼 읽혔다("벙 떠 있다"). 슬래브를 걷어내고
+ * 눈금(eyebrow) + 제목 + 여백의 리듬으로 나눈다. 구분이 필요한 곳만 1px 실선.
+ *
+ * tone='card' 는 누를 수 있는 묶음(만드는 법·반응)에만 쓴다 —
+ * 읽는 섹션은 흰 바탕에 그대로 두어 표면이 늘어나지 않게 한다.
+ */
+const Section = ({
+  eyebrow,
+  title,
+  tone = 'plain',
+  children,
+}: {
+  eyebrow?: string;
+  title?: string;
+  tone?: 'plain' | 'card';
+  children: React.ReactNode;
+}) => (
+  <View style={[styles.section, tone === 'card' && styles.sectionCard]}>
+    {!!eyebrow && <Text style={styles.eyebrow}>{eyebrow}</Text>}
+    {!!title && <Text style={styles.sectionTitle}>{title}</Text>}
+    {children}
+  </View>
+);
+
 const DetailRow = ({
   label,
   children,
@@ -95,6 +123,9 @@ export function CocktailDetailScreen({ route }: Props) {
 
   // 제조 단계 — 예전엔 별도 화면으로만 갈 수 있었다. 순서를 상세에서 바로 보여준다.
   const [steps, setSteps] = useState<CocktailStepDto[]>([]);
+  // 연결된 가이드. 예전엔 서버가 주지도 않는 detail.guidePart 를 보고 있어서
+  // 항상 undefined → 가이드 '목록 최상단'으로 떨어졌다. 실제 API 로 바꾼다.
+  const [guide, setGuide] = useState<{ part: number; title: string; imageUrl: string | null } | null>(null);
   useEffect(() => {
     const id = vm.detail?.id;
     if (!id) { return; }
@@ -102,6 +133,20 @@ export function CocktailDetailScreen({ route }: Props) {
     instance.get(`/api/v2/cocktails/${id}/steps`)
       .then(res => { if (alive) { setSteps(unwrap<CocktailStepDto[]>(res) ?? []); } })
       .catch(() => { if (alive) { setSteps([]); } });  // 단계는 부가정보다. 없으면 섹션만 빠진다.
+    return () => { alive = false; };
+  }, [vm.detail?.id]);
+
+  useEffect(() => {
+    const id = vm.detail?.id;
+    if (!id) { return; }
+    let alive = true;
+    instance.get(`/api/v2/cocktails/${id}/guides`)
+      .then(res => {
+        if (!alive) { return; }
+        const list = unwrap<{ part: number; title: string; imageUrl: string | null }[]>(res) ?? [];
+        setGuide(list.find(g => g?.part != null) ?? null);
+      })
+      .catch(() => { if (alive) { setGuide(null); } });
     return () => { alive = false; };
   }, [vm.detail?.id]);
 
@@ -221,7 +266,6 @@ export function CocktailDetailScreen({ route }: Props) {
           <Text style={[styles.valueText, { letterSpacing: 0.57 }]}>{vm.detail.originText}</Text>
         </DetailRow>
 
-        <Divider style={styles.sectionDivider} />
         <DetailRow label="맛">
           <Text style={styles.valueText}>
             {vm.detail.flavors.join(' • ')}
@@ -246,15 +290,17 @@ export function CocktailDetailScreen({ route }: Props) {
       </View>
 
 
-      <Divider style={styles.Divider} />
-
       {steps.length > 0 && (
-        <View style={styles.stepsBlock}>
-          <Text style={styles.sectionHeading}>만드는 순서</Text>
+        <Section eyebrow="RECIPE" title="만드는 순서">
           {steps.map((st, i) => (
             <View key={`step-${st.stepOrder ?? i}`} style={styles.stepRow}>
-              <View style={styles.stepNum}>
-                <Text style={styles.stepNumText}>{i + 1}</Text>
+              {/* 번호를 잇는 세로 레일 — 네 줄이 따로 노는 대신 하나의 흐름으로 읽힌다.
+                  마지막 단계에는 레일을 그리지 않는다. */}
+              <View style={styles.stepRail}>
+                <View style={styles.stepNum}>
+                  <Text style={styles.stepNumText}>{i + 1}</Text>
+                </View>
+                {i < steps.length - 1 && <View style={styles.stepLine} />}
               </View>
               <View style={styles.stepBody}>
                 <Text style={styles.stepText} lineBreakStrategyIOS="hangul-word">
@@ -267,7 +313,7 @@ export function CocktailDetailScreen({ route }: Props) {
               </View>
             </View>
           ))}
-        </View>
+        </Section>
       )}
 
       {/* 만드는 법 — 단계별 화면(도구·타이머 포함)으로 가는 입구 */}
@@ -290,10 +336,8 @@ export function CocktailDetailScreen({ route }: Props) {
         <Text style={styles.stepsCtaArrow}>›</Text>
       </TouchableOpacity>
 
-      <Divider style={styles.Divider} />
-
-      <Text style={styles.valueText}>이 칵테일, 입문자도 즐길 수 있을까요?</Text>
-      <View style={styles.buttonContainer}>
+      <Section tone="card" eyebrow="당신의 한 줄" title="이 칵테일, 입문자도 즐길 수 있을까요?">
+        <View style={styles.buttonContainer}>
         <Pressable style={[styles.button,
         vm.myReaction === 'RECOMMEND' && { backgroundColor: '#333' }]}
           onPress={() => { vm.handleReaction('RECOMMEND'); }}>
@@ -305,19 +349,20 @@ export function CocktailDetailScreen({ route }: Props) {
           onPress={() => { vm.handleReaction('HARD'); }}>
           <Text style={[styles.text, vm.myReaction === 'HARD' && { color: '#FFFFFF' }]}>
             조금 어려워요🤔</Text>
-        </Pressable>
-      </View>
+          </Pressable>
+        </View>
+      </Section>
 
-      <Text style={styles.sectionHeading}>이런 칵테일은 어떠세요?</Text>
-      <FlatList
+      <Section eyebrow="비슷한 취향" title="이런 칵테일은 어떠세요?">
+        <FlatList
         data={vm.recommendedCocktails}
         horizontal
         showsHorizontalScrollIndicator={false}
         keyExtractor={(item) => `recommended-${item.id}`}
         style={{ marginTop: heightPercentage(16) }}
         contentContainerStyle={{
-          paddingLeft: widthPercentage(16),
-          paddingRight: widthPercentage(16),
+          paddingLeft: widthPercentage(20),
+          paddingRight: widthPercentage(20),
         }}
         ItemSeparatorComponent={() => <View style={{ width: 8 }} />}
         renderItem={({ item }) => (
@@ -335,41 +380,35 @@ export function CocktailDetailScreen({ route }: Props) {
             onToggleBookmark={() => {
               vm.bookmarked(item.id);
             }}
-          />
-        )}
-      />
+            />
+          )}
+        />
+      </Section>
 
-      {/*
-        가이드 진입점 ③ — 칵테일 상세 하단 "이 칵테일의 이야기".
-        TODO(T-09/T-13): 백엔드 CocktailDetail 에 guidePart(number|null) 필드가 추가되면
-        해당 파트의 GuideDetailScreen 으로 딥하게 보낸다. 그 전까지는 가이드 목록으로 보낸다.
-      */}
-      <Text style={styles.valueText}>이 칵테일의 이야기</Text>
-      <TouchableOpacity
-        style={styles.storyCard}
-        activeOpacity={0.9}
-        accessibilityRole="button"
-        accessibilityLabel="이 칵테일의 이야기 보러가기"
-        onPress={() => {
-          const guidePart = (vm.detail as any)?.guidePart;
-          if (guidePart) {
-            navigation.navigate('GuideDetailScreen', {
-              id: guidePart,
-              src: vm.detail?.imageUrl,
-              title: vm.detail?.korName ?? '칵테일 가이드',
-            });
-          } else {
-            navigation.navigate('GuideScreen');
-          }
-        }}
-      >
-        <Text style={styles.storyCardTitle}>칵테일 가이드에서 더 읽기</Text>
-        <Text style={styles.storyCardBody} numberOfLines={2}>
-          {vm.detail?.originText
-            ? vm.detail.originText
-            : '이 칵테일이 태어난 배경과 바 문화의 이야기를 가이드에서 만나보세요.'}
-        </Text>
-      </TouchableOpacity>
+      {/* 연결된 가이드가 있을 때만 띄운다. 없는데 "더 읽기"를 보여주고 목록 맨 위로
+          떨어뜨리면 눌러본 사람을 헛걸음시킨다. 실제로 105종 중 12종만 연결돼 있다. */}
+      {guide && (
+        <Section eyebrow="이어서 읽기" title="이 칵테일의 이야기">
+          <TouchableOpacity
+            style={styles.storyCard}
+            activeOpacity={0.9}
+            accessibilityRole="button"
+            accessibilityLabel={`가이드 '${guide.title}' 보러가기`}
+            onPress={() => {
+              navigation.navigate('GuideDetailScreen', {
+                id: guide.part,
+                src: guide.imageUrl ?? vm.detail?.imageUrl,
+                title: guide.title,
+              });
+            }}
+          >
+            <Text style={styles.storyCardTitle}>{guide.title}</Text>
+            <Text style={styles.storyCardBody} numberOfLines={2}>
+              가이드에서 이어서 읽기
+            </Text>
+          </TouchableOpacity>
+        </Section>
+      )}
 
       <View style={{ height: heightPercentage(100) }} />
     </ScrollView>
@@ -397,11 +436,59 @@ const styles = StyleSheet.create({
     fontFamily: fonts.semibold, fontSize: fontPercentage(16),
     color: colors.text, marginBottom: heightPercentage(14),
   },
-  stepRow: { flexDirection: 'row', marginBottom: heightPercentage(16) },
+  /**
+   * 화면 전체의 좌우 기준선.
+   * 예전엔 항목행 16 / 값 +20 / 리액션 10 / 가로리스트 16 이 뒤섞여
+   * 문구마다 다른 위치에서 시작해 "왼쪽으로 치우쳤다"는 인상을 줬다.
+   */
+  sectionPad: { paddingHorizontal: widthPercentage(20) },
+
+  // ── 섹션 체계 ────────────────────────────────────────────────────────
+  // 회색 슬래브 대신 여백과 눈금으로 나눈다. 좌우 기준선은 전부 20 하나.
+  section: {
+    paddingHorizontal: widthPercentage(20),
+    paddingTop: heightPercentage(28),
+    paddingBottom: heightPercentage(4),
+  },
+  // 누를 수 있는 묶음만 표면을 준다. 읽는 섹션은 흰 바탕 그대로.
+  sectionCard: {
+    backgroundColor: colors.bgSubtle,
+    marginTop: heightPercentage(28),
+    paddingTop: heightPercentage(22),
+    paddingBottom: heightPercentage(22),
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: colors.border,
+  },
+  eyebrow: {
+    fontFamily: fonts.medium,
+    fontSize: fontPercentage(11),
+    letterSpacing: 1,
+    color: colors.textTertiary,
+    marginBottom: heightPercentage(5),
+  },
+  sectionTitle: {
+    fontFamily: fonts.semibold,
+    fontSize: fontPercentage(18),
+    letterSpacing: -0.3,
+    color: colors.text,
+    marginBottom: heightPercentage(16),
+  },
+
+  // 번호를 잇는 세로 레일 — 순서가 하나의 흐름으로 읽히게 한다.
+  stepRail: { alignItems: 'center', marginRight: widthPercentage(12) },
+  stepLine: {
+    flex: 1,
+    width: 1,
+    backgroundColor: colors.borderStrong,
+    marginTop: heightPercentage(4),
+    marginBottom: heightPercentage(-4),
+  },
+  stepRow: { flexDirection: 'row', paddingBottom: heightPercentage(18) },
   stepNum: {
     width: widthPercentage(22), height: widthPercentage(22), borderRadius: widthPercentage(11),
     backgroundColor: colors.text, alignItems: 'center', justifyContent: 'center',
-    marginRight: widthPercentage(12), marginTop: 1,
+    marginTop: 1,
   },
   stepNumText: { fontFamily: fonts.semibold, fontSize: fontPercentage(11), color: colors.textInverse },
   stepBody: { flex: 1 },
@@ -422,10 +509,9 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginHorizontal: widthPercentage(10),
-    marginTop: heightPercentage(21),
-    marginBottom: heightPercentage(52),
+    justifyContent: 'space-between',
+    columnGap: widthPercentage(10),
+    marginTop: heightPercentage(4),
   },
   button: {
     paddingHorizontal: 16,
@@ -442,16 +528,6 @@ const styles = StyleSheet.create({
     fontFamily: 'Pretendard-Regular',
     fontSize: fontPercentage(16),
     color: '#1B1B1B',
-  },
-  sectionDivider: {
-    marginVertical: heightPercentage(32),
-    height: 4,
-    backgroundColor: '#e8e8e8',
-  },
-  Divider: {
-    marginVertical: heightPercentage(32),
-    height: 12,
-    backgroundColor: '#e8e8e8',
   },
   row: {
     paddingVertical: heightPercentage(10),
@@ -585,13 +661,6 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
 
-  // 섹션 제목 공통
-  sectionTitle: {
-    // fontWeight:'700' 을 함께 주면 Android 가 Pretendard-Medium_bold.otf 를 찾다 실패해
-    // Roboto 합성 볼드로 떨어진다. 굵기는 파일명으로만 지정한다.
-    fontFamily: 'Pretendard-Bold',
-    marginTop: 16,
-  },
 
   // 스토리 본문
   story: {

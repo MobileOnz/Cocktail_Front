@@ -27,7 +27,12 @@ const fetchDetailData = async (id: number, repository: ICocktailDetailRepository
 
         let recommendedCocktails: any[] = [];
         if (detailData?.style) {
-            recommendedCocktails = await repository.recommendCocktails(detailData.style);
+            const sameStyle = await repository.recommendCocktails(detailData.style);
+            // 같은 스타일로만 뽑다 보니 지금 보고 있는 칵테일이 그대로 첫 칸에 들어왔다.
+            // "이런 칵테일은 어떠세요?"에 자기 자신을 권할 수는 없다.
+            recommendedCocktails = (sameStyle ?? []).filter(
+                (c: any) => Number(c?.id) !== Number(id),
+            );
         }
 
         await trace.stop();
