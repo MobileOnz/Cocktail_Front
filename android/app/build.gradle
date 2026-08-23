@@ -96,7 +96,7 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode (System.getenv("VERSION_CODE") ? System.getenv("VERSION_CODE").toInteger() : 8)
-        versionName "2.0"
+        versionName "2.1.0"
         manifestPlaceholders = [
             appAuthRedirectScheme: "com.googleusercontent.apps.1058340377075-vt8u6qabph0f0van79eqhkt9j2f1jkbe"
         ]

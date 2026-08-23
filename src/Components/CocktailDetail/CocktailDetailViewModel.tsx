@@ -59,6 +59,9 @@ const useCocktailDetailViewModel = (id: number, deps?: UseCocktailDetailDeps) =>
         staleTime: 1000 * 60 * 60 * 24, // 24시간
     });
 
+    // 캐시가 정본. `?? myReaction` 으로 합치면 반응 '해제'가 옛 값으로 되살아난다.
+    const currentReaction: ReactionType | null = data ? (data.myReaction ?? null) : myReaction;
+
     const checkToken = async () => {
         const token = await getToken();
         if (!token) {
@@ -70,17 +73,26 @@ const useCocktailDetailViewModel = (id: number, deps?: UseCocktailDetailDeps) =>
         return true;
     };
 
+    // 캐시와 로컬 상태를 함께 옮긴다.
+    // staleTime 이 24시간이라 캐시를 놔두면 화면을 다시 열 때 남긴 반응이 사라진다.
+    const applyReaction = (v: ReactionType | null) => {
+        setMyReaction(v);
+        queryClient.setQueryData(['cocktailDetail', id], (old: any) =>
+            old ? { ...old, myReaction: v } : old,
+        );
+    };
+
     const handleReaction = async (type: ReactionType) => {
         if (!(await checkToken())) { return; }
-        const prev = myReaction;
-        const next = myReaction === type ? null : type;
-        setMyReaction(next);
+        const prev = currentReaction;
+        const next = prev === type ? null : type;
+        applyReaction(next);
         try {
             const res = await repository.postCocktailRecommendation(id.toString(), type);
             console.log('[Reaction 성공] 추천수:', res.data.recommendCount);
             console.log('[Reaction 성공] hardCount:', res.data.hardCount);
         } catch (e) {
-            setMyReaction(prev);
+            applyReaction(prev);
             Toast.show({ type: 'error', text1: '반응을 등록하지 못했습니다.' });
         }
     };
@@ -138,7 +150,7 @@ const useCocktailDetailViewModel = (id: number, deps?: UseCocktailDetailDeps) =>
         recommendedCocktails: data?.recommendedCocktails ?? [],
         bookmarked,
         handleReaction,
-        myReaction: data?.myReaction ?? myReaction,
+        myReaction: currentReaction,
         trackViewDetail,
         trackStay10s,
     };

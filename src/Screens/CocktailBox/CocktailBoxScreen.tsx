@@ -35,7 +35,9 @@ const CocktailBoxScreen = () => {
                 // 상단 헤더를 리스트의 일부로 설정
                 ListHeaderComponent={
                     <View>
-                        <Appbar.Header style={{ backgroundColor: '#FFFFFF' }}>
+                        {/* SafeAreaView 가 이미 상단 inset 을 준다.
+                            Appbar 이 statusBarHeight 를 또 더하면 헤더가 통째로 내려앉는다. */}
+                        <Appbar.Header statusBarHeight={0} style={{ backgroundColor: '#FFFFFF' }}>
                             <TouchableOpacity style={{ paddingLeft: 20 }}
                                 onPress={() => navigation.goBack()}>
                                 <Icon

@@ -143,8 +143,10 @@ const BarDetailScreen: React.FC = () => {
         {bar.nameEn ? <Text style={styles.nameEn}>{bar.nameEn}</Text> : null}
         {bar.description ? <Text style={styles.description}>{bar.description}</Text> : null}
 
-        <View style={styles.row}><Text style={styles.kAddr}>주소</Text><Text style={styles.vAddr}>{bar.address}</Text></View>
-        {bar.phone ? <View style={styles.row}><Text style={styles.kAddr}>전화</Text><Text style={styles.vAddr}>{bar.phone}</Text></View> : null}
+        {/* 좌라벨/우값은 라벨 폭(40)만큼 값이 안쪽으로 밀려 본문과 기준선이 어긋난다.
+            칵테일 상세와 같이 라벨을 위에 두고 값을 전폭으로 편다. */}
+        <View style={styles.metaRow}><Text style={styles.metaLabel}>주소</Text><Text style={styles.metaValue}>{bar.address}</Text></View>
+        {bar.phone ? <View style={styles.metaRow}><Text style={styles.metaLabel}>전화</Text><Text style={styles.metaValue}>{bar.phone}</Text></View> : null}
 
         <View style={styles.actions}>
           <TouchableOpacity
@@ -198,9 +200,9 @@ const styles = StyleSheet.create({
   name: { color: barTheme.text, fontSize: 26, fontFamily: fonts.bold,},
   nameEn: { color: barTheme.textTertiary, fontFamily: fonts.regular, fontSize: 14, marginTop: 4 },
   description: { color: barTheme.textSecondary, fontFamily: fonts.regular, fontSize: 14, lineHeight: 22, marginTop: 12 },
-  row: { flexDirection: 'row', alignItems: 'flex-start', marginTop: 14, gap: 12 },
-  kAddr: { color: barTheme.textTertiary, fontFamily: fonts.regular, fontSize: 13, width: 40 },
-  vAddr: { color: barTheme.textSecondary, fontFamily: fonts.regular, fontSize: 13, flex: 1 },
+  metaRow: { marginTop: 14 },
+  metaLabel: { color: barTheme.textTertiary, fontFamily: fonts.regular, fontSize: 12, marginBottom: 4 },
+  metaValue: { color: barTheme.textSecondary, fontFamily: fonts.regular, fontSize: 14 },
   actions: { marginTop: 24, gap: 10 },
   actionBtn: {
     paddingVertical: 14,

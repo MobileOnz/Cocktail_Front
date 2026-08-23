@@ -132,7 +132,7 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation, route }) => {
                   accessibilityLabel={`${item.queryText} 검색 기록 삭제`}
                   hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                 >
-                  <FIcon name="close" size={20} color={colors.textSecondary} />
+                  <FIcon name="x" size={20} color={colors.textSecondary} />
                 </TouchableOpacity>
               </View>
             )}

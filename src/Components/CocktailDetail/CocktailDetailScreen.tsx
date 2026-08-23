@@ -1,7 +1,7 @@
 // CocktailDetailScreen.tsx
 import React, { useEffect, useRef, useState } from 'react';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { Image, ScrollView, Text, View, StyleSheet, Pressable, TouchableOpacity, Share, FlatList } from 'react-native';
+import { Animated, Dimensions, Image, Text, View, StyleSheet, Pressable, TouchableOpacity, Share, FlatList } from 'react-native';
 import { ActivityIndicator } from 'react-native-paper';
 
 import PillStyleStatus from '../PillStyleStatus';
@@ -88,6 +88,16 @@ const ABV_LABEL: Record<string, string> = {
 export function CocktailDetailScreen({ route }: Props) {
 
   const insets = useSafeAreaInsets();
+  // 히어로는 상태바까지 차오르는 게 07안의 핵심이라 헤더가 SafeArea 밖에 있다.
+  // 그래서 스크롤하면 본문이 시계·다이나믹 아일랜드와 겹쳐 읽힌다.
+  // 히어로가 지나가는 지점에서 상단에 배경을 깔아 그 겹침만 끊는다.
+  const scrollY = useRef(new Animated.Value(0)).current;
+  const heroHeight = (Dimensions.get('window').width * 4) / 3;
+  const statusScrimOpacity = scrollY.interpolate({
+    inputRange: [heroHeight - insets.top - 40, heroHeight - insets.top],
+    outputRange: [0, 1],
+    extrapolate: 'clamp',
+  });
 
   const { cocktailId } = route.params;
   const navigation = useNavigation<any>();
@@ -178,7 +188,18 @@ export function CocktailDetailScreen({ route }: Props) {
 
   // 정상 렌더링
   return (
-    <ScrollView style={styles.container}>
+    <View style={styles.container}>
+    <Animated.View
+      pointerEvents="none"
+      style={[styles.statusScrim, { height: insets.top, opacity: statusScrimOpacity }]}
+    />
+    <Animated.ScrollView
+      style={styles.container}
+      scrollEventThrottle={16}
+      onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], {
+        useNativeDriver: true,
+      })}
+    >
       <View style={styles.imageContainer}>
         <Image
           source={{
@@ -359,7 +380,9 @@ export function CocktailDetailScreen({ route }: Props) {
         horizontal
         showsHorizontalScrollIndicator={false}
         keyExtractor={(item) => `recommended-${item.id}`}
-        style={{ marginTop: heightPercentage(16) }}
+        // Section 이 이미 좌우 20 을 준다. 그 위에 또 20 을 얹으면 카드만 40 에서 시작해
+        // 제목과 기준선이 어긋난다. 패딩을 상쇄해 20 에 맞추고, 대신 카드가 화면 끝까지 흐르게 둔다.
+        style={{ marginTop: heightPercentage(16), marginHorizontal: -widthPercentage(20) }}
         contentContainerStyle={{
           paddingLeft: widthPercentage(20),
           paddingRight: widthPercentage(20),
@@ -411,7 +434,8 @@ export function CocktailDetailScreen({ route }: Props) {
       )}
 
       <View style={{ height: heightPercentage(100) }} />
-    </ScrollView>
+    </Animated.ScrollView>
+    </View>
   );
 }
 
@@ -509,14 +533,14 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     columnGap: widthPercentage(10),
     marginTop: heightPercentage(4),
   },
   button: {
     paddingHorizontal: 16,
     paddingVertical: 10,
-    width: widthPercentage(170),
+    // 고정폭이면 섹션 좌우 기준선(20)을 넘어 오른쪽만 잘린다. 폭에 맞춰 균등 분할한다.
+    flex: 1,
     height: heightPercentage(55),
     borderRadius: 10,
     borderWidth: 1,
@@ -567,7 +591,7 @@ const styles = StyleSheet.create({
   stepsCtaArrow: { fontFamily: fonts.regular, fontSize: fontPercentage(22), color: '#FFFFFF' },
   storyCard: {
     marginTop: heightPercentage(12),
-    marginHorizontal: widthPercentage(20),
+    // Section 이 좌우 20 을 이미 준다. 여기서 또 주면 이 카드만 안쪽으로 밀린다.
     padding: widthPercentage(16),
     borderRadius: widthPercentage(12),
     backgroundColor: '#F5F5F5',
@@ -630,6 +654,14 @@ const styles = StyleSheet.create({
     fontSize: fontPercentage(13),
     color: 'rgba(255,255,255,0.7)',
     marginTop: 2,
+  },
+  statusScrim: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: '#FFFFFF',
+    zIndex: 10,
   },
   imageHeader: {
     position: 'absolute',
