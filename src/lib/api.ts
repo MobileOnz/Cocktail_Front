@@ -59,5 +59,11 @@ export function toUserMessage(e: unknown, fallback = '문제가 발생했습니�
 
 export function isUnauthorized(e: unknown): boolean {
   const anyE = e as any;
-  return anyE?.response?.status === 401 || (e instanceof ApiError && e.code === -2);
+  // 인터셉터가 토큰 없이/리프레시 실패로 끊은 요청은 axios 응답이 아예 없다.
+  // 그때 다는 표식을 같이 봐야 한다 — 이걸 빠뜨려서 세션이 만료됐을 때
+  // "로그인이 필요합니다" 대신 "기록하지 못했습니다" 같은 엉뚱한 문구가 나갔다.
+  if (anyE?.isAuthError === true) { return true; }
+  return anyE?.response?.status === 401
+    || anyE?.response?.status === 403
+    || (e instanceof ApiError && e.code === -2);
 }

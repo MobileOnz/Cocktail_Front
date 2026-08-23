@@ -8,10 +8,20 @@ import useCocktailBoxViewModel from './CocktailBoxViewModel';
 
 import CocktailCard from '../../Components/CocktailCard';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { fonts } from '../../lib/theme';
+import { colors, fonts, radius } from '../../lib/theme';
+import type { ArchiveTab } from '../../model/DataSource/BookMarksDataSource';
+/** 보관함 탭 — 저장 말고도 내가 남긴 기록으로 칵테일을 되찾을 수 있어야 한다. */
+const TABS: { key: ArchiveTab; label: string; emptyTitle: string; emptySub: string }[] = [
+    { key: 'BOOKMARK', label: '저장', emptyTitle: '아직 저장한 칵테일이 없네요.', emptySub: '마음에 드는 칵테일을 찾아볼까요?' },
+    { key: 'MADE', label: '만들어봤어요', emptyTitle: '아직 만들어본 칵테일이 없어요.', emptySub: '레시피를 보고 한 잔 만들어보세요.' },
+    { key: 'RECOMMEND', label: '좋아요', emptyTitle: '아직 좋아요한 칵테일이 없어요.', emptySub: '상세 화면에서 반응을 남길 수 있어요.' },
+    { key: 'HARD', label: '어려워요', emptyTitle: '어려워요로 표시한 칵테일이 없어요.', emptySub: '만들기 어려웠던 칵테일을 표시해두면 여기 모여요.' },
+];
+
 const CocktailBoxScreen = () => {
     const navigation = useNavigation<any>();
     const vm = useCocktailBoxViewModel();
+    const current = TABS.find(t => t.key === vm.tab) ?? TABS[0];
     return (
         <SafeAreaView style={styles.container}>
             <FlatList
@@ -40,6 +50,25 @@ const CocktailBoxScreen = () => {
                             </View>
 
                         </Appbar.Header>
+
+                        <View style={styles.tabBar}>
+                            {TABS.map(t => {
+                                const on = vm.tab === t.key;
+                                return (
+                                    <TouchableOpacity
+                                        key={t.key}
+                                        style={[styles.tab, on && styles.tabOn]}
+                                        onPress={() => vm.setTab(t.key)}
+                                        accessibilityRole="button"
+                                        accessibilityState={{ selected: on }}
+                                    >
+                                        <Text style={[styles.tabText, on && styles.tabTextOn]} numberOfLines={1}>
+                                            {t.label}
+                                        </Text>
+                                    </TouchableOpacity>
+                                );
+                            })}
+                        </View>
                     </View>
                 }
 
@@ -50,8 +79,8 @@ const CocktailBoxScreen = () => {
                             <ActivityIndicator size="large" color="#111" />
                         ) : (
                             <View style={styles.textContainer}>
-                                <Text style={styles.emptyTitle}>아직 저장한 칵테일이 없네요.</Text>
-                                <Text style={styles.emptySub}>마음에 드는 칵테일을 찾아볼까요?</Text>
+                                <Text style={styles.emptyTitle}>{current.emptyTitle}</Text>
+                                <Text style={styles.emptySub}>{current.emptySub}</Text>
                             </View>
                         )}
                     </View>
@@ -64,7 +93,7 @@ const CocktailBoxScreen = () => {
                             name={item.name}
                             type={item.type}
                             image={item.image}
-                            bookmarked={true}
+                            bookmarked={vm.tab === 'BOOKMARK' ? true : item.isBookmarked}
                             onPress={() =>
                                 navigation.navigate('CocktailDetailScreen', { cocktailId: item.id })
                             }
@@ -80,6 +109,24 @@ const CocktailBoxScreen = () => {
 export default CocktailBoxScreen;
 
 const styles = StyleSheet.create({
+    tabBar: {
+        flexDirection: 'row',
+        columnGap: widthPercentage(6),
+        paddingHorizontal: widthPercentage(16),
+        paddingBottom: heightPercentage(12),
+    },
+    tab: {
+        flex: 1,
+        paddingVertical: heightPercentage(8),
+        borderRadius: radius.pill,
+        borderWidth: 1,
+        borderColor: colors.border,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    tabOn: { backgroundColor: colors.text, borderColor: colors.text },
+    tabText: { fontFamily: fonts.medium, fontSize: fontPercentage(12), color: colors.textSecondary },
+    tabTextOn: { color: colors.textInverse, fontFamily: fonts.semibold },
     container: {
         flex: 1,
         backgroundColor: '#FFFFFF',

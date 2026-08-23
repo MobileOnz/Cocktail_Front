@@ -1,9 +1,10 @@
-import { BookMarksDataSource } from '../DataSource/BookMarksDataSource';
+import { BookMarksDataSource, ArchiveTab } from '../DataSource/BookMarksDataSource';
 import { CocktailCard } from '../domain/CocktailCard';
 import { CocktailSchema } from '../Schema/CocktailSchema';
 
 export interface IBookmarkRepository {
     fetchBookmarked(): Promise<CocktailCard[]>;
+    fetchArchive(tab: ArchiveTab): Promise<CocktailCard[]>;
 }
 export class BookmarkRepository implements IBookmarkRepository {
     private dataSource: BookMarksDataSource;
@@ -12,7 +13,11 @@ export class BookmarkRepository implements IBookmarkRepository {
         this.dataSource = dataSource ?? new BookMarksDataSource();
     }
     async fetchBookmarked(): Promise<CocktailCard[]> {
-        const dto = await this.dataSource.fetchBookMarks();
+        return this.fetchArchive('BOOKMARK');
+    }
+
+    async fetchArchive(tab: ArchiveTab): Promise<CocktailCard[]> {
+        const dto = await this.dataSource.fetchArchive(tab);
         const validSchema = dto.map((item) => {
             return CocktailSchema.parse(item);
         });

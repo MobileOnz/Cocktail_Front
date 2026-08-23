@@ -88,12 +88,12 @@ instance.interceptors.response.use(
 
       const newAccessToken = await tokenRefresh();
       if (!newAccessToken) {
-        // 세션은 정리하되, 토스트는 사용자가 시작한 요청에서만.
-        // 화면 진입 시 자동으로 나가는 요청의 401 은 비로그인의 정상 결과다.
         await AsyncStorage.clear();
-        if (originalRequest.authPrompt) {
-          promptLogin('로그인을 해주세요.');
-        }
+        // 리프레시까지 실패했다면 '비로그인'이 아니라 '쓰던 세션이 끊긴' 것이다.
+        // 이 경우엔 authPrompt 여부와 무관하게 로그인으로 보낸다 —
+        // 그러지 않으면 만들어봤어요·문의·리액션이 저마다 다른 문구로 조용히 실패하고
+        // 사용자는 로그인이 문제라는 걸 알 방법이 없다(실제 QA 에서 그렇게 나왔다).
+        promptLogin('로그인이 만료됐어요. 다시 로그인해주세요.');
         return Promise.reject(authRejection('리프레시 실패, 재로그인 필요'));
       }
 
