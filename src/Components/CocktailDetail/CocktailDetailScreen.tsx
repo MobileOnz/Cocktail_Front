@@ -59,8 +59,8 @@ export function CocktailDetailScreen({ route }: Props) {
   const vm = useCocktailDetailViewModel(cocktailId);
   const stay10sTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Image variant onError fallback to original imageUrl/glassImageUrl
-  // (covers mock-S3 mode where variant URLs may 404 while real keys are pending).
+  // 히어로 변형 이미지가 404 나면 원본으로 되돌린다(변형 URL 이 아직 없는 환경 대비).
+  // 잔 이미지는 제거했다 — 13장을 105종이 돌려 쓰고 있어 상세마다 같은 그림이 반복됐다.
   const [heroErrored, setHeroErrored] = useState(false);
 
   const handleShare = async () => {
