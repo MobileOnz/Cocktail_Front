@@ -69,7 +69,7 @@ jobs:
           # QA 내부배포: 로컬 BE(신규 바/뉴스/채팅/매거진 포함)를 Tailscale Funnel 로 노출한 고정 URL.
           # cloudflared quick 터널과 달리 재발급되지 않으므로 APK 를 다시 굽지 않아도 계속 유효하다.
           # 프로덕션(onz-cocktail.kr)에는 아직 신규 기능이 없어 QA 만 이 주소를 바라본다.
-          echo "API_BASE_URL=https://hyunho-mac.taila769b3.ts.net/onz" >> .env
+          echo "API_BASE_URL=http://onz-cocktail.kr/onz" >> .env
           echo "GOOGLE_PLACES_API_KEY=AIzaSyDeWHr3QIavBa4RGYwZly8h0sNTfLmQ" >> .env
           echo "GOOGLE_CLIENT_ID=1058340377075-vt8u6qabph0f0van79eqhkt9j2f1jkbe.apps.googleusercontent.com" >> .env
           echo "GOOGLE_REDIRECT_URI=com.googleusercontent.apps.1058340377075-vt8u6qabph0f0van79eqhkt9j2f1jkbe:/oauth2redirect/google" >> .env
@@ -132,7 +132,7 @@ jobs:
       - name: Create .env file
         run: |
           # Android 잡과 동일한 QA 주소를 바라본다. Tailscale Funnel 고정 주소라 자동 갱신이 필요 없다.
-          echo "API_BASE_URL=https://hyunho-mac.taila769b3.ts.net/onz" >> .env
+          echo "API_BASE_URL=http://onz-cocktail.kr/onz" >> .env
           echo "GOOGLE_PLACES_API_KEY=AIzaSyDeWHr3QIavBa4RGYwZly8h0sNTfLmQ" >> .env
           echo "GOOGLE_CLIENT_ID=1058340377075-vt8u6qabph0f0van79eqhkt9j2f1jkbe.apps.googleusercontent.com" >> .env
           echo "GOOGLE_REDIRECT_URI=com.googleusercontent.apps.1058340377075-vt8u6qabph0f0van79eqhkt9j2f1jkbe:/oauth2redirect/google" >> .env
