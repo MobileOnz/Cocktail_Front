@@ -19,17 +19,25 @@ import type { CocktailStep as CocktailStepDto } from '../../types/api';
 import { colors, fonts } from '../../lib/theme';
 type Props = NativeStackScreenProps<RootStackParamList, 'CocktailDetailScreen'>;
 
+/**
+ * 항목 한 줄.
+ *
+ * 예전엔 좌측 라벨(60pt) + 우측 값이었는데, 여기에 값의 marginLeft 20pt 까지 더해져
+ * 폭의 약 25%가 라벨 열로 나갔다. "여름"(2글자)과 200자 유래가 같은 좁은 칸을 쓰다 보니
+ * 긴 글이 오른쪽으로 몰려 잘게 꺾였다.
+ *
+ * → 라벨을 위로 올리고 값은 전폭을 쓴다. 짧은 값도 같은 리듬을 따르므로 목록이 고르게 읽힌다.
+ */
 const DetailRow = ({
   label,
   children,
-  align = 'flex-start',
 }: {
   label: string;
   children: React.ReactNode;
   align?: 'center' | 'flex-start';
 }) => {
   return (
-    <View style={[styles.row, { alignItems: align }]}>
+    <View style={styles.row}>
       <Text style={styles.label}>{label}</Text>
       <View style={styles.valueWrapper}>
         {children}
@@ -176,7 +184,11 @@ export function CocktailDetailScreen({ route }: Props) {
           </View>
         </View>
         {/* 07안 — 사진 크기를 유지한 채 하단 그라데이션 위에 이름과 핵심 스펙을 얹는다.
-            스크롤하기 전에 "무엇을 마시는지 / 얼마나 센지 / 무슨 잔인지"가 다 보인다. */}
+            스크롤하기 전에 "무엇을 마시는지 / 얼마나 센지 / 어떤 잔에 만드는지"가 다 보인다.
+
+            잔은 '사진 속 잔'이 아니라 '이 칵테일에 쓰는 잔'이다. 사진은 연출 컷이라
+            표기와 다른 잔으로 찍힌 경우가 있다(표본 3종 중 2종에서 확인). 그래서 라벨을
+            '추천 잔'으로 두어 사진을 설명하는 말이 아님을 분명히 한다. */}
         <View style={styles.heroScrim} pointerEvents="none" />
         <View style={styles.heroOverlay} pointerEvents="box-none">
           <Text style={styles.korText} lineBreakStrategyIOS="hangul-word">{vm.detail.korName}</Text>
@@ -191,7 +203,7 @@ export function CocktailDetailScreen({ route }: Props) {
               <Text style={styles.heroSpecVal} numberOfLines={1}>{vm.detail.base}</Text>
             </View>
             <View style={styles.heroSpec}>
-              <Text style={styles.heroSpecKey}>잔</Text>
+              <Text style={styles.heroSpecKey}>추천 잔</Text>
               <Text style={styles.heroSpecVal} numberOfLines={1}>{vm.detail.glassType}</Text>
             </View>
           </View>
@@ -296,7 +308,7 @@ export function CocktailDetailScreen({ route }: Props) {
         </Pressable>
       </View>
 
-      <Text style={styles.valueText}>이런 잔은 어떠세요?</Text>
+      <Text style={styles.sectionHeading}>이런 칵테일은 어떠세요?</Text>
       <FlatList
         data={vm.recommendedCocktails}
         horizontal
@@ -442,20 +454,17 @@ const styles = StyleSheet.create({
     backgroundColor: '#e8e8e8',
   },
   row: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
     paddingVertical: heightPercentage(10),
-    paddingLeft: widthPercentage(16),
-    paddingRight: widthPercentage(10),
+    paddingHorizontal: widthPercentage(20),
   },
   valueWrapper: {
-    flex: 1,
+    width: '100%',
   },
   valueText: {
-    marginLeft: widthPercentage(20),
-    fontFamily: 'Pretendard-Regular',
-    color: '#1B1B1B',
-    fontSize: fontPercentage(16),
+    fontFamily: fonts.regular,
+    color: colors.text,
+    fontSize: fontPercentage(15),
+    lineHeight: fontPercentage(24),
   },
   stepsCta: {
     flexDirection: 'row',
@@ -500,10 +509,10 @@ const styles = StyleSheet.create({
     lineHeight: fontPercentage(20),
   },
   label: {
-    fontFamily: 'Pretendard-Medium',
-    width: widthPercentage(60),
+    fontFamily: fonts.medium,
     fontSize: fontPercentage(12),
-    color: '#616161',
+    color: colors.textTertiary,
+    marginBottom: heightPercentage(6),
   },
   contentWrapper: {
 
@@ -530,21 +539,21 @@ const styles = StyleSheet.create({
     aspectRatio: 3 / 4,
     resizeMode: 'cover',
   },
+  // 예전엔 둘 다 position:'absolute' + bottom(한글 40 / 영문 75)이라
+  // 영문이 한글 '위'에 떴고, 크기도 20 으로 같았다. 오버레이 안에서는 흐름대로 쌓아
+  // 한글을 크게 먼저, 영문을 작게 뒤에 둔다.
   korText: {
-    fontFamily: 'Pretendard-Medium',
-    position: 'absolute',
-    left: 20,
-    bottom: 40,
-    fontSize: fontPercentage(20),
+    fontFamily: fonts.bold,
+    fontSize: fontPercentage(24),
+    lineHeight: fontPercentage(30),
+    letterSpacing: -0.5,
     color: '#FFFFFF',
   },
   engText: {
-    fontFamily: 'Pretendard-Bold',
-    position: 'absolute',
-    left: 20,
-    bottom: 75,
-    fontSize: fontPercentage(20),
-    color: '#FFFFFF',
+    fontFamily: fonts.regular,
+    fontSize: fontPercentage(13),
+    color: 'rgba(255,255,255,0.7)',
+    marginTop: 2,
   },
   imageHeader: {
     position: 'absolute',
