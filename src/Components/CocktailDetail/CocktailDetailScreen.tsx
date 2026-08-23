@@ -13,7 +13,10 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import CocktailCard from '../CocktailCard';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { fonts } from '../../lib/theme';
+import instance from '../../tokenRequest/axios_interceptor';
+import { unwrap } from '../../lib/api';
+import type { CocktailStep as CocktailStepDto } from '../../types/api';
+import { colors, fonts } from '../../lib/theme';
 type Props = NativeStackScreenProps<RootStackParamList, 'CocktailDetailScreen'>;
 
 const DetailRow = ({
@@ -36,8 +39,12 @@ const DetailRow = ({
 };
 
 // 백엔드 enum 이 그대로 노출되던 것(WEAK 등)을 한글로.
+// 서버가 실제로 보내는 값은 WEAK / NORMAL / STRONG 이다.
+// MEDIUM 으로 적어 두어 105종 중 48종(46%)의 도수 자리에 영문 "NORMAL" 이 그대로 노출됐다.
+// 두 표기를 모두 받아 두어 서버가 어느 쪽을 보내도 한글이 나오게 한다.
 const ABV_LABEL: Record<string, string> = {
   WEAK: '약함',
+  NORMAL: '보통',
   MEDIUM: '보통',
   STRONG: '강함',
 };
@@ -55,7 +62,6 @@ export function CocktailDetailScreen({ route }: Props) {
   // Image variant onError fallback to original imageUrl/glassImageUrl
   // (covers mock-S3 mode where variant URLs may 404 while real keys are pending).
   const [heroErrored, setHeroErrored] = useState(false);
-  const [glassErrored, setGlassErrored] = useState(false);
 
   const handleShare = async () => {
     if (!vm.detail) { return; }
@@ -79,6 +85,18 @@ export function CocktailDetailScreen({ route }: Props) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [vm.detail]);
 
+  // 제조 단계 — 예전엔 별도 화면으로만 갈 수 있었다. 순서를 상세에서 바로 보여준다.
+  const [steps, setSteps] = useState<CocktailStepDto[]>([]);
+  useEffect(() => {
+    const id = vm.detail?.id;
+    if (!id) { return; }
+    let alive = true;
+    instance.get(`/api/v2/cocktails/${id}/steps`)
+      .then(res => { if (alive) { setSteps(unwrap<CocktailStepDto[]>(res) ?? []); } })
+      .catch(() => { if (alive) { setSteps([]); } });  // 단계는 부가정보다. 없으면 섹션만 빠진다.
+    return () => { alive = false; };
+  }, [vm.detail?.id]);
+
   //  로딩 상태
   if (vm.loading) {
     return (
@@ -98,6 +116,13 @@ export function CocktailDetailScreen({ route }: Props) {
     );
   }
 
+  // 도수는 밴드(약함/보통/강함)보다 실제 수치가 유용하다. 둘 다 있으면 수치를 쓴다.
+  const abvBandLabel = ABV_LABEL[vm.detail.abvBand] ?? vm.detail.abvBand;
+  const abvText =
+    vm.detail.minAlcohol != null && vm.detail.maxAlcohol != null
+      ? `${vm.detail.minAlcohol}–${vm.detail.maxAlcohol}%`
+      : abvBandLabel;
+
   // 정상 렌더링
   return (
     <ScrollView style={styles.container}>
@@ -113,7 +138,7 @@ export function CocktailDetailScreen({ route }: Props) {
         />
 
         {/* 상단 바 전체를 한 View에 묶기 */}
-        <View style={[styles.imageHeader, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
+        <View style={[styles.imageHeader, { paddingTop: insets.top }]}>
           {/* 왼쪽: 뒤로가기 */}
           <TouchableOpacity onPress={() => navigation.goBack()}
           >
@@ -150,8 +175,27 @@ export function CocktailDetailScreen({ route }: Props) {
 
           </View>
         </View>
-        <Text style={styles.korText}>{vm.detail.korName}</Text>
-        <Text style={styles.engText}>{vm.detail.engName}</Text>
+        {/* 07안 — 사진 크기를 유지한 채 하단 그라데이션 위에 이름과 핵심 스펙을 얹는다.
+            스크롤하기 전에 "무엇을 마시는지 / 얼마나 센지 / 무슨 잔인지"가 다 보인다. */}
+        <View style={styles.heroScrim} pointerEvents="none" />
+        <View style={styles.heroOverlay} pointerEvents="box-none">
+          <Text style={styles.korText} lineBreakStrategyIOS="hangul-word">{vm.detail.korName}</Text>
+          <Text style={styles.engText}>{vm.detail.engName}</Text>
+          <View style={styles.heroSpecs}>
+            <View style={styles.heroSpec}>
+              <Text style={styles.heroSpecKey}>도수</Text>
+              <Text style={styles.heroSpecVal}>{abvText}</Text>
+            </View>
+            <View style={styles.heroSpec}>
+              <Text style={styles.heroSpecKey}>베이스</Text>
+              <Text style={styles.heroSpecVal} numberOfLines={1}>{vm.detail.base}</Text>
+            </View>
+            <View style={styles.heroSpec}>
+              <Text style={styles.heroSpecKey}>잔</Text>
+              <Text style={styles.heroSpecVal} numberOfLines={1}>{vm.detail.glassType}</Text>
+            </View>
+          </View>
+        </View>
       </View>
 
 
@@ -166,10 +210,6 @@ export function CocktailDetailScreen({ route }: Props) {
         </DetailRow>
 
         <Divider style={styles.sectionDivider} />
-
-        <DetailRow label="도수">
-          <Text style={styles.valueText}> {ABV_LABEL[vm.detail.abvBand] ?? vm.detail.abvBand}</Text>
-        </DetailRow>
         <DetailRow label="맛">
           <Text style={styles.valueText}>
             {vm.detail.flavors.join(' • ')}
@@ -181,9 +221,6 @@ export function CocktailDetailScreen({ route }: Props) {
         <DetailRow label="계절">
           <Text style={styles.valueText}> {vm.detail.season}</Text>
         </DetailRow>
-        <DetailRow label="베이스">
-          <Text style={styles.valueText}> {vm.detail.base}</Text>
-        </DetailRow>
         <DetailRow label="재료">
           <View style={{ flexDirection: 'column', gap: 6 }}>
             {vm.detail.ingredients.map((item, index) => (
@@ -193,25 +230,35 @@ export function CocktailDetailScreen({ route }: Props) {
             ))}
           </View>
         </DetailRow>
-        {/* 추후 넣기 */}
-        <DetailRow label="잔 유형">
-          <Text style={styles.valueText}> {vm.detail.glassType}</Text>
-          <Image
-            source={{
-              uri: glassErrored
-                ? vm.detail.glassImageUrl
-                : (vm.detail.glassImageUrlDetail ?? vm.detail.glassImageUrl),
-            }}
-            style={styles.glassImage}
-            onError={() => setGlassErrored(true)}
-          />
-        </DetailRow>
+
       </View>
 
 
       <Divider style={styles.Divider} />
 
-      {/* 만드는 법 — 재료만 있고 제조 단계가 없던 갭을 백엔드 T-07(/steps)로 해소 */}
+      {steps.length > 0 && (
+        <View style={styles.stepsBlock}>
+          <Text style={styles.sectionHeading}>만드는 순서</Text>
+          {steps.map((st, i) => (
+            <View key={`step-${st.stepOrder ?? i}`} style={styles.stepRow}>
+              <View style={styles.stepNum}>
+                <Text style={styles.stepNumText}>{i + 1}</Text>
+              </View>
+              <View style={styles.stepBody}>
+                <Text style={styles.stepText} lineBreakStrategyIOS="hangul-word">
+                  {st.instruction}
+                </Text>
+                {!!st.tip && <Text style={styles.stepTip}>{st.tip}</Text>}
+                {!!st.durationSec && (
+                  <Text style={styles.stepDuration}>{st.durationSec}초</Text>
+                )}
+              </View>
+            </View>
+          ))}
+        </View>
+      )}
+
+      {/* 만드는 법 — 단계별 화면(도구·타이머 포함)으로 가는 입구 */}
       <TouchableOpacity
         style={styles.stepsCta}
         activeOpacity={0.9}
@@ -318,6 +365,46 @@ export function CocktailDetailScreen({ route }: Props) {
 }
 
 const styles = StyleSheet.create({
+  // ── 07안 히어로 오버레이 ──────────────────────────────────────────────
+  heroScrim: {
+    position: 'absolute', left: 0, right: 0, bottom: 0, height: heightPercentage(150),
+    backgroundColor: 'rgba(0,0,0,0.55)',
+  },
+  heroOverlay: { position: 'absolute', left: 0, right: 0, bottom: 0, padding: widthPercentage(20) },
+  heroSpecs: { flexDirection: 'row', marginTop: heightPercentage(12), columnGap: widthPercentage(22) },
+  heroSpec: { flexShrink: 1 },
+  heroSpecKey: {
+    fontFamily: fonts.medium, fontSize: fontPercentage(10),
+    color: 'rgba(255,255,255,0.65)', letterSpacing: 0.4, marginBottom: 2,
+  },
+  heroSpecVal: { fontFamily: fonts.semibold, fontSize: fontPercentage(14), color: '#FFFFFF' },
+
+  // ── 제조 순서 ────────────────────────────────────────────────────────
+  stepsBlock: { paddingHorizontal: widthPercentage(20), paddingTop: heightPercentage(8) },
+  sectionHeading: {
+    fontFamily: fonts.semibold, fontSize: fontPercentage(16),
+    color: colors.text, marginBottom: heightPercentage(14),
+  },
+  stepRow: { flexDirection: 'row', marginBottom: heightPercentage(16) },
+  stepNum: {
+    width: widthPercentage(22), height: widthPercentage(22), borderRadius: widthPercentage(11),
+    backgroundColor: colors.text, alignItems: 'center', justifyContent: 'center',
+    marginRight: widthPercentage(12), marginTop: 1,
+  },
+  stepNumText: { fontFamily: fonts.semibold, fontSize: fontPercentage(11), color: colors.textInverse },
+  stepBody: { flex: 1 },
+  stepText: {
+    fontFamily: fonts.regular, fontSize: fontPercentage(15),
+    lineHeight: fontPercentage(24), color: colors.text,
+  },
+  stepTip: {
+    fontFamily: fonts.regular, fontSize: fontPercentage(13),
+    lineHeight: fontPercentage(20), color: colors.textTertiary, marginTop: heightPercentage(4),
+  },
+  stepDuration: {
+    fontFamily: fonts.medium, fontSize: fontPercentage(12),
+    color: colors.accentText, marginTop: heightPercentage(4),
+  },
   container: {
     flex: 1,
   },
@@ -426,11 +513,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  glassImage: {
-    width: '100%',
-    height: heightPercentage(420),
-    resizeMode: 'cover',
   },
 
   // 로딩 텍스트
