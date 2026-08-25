@@ -79,3 +79,12 @@ yarn-error.log
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+
+# TLS 인증서·개인키
+# Tailscale cert 가 리포 루트에 떨어져 그대로 커밋된 적이 있다(공개 레포였다).
+*.key
+*.crt
+*.cer
+*.p12
+*.pem
+!android/app/upload_certificate.pem
