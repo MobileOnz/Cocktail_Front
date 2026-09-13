@@ -62,8 +62,9 @@ jobs:
           # ── TestFlight 빌드 상태 ──────────────────────────────────────────
           # "업로드는 됐는데 폰에 안 뜬다" 를 가르는 정보: 처리 상태와 테스터 그룹 연결.
           APP_ID = "6744957084"
+          # 정렬을 주지 않으면 ASC 가 오래된 빌드부터 임의 순서로 준다 — 최근 빌드를 못 본다.
           rb = requests.get(f"https://api.appstoreconnect.apple.com/v1/apps/{APP_ID}/builds",
-                            headers=h, params={"limit": 8}, timeout=60)
+                            headers=h, params={"limit": 8, "sort": "-uploadedDate"}, timeout=60)
           print("== builds ==", rb.status_code)
           if rb.status_code == 200:
               for b in rb.json().get("data", []):
