@@ -9,7 +9,23 @@ import {colors} from './theme';
  * 탭바 높이의 단일 출처. BottomTabNavigator 가 이 값을 import 해서 tabBarStyle.height 로 쓴다.
  * (예전엔 여기 58, 네비게이터에 60 이 각각 하드코딩돼 2pt 어긋나 있었다.)
  */
-export const TAB_BAR_HEIGHT = heightPercentage(60);
+/**
+ * 활성 탭 알약이 담아야 하는 콘텐츠 높이.
+ * 아이콘 래퍼 28 + 레이블 marginTop 2 + lineHeight 14 = 44.
+ */
+const TAB_CONTENT_HEIGHT = 44;
+/** 알약이 위아래로 갖는 여백(BottomTabNavigator 의 tabPill.marginVertical × 2). */
+const TAB_PILL_MARGIN = 12;
+
+/**
+ * heightPercentage 는 812pt 기준으로 비례 축소한다. 그대로 두면 작은 화면에서 탭바가 줄어들어
+ * 알약이 콘텐츠보다 짧아지고, 흰 레이블이 알약 밖으로 새어나가 흰 배경 위에 얹힌다
+ * (SE2/SE3 667pt 에서 6.7pt 넘침). 알약이 콘텐츠를 담을 수 있는 최소치를 하한으로 둔다.
+ */
+export const TAB_BAR_HEIGHT = Math.max(
+  heightPercentage(60),
+  TAB_CONTENT_HEIGHT + TAB_PILL_MARGIN,
+);
 
 /**
  * BottomTabNavigator tabBarStyle.bottom = insets.bottom + TAB_BAR_GAP

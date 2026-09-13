@@ -112,6 +112,12 @@ const SearchResultScreen = ({ navigation, route }: Props) => {
       />
       <OpenBottomSheet
         ref={bottomSheetRef}
+        // 적용 없이 닫으면 시트 선택과 목록이 어긋난다 → 닫힐 때 적용된 필터로 되돌린다.
+        onIndexChange={index => {
+          if (index === -1) {
+            filterRef.current?.reset();
+          }
+        }}
         footer={
           <View style={styles.footer}>
             <Pressable style={[styles.resetButton]} onPress={() => { filterRef.current?.reset(); }} >
@@ -132,6 +138,7 @@ const SearchResultScreen = ({ navigation, route }: Props) => {
 
         <FilterBottomSheet
           ref={filterRef}
+          initialValue={vm.appliedFilter}
           onApply={(filterValue) => vm.refetch(filterValue)}
           onClose={() => bottomSheetRef.current?.close()}
         />

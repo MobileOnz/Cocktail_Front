@@ -62,6 +62,12 @@ const AllCocktailScreen = ({navigation, embedded = false}: Props) => {
   // embedded(레시피북 탭) 에서만 의미 있다 — 스택 화면엔 애초에 탭바가 없다.
   const handleFilterSheetIndexChange = useCallback(
     (index: number) => {
+      // '적용하기' 없이 X·백드롭으로 닫으면 시트 안의 선택만 남고 목록은 그대로였다.
+      // 다시 열면 적용되지도 않은 조건이 선택된 채로 보인다 — 배지·초기화가 생기면서 더 눈에 띈다.
+      // 닫힐 때 실제 적용된 필터로 되돌린다.
+      if (index === -1) {
+        filterRef.current?.reset();
+      }
       if (!embedded) {
         return;
       }
@@ -241,6 +247,9 @@ const AllCocktailScreen = ({navigation, embedded = false}: Props) => {
         }>
         <FilterBottomSheet
           ref={filterRef}
+          // reset() 이 되돌아갈 기준점. 안 주면 항상 DEFAULT_FILTER 로 돌아가
+          // 적용해 둔 조건까지 날아간다.
+          initialValue={vm.appliedFilter}
           onApply={filterValue => vm.refetch(filterValue)}
           onClose={() => bottomSheetRef.current?.close()}
         />

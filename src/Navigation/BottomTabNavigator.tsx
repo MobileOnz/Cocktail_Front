@@ -22,6 +22,10 @@ import {useSafeAreaInsets} from 'react-native-safe-area-context';
 const Tab = createBottomTabNavigator<BottomTabParamList>();
 
 // 바 탭이 홈과 같은 집 모양(NearBar.svg)이라 구분이 안 됐다 → 칵테일 잔으로 교체.
+/** 탭 순서 — 접근성 레이블의 "N / M" 계산에 쓴다. Tab.Screen 선언 순서와 같아야 한다. */
+const TAB_ORDER = ['홈', '매거진', '레시피북', '바'] as const;
+type TabName = (typeof TAB_ORDER)[number];
+
 export const ICON_PATH = {
   홈: HomeIcon,
   매거진: GuideIcon,
@@ -86,6 +90,9 @@ const TabBarButton = ({
     <Pressable
       {...rest}
       accessibilityState={accessibilityState}
+      // 기본 렌더러(PlatformPressable)가 채워주던 리플 색을 더는 못 받는다.
+      // 색을 안 주면 테마 기본값으로 떨어져 진한 알약 위에서 거의 보이지 않는다.
+      android_ripple={{color: 'rgba(0, 0, 0, 0.12)', borderless: true}}
       style={[style, styles.tabButton]}>
       <View style={[styles.tabPill, focused && styles.tabPillActive]}>
         {children}
@@ -143,10 +150,15 @@ const BottomTabNavigator = () => {
           tabBarInactiveTintColor: colors.textTertiary,
           tabBarBackground: TabBarBackground,
           tabBarButton: props => <TabBarButton {...props} />,
+          // tabBarLabel 이 함수면 라이브러리가 accessibilityLabel 을 만들어주지 않는다
+          // (문자열일 때만 "…, tab, N of M" 을 붙인다). VoiceOver 가 몇 번째 탭인지 못 읽게 되므로
+          // 여기서 직접 채운다.
+          tabBarAccessibilityLabel: `${route.name}, 탭, ${
+            TAB_ORDER.indexOf(route.name as TabName) + 1
+          } / ${TAB_ORDER.length}`,
           tabBarLabel: ({focused, color, children}) => (
             <Text
               numberOfLines={1}
-              allowFontScaling={false}
               style={[
                 styles.tabLabel,
                 {color, fontFamily: focused ? fonts.bold : fonts.medium},
@@ -157,12 +169,13 @@ const BottomTabNavigator = () => {
           // 배경은 tabBarBackground(blur) 가 그린다. 여기서 칠하면 blur 를 덮어버린다.
           tabBarStyle: getFloatingTabBarStyle(insets.bottom),
           // 세로 여백은 알약(tabPill)의 marginVertical 이 갖는다. 여기서 또 주면 알약이 눌린다.
+          // alignItems 를 주지 않는다 — 'center' 면 Pressable 폭이 콘텐츠 폭으로 줄어들어
+          // 알약이 탭마다 다른 폭이 된다(홈 39pt vs 레시피북 63pt). 셀 전체를 채우게 둔다.
           tabBarItemStyle: {
             height: TAB_BAR_HEIGHT,
             paddingVertical: 0,
             flexDirection: 'column',
             justifyContent: 'center',
-            alignItems: 'center',
           },
           tabBarIcon: ({color}) => {
             const IconComponent =

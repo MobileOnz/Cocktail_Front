@@ -107,7 +107,9 @@ jobs:
           echo "ndkVersion=$NDK_VERSION"
           if [ ! -d "${ANDROID_HOME}/ndk/${NDK_VERSION}" ]; then
             echo "러너에 없다 → sdkmanager 로 설치."
-            "${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager" --install "ndk;${NDK_VERSION}"
+            # 라이선스 미동의 시 프롬프트에서 멈춰 잡이 타임아웃된다. 러너 이미지가 바뀌어
+            # $ANDROID_HOME/licenses 가 비는 경우를 대비해 동의를 파이프로 넣는다.
+            yes | "${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager" --install "ndk;${NDK_VERSION}"
           fi
           printf 'sdk.dir=%s\nndk.dir=%s/ndk/%s\n' \
             "${ANDROID_HOME}" "${ANDROID_HOME}" "${NDK_VERSION}" > android/local.properties
