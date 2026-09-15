@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
   View,
   Text,
@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   FlatList,
   ActivityIndicator,
-  Animated,
 } from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useNavigation, useRoute} from '@react-navigation/native';
@@ -55,37 +54,6 @@ const NewsScreen = () => {
   // (없으면 '스토리' 탭에 '가이드' 글이 섞이고 커서까지 남의 것으로 덮인다)
   const generation = useRef(0);
   const tagRef = useRef<string | null>(null);
-  // 태그 바를 스크롤량에 그대로 붙여 접는다 — 손가락 움직임과 같이 올라가는 느낌.
-  // diffClamp 로 순방향 스크롤 누적치만 뽑아, 목록 한참 내려간 상태에서도 위로 조금만 올리면 바로 펼쳐진다.
-  const [tagBarHeight, setTagBarHeight] = useState(0);
-  const scrollY = useRef(new Animated.Value(0)).current;
-  // iOS 상단 바운스(오버스크롤)는 y 가 음수로 갔다가 0으로 복귀하며 "증가"로 잡혀
-  // diffClamp 가 이를 아래로 스크롤한 것으로 오인한다. 음수 구간을 0으로 눌러 차단.
-  const clampedScrollY = useMemo(
-    () =>
-      scrollY.interpolate({
-        inputRange: [0, 1],
-        outputRange: [0, 1],
-        extrapolateLeft: 'clamp',
-      }),
-    [scrollY],
-  );
-  const diffClampedScrollY = useMemo(
-    () => Animated.diffClamp(clampedScrollY, 0, tagBarHeight || 1),
-    [clampedScrollY, tagBarHeight],
-  );
-  const onScroll = useMemo(
-    () =>
-      // height 를 애니메이션하면 헤더 높이 변화가 리스트 오프셋을 바꾸고, 그 오프셋이 다시
-      // 높이를 바꾸는 되먹임이 생긴다. 최하단에서 이게 진동으로 드러났다
-      // (QA: "맨 마지막까지 스크롤하면 부르르르 떨린다").
-      // translateY 로 바꿔 레이아웃을 건드리지 않게 했고, 그래서 네이티브 드라이버도 쓸 수 있다.
-      Animated.event([{nativeEvent: {contentOffset: {y: scrollY}}}], {
-        useNativeDriver: true,
-      }),
-    [scrollY],
-  );
-
   /**
    * 매거진 목록.
    *
@@ -247,6 +215,41 @@ const NewsScreen = () => {
     </TouchableOpacity>
   );
 
+  // 태그 바는 리스트의 헤더로 들어간다.
+  //
+  // 예전엔 스크롤량에 맞춰 height 를 애니메이션해 접었는데, 높이 변화가 리스트 오프셋을
+  // 바꾸고 그 오프셋이 다시 높이를 바꾸는 되먹임이 생겨 최하단에서 화면이 떨렸다
+  // (QA: "맨 마지막까지 스크롤하면 부르르르 떨린다").
+  // 헤더로 넣으면 콘텐츠와 함께 자연스럽게 밀려 올라가므로 애니메이션도, 되먹임도 없다.
+  // (대신 목록 중간에서 살짝 올려 다시 펼치는 동작은 사라진다 — 맨 위로 가면 다시 보인다.)
+  const tagBar =
+    tags.length > 0 ? (
+      <View style={styles.tagBar}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.tagBarContent}>
+          {tags.map(t => {
+            const on = selectedTag === t;
+            return (
+              <TouchableOpacity
+                key={t}
+                style={[styles.tagChip, on && styles.tagChipActive]}
+                onPress={() => setSelectedTag(on ? null : t)}
+                accessibilityRole="button"
+                accessibilityState={{selected: on}}
+                accessibilityLabel={`${t} 태그 ${on ? '해제' : '적용'}`}>
+                <Text
+                  style={[styles.tagChipText, on && styles.tagChipTextActive]}>
+                  #{t}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </ScrollView>
+      </View>
+    ) : null;
+
   return (
     <View style={styles.container}>
       <View style={[styles.header, {paddingTop: insets.top + 10}]}>
@@ -278,59 +281,6 @@ const NewsScreen = () => {
         </ScrollView>
       </View>
 
-      {tags.length > 0 && (
-        <Animated.View
-          pointerEvents="box-none"
-          style={[
-            styles.tagBar,
-            styles.tagBarFloating,
-            tagBarHeight > 0 && {
-              transform: [
-                {
-                  translateY: diffClampedScrollY.interpolate({
-                    inputRange: [0, tagBarHeight],
-                    outputRange: [0, -tagBarHeight],
-                    extrapolate: 'clamp',
-                  }),
-                },
-              ],
-            },
-          ]}>
-          <View
-            onLayout={e => {
-              if (tagBarHeight === 0) {
-                setTagBarHeight(e.nativeEvent.layout.height);
-              }
-            }}>
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.tagBarContent}>
-              {tags.map(t => {
-                const on = selectedTag === t;
-                return (
-                  <TouchableOpacity
-                    key={t}
-                    style={[styles.tagChip, on && styles.tagChipActive]}
-                    onPress={() => setSelectedTag(on ? null : t)}
-                    accessibilityRole="button"
-                    accessibilityState={{selected: on}}
-                    accessibilityLabel={`${t} 태그 ${on ? '해제' : '적용'}`}>
-                    <Text
-                      style={[
-                        styles.tagChipText,
-                        on && styles.tagChipTextActive,
-                      ]}>
-                      #{t}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
-            </ScrollView>
-          </View>
-        </Animated.View>
-      )}
-
       {loading ? (
         <SkeletonList count={3} variant="card" />
       ) : error ? (
@@ -338,16 +288,14 @@ const NewsScreen = () => {
       ) : (
         <FlatList
           data={news}
+          ListHeaderComponent={tagBar}
           keyExtractor={item => item.id.toString()}
           renderItem={renderNewsItem}
           contentContainerStyle={[
             styles.scrollContent,
-            // 태그 바가 absolute 로 떠 있으므로 그 높이만큼 위를 비운다.
-            {paddingTop: tagBarHeight, paddingBottom: insets.bottom + 120},
+            {paddingBottom: insets.bottom + 120},
           ]}
           showsVerticalScrollIndicator={false}
-          onScroll={onScroll}
-          scrollEventThrottle={16}
           onEndReached={loadMore}
           onEndReachedThreshold={0.5}
           ListFooterComponent={
