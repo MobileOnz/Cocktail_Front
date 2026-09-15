@@ -317,7 +317,13 @@ const HomeFeedScreen = () => {
       <SafeAreaView style={styles.container} edges={['top']}>
         <StatusBar barStyle="dark-content" backgroundColor={colors.bg} />
         <View style={styles.appbar}>
-          <Text style={styles.brand}>onz</Text>
+          <Image
+            source={require('../../assets/drawable/onz_logo.png')}
+            style={styles.brand}
+            resizeMode="contain"
+            accessibilityRole="image"
+            accessibilityLabel="onz"
+          />
           <TopRightMenu tint={colors.text} />
         </View>
         <SkeletonList count={3} variant="card" />
@@ -331,7 +337,13 @@ const HomeFeedScreen = () => {
       <SafeAreaView style={styles.container} edges={['top']}>
         <StatusBar barStyle="dark-content" backgroundColor={colors.bg} />
         <View style={styles.appbar}>
-          <Text style={styles.brand}>onz</Text>
+          <Image
+            source={require('../../assets/drawable/onz_logo.png')}
+            style={styles.brand}
+            resizeMode="contain"
+            accessibilityRole="image"
+            accessibilityLabel="onz"
+          />
           <TopRightMenu tint={colors.text} />
         </View>
         <ErrorState message={error} onRetry={() => fetchPage('initial')} />
@@ -356,7 +368,13 @@ const HomeFeedScreen = () => {
           />
         }>
         <View style={styles.appbar}>
-          <Text style={styles.brand}>onz</Text>
+          <Image
+            source={require('../../assets/drawable/onz_logo.png')}
+            style={styles.brand}
+            resizeMode="contain"
+            accessibilityRole="image"
+            accessibilityLabel="onz"
+          />
           <View style={styles.appbarActions}>
             <TouchableOpacity
               onPress={() => navigation.navigate('SearchScreen')}
@@ -523,10 +541,11 @@ const styles = StyleSheet.create({
     paddingTop: heightPercentage(spacing.sm),
     paddingBottom: heightPercentage(spacing.md),
   },
+  // 텍스트 'onz' 대신 브랜드 워드마크(240×68, 비율 3.53:1)를 쓴다.
+  // 높이를 기존 텍스트와 비슷하게 잡고 폭은 비율로 따라간다.
   brand: {
-    fontFamily: fonts.bold,
-    fontSize: fontPercentage(fontSize.hero),
-    color: colors.text,
+    height: heightPercentage(26),
+    width: heightPercentage(26) * (240 / 68),
   },
   appbarActions: {
     flexDirection: 'row',

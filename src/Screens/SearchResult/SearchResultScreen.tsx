@@ -52,7 +52,15 @@ const SearchResultScreen = ({ navigation, route }: Props) => {
                 <Icon name="chevron-back-sharp" size={24} color="#000" style={{ marginRight: widthPercentage(8) }} />
               </TouchableOpacity>
 
-              <View style={styles.search}>
+              {/* 검색어 칸이 View 라 아예 누를 수 없었다 — 검색 결과에서 검색어를 고치려면
+                  뒤로 갔다가 다시 들어와야 했다(QA: "검색 후 검색창 클릭이 안 됩니다").
+                  누르면 기존 검색어를 채운 채로 검색 화면에 돌아간다. */}
+              <TouchableOpacity
+                style={styles.search}
+                activeOpacity={0.7}
+                accessibilityRole="search"
+                accessibilityLabel={`검색어 ${keyword}, 다시 검색하기`}
+                onPress={() => navigation.navigate('SearchScreen', { initialKeyword: keyword })}>
                 <Image
                   source={require('../../assets/drawable/SharpSearch.png')}
                   style={{
@@ -63,7 +71,7 @@ const SearchResultScreen = ({ navigation, route }: Props) => {
                   resizeMode="contain"
                 />
                 <Text style={styles.searchText}>{keyword}</Text>
-              </View>
+              </TouchableOpacity>
               <TouchableOpacity onPress={() => navigation.navigate('BottomTabNavigator', {
                 screen: '레시피북',
               })}>

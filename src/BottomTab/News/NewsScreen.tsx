@@ -76,8 +76,12 @@ const NewsScreen = () => {
   );
   const onScroll = useMemo(
     () =>
+      // height 를 애니메이션하면 헤더 높이 변화가 리스트 오프셋을 바꾸고, 그 오프셋이 다시
+      // 높이를 바꾸는 되먹임이 생긴다. 최하단에서 이게 진동으로 드러났다
+      // (QA: "맨 마지막까지 스크롤하면 부르르르 떨린다").
+      // translateY 로 바꿔 레이아웃을 건드리지 않게 했고, 그래서 네이티브 드라이버도 쓸 수 있다.
       Animated.event([{nativeEvent: {contentOffset: {y: scrollY}}}], {
-        useNativeDriver: false,
+        useNativeDriver: true,
       }),
     [scrollY],
   );
@@ -267,15 +271,20 @@ const NewsScreen = () => {
 
       {tags.length > 0 && (
         <Animated.View
+          pointerEvents="box-none"
           style={[
             styles.tagBar,
+            styles.tagBarFloating,
             tagBarHeight > 0 && {
-              height: diffClampedScrollY.interpolate({
-                inputRange: [0, tagBarHeight],
-                outputRange: [tagBarHeight, 0],
-                extrapolate: 'clamp',
-              }),
-              overflow: 'hidden',
+              transform: [
+                {
+                  translateY: diffClampedScrollY.interpolate({
+                    inputRange: [0, tagBarHeight],
+                    outputRange: [0, -tagBarHeight],
+                    extrapolate: 'clamp',
+                  }),
+                },
+              ],
             },
           ]}>
           <View
@@ -324,7 +333,8 @@ const NewsScreen = () => {
           renderItem={renderNewsItem}
           contentContainerStyle={[
             styles.scrollContent,
-            {paddingBottom: insets.bottom + 120},
+            // 태그 바가 absolute 로 떠 있으므로 그 높이만큼 위를 비운다.
+            {paddingTop: tagBarHeight, paddingBottom: insets.bottom + 120},
           ]}
           showsVerticalScrollIndicator={false}
           onScroll={onScroll}
@@ -376,6 +386,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     borderBottomWidth: 1,
     borderBottomColor: '#F1F3F5',
+    // 태그 바가 위로 접힐 때 이 바 뒤로 들어가야 한다. 불투명 배경 + 더 높은 z 순서.
+    zIndex: 3,
   },
   tabBarContent: {
     paddingHorizontal: 16,
@@ -403,6 +415,18 @@ const styles = StyleSheet.create({
     marginTop: 8,
     borderBottomWidth: 1,
     borderBottomColor: colors.divider,
+  },
+  /**
+   * 목록 위에 떠 있는 태그 바.
+   * 레이아웃 흐름에서 빼야 접힐 때 리스트 높이가 흔들리지 않는다(되먹임 진동 방지).
+   * 리스트는 contentContainerStyle 의 paddingTop 으로 이만큼을 비워 둔다.
+   */
+  tagBarFloating: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    zIndex: 1,
+    backgroundColor: colors.bg,
   },
   tagBarContent: {
     paddingHorizontal: 16,
