@@ -183,11 +183,41 @@ const AllCocktailScreen = ({navigation, embedded = false}: Props) => {
             </TouchableOpacity>
           </View>
         )}
-        <FilterTriggerRow
-          filter={vm.appliedFilter}
-          onPress={() => bottomSheetRef.current?.open()}
-          onReset={handleResetFilter}
-        />
+        {/* 레시피북 탭에서는 제목·검색·필터를 한 줄에 모은다.
+            예전엔 필터 알약이 제목 아래 한 줄을 통째로 차지한 채 혼자 떠 있고, 같은 성격의
+            검색 아이콘은 제목 줄 오른쪽에 따로 있었다 — 두 컨트롤이 다른 줄 반대쪽 끝에
+            흩어져 어색했다(QA: "필터링 위치가 좀 이상해요"). 한 줄로 묶으면서 목록도
+            한 칸 더 올라온다. */}
+        {embedded ? (
+          <View style={styles.embeddedHeader}>
+            <Text style={styles.embeddedTitle}>레시피 북</Text>
+            <View style={styles.embeddedActions}>
+              <FilterTriggerRow
+                filter={vm.appliedFilter}
+                onPress={() => bottomSheetRef.current?.open()}
+                onReset={handleResetFilter}
+                style={styles.embeddedFilter}
+              />
+              <TouchableOpacity
+                onPress={() => (navigation as any).navigate('SearchScreen')}
+                accessibilityRole="button"
+                accessibilityLabel="칵테일 검색"
+                hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
+                <Image
+                  source={require('../../assets/drawable/SharpSearch.png')}
+                  style={styles.embeddedSearchIcon}
+                  resizeMode="contain"
+                />
+              </TouchableOpacity>
+            </View>
+          </View>
+        ) : (
+          <FilterTriggerRow
+            filter={vm.appliedFilter}
+            onPress={() => bottomSheetRef.current?.open()}
+            onReset={handleResetFilter}
+          />
+        )}
       </View>
 
       <FlatList
@@ -272,6 +302,35 @@ const styles = StyleSheet.create({
   stickyHeader: {
     backgroundColor: colors.bg,
     zIndex: 10,
+  },
+  // 레시피북 탭 전용 헤더 — 제목 + (필터·검색) 한 줄.
+  embeddedHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: widthPercentage(20),
+    paddingBottom: heightPercentage(12),
+  },
+  embeddedTitle: {
+    fontSize: fontPercentage(24),
+    fontFamily: 'Pretendard-Bold',
+    color: '#1B1B1B',
+  },
+  embeddedActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: widthPercentage(12),
+  },
+  // 헤더 줄 안에 들어가므로 FilterTriggerRow 자체 여백은 없앤다.
+  embeddedFilter: {
+    paddingHorizontal: 0,
+    paddingTop: 0,
+    paddingBottom: 0,
+  },
+  embeddedSearchIcon: {
+    width: widthPercentage(22),
+    height: widthPercentage(22),
+    tintColor: '#1B1B1B',
   },
   header: {
     paddingHorizontal: 20,

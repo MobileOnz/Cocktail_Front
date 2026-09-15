@@ -1,14 +1,10 @@
 // RecipeBookScreen.tsx
 // 탭3 "레시피북" — 레시피(칵테일) 전용. 가이드는 독립 탭으로 분리되어 세그먼트를 제거했다.
 import React from 'react';
-import {View, Text, StyleSheet, TouchableOpacity, Image} from 'react-native';
+import {View, StyleSheet} from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useNavigation} from '@react-navigation/native';
-import {
-  fontPercentage,
-  heightPercentage,
-  widthPercentage,
-} from '../../assets/styles/FigmaScreen';
+import {heightPercentage} from '../../assets/styles/FigmaScreen';
 import AllCocktailScreen from '../AllCocktail/AllCocktailScreen';
 
 const RecipeBookScreen = () => {
@@ -17,24 +13,10 @@ const RecipeBookScreen = () => {
 
   return (
     <View style={styles.container}>
-      <View
-        style={[styles.header, {paddingTop: insets.top + heightPercentage(8)}]}>
-        <View style={styles.titleRow}>
-          <Text style={styles.title}>레시피 북</Text>
-          <TouchableOpacity
-            onPress={() => navigation.navigate('SearchScreen')}
-            style={styles.searchButton}
-            accessibilityRole="button"
-            accessibilityLabel="칵테일 검색"
-            hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
-            <Image
-              source={require('../../assets/drawable/SharpSearch.png')}
-              style={styles.searchIcon}
-              resizeMode="contain"
-            />
-          </TouchableOpacity>
-        </View>
-      </View>
+      {/* 제목·검색·필터는 AllCocktailScreen 의 embedded 헤더가 한 줄로 그린다.
+          여기서는 상태바만 비켜준다 — 예전엔 이 화면이 제목+검색을, 아래쪽이 필터를
+          따로 그려서 두 컨트롤이 다른 줄로 흩어져 있었다. */}
+      <View style={{paddingTop: insets.top + heightPercentage(8)}} />
 
       <View style={styles.content}>
         <AllCocktailScreen embedded navigation={navigation} />
@@ -47,32 +29,5 @@ export default RecipeBookScreen;
 
 const styles = StyleSheet.create({
   container: {flex: 1, backgroundColor: '#FFFFFF'},
-  header: {
-    paddingHorizontal: widthPercentage(20),
-    backgroundColor: '#FFFFFF',
-  },
-  titleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  title: {
-    fontSize: fontPercentage(24),
-    fontFamily: 'Pretendard-Bold',
-    color: '#1B1B1B',
-  },
-  searchButton: {
-    width: widthPercentage(36),
-    height: widthPercentage(36),
-    borderRadius: widthPercentage(18),
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#FFFFFF',
-  },
-  searchIcon: {
-    width: widthPercentage(18),
-    height: widthPercentage(18),
-    tintColor: '#000000',
-  },
   content: {flex: 1},
 });
