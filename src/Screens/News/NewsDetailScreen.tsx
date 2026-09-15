@@ -201,12 +201,13 @@ const styles = StyleSheet.create({
     color: colors.accentText,
     marginBottom: heightPercentage(spacing.sm),
   },
-  // 본문 소제목(heading)이 22 로 커졌으므로 기사 제목은 그보다 확실히 위여야 한다.
+  // 기사 제목 24 / 소제목 22 는 2pt 차이뿐이라 둘이 같은 급으로 읽혔다
+  // (QA: "제목과 문단별 제목 크기가 비슷하다"). 28 / 20 / 17 로 세 단계를 벌린다.
   title: {
     fontFamily: fonts.bold,
-    fontSize: fontPercentage(fontSize.hero),
+    fontSize: fontPercentage(fontSize.display),
     color: colors.text,
-    lineHeight: fontPercentage(34),
+    lineHeight: fontPercentage(38),
     letterSpacing: -0.5,
   },
   metaRow: {

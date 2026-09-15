@@ -105,6 +105,8 @@ export const fontSize = {
   xl: 20,
   xxl: 22,
   hero: 24,
+  /** 기사 제목처럼 한 화면에 하나뿐인 최상위 제목. hero 와 본문 소제목 사이 간격을 벌리려고 추가. */
+  display: 28,
 } as const;
 
 export const spacing = {

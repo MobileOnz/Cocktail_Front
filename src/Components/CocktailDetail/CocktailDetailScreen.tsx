@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Animated, Dimensions, Image, Text, View, StyleSheet, Pressable, TouchableOpacity, FlatList } from 'react-native';
 import RNShare from 'react-native-share';
+import { useToast } from '../ToastContext';
 import ImageResizer from 'react-native-image-resizer';
 import { ActivityIndicator } from 'react-native-paper';
 
@@ -165,6 +166,7 @@ export function CocktailDetailScreen({ route }: Props) {
   // 히어로 변형 이미지가 404 나면 원본으로 되돌린다(변형 URL 이 아직 없는 환경 대비).
   // 잔 이미지는 제거했다 — 13장을 105종이 돌려 쓰고 있어 상세마다 같은 그림이 반복됐다.
   const [heroErrored, setHeroErrored] = useState(false);
+  const { showToast } = useToast();
 
   const handleShare = async () => {
     if (!vm.detail) { return; }
@@ -177,18 +179,27 @@ export function CocktailDetailScreen({ route }: Props) {
     // 칵테일 이미지를 로컬 파일로 받아 함께 공유한다.
     // (RN Android 는 원격 URL·base64 첨부가 불안정해 로컬 파일 경로로 넘긴다.)
     // 이미지 준비가 실패하면 링크만으로 폴백한다.
+    // 공유 시트를 닫고 나면 아무 반응이 없어 "된 건가?" 싶다는 QA 가 있었다.
+    // 결과를 받아 한 줄 알린다. 링크 복사를 고른 경우는 문구를 달리한다.
+    const notify = (res: any) => {
+      if (!res || res.success === false) { return; }
+      const target = String(res.message ?? res.app ?? '');
+      const copied = /copy|pasteboard|clipboard/i.test(target);
+      showToast(copied ? '링크가 복사되었습니다.' : '공유했습니다.');
+    };
+
     try {
       const local = await ImageResizer.createResizedImage(imgUri, 1200, 1600, 'JPEG', 90);
-      await RNShare.open({
+      notify(await RNShare.open({
         title: vm.detail.korName,
         message,
         url: local.uri,
         type: 'image/jpeg',
         failOnCancel: false,
-      });
+      }));
     } catch (e) {
       try {
-        await RNShare.open({ title: vm.detail.korName, message, failOnCancel: false });
+        notify(await RNShare.open({ title: vm.detail.korName, message, failOnCancel: false }));
       } catch {
         // 사용자가 공유 시트를 닫은 경우 등 — 무시.
       }

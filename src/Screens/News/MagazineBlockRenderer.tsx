@@ -153,12 +153,14 @@ const styles = StyleSheet.create({
     marginTop: -heightPercentage(spacing.xs),
     marginBottom: heightPercentage(spacing.md),
   },
-  // 본문 17 과 소제목 17 이 같아 위계가 없었다 → 22 로 벌리고 위 여백을 키운다.
+  // 위계: 기사 제목 28 / 소제목 20 / 본문 17.
+  // 한때 소제목이 22 였는데 제목 24 와 2pt 차이라 둘이 같은 급으로 읽혔다.
+  // 본문과는 3pt + Bold + 위 여백으로 충분히 갈린다.
   heading: {
     fontFamily: fonts.bold,
-    fontSize: fontPercentage(fontSize.xxl),
+    fontSize: fontPercentage(fontSize.xl),
     color: colors.text,
-    lineHeight: fontPercentage(32),
+    lineHeight: fontPercentage(29),
     letterSpacing: -0.4,
     marginTop: heightPercentage(spacing.xxl),
     marginBottom: heightPercentage(spacing.sm),

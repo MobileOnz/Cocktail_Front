@@ -4,7 +4,6 @@ import {
   Text,
   StyleSheet,
   ScrollView,
-  Image,
   TouchableOpacity,
   FlatList,
   ActivityIndicator,
@@ -21,6 +20,7 @@ import {unwrap, toUserMessage} from '../../lib/api';
 import type {NewsCard, NewsFeedResponse} from '../../types/api';
 import ErrorState from '../../Components/common/ErrorState';
 import EmptyState from '../../Components/common/EmptyState';
+import RemoteImage from '../../Components/common/RemoteImage';
 import SkeletonList from '../../Components/common/SkeletonList';
 import {formatDate} from '../../lib/date';
 import {colors, fonts, radius} from '../../lib/theme';
@@ -206,9 +206,18 @@ const NewsScreen = () => {
       onPress={() => navigation.navigate('NewsDetailScreen', {newsId: item.id})}
       accessibilityRole="button"
       accessibilityLabel={`${item.title} 뉴스 열기`}>
-      {/* imageUrl 은 null 일 수 있다. 외부 Unsplash 폴백 대신 이미지 영역을 생략한다. */}
+      {/* 맨 Image 였을 땐 로딩 동안 그냥 빈칸이라 "사진이 느리게 뜬다"로 읽혔다.
+          RemoteImage 는 같은 크기로 로딩 펄스 → 실패 시 '이미지 준비중' 까지 그린다.
+          imageUrl 이 null 이어도 영역을 유지해 목록 높이가 흔들리지 않는다. */}
       {!!item.imageUrl && (
-        <Image source={{uri: item.imageUrl}} style={styles.newsImage} />
+        <RemoteImage
+          uri={item.imageUrl}
+          style={styles.newsImage}
+          resizeMode="cover"
+          tone="light"
+          label={item.title}
+          accessibilityLabel={`${item.title} 이미지`}
+        />
       )}
       <View style={styles.newsContent}>
         <View style={styles.newsMeta}>

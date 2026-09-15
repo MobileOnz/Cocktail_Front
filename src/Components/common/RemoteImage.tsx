@@ -120,11 +120,11 @@ const RemoteImage: React.FC<Props> = ({
       {state === 'failed' && (
         <View style={styles.placeholder} pointerEvents="none">
           <Text style={[styles.glyph, { fontSize: glyphSize, color: palette.glyph }]}>🍸</Text>
-          {!!label && (
-            <Text style={[styles.label, { color: palette.text }]} numberOfLines={2}>
-              {label}
-            </Text>
-          )}
+          {/* 실루엣만 두면 "왜 비었는지" 를 알 수 없다. 아직 준비되지 않은 것인지
+              기다리면 되는 것인지 한 줄로 말해 준다(QA: "이미지 준비중 이런 식으로"). */}
+          <Text style={[styles.label, { color: palette.text }]} numberOfLines={2}>
+            {label ? `${label}\n이미지 준비중` : '이미지 준비중'}
+          </Text>
         </View>
       )}
 
