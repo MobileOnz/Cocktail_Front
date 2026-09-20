@@ -15,7 +15,7 @@ import QuitScreen from '../BottomTab/MyPage/QuitScreen';
 import PrivacyPolicyScreen from '../BottomTab/MyPage/PrivacyPolicyScreen';
 import InquiryFormScreen from '../BottomTab/MyPage/Inquiry/InquiryFormScreen';
 import CocktailDetailScreen from '../Components/CocktailDetail/CocktailDetailScreen';
-import RecommendationScreen from '../BottomTab/Recommend/RecommendationScreen';
+import RecommendationWebScreen from '../Screens/RecommendationWebScreen';
 import GuideScreen from '../BottomTab/Guide/GuideScreen';
 import GuideDetailScreen from '../BottomTab/Guide/GuideDetail';
 import CocktailBoxScreen from '../Screens/CocktailBox/CocktailBoxScreen';
@@ -126,7 +126,7 @@ const Navigation: React.FC<NavigationProps> = memo(({ isOnboarded, setIsOnboarde
             <Stack.Screen name="CocktailDetailScreen" component={CocktailDetailScreen} />
             <Stack.Screen name="SearchScreen" component={SearchScreen} />
             <Stack.Screen name="SearchResultScreen" component={SearchResultScreen} />
-            <Stack.Screen name="RecommendationScreen" component={RecommendationScreen} />
+            <Stack.Screen name="RecommendationScreen" component={RecommendationWebScreen} />
             <Stack.Screen name="RecommendationIntro" component={RecommendationIntroScreen} />
             <Stack.Screen name="BarDetailScreen" component={require('../Screens/Bar/BarDetailScreen').default} />
             <Stack.Screen name="VisitedBarsScreen" component={require('../Screens/Bar/VisitedBarsScreen').default} />

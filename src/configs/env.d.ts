@@ -5,4 +5,5 @@ declare module '@env' {
     export const GOOGLE_REDIRECT_URI: string;
     export const FLOW_ID: string;
     export const SENTRY_ENV: string;
+    export const RECOMMENDATION_WEB_URL: string;
   }
