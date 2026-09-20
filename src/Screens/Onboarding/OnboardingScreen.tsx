@@ -1,8 +1,16 @@
 import React, { useMemo } from 'react';
-import { View, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView } from 'react-native';
+import { View, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Dimensions } from 'react-native';
 import { Text, Button, RadioButton } from 'react-native-paper';
 import { colors } from '../../lib/theme';
 import UseOnboarindViewModel from './OnboarindViewModel';
+
+// 연령대 칩을 3열 격자로 정확히 맞춘다.
+// minWidth:'30%' 로 두면 폭이 글자 길이를 따라가 '19세 이하'만 넓어지고 열이 어긋난다.
+const H_PADDING = 24;
+const CHIP_GAP = 12;
+const CHIP_COLUMNS = 3;
+const CHIP_WIDTH =
+    (Dimensions.get('window').width - H_PADDING * 2 - CHIP_GAP * (CHIP_COLUMNS - 1)) / CHIP_COLUMNS;
 
 const OnboardingScreen = ({ setIsOnboarded }: any) => {
     const vm = UseOnboarindViewModel({ onComplete: () => setIsOnboarded(true) });
@@ -107,48 +115,58 @@ const OnboardingScreen = ({ setIsOnboarded }: any) => {
 
 const styles = StyleSheet.create({
     container: { flex: 1, backgroundColor: colors.bg },
-    content: { paddingHorizontal: 24, paddingTop: 40 },
+    // 질문이 둘뿐이라 위로 붙이면 화면 아래 절반이 통째로 비어 보였다.
+    // 남는 공간을 위아래로 나눠 콘텐츠를 광학 중앙에 둔다(작은 화면에서는 그대로 스크롤된다).
+    content: {
+        flexGrow: 1,
+        justifyContent: 'center',
+        paddingHorizontal: H_PADDING,
+        paddingVertical: 32,
+    },
     header: { marginBottom: 40 },
+    // 제목이 Regular, 부제가 Medium 이라 부제가 더 굵어 위계가 뒤집혀 있었다.
     titleText: {
-        fontFamily: 'Pretendard-Regular',
+        fontFamily: 'Pretendard-Bold',
         fontSize: 24,
+        lineHeight: 34,
         marginBottom: 12,
         color: '#000',
     },
     subText: {
-        fontFamily: 'Pretendard-Medium',
+        fontFamily: 'Pretendard-Regular',
         fontSize: 14,
         color: '#666',
-        lineHeight: 20,
+        lineHeight: 21,
     },
     section: { marginBottom: 32 },
     sectionTitle: {
-        fontFamily: 'Pretendard-Regular',
+        fontFamily: 'Pretendard-SemiBold',
         fontSize: 16,
         marginBottom: 16,
         color: '#000',
     },
 
     // 라디오 버튼 스타일
-    radioGroup: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-    radioItem: { flexDirection: 'row', alignItems: 'center', marginRight: 8 },
+    // gap 과 marginRight 를 같이 주면 간격이 이중으로 들어간다. gap 하나로 통일.
+    radioGroup: { flexDirection: 'row', alignItems: 'center', gap: 16 },
+    radioItem: { flexDirection: 'row', alignItems: 'center' },
     radioLabel: {
         fontFamily: 'Pretendard-Regular',
         fontSize: 15,
         color: '#333',
     },
 
-    // 연령대 칩 스타일
-    chipContainer: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
+    // 연령대 칩 스타일 — 폭을 고정해 3열 격자를 맞춘다.
+    chipContainer: { flexDirection: 'row', flexWrap: 'wrap', gap: CHIP_GAP },
     chip: {
+        width: CHIP_WIDTH,
         paddingVertical: 12,
-        paddingHorizontal: 20,
         borderRadius: 25,
         borderWidth: 1,
         borderColor: '#E0E0E0',
         backgroundColor: '#FFFFFF',
-        minWidth: '30%',
         alignItems: 'center',
+        justifyContent: 'center',
     },
     selectedChip: { backgroundColor: '#333', borderColor: '#333' },
     chipText: {
@@ -162,12 +180,20 @@ const styles = StyleSheet.create({
     },
 
     // 하단 버튼 스타일
-    footer: { padding: 20, backgroundColor: '#FFFFFF' },
+    // 콘텐츠와 멀리 떨어져 홀로 떠 보였다 → 윗 실선으로 '하단 영역'임을 드러낸다.
+    footer: {
+        paddingHorizontal: H_PADDING,
+        paddingTop: 16,
+        paddingBottom: 20,
+        backgroundColor: '#FFFFFF',
+        borderTopWidth: 1,
+        borderTopColor: '#F1F3F5',
+    },
     startButton: { borderRadius: 12, height: 56, justifyContent: 'center' },
     buttonActive: { backgroundColor: '#333' },
     buttonDisabled: { backgroundColor: '#E0E0E0' },
     buttonLabel: {
-        fontFamily: 'Pretendard-Regular',
+        fontFamily: 'Pretendard-SemiBold',
         fontSize: 16,
         color: '#FFFFFF',
     },
