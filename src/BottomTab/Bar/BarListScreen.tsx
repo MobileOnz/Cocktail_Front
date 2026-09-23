@@ -247,17 +247,13 @@ const styles = StyleSheet.create({
   segmentText: { color: night.textDim, fontSize: 13, fontFamily: fonts.medium },
   segmentTextActive: { color: night.onAccent },
   // 카드 한 장 — 다른 화면의 카드와 같은 테두리·모서리·여백을 쓴다.
+  // 홈과 같은 규칙 — 테두리·배경 없이 사진이 카드 모양을 만든다.
   barCard: {
     marginHorizontal: space.gutter,
-    marginBottom: space.md,
-    borderRadius: round.md,
-    borderWidth: 1,
-    borderColor: night.line,
-    backgroundColor: night.surface,
-    overflow: 'hidden',
+    marginBottom: space.xxl,
   },
-  barImage: { width: '100%', height: 160 },
-  barBody: { padding: space.lg },
+  barImage: { width: '100%', height: 160, borderRadius: round.md },
+  barBody: { paddingTop: space.md },
   barName: { color: night.text, fontSize: 17, fontFamily: fonts.semibold },
   barMetaRow: {
     flexDirection: 'row',

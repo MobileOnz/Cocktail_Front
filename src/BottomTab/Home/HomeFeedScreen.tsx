@@ -602,20 +602,18 @@ const styles = StyleSheet.create({
     lineHeight: fontPercentage(18),
   },
 
+  // 테두리도 배경도 없다. 사진이 둥근 모서리로 잘리면 그게 카드 모양이고,
+  // 글은 배경 위에 그대로 앉는다. 액자를 두르면 사진이 그 안에 갇힌다.
   heroCard: {
     marginHorizontal: space.gutter,
-    borderRadius: round.md,
-    borderWidth: 1,
-    borderColor: night.line,
-    overflow: 'hidden',
-    backgroundColor: night.surface,
   },
   heroImage: {
     width: '100%',
     height: heightPercentage(220),
+    borderRadius: round.md,
     backgroundColor: night.surfaceHigh,
   },
-  heroBody: {padding: space.lg},
+  heroBody: {paddingTop: space.md},
   heroEyebrow: {
     fontFamily: fonts.semibold,
     fontSize: fontPercentage(fontSize.xs),
@@ -647,8 +645,6 @@ const styles = StyleSheet.create({
     // 액센트를 면으로 채우면 사진보다 세져 시선을 뺏는다. 강조는 한 곳에만 —
     // 테두리와 글자로만 드러낸다.
     backgroundColor: night.surface,
-    borderWidth: 1,
-    borderColor: night.accent,
   },
   recommendCtaText: {
     fontFamily: fonts.medium,
@@ -682,19 +678,15 @@ const styles = StyleSheet.create({
 
   newsCard: {
     marginHorizontal: space.gutter,
-    marginBottom: space.md,
-    borderRadius: round.md,
-    backgroundColor: night.surface,
-    borderWidth: 1,
-    borderColor: night.line,
-    overflow: 'hidden',
+    marginBottom: space.xxl,
   },
   newsImage: {
     width: '100%',
     height: heightPercentage(170),
+    borderRadius: round.md,
     backgroundColor: night.surfaceHigh,
   },
-  newsBody: {padding: space.lg},
+  newsBody: {paddingTop: space.md},
   newsMeta: {
     flexDirection: 'row',
     justifyContent: 'space-between',

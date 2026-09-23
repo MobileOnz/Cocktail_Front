@@ -151,19 +151,26 @@ export default tokens;
  *   text 16.97 · textDim 8.81 · textFaint 5.70 · accent 10.41 (배경 ink 기준)
  */
 export const night = {
-  /** 화면 바닥. 사진이 주인공이므로 카드보다 더 깊다. */
-  ink: '#17092B',
-  /** 카드·시트 표면 = 브랜드 색 그 자체. */
-  surface: '#21103C',
-  /** 눌린 상태·입력창처럼 한 단 올라온 표면. */
-  surfaceHigh: '#2E1A4F',
+  /**
+   * 화면 바닥. 거의 검정이다(순수 검정 대비 1.06).
+   * 자주색을 그대로 깔았더니 배경이 스스로 색을 주장해 사진과 경쟁했다 —
+   * 브랜드 색조는 남기되 검정까지 내려 사진만 색을 갖게 한다.
+   */
+  ink: '#0D0812',
+  /** 칩·시트·입력창처럼 '면'으로 읽혀야 하는 것만. 카드는 이걸 쓰지 않는다. */
+  surface: '#181121',
+  /** 눌린 상태·스켈레톤. */
+  surfaceHigh: '#231A2F',
 
-  /** 경계선은 한 종류뿐이다. 회색 8종을 쓰던 걸 여기로 모은다. */
-  line: '#432C73',
+  /**
+   * 진짜 구분선이 필요한 곳에만. 카드에는 테두리를 두르지 않는다 —
+   * 사진의 둥근 모서리가 이미 카드 모양을 만든다.
+   */
+  line: '#2A2036',
 
-  text: '#F5F1FA',
-  textDim: '#BCA9D6',
-  textFaint: '#9686B0',
+  text: '#F2EEF7',
+  textDim: '#B4A6C4',
+  textFaint: '#8B7F9B',
 
   /** 강조는 한 곳에만. 사진 속 술 색에서 가져온 황동. */
   accent: '#E9B872',
@@ -202,13 +209,15 @@ export const round = {
 } as const;
 
 /**
- * 카드 한 장의 정의. 카드는 전부 이걸 쓴다 —
- * 테두리 두께·색·모서리·안쪽 여백을 화면마다 다르게 정하지 않는다.
+ * 카드 한 장의 정의.
+ *
+ * 테두리도 배경도 두지 않는다. 사진이 둥근 모서리로 잘리면 그 자체가 카드 모양이고,
+ * 글은 배경 위에 그대로 앉는다. 테두리를 두르면 어느 앱에나 있는 '카드 키트'가 되고
+ * 사진이 액자 안에 갇힌다.
+ *
+ * 면으로 읽혀야 하는 것(칩·시트·입력창)만 night.surface 를 쓴다.
  */
 export const card = {
-  backgroundColor: night.surface,
-  borderWidth: 1,
-  borderColor: night.line,
   borderRadius: round.md,
-  padding: space.lg,
+  gap: space.md,
 } as const;
