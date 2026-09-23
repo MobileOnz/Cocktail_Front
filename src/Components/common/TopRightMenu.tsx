@@ -13,6 +13,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { colors, fonts, fontSize, radius, night} from '../../lib/theme';
+import { BAR_TAB_ENABLED } from '../../lib/flags';
 import { widthPercentage, heightPercentage, fontPercentage } from '../../assets/styles/FigmaScreen';
 
 interface Props {
@@ -75,7 +76,17 @@ const TopRightMenu: React.FC<Props> = ({ tint = colors.text }) => {
           icon: 'bookmark-outline',
           onPress: () => go('CocktailBoxScreen'),
         },
-        { label: '방문한 바', icon: 'location-outline', onPress: () => go('VisitedBarsScreen') },
+        // 바 기능이 꺼져 있으면 이 줄도 같이 감춘다 — 탭만 막고 옆문을 열어두면
+        // 준비 안 된 화면으로 그대로 새어 나간다.
+        ...(BAR_TAB_ENABLED
+          ? [
+              {
+                label: '방문한 바',
+                icon: 'location-outline',
+                onPress: () => go('VisitedBarsScreen'),
+              },
+            ]
+          : []),
       ],
     },
     {

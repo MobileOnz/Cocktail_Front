@@ -6,6 +6,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../../Navigation/Navigation';
 import MyPageViewModel from './MyPageViewModel';
 import { User } from '../../model/domain/User';
+import { BAR_TAB_ENABLED } from '../../lib/flags';
 // import WithdrawBottomSheet from '../BottomSheet/WithdrawBottomSheet';
 import SignOutModal from '../../Components/SignOutModal';
 import WithdrawConfirmModal from '../../Components/WithdrawConfirmModal';
@@ -245,15 +246,18 @@ const MyPageScreen = () => {
                 <Image source={require('../../assets/drawable/bookmarkCircle.png')} style={styles.cockTailBookmark} />
               </TouchableOpacity>
 
-              {/* VisitedBarsScreen 의 유일한 진입점. 라우트만 등록돼 있고 호출부가 없어 도달 불가였다. */}
-              <TouchableOpacity
-                style={styles.cocktailBox}
-                onPress={() => {navigation.navigate('VisitedBarsScreen' as never)}}
-                accessibilityRole="button"
-                accessibilityLabel="방문한 바 보기"
-              >
-                <Text style={styles.cocktailBoxText}>방문한 바</Text>
-              </TouchableOpacity>
+              {/* VisitedBarsScreen 의 유일한 진입점. 라우트만 등록돼 있고 호출부가 없어 도달 불가였다.
+                  바 기능이 꺼져 있는 동안에는 이 줄도 감춘다(lib/flags.ts). */}
+              {BAR_TAB_ENABLED && (
+                <TouchableOpacity
+                  style={styles.cocktailBox}
+                  onPress={() => {navigation.navigate('VisitedBarsScreen' as never)}}
+                  accessibilityRole="button"
+                  accessibilityLabel="방문한 바 보기"
+                >
+                  <Text style={styles.cocktailBoxText}>방문한 바</Text>
+                </TouchableOpacity>
+              )}
             </>
           ) : (
             <TouchableOpacity style={styles.loginContainer} onPress={handleLoginPress}>

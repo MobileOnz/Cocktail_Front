@@ -9,6 +9,8 @@ import Home from '../BottomTab/Home/HomeFeedScreen';
 import NewsScreen from '../BottomTab/News/NewsScreen';
 import RecipeBookScreen from '../Screens/RecipeBook/RecipeBookScreen';
 import BarListScreen from '../BottomTab/Bar/BarListScreen';
+import BarComingSoonScreen from '../BottomTab/Bar/BarComingSoonScreen';
+import {BAR_TAB_ENABLED} from '../lib/flags';
 import HomeIcon from '../assets/drawable/Home.svg';
 import GuideIcon from '../assets/drawable/Guide.svg';
 import BookIcon from '../assets/drawable/Book.svg';
@@ -197,7 +199,9 @@ const BottomTabNavigator = () => {
         />
         <Tab.Screen
           name="바"
-          component={BarListScreen}
+          // 바 데이터가 실서비스 수준이 될 때까지 자리만 지키고 내용을 바꾼다.
+          // 되돌리려면 lib/flags.ts 의 BAR_TAB_ENABLED 를 true 로.
+          component={BAR_TAB_ENABLED ? BarListScreen : BarComingSoonScreen}
           options={{headerShown: false}}
         />
       </Tab.Navigator>
