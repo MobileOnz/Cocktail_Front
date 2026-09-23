@@ -19,7 +19,8 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { useTabBarSpace } from '../../lib/layout';
-import { bar as barTheme, fonts } from '../../lib/theme';
+import { bar as barTheme, fonts, night, space, round } from '../../lib/theme';
+import RemoteImage from '../../Components/common/RemoteImage';
 import Geolocation from 'react-native-geolocation-service';
 import ErrorState from '../../Components/common/ErrorState';
 import EmptyState from '../../Components/common/EmptyState';
@@ -33,6 +34,9 @@ interface BarListItem {
   slug: string;
   nameKo: string;
   nameEn?: string | null;
+  /** 서버가 내려주는데 목록에서 안 쓰고 있었다. 카드 사진으로 쓴다. */
+  heroImage?: string | null;
+  address?: string | null;
   distanceKm?: number;
   featuredWeight?: number;
   updatedAt?: string;
@@ -177,16 +181,35 @@ const BarListScreen: React.FC = () => {
       ) : (
         <FlatList
           contentContainerStyle={{ paddingBottom: tabBarSpace }}
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={barTheme.textTertiary} />}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={night.accent} />}
           data={bars}
           keyExtractor={(item) => String(item.id)}
-          ItemSeparatorComponent={() => <View style={styles.separator} />}
           renderItem={({ item }) => (
+            // 이름만 나열된 텍스트 리스트였다. 바는 '분위기'로 고르는 곳인데 그걸 전혀
+            // 보여주지 못했다(QA: "리스트 형태가 아닌 UX 친화적 뷰가 필요"). 서버가 내려주는
+            // heroImage 를 쓰지 않고 있었으므로 사진 카드로 바꾼다.
             <TouchableOpacity
-              style={styles.row}
+              style={styles.barCard}
+              activeOpacity={0.9}
+              accessibilityRole="button"
+              accessibilityLabel={`${item.nameKo} 상세 보기`}
               onPress={() => navigation.navigate('BarDetailScreen', { slug: item.slug })}>
-              <Text style={styles.rowName}>{item.nameKo}</Text>
-              <Text style={styles.rowMeta}>{renderRight(item)}</Text>
+              <RemoteImage
+                uri={item.heroImage}
+                style={styles.barImage}
+                resizeMode="cover"
+                tone="dark"
+                label={item.nameKo}
+              />
+              <View style={styles.barBody}>
+                <Text style={styles.barName} numberOfLines={1}>{item.nameKo}</Text>
+                <View style={styles.barMetaRow}>
+                  <Text style={styles.barAddress} numberOfLines={1}>{item.address}</Text>
+                  {!!renderRight(item) && (
+                    <Text style={styles.barMeta}>{renderRight(item)}</Text>
+                  )}
+                </View>
+              </View>
             </TouchableOpacity>
           )}
         />
@@ -198,49 +221,63 @@ const BarListScreen: React.FC = () => {
 // 색은 bar 팔레트, 서체는 Pretendard 로 맞춘다.
 // 이 화면만 fontWeight 로 시스템 폰트를 쓰고 있어서 다른 탭과 글자 모양이 달랐다.
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: barTheme.bg },
+  container: { flex: 1, backgroundColor: night.ink },
   title: {
-    color: barTheme.text,
+    color: night.text,
     fontSize: 28,
     fontFamily: fonts.bold,
-    paddingHorizontal: 20,
-    marginBottom: 16,
+    paddingHorizontal: space.gutter,
+    marginBottom: space.lg,
   },
   segmentBar: {
     flexDirection: 'row',
-    gap: 8,
-    paddingHorizontal: 20,
-    marginBottom: 16,
+    gap: space.sm,
+    paddingHorizontal: space.gutter,
+    marginBottom: space.lg,
   },
   segment: {
-    paddingVertical: 8,
-    paddingHorizontal: 14,
-    borderRadius: 999,
-    backgroundColor: barTheme.surfaceHigh,
+    paddingVertical: space.sm,
+    paddingHorizontal: space.md,
+    borderRadius: round.pill,
+    backgroundColor: night.surface,
+    borderWidth: 1,
+    borderColor: night.line,
   },
-  segmentActive: { backgroundColor: barTheme.text },
-  segmentText: { color: barTheme.textTertiary, fontSize: 13, fontFamily: fonts.medium },
-  segmentTextActive: { color: barTheme.textOnLight },
-  row: {
+  segmentActive: { backgroundColor: night.accent, borderColor: night.accent },
+  segmentText: { color: night.textDim, fontSize: 13, fontFamily: fonts.medium },
+  segmentTextActive: { color: night.onAccent },
+  // 카드 한 장 — 다른 화면의 카드와 같은 테두리·모서리·여백을 쓴다.
+  barCard: {
+    marginHorizontal: space.gutter,
+    marginBottom: space.md,
+    borderRadius: round.md,
+    borderWidth: 1,
+    borderColor: night.line,
+    backgroundColor: night.surface,
+    overflow: 'hidden',
+  },
+  barImage: { width: '100%', height: 160 },
+  barBody: { padding: space.lg },
+  barName: { color: night.text, fontSize: 17, fontFamily: fonts.semibold },
+  barMetaRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingVertical: 18,
+    gap: space.sm,
+    marginTop: space.xs,
   },
-  rowName: { color: barTheme.text, fontSize: 17, fontFamily: fonts.regular, flex: 1 },
-  rowMeta: { color: barTheme.textTertiary, fontSize: 13, fontFamily: fonts.regular },
-  separator: { height: 1, backgroundColor: barTheme.border, marginHorizontal: 20 },
+  barAddress: { color: night.textDim, fontSize: 13, fontFamily: fonts.regular, flex: 1 },
+  barMeta: { color: night.accent, fontSize: 13, fontFamily: fonts.medium },
   empty: { padding: 48, alignItems: 'center' },
-  emptyText: { color: barTheme.textTertiary, fontSize: 14, fontFamily: fonts.regular },
+  emptyText: { color: night.textFaint, fontSize: 14, fontFamily: fonts.regular },
   retryBtn: {
     marginTop: 16,
     paddingHorizontal: 16,
     paddingVertical: 10,
-    backgroundColor: barTheme.surfaceHigh,
-    borderRadius: 8,
+    backgroundColor: night.surface,
+    borderRadius: round.sm,
   },
-  retryText: { color: barTheme.text, fontSize: 13, fontFamily: fonts.medium },
+  retryText: { color: night.text, fontSize: 13, fontFamily: fonts.medium },
 });
 
 export default BarListScreen;

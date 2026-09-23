@@ -12,7 +12,7 @@
 import React from 'react';
 import {Pressable, StyleProp, StyleSheet, Text, View, ViewStyle} from 'react-native';
 import MIcon from 'react-native-vector-icons/MaterialCommunityIcons';
-import {colors, fonts} from '../../lib/theme';
+import {fonts, night, space, round} from '../../lib/theme';
 import {
   DEFAULT_FILTER,
   FilterState,
@@ -56,7 +56,7 @@ const FilterTriggerRow = ({filter, onPress, onReset, style}: Props) => {
         <MIcon
           name="tune-variant"
           size={16}
-          color={active ? colors.textInverse : colors.textSecondary}
+          color={active ? night.onAccent : night.textDim}
         />
         <Text style={[styles.label, active && styles.labelActive]}>필터링</Text>
         {active && (
@@ -73,7 +73,7 @@ const FilterTriggerRow = ({filter, onPress, onReset, style}: Props) => {
           accessibilityLabel="필터 초기화"
           hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}
           style={styles.reset}>
-          <MIcon name="close" size={14} color={colors.textSecondary} />
+          <MIcon name="close" size={14} color={night.textDim} />
           <Text style={styles.resetLabel}>초기화</Text>
         </Pressable>
       )}
@@ -87,27 +87,27 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-    paddingHorizontal: 20,
-    paddingTop: 8,
-    paddingBottom: 16,
+    gap: space.sm,
+    paddingHorizontal: space.gutter,
+    paddingTop: space.sm,
+    paddingBottom: space.lg,
   },
   trigger: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    gap: space.xs + 2,
     minHeight: 34,
-    paddingHorizontal: 14,
-    borderRadius: 100,
+    paddingHorizontal: space.md,
+    borderRadius: round.pill,
     borderWidth: 1,
   },
   triggerIdle: {
-    backgroundColor: colors.bg,
-    borderColor: colors.borderStrong,
+    backgroundColor: night.surface,
+    borderColor: night.line,
   },
   triggerActive: {
-    backgroundColor: '#313131',
-    borderColor: '#313131',
+    backgroundColor: night.accent,
+    borderColor: night.accent,
   },
   triggerPressed: {
     opacity: 0.7,
@@ -115,18 +115,18 @@ const styles = StyleSheet.create({
   label: {
     fontFamily: fonts.medium,
     fontSize: fontPercentage(14),
-    color: colors.textSecondary,
+    color: night.textDim,
     includeFontPadding: false,
   },
   labelActive: {
-    color: colors.textInverse,
+    color: night.onAccent,
   },
   badge: {
     minWidth: 18,
     height: 18,
     paddingHorizontal: 5,
-    borderRadius: 9,
-    backgroundColor: colors.textInverse,
+    borderRadius: round.pill,
+    backgroundColor: night.onAccent,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -134,7 +134,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.bold,
     fontSize: fontPercentage(11),
     lineHeight: fontPercentage(14),
-    color: '#313131',
+    color: night.accent,
     includeFontPadding: false,
   },
   reset: {
@@ -147,7 +147,7 @@ const styles = StyleSheet.create({
   resetLabel: {
     fontFamily: fonts.medium,
     fontSize: fontPercentage(13),
-    color: colors.textSecondary,
+    color: night.textDim,
     includeFontPadding: false,
   },
 });

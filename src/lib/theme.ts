@@ -128,3 +128,87 @@ export const radius = {
 
 const tokens = { colors, fonts, fontSize, spacing, radius };
 export default tokens;
+
+/* ═══════════════════════════════════════════════════════════════════
+ * 야간 테마 (2026-09) — "밤"
+ *
+ * 왜 새로 만드나
+ *   사진은 검은 배경에 스튜디오 조명으로 찍은 밤의 칵테일인데, UI 는 흰 배경에
+ *   연회색 카드였다. 사진의 분위기가 카드 경계에서 끊겼다.
+ *
+ *   그리고 값이 흩어져 있었다 — 좌우 여백 6종(8·12·14·16·20·24), borderRadius 20종,
+ *   하드코딩 색 92종, 경계선 회색만 8종. 카드마다 테두리·여백·정렬이 달라 보이던 원인이다.
+ *   그래서 이 블록은 "예쁜 색"이 아니라 **하나뿐인 척도**를 정하는 게 목적이다.
+ *
+ * 왜 자주색인가
+ *   로고 onz 의 실제 색이 #21103C 다(PNG 에서 추출). 흔한 #111 다크테마 대신
+ *   브랜드 색을 배경으로 쓰면 이 앱만의 어둠이 된다.
+ *
+ * 왜 황동색 액센트인가
+ *   기존 주황(#FF6B00)은 근거가 없었다. 사진 속 술이 호박색이라 거기서 가져온다.
+ *
+ * 대비는 전부 계산해서 골랐다(WCAG):
+ *   text 16.97 · textDim 8.81 · textFaint 5.70 · accent 10.41 (배경 ink 기준)
+ */
+export const night = {
+  /** 화면 바닥. 사진이 주인공이므로 카드보다 더 깊다. */
+  ink: '#17092B',
+  /** 카드·시트 표면 = 브랜드 색 그 자체. */
+  surface: '#21103C',
+  /** 눌린 상태·입력창처럼 한 단 올라온 표면. */
+  surfaceHigh: '#2E1A4F',
+
+  /** 경계선은 한 종류뿐이다. 회색 8종을 쓰던 걸 여기로 모은다. */
+  line: '#432C73',
+
+  text: '#F5F1FA',
+  textDim: '#BCA9D6',
+  textFaint: '#9686B0',
+
+  /** 강조는 한 곳에만. 사진 속 술 색에서 가져온 황동. */
+  accent: '#E9B872',
+  /** 액센트 위에 얹는 글자. */
+  onAccent: '#1A0B2E',
+
+  danger: '#FF8A8A',
+} as const;
+
+/**
+ * 여백 척도 — 이 값들만 쓴다.
+ * 화면마다 8·12·14·16·20·24 가 섞여 있던 것을 하나로 모은다.
+ */
+export const space = {
+  xs: 4,
+  sm: 8,
+  md: 12,
+  lg: 16,
+  xl: 20,
+  xxl: 28,
+  xxxl: 40,
+  /** 모든 화면의 좌우 여백. 예외 없음. */
+  gutter: 20,
+} as const;
+
+/**
+ * 모서리 — 세 가지뿐이다(20종이던 것을 정리).
+ *   sm  칩·배지·작은 버튼
+ *   md  카드·이미지·시트
+ *   pill 알약
+ */
+export const round = {
+  sm: 10,
+  md: 16,
+  pill: 999,
+} as const;
+
+/**
+ * 카드 한 장의 정의. 카드는 전부 이걸 쓴다 —
+ * 테두리 두께·색·모서리·안쪽 여백을 화면마다 다르게 정하지 않는다.
+ */
+export const card = {
+  backgroundColor: night.surface,
+  borderWidth: 1,
+  borderColor: night.line,
+  borderRadius: round.md,
+  padding: space.lg,
+} as const;

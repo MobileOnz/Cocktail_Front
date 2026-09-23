@@ -21,7 +21,7 @@ import {
 } from '../../assets/styles/FigmaScreen';
 import instance from '../../tokenRequest/axios_interceptor';
 import {unwrap, toUserMessage} from '../../lib/api';
-import {colors, fonts, fontSize, radius, spacing} from '../../lib/theme';
+import {fonts, fontSize, spacing, night, space, round} from '../../lib/theme';
 import type {
   FeedItem,
   Hero,
@@ -214,6 +214,10 @@ const HomeFeedScreen = () => {
       return null;
     }
     return (
+      <>
+      <View style={styles.sectionHeader}>
+        <Text style={styles.sectionTitle}>오늘의 추천</Text>
+      </View>
       <TouchableOpacity
         style={styles.heroCard}
         activeOpacity={0.92}
@@ -232,12 +236,12 @@ const HomeFeedScreen = () => {
           />
         )}
         <View style={styles.heroBody}>
-          <Text style={styles.heroEyebrow}>오늘의 추천</Text>
           <Text style={styles.heroName}>{hero.name}</Text>
           {/* heroReason 은 서버가 내려주는 추천 근거. 그대로 노출한다. */}
           <Text style={styles.heroReason}>{hero.heroReason}</Text>
         </View>
       </TouchableOpacity>
+      </>
     );
   };
 
@@ -315,7 +319,7 @@ const HomeFeedScreen = () => {
   if (loading && feed.length === 0) {
     return (
       <SafeAreaView style={styles.container} edges={['top']}>
-        <StatusBar barStyle="dark-content" backgroundColor={colors.bg} />
+        <StatusBar barStyle="light-content" backgroundColor={night.ink} />
         <View style={styles.appbar}>
           <Image
             source={require('../../assets/drawable/onz_logo.png')}
@@ -324,7 +328,7 @@ const HomeFeedScreen = () => {
             accessibilityRole="image"
             accessibilityLabel="onz"
           />
-          <TopRightMenu tint={colors.text} />
+          <TopRightMenu tint={night.text} />
         </View>
         <SkeletonList count={3} variant="card" />
       </SafeAreaView>
@@ -335,7 +339,7 @@ const HomeFeedScreen = () => {
   if (error && feed.length === 0) {
     return (
       <SafeAreaView style={styles.container} edges={['top']}>
-        <StatusBar barStyle="dark-content" backgroundColor={colors.bg} />
+        <StatusBar barStyle="light-content" backgroundColor={night.ink} />
         <View style={styles.appbar}>
           <Image
             source={require('../../assets/drawable/onz_logo.png')}
@@ -344,7 +348,7 @@ const HomeFeedScreen = () => {
             accessibilityRole="image"
             accessibilityLabel="onz"
           />
-          <TopRightMenu tint={colors.text} />
+          <TopRightMenu tint={night.text} />
         </View>
         <ErrorState message={error} onRetry={() => fetchPage('initial')} />
       </SafeAreaView>
@@ -353,7 +357,7 @@ const HomeFeedScreen = () => {
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      <StatusBar barStyle="dark-content" backgroundColor={colors.bg} />
+      <StatusBar barStyle="light-content" backgroundColor={night.ink} />
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={[
@@ -364,7 +368,7 @@ const HomeFeedScreen = () => {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            tintColor={colors.accent}
+            tintColor={night.accent}
           />
         }>
         <View style={styles.appbar}>
@@ -388,7 +392,7 @@ const HomeFeedScreen = () => {
               />
             </TouchableOpacity>
             {/* 하단 탭에서 빠진 마이페이지의 새 진입점 */}
-            <TopRightMenu tint={colors.text} />
+            <TopRightMenu tint={night.text} />
           </View>
         </View>
 
@@ -530,22 +534,25 @@ const HomeFeedScreen = () => {
 export default HomeFeedScreen;
 
 const styles = StyleSheet.create({
-  container: {flex: 1, backgroundColor: colors.bg},
+  container: {flex: 1, backgroundColor: night.ink},
   listContent: {},
 
   appbar: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: widthPercentage(spacing.xl),
-    paddingTop: heightPercentage(spacing.sm),
-    paddingBottom: heightPercentage(spacing.md),
+    paddingHorizontal: space.gutter,
+    paddingTop: space.sm,
+    paddingBottom: space.md,
   },
   // 텍스트 'onz' 대신 브랜드 워드마크(240×68, 비율 3.53:1)를 쓴다.
   // 높이를 기존 텍스트와 비슷하게 잡고 폭은 비율로 따라간다.
+  // 로고 PNG 는 브랜드 자주색(#21103C)이 구워져 있어 자주색 배경에서 사라진다.
+  // 알파 채널이 있으므로 tint 로 밝게 칠해 쓴다.
   brand: {
     height: heightPercentage(26),
     width: heightPercentage(26) * (240 / 68),
+    tintColor: night.text,
   },
   appbarActions: {
     flexDirection: 'row',
@@ -555,22 +562,22 @@ const styles = StyleSheet.create({
   searchIcon: {width: widthPercentage(22), height: widthPercentage(22)},
 
   cocktailRow: {
-    paddingHorizontal: widthPercentage(spacing.lg),
-    paddingVertical: heightPercentage(spacing.sm),
-    gap: widthPercentage(spacing.lg),
+    paddingHorizontal: space.gutter,
+    paddingVertical: space.sm,
+    gap: space.md,
   },
   cocktailCard: {width: widthPercentage(120)},
   cocktailImage: {
     width: widthPercentage(120),
     height: widthPercentage(120),
-    borderRadius: radius.md,
-    backgroundColor: colors.skeleton,
-    marginBottom: heightPercentage(spacing.sm),
+    borderRadius: round.sm,
+    backgroundColor: night.surfaceHigh,
+    marginBottom: space.sm,
   },
   cocktailName: {
     fontFamily: fonts.semibold,
     fontSize: fontPercentage(fontSize.sm),
-    color: colors.text,
+    color: night.text,
   },
 
   // 최신 칵테일 뉴스 가로 카드 — 뉴스는 제목이 길어 레시피 카드보다 넓게 둔다.
@@ -578,51 +585,53 @@ const styles = StyleSheet.create({
   newsHImage: {
     width: widthPercentage(200),
     height: widthPercentage(112),
-    borderRadius: radius.md,
-    backgroundColor: colors.skeleton,
-    marginBottom: heightPercentage(spacing.sm),
+    borderRadius: round.sm,
+    backgroundColor: night.surfaceHigh,
+    marginBottom: space.sm,
   },
   newsHCategory: {
     fontFamily: fonts.bold,
     fontSize: fontPercentage(fontSize.xs),
-    color: colors.accent,
-    marginBottom: heightPercentage(spacing.xs),
+    color: night.accent,
+    marginBottom: space.xs,
   },
   newsHTitle: {
     fontFamily: fonts.semibold,
     fontSize: fontPercentage(fontSize.sm),
-    color: colors.text,
+    color: night.text,
     lineHeight: fontPercentage(18),
   },
 
   heroCard: {
-    marginHorizontal: widthPercentage(spacing.lg),
-    borderRadius: radius.lg,
+    marginHorizontal: space.gutter,
+    borderRadius: round.md,
+    borderWidth: 1,
+    borderColor: night.line,
     overflow: 'hidden',
-    backgroundColor: colors.bgMuted,
+    backgroundColor: night.surface,
   },
   heroImage: {
     width: '100%',
     height: heightPercentage(220),
-    backgroundColor: colors.skeleton,
+    backgroundColor: night.surfaceHigh,
   },
-  heroBody: {padding: widthPercentage(spacing.xl)},
+  heroBody: {padding: space.lg},
   heroEyebrow: {
     fontFamily: fonts.semibold,
     fontSize: fontPercentage(fontSize.xs),
-    color: colors.accent,
-    marginBottom: heightPercentage(spacing.xs),
+    color: night.accent,
+    marginBottom: space.xs,
   },
   heroName: {
     fontFamily: fonts.bold,
     fontSize: fontPercentage(fontSize.xl),
-    color: colors.text,
+    color: night.text,
   },
   heroReason: {
-    marginTop: heightPercentage(spacing.xs + 2),
+    marginTop: space.xs,
     fontFamily: fonts.regular,
     fontSize: fontPercentage(fontSize.sm),
-    color: colors.textSecondary,
+    color: night.textDim,
     lineHeight: fontPercentage(20),
   },
 
@@ -630,84 +639,88 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginHorizontal: widthPercentage(spacing.lg),
-    marginTop: heightPercentage(spacing.xxl),
-    paddingHorizontal: widthPercentage(spacing.lg),
-    paddingVertical: heightPercentage(spacing.lg),
-    borderRadius: radius.md,
-    backgroundColor: colors.bgInverse,
+    marginHorizontal: space.gutter,
+    marginTop: space.xxl,
+    paddingHorizontal: space.lg,
+    paddingVertical: space.lg,
+    borderRadius: round.md,
+    // 액센트를 면으로 채우면 사진보다 세져 시선을 뺏는다. 강조는 한 곳에만 —
+    // 테두리와 글자로만 드러낸다.
+    backgroundColor: night.surface,
+    borderWidth: 1,
+    borderColor: night.accent,
   },
   recommendCtaText: {
     fontFamily: fonts.medium,
     fontSize: fontPercentage(fontSize.base),
-    color: colors.textInverse,
+    color: night.accent,
   },
   recommendCtaArrow: {
     fontFamily: fonts.regular,
     fontSize: fontPercentage(fontSize.xl),
-    color: colors.textInverse,
+    color: night.accent,
   },
 
   sectionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginHorizontal: widthPercentage(spacing.lg),
-    marginTop: heightPercentage(spacing.xxxl + spacing.sm),
-    marginBottom: heightPercentage(spacing.lg),
+    marginHorizontal: space.gutter,
+    marginTop: space.xxl,
+    marginBottom: space.md,
   },
   sectionTitle: {
     fontFamily: fonts.bold,
     fontSize: fontPercentage(fontSize.lg),
-    color: colors.text,
+    color: night.text,
   },
   sectionMore: {
     fontFamily: fonts.medium,
     fontSize: fontPercentage(fontSize.sm),
-    color: colors.textTertiary,
+    color: night.textDim,
   },
 
   newsCard: {
-    marginHorizontal: widthPercentage(spacing.lg),
-    marginBottom: heightPercentage(spacing.xxl),
-    borderRadius: radius.lg,
-    backgroundColor: colors.bg,
+    marginHorizontal: space.gutter,
+    marginBottom: space.md,
+    borderRadius: round.md,
+    backgroundColor: night.surface,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: night.line,
     overflow: 'hidden',
   },
   newsImage: {
     width: '100%',
     height: heightPercentage(170),
-    backgroundColor: colors.skeleton,
+    backgroundColor: night.surfaceHigh,
   },
-  newsBody: {padding: widthPercentage(spacing.lg)},
+  newsBody: {padding: space.lg},
   newsMeta: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: heightPercentage(spacing.sm),
+    marginBottom: space.sm,
   },
   newsCategory: {
     fontFamily: fonts.bold,
     fontSize: fontPercentage(fontSize.xs),
-    color: colors.accent,
+    color: night.accent,
   },
   newsDate: {
     fontFamily: fonts.regular,
     fontSize: fontPercentage(fontSize.xs),
-    color: colors.textTertiary,
+    color: night.textFaint,
   },
   newsTitle: {
     fontFamily: fonts.medium,
     fontSize: fontPercentage(fontSize.lg),
-    color: colors.text,
+    color: night.text,
     lineHeight: fontPercentage(24),
   },
   newsSummary: {
     marginTop: heightPercentage(spacing.sm),
     fontFamily: fonts.regular,
     fontSize: fontPercentage(fontSize.sm),
-    color: colors.textTertiary,
+    color: night.textFaint,
     lineHeight: fontPercentage(20),
   },
 });

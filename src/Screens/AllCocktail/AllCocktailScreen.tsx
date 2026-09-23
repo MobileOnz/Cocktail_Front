@@ -9,16 +9,13 @@ import {
   Platform,
   Image,
   FlatList,
+  Dimensions,
 } from 'react-native';
 import {ActivityIndicator, Text} from 'react-native-paper';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useTabBarSpace, getFloatingTabBarStyle} from '../../lib/layout';
-import {
-  fontPercentage,
-  heightPercentage,
-  widthPercentage,
-} from '../../assets/styles/FigmaScreen';
-import {colors} from '../../lib/theme';
+import {fontPercentage, heightPercentage} from '../../assets/styles/FigmaScreen';
+import {night, space} from '../../lib/theme';
 import OpenBottomSheet, {
   OpenBottomSheetHandle,
 } from '../../Components/BottomSheet/OpenBottomSheet';
@@ -293,14 +290,14 @@ export default AllCocktailScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.bg,
+    backgroundColor: night.ink,
   },
   safeArea: {
     flex: 1,
-    backgroundColor: colors.bg,
+    backgroundColor: night.ink,
   },
   stickyHeader: {
-    backgroundColor: colors.bg,
+    backgroundColor: night.ink,
     zIndex: 10,
   },
   // 레시피북 탭 전용 헤더 — 제목 + (필터·검색) 한 줄.
@@ -308,18 +305,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: widthPercentage(20),
-    paddingBottom: heightPercentage(12),
+    paddingHorizontal: space.gutter,
+    paddingBottom: space.md,
   },
   embeddedTitle: {
     fontSize: fontPercentage(24),
     fontFamily: 'Pretendard-Bold',
-    color: '#1B1B1B',
+    color: night.text,
   },
   embeddedActions: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: widthPercentage(12),
+    gap: space.md,
   },
   // 헤더 줄 안에 들어가므로 FilterTriggerRow 자체 여백은 없앤다.
   embeddedFilter: {
@@ -328,9 +325,9 @@ const styles = StyleSheet.create({
     paddingBottom: 0,
   },
   embeddedSearchIcon: {
-    width: widthPercentage(22),
-    height: widthPercentage(22),
-    tintColor: '#1B1B1B',
+    width: 22,
+    height: 22,
+    tintColor: night.text,
   },
   header: {
     paddingHorizontal: 20,
@@ -368,15 +365,16 @@ const styles = StyleSheet.create({
     tintColor: '#1a1a1a',
   },
   listContent: {},
+  // 예전엔 justifyContent:'center' 라 카드 왼쪽 끝이 헤더와 2pt 어긋났다.
+  // 좌우를 gutter 로 고정하고 space-between 으로 벌린다.
   row: {
     flexDirection: 'row',
-    justifyContent: 'center',
-    gap: widthPercentage(12),
-    marginBottom: 16,
+    justifyContent: 'space-between',
+    paddingHorizontal: space.gutter,
+    marginBottom: space.lg,
   },
   cardWrapper: {
-    width: widthPercentage(160),
-    alignItems: 'center',
+    width: (Dimensions.get('window').width - space.gutter * 2 - space.md) / 2,
   },
   emptyContainer: {
     flex: 1,
@@ -385,7 +383,7 @@ const styles = StyleSheet.create({
     paddingVertical: 40,
   },
   text: {
-    color: '#BDBDBD',
+    color: night.textFaint,
     fontFamily: 'Pretendard-Regular',
     fontSize: fontPercentage(16),
   },
@@ -394,9 +392,9 @@ const styles = StyleSheet.create({
     gap: 12,
     paddingHorizontal: 16,
     paddingVertical: 12,
-    backgroundColor: colors.bg,
+    backgroundColor: night.surface,
     borderTopWidth: 1,
-    borderTopColor: '#EEE',
+    borderTopColor: night.line,
     ...Platform.select({
       ios: {
         shadowColor: '#000000',
@@ -418,7 +416,7 @@ const styles = StyleSheet.create({
     height: heightPercentage(50),
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#D0D0D0',
+    borderColor: night.line,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -432,16 +430,16 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#313131',
+    backgroundColor: night.accent,
   },
   resetText: {
     fontFamily: 'Pretendard-Medium',
     fontSize: 14,
-    color: '#444444',
+    color: night.textDim,
   },
   applyText: {
     fontFamily: 'Pretendard-Medium',
     fontSize: 14,
-    color: '#FFFFFF',
+    color: night.onAccent,
   },
 });

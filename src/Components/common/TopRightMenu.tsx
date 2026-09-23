@@ -12,7 +12,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { colors, fonts, fontSize, radius } from '../../lib/theme';
+import { colors, fonts, fontSize, radius, night} from '../../lib/theme';
 import { widthPercentage, heightPercentage, fontPercentage } from '../../assets/styles/FigmaScreen';
 
 interface Props {
@@ -152,13 +152,16 @@ const TopRightMenu: React.FC<Props> = ({ tint = colors.text }) => {
 export default TopRightMenu;
 
 const styles = StyleSheet.create({
+  // 밝은 회색 원이 어두운 배경에서 흰 점처럼 튄다. 표면색 + 얇은 테두리로 낮춘다.
   trigger: {
     width: widthPercentage(36),
     height: widthPercentage(36),
     borderRadius: widthPercentage(18),
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: colors.bgMuted,
+    backgroundColor: night.surface,
+    borderWidth: 1,
+    borderColor: night.line,
   },
   overlay: {
     flex: 1,
