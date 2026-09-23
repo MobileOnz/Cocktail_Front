@@ -21,7 +21,8 @@ import {
 } from '../../assets/styles/FigmaScreen';
 import instance from '../../tokenRequest/axios_interceptor';
 import {unwrap, toUserMessage} from '../../lib/api';
-import {fonts, fontSize, spacing, night, space, round} from '../../lib/theme';
+import {fonts, fontSize, spacing, night, space, round, koreanBreak} from '../../lib/theme';
+import {RECOMMENDATION_WEB_URL} from '@env';
 import type {
   FeedItem,
   Hero,
@@ -238,7 +239,7 @@ const HomeFeedScreen = () => {
         <View style={styles.heroBody}>
           <Text style={styles.heroName}>{hero.name}</Text>
           {/* heroReason 은 서버가 내려주는 추천 근거. 그대로 노출한다. */}
-          <Text style={styles.heroReason}>{hero.heroReason}</Text>
+          <Text style={styles.heroReason} {...koreanBreak}>{hero.heroReason}</Text>
         </View>
       </TouchableOpacity>
       </>
@@ -398,16 +399,25 @@ const HomeFeedScreen = () => {
 
         {renderHero()}
 
-        <TouchableOpacity
-          style={styles.recommendCta}
-          onPress={() => navigation.navigate('RecommendationIntro')}
-          accessibilityRole="button"
-          accessibilityLabel="나에게 맞는 칵테일 추천 받기">
-          <Text style={styles.recommendCtaText}>
-            나에게 맞는 칵테일 추천 받기
-          </Text>
-          <Text style={styles.recommendCtaArrow}>›</Text>
-        </TouchableOpacity>
+        {/* 추천은 별도 웹앱(RECOMMENDATION_WEB_URL)을 웹뷰로 띄운다. 주소가 없으면
+            눌러봐야 '연결할 수 없어요' 화면이 뜨므로, 아예 내보이지 않는다.
+            홈에 문 모양만 있고 열리지 않는 문을 두지 않는다.
+            표면색 박스로 감싸 봤더니 테두리 없는 홈에서 저것만 덩어리로 튀었고,
+            아이콘 + 2줄 텍스트 탓에 좌측 선도 히어로·섹션 헤더의 거터와 어긋났다.
+            → 배경 없이 한 줄로 두고 거터에 맞춘다. */}
+        {RECOMMENDATION_WEB_URL ? (
+          <TouchableOpacity
+            style={styles.recommendCta}
+            onPress={() => navigation.navigate('RecommendationIntro')}
+            accessibilityRole="button"
+            accessibilityLabel="나에게 맞는 칵테일 추천 받기"
+            accessibilityHint="질문 몇 개에 답하면 취향에 가까운 칵테일을 골라줍니다">
+            <Text style={styles.recommendCtaTitle}>
+              나에게 맞는 칵테일 추천 받기
+            </Text>
+            <Text style={styles.recommendCtaArrow}>›</Text>
+          </TouchableOpacity>
+        ) : null}
 
         {latestNews.length > 0 && (
           <View>
@@ -639,15 +649,10 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginHorizontal: space.gutter,
     marginTop: space.xxl,
-    paddingHorizontal: space.lg,
-    paddingVertical: space.lg,
-    borderRadius: round.md,
-    // 액센트를 면으로 채우면 사진보다 세져 시선을 뺏는다. 강조는 한 곳에만 —
-    // 테두리와 글자로만 드러낸다.
-    backgroundColor: night.surface,
+    paddingVertical: space.sm,
   },
-  recommendCtaText: {
-    fontFamily: fonts.medium,
+  recommendCtaTitle: {
+    fontFamily: fonts.semibold,
     fontSize: fontPercentage(fontSize.base),
     color: night.accent,
   },

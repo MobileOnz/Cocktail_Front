@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { StackScreenProps } from '@react-navigation/stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { colors, fonts, fontSize, radius, spacing } from '../../lib/theme';
+import {fonts, fontSize, radius, spacing, night} from '../../lib/theme';
 import {
   widthPercentage,
   heightPercentage,
@@ -50,7 +50,7 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation, route }) => {
 
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor={colors.bg} />
+      <StatusBar barStyle="light-content" backgroundColor={night.ink} />
 
       {/* 상단 검색 바 영역 */}
       <View style={[styles.header, { paddingTop: insets.top + heightPercentage(8) }]}>
@@ -61,7 +61,7 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation, route }) => {
           accessibilityLabel="뒤로 가기"
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
-          <Icon name="chevron-back-sharp" size={24} color={colors.text} />
+          <Icon name="chevron-back-sharp" size={24} color={night.text} />
         </TouchableOpacity>
 
         {/* 레시피북 헤더의 검색 버튼과 같은 계열(회색 필)로 맞춘다. paper 의 outlined 룩은 이 앱 어디에도 없었다. */}
@@ -74,7 +74,7 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation, route }) => {
           <TextInput
             style={styles.searchInput}
             placeholder="칵테일을 검색해보세요"
-            placeholderTextColor={colors.textDisabled}
+            placeholderTextColor={night.textFaint}
             value={searchText}
             onChangeText={handleSearchTextChange}
             onSubmitEditing={handleSubmitSearch}
@@ -90,7 +90,7 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation, route }) => {
               accessibilityLabel="검색어 지우기"
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             >
-              <Icon name="close-circle" size={18} color={colors.textDisabled} />
+              <Icon name="close-circle" size={18} color={night.textFaint} />
             </TouchableOpacity>
           )}
         </View>
@@ -132,7 +132,7 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation, route }) => {
                   accessibilityLabel={`${item.queryText} 검색 기록 삭제`}
                   hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                 >
-                  <FIcon name="x" size={20} color={colors.textSecondary} />
+                  <FIcon name="x" size={20} color={night.textDim} />
                 </TouchableOpacity>
               </View>
             )}
@@ -176,7 +176,7 @@ export default SearchScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.bg,
+    backgroundColor: night.ink,
   },
   header: {
     flexDirection: 'row',
@@ -195,19 +195,19 @@ const styles = StyleSheet.create({
     height: heightPercentage(42),
     paddingHorizontal: spacing.md,
     borderRadius: radius.md,
-    backgroundColor: colors.bgMuted,
+    backgroundColor: night.surface,
   },
   searchFieldIcon: {
     width: widthPercentage(18),
     height: widthPercentage(18),
-    tintColor: colors.textTertiary,
+    tintColor: night.textFaint,
   },
   searchInput: {
     flex: 1,
     padding: 0,
     fontFamily: fonts.regular,
     fontSize: fontPercentage(fontSize.md),
-    color: colors.text,
+    color: night.text,
   },
   content: {
     flex: 1,
@@ -223,12 +223,12 @@ const styles = StyleSheet.create({
   recentTitle: {
     fontFamily: fonts.medium,
     fontSize: fontPercentage(fontSize.xl),
-    color: colors.text,
+    color: night.text,
   },
   clearAllText: {
     fontFamily: fonts.medium,
     fontSize: fontPercentage(fontSize.xs),
-    color: colors.textTertiary,
+    color: night.textFaint,
   },
   recentItem: {
     flexDirection: 'row',
@@ -239,7 +239,7 @@ const styles = StyleSheet.create({
   recentText: {
     fontFamily: fonts.regular,
     fontSize: fontPercentage(fontSize.md),
-    color: colors.textSecondary,
+    color: night.textDim,
   },
   suggestionItem: {
     flexDirection: 'row',
@@ -249,12 +249,12 @@ const styles = StyleSheet.create({
   suggestionIcon: {
     width: widthPercentage(20),
     height: widthPercentage(20),
-    tintColor: colors.textSecondary,
+    tintColor: night.textDim,
   },
   suggestionText: {
     fontFamily: fonts.regular,
     fontSize: fontPercentage(fontSize.md),
-    color: colors.textSecondary,
+    color: night.textDim,
     marginLeft: widthPercentage(10),
   },
 });

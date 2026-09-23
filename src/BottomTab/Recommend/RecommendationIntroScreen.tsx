@@ -1,250 +1,242 @@
-import React, { useEffect, useRef, useState } from 'react';
+// RecommendationIntroScreen.tsx
+// 홈의 '나에게 맞는 칵테일 추천 받기' → 여기 → RecommendationScreen(웹뷰 문답).
+//
+// 이력: 원래는 밝은 그라데이션 배경에 잔 아이콘이 화면 높이의 절반을 차지하고,
+// 본문은 가운데 정렬, 버튼은 absolute 로 바닥에 붙어 있었다. 앱이 밤 테마로 바뀌면서
+// 이 화면만 밝은 채로 남아 눈에 띄게 겉돌았고, 무엇을 하는 화면인지도 읽히지 않았다.
+// → 배경/서체를 앱 토큰으로 맞추고, 정렬을 다른 화면과 같은 좌측 거터에 세웠다.
+//   잔 실루엣은 화면을 채우는 히어로가 아니라 제목 위의 작은 표식으로 내린다.
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
-  View,
-  Text,
-  TouchableOpacity,
+  AccessibilityInfo,
   Animated,
-  StyleSheet,
   Image,
-  Easing,
-  Platform,
+  Pressable,
+  StatusBar,
+  StyleSheet,
+  Text,
+  View,
 } from 'react-native';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { RootStackParamList } from '../../Navigation/Navigation';
-import {
-  widthPercentage,
-  heightPercentage,
-  fontPercentage,
-} from '../../assets/styles/FigmaScreen';
-// import LottieView from 'lottie-react-native';
-import { LinearGradient } from 'react-native-linear-gradient';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import {StackNavigationProp} from '@react-navigation/stack';
+import {RootStackParamList} from '../../Navigation/Navigation';
+import {fontPercentage, widthPercentage} from '../../assets/styles/FigmaScreen';
+import {fonts, night, round, space} from '../../lib/theme';
 
-// 4가지 칵테일 잔 아이콘
-const icons = [
-  require('../../assets/drawable/coupe.png'),
-  require('../../assets/drawable/flute.png'),
-  require('../../assets/drawable/hurricane.png'),
-  require('../../assets/drawable/magarita.png'),
+/** 표식으로 돌려 쓰는 잔 실루엣. 흰 단색이라 어두운 배경에서 tintColor 로 물들인다. */
+const GLASSES = [
   require('../../assets/drawable/martini.png'),
-  require('../../assets/drawable/wine.png'),
+  require('../../assets/drawable/coupe.png'),
+  require('../../assets/drawable/hurricane.png'),
+  require('../../assets/drawable/flute.png'),
 ];
 
-type RecommendationIntroScreenNavigationProp = StackNavigationProp<
-  RootStackParamList,
-  'RecommendationIntro'
->;
+const HOLD_MS = 1600;
+const FADE_MS = 320;
 
-interface Props {
-  navigation: RecommendationIntroScreenNavigationProp;
-}
+type Props = {
+  navigation: StackNavigationProp<RootStackParamList, 'RecommendationIntro'>;
+};
 
-const RecommendationIntroScreen: React.FC<Props> = ({ navigation }) => {
-
-
+const RecommendationIntroScreen: React.FC<Props> = ({navigation}) => {
   const insets = useSafeAreaInsets();
-  const fadeAnim = useRef(new Animated.Value(0)).current;
-  const buttonScale = useRef(new Animated.Value(1)).current;
+  const opacity = useRef(new Animated.Value(1)).current;
+  const [index, setIndex] = useState(0);
+  const [stillness, setStillness] = useState(false);
 
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const opacity = useRef(new Animated.Value(0)).current;
-  const getBottomMargin = () => {
-    if (Platform.OS === 'ios') {
-
-      return insets.bottom > 0 ? insets.bottom + 30 : 32;
-    }
-    return 40;
-  };
+  // 손대지 않았는데 움직이는 요소는 이 화면에 이것 하나뿐이다.
+  // 모션 줄이기를 켠 사람에게는 그 하나도 멈춘다.
   useEffect(() => {
-    const animate = () => {
-      Animated.timing(opacity, {
-        toValue: 1,
-        duration: 400,
-        useNativeDriver: true,
-      }).start(() => {
-        setTimeout(() => {
-          Animated.timing(opacity, {
-            toValue: 0,
-            duration: 400,
-            useNativeDriver: true,
-          }).start(() => {
-            setCurrentIndex((prev) => (prev + 1) % icons.length);
-            animate();
-          });
-        }, 800);
-      });
-    };
-    animate();
-  }, [opacity]);
-
-  const handlePress = () => { //버튼 애니메이션 (누르면 움츠려들었다가 펴지는거)
-    Animated.sequence([
-      Animated.timing(buttonScale, {
-        toValue: 0.9, // 버튼 축소
-        duration: 100,
-        easing: Easing.out(Easing.ease),
-        useNativeDriver: true,
-      }),
-      Animated.timing(buttonScale, {
-        toValue: 1,
-        duration: 100,
-        easing: Easing.out(Easing.ease),
-        useNativeDriver: true,
-      }),
-    ]).start(() => {
-      navigation.navigate('RecommendationScreen');
+    let alive = true;
+    AccessibilityInfo.isReduceMotionEnabled().then(reduced => {
+      if (alive) {
+        setStillness(reduced);
+      }
     });
-  };
+    const sub = AccessibilityInfo.addEventListener(
+      'reduceMotionChanged',
+      setStillness,
+    );
+    return () => {
+      alive = false;
+      sub.remove();
+    };
+  }, []);
 
+  // 예전 구현은 애니메이션 콜백 안에서 자기를 다시 부르며 setTimeout 을 쌓았고
+  // 정리 경로가 없어 화면을 떠난 뒤에도 계속 돌았다. 타이머를 밖에서 쥐고 끊는다.
   useEffect(() => {
-    Animated.timing(fadeAnim, {
-      toValue: 1,
-      duration: 1000,
-      useNativeDriver: true,
-    }).start();
-  }, [fadeAnim]);
+    if (stillness) {
+      return;
+    }
+    let alive = true;
+    let timer: ReturnType<typeof setTimeout>;
 
-  // Gradient 바탕색 적용하기
+    const cycle = () => {
+      timer = setTimeout(() => {
+        if (!alive) {
+          return;
+        }
+        Animated.timing(opacity, {
+          toValue: 0,
+          duration: FADE_MS,
+          useNativeDriver: true,
+        }).start(() => {
+          if (!alive) {
+            return;
+          }
+          setIndex(prev => (prev + 1) % GLASSES.length);
+          Animated.timing(opacity, {
+            toValue: 1,
+            duration: FADE_MS,
+            useNativeDriver: true,
+          }).start(({finished}) => {
+            if (finished && alive) {
+              cycle();
+            }
+          });
+        });
+      }, HOLD_MS);
+    };
+    cycle();
+
+    return () => {
+      alive = false;
+      clearTimeout(timer);
+      opacity.stopAnimation();
+    };
+  }, [opacity, stillness]);
+
+  // 예전엔 뒤로가기가 홈 탭으로 navigation.reset 을 했다. 어디서 들어왔든 홈으로
+  // 튕겨 나가고 스택도 날아간다. 들어온 자리로 돌려보내는 게 맞다.
+  const goBack = useCallback(() => {
+    if (navigation.canGoBack()) {
+      navigation.goBack();
+    } else {
+      navigation.navigate('BottomTabNavigator', {screen: '홈'});
+    }
+  }, [navigation]);
+
+  const start = useCallback(() => {
+    navigation.navigate('RecommendationScreen');
+  }, [navigation]);
+
   return (
+    <View style={[styles.screen, {paddingTop: insets.top}]}>
+      <StatusBar barStyle="light-content" backgroundColor={night.ink} />
 
-    <LinearGradient
-      colors={['#FAF1E3', '#F6E0D8', '#EDEBE4', '#F0F2EE']}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
-      style={{ flex: 1 }}
-    >
-      {/* 화면 내용 */}
-      <View style={[styles.container, { paddingTop: insets.top }]}>
-        {/* 뒤로가기 버튼 */}
-        <TouchableOpacity
-          onPress={() => {
-            navigation.reset({
-              index: 0,
-              routes: [
-                {
-                  name: 'BottomTabNavigator',
-                  params: {
-                    screen: '홈',
-                  },
-                },
-              ],
-            });
-          }}
-          style={styles.backButton}
-          accessibilityRole="button"
-          accessibilityLabel="뒤로 가기"
-        >
-          <Image
-            source={require('../../assets/drawable/left-chevron.png')}
-            style={styles.icon}
-          />
-        </TouchableOpacity>
+      <Pressable
+        onPress={goBack}
+        accessibilityRole="button"
+        accessibilityLabel="뒤로 가기"
+        hitSlop={{top: 12, bottom: 12, left: 12, right: 12}}
+        style={({pressed}) => [styles.back, pressed && styles.pressed]}>
+        <Image
+          source={require('../../assets/drawable/left-chevron.png')}
+          style={styles.backIcon}
+        />
+      </Pressable>
 
+      <View style={styles.body}>
         <Animated.Image
-          source={icons[currentIndex]}
+          source={GLASSES[index]}
           resizeMode="contain"
-          style={{
-            opacity,
-            width: '100%',
-            height: heightPercentage(400),
-            marginBottom: heightPercentage(50),
-          }}
+          accessibilityElementsHidden
+          importantForAccessibility="no"
+          style={[styles.glass, {opacity}]}
         />
 
-        {/* 설명 텍스트 (페이드인 애니메이션) */}
-        <Animated.View style={{ opacity: fadeAnim }}>
-          <Text style={styles.descriptionFirst}>
-            당신의 취향, 한 잔으로 알아볼까요?
-          </Text>
-          <Text style={styles.descriptionSecond}>
-            오늘은 달콤하게, 내일은 상큼하게.{'\n'}지금, 당신만의 칵테일을 찾아보세요.
-          </Text>
-        </Animated.View>
-
-
-        {/* 버튼 */}
-        <Animated.View style={[
-          styles.confirmButtonContainer,
-          {
-            bottom: getBottomMargin(),
-            transform: [{ scale: buttonScale }],
-          },
-        ]}>
-
-          <TouchableOpacity
-            style={styles.confirmButton}
-            onPress={handlePress}
-          >
-            <Text style={styles.confirmButtonText}>시작하기</Text>
-          </TouchableOpacity>
-        </Animated.View>
+        <Text
+          style={styles.title}
+          lineBreakStrategyIOS="hangul-word"
+          textBreakStrategy="balanced">
+          오늘 기분에 맞는{'\n'}한 잔을 찾아드려요
+        </Text>
+        <Text
+          style={styles.lead}
+          lineBreakStrategyIOS="hangul-word"
+          textBreakStrategy="balanced">
+          질문 몇 개에 답하면{'\n'}취향에 가까운 한 잔을 골라드려요.
+        </Text>
       </View>
-    </LinearGradient>
+
+      <View style={[styles.footer, {paddingBottom: insets.bottom + space.xl}]}>
+        <Pressable
+          onPress={start}
+          accessibilityRole="button"
+          accessibilityLabel="추천 받기"
+          style={({pressed}) => [styles.cta, pressed && styles.pressed]}
+          android_ripple={{color: 'rgba(0,0,0,0.12)'}}>
+          <Text style={styles.ctaText}>추천 받기</Text>
+        </Pressable>
+      </View>
+    </View>
   );
 };
 
 export default RecommendationIntroScreen;
 
-
-// TODO: 그라데이션 배경식 및 아이콘 적용 [npm install react-native-linear-gradient]
 const styles = StyleSheet.create({
-  container: {
+  screen: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: night.ink,
   },
-  backButton: {
-    position: 'absolute',
-    top: heightPercentage(50),
-    left: widthPercentage(10),
-    alignItems: 'center',
-    justifyContent: 'center',
+  back: {
     width: widthPercentage(40),
-    height: heightPercentage(40),
-
+    height: widthPercentage(40),
+    marginLeft: space.sm,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  icon: {
+  backIcon: {
     width: widthPercentage(24),
     height: widthPercentage(24),
-
+    tintColor: night.text,
   },
-  descriptionFirst: {
-    fontFamily: 'Pretendard-Medium',
-    fontSize: fontPercentage(20),
-    color: '#1B1B1B',
-    textAlign: 'center',
+  pressed: {
+    opacity: 0.7,
   },
-  descriptionSecond: {
-    fontSize: fontPercentage(14),
-    lineHeight: fontPercentage(20),
-    fontFamily: 'Pretendard-Medium',
-    textAlign: 'center',
-    color: '#BDBDBD',
-    marginTop: heightPercentage(8),
+  body: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    paddingHorizontal: space.gutter,
+    paddingBottom: space.xxxl,
   },
-  cocktailImage: {
-    width: widthPercentage(179),
-    height: heightPercentage(335),
-    resizeMode: 'contain',
+  // 제목 위 표식. 예전의 400pt 짜리 히어로가 아니라, 제목에 딸린 크기로 둔다.
+  glass: {
+    width: widthPercentage(64),
+    height: widthPercentage(64),
+    marginLeft: -space.xs,
+    marginBottom: space.xl,
+    tintColor: night.accent,
   },
-  confirmButton: {
-    width: widthPercentage(343),
-    height: heightPercentage(52),
-    backgroundColor: '#313131',
-    borderRadius: 8,
+  title: {
+    fontFamily: fonts.bold,
+    fontSize: fontPercentage(28),
+    lineHeight: fontPercentage(40),
+    color: night.text,
+  },
+  lead: {
+    marginTop: space.md,
+    fontFamily: fonts.regular,
+    fontSize: fontPercentage(15),
+    lineHeight: fontPercentage(24),
+    color: night.textDim,
+  },
+  footer: {
+    paddingHorizontal: space.gutter,
+  },
+  cta: {
+    height: 52,
+    borderRadius: round.sm,
+    alignItems: 'center',
     justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: heightPercentage(4),
-    paddingHorizontal: widthPercentage(16),
+    backgroundColor: night.accent,
+    overflow: 'hidden',
   },
-  confirmButtonText: {
+  ctaText: {
+    fontFamily: fonts.semibold,
     fontSize: fontPercentage(16),
-    color: '#FFFFFF',
-    fontFamily: 'Pretendard-Regular',
-  },
-  confirmButtonContainer: {
-    position: 'absolute',
-    bottom: 52,
-    alignItems: 'center',
+    color: night.onAccent,
   },
 });

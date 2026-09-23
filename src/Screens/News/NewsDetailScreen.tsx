@@ -16,7 +16,7 @@ import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { fontPercentage, heightPercentage, widthPercentage } from '../../assets/styles/FigmaScreen';
 import instance from '../../tokenRequest/axios_interceptor';
 import { unwrap, toUserMessage, fireAndForget } from '../../lib/api';
-import { colors, fonts, fontSize, radius, spacing } from '../../lib/theme';
+import {fonts, fontSize, koreanBreak, radius, spacing, night} from '../../lib/theme';
 import type { MagazineDetail } from '../../types/api';
 import { RootStackParamList } from '../../Navigation/Navigation';
 import MagazineBlockRenderer from './MagazineBlockRenderer';
@@ -103,17 +103,17 @@ const NewsDetailScreen = () => {
           {!!detail.heroImage && (
             <>
               <Image source={{ uri: detail.heroImage }} style={styles.hero} resizeMode="cover" />
-              {!!detail.imageCaption && <Text style={styles.caption}>{detail.imageCaption}</Text>}
+              {!!detail.imageCaption && (
+                <Text style={styles.caption} {...koreanBreak}>
+                  {detail.imageCaption}
+                </Text>
+              )}
             </>
           )}
 
           <View style={styles.body}>
             {!!detail.subcategory && <Text style={styles.category}>{detail.subcategory}</Text>}
-            <Text
-              style={styles.title}
-              accessibilityRole="header"
-              lineBreakStrategyIOS="hangul-word"
-              textBreakStrategy="balanced">
+            <Text style={styles.title} accessibilityRole="header" {...koreanBreak}>
               {titleText}
             </Text>
 
@@ -123,7 +123,11 @@ const NewsDetailScreen = () => {
               {!!detail.publishedAt && <Text style={styles.date}>{formatDate(detail.publishedAt)}</Text>}
             </View>
 
-            {!!detail.dek && <Text style={styles.summary}>{detail.dek}</Text>}
+            {!!detail.dek && (
+              <Text style={styles.summary} {...koreanBreak}>
+                {detail.dek}
+              </Text>
+            )}
 
             {/* 본문 블록은 서버 JSONB 원본이라 형태를 보장할 수 없다.
                 여기서 막지 않으면 루트 ErrorBoundary 까지 올라가 앱 전체가 리셋된다. */}
@@ -172,7 +176,7 @@ const NewsDetailScreen = () => {
 export default NewsDetailScreen;
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.bg },
+  container: { flex: 1, backgroundColor: night.ink },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -180,17 +184,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: widthPercentage(spacing.lg),
     paddingBottom: heightPercentage(spacing.sm + 2),
     borderBottomWidth: 1,
-    borderBottomColor: colors.divider,
+    borderBottomColor: night.line,
   },
-  backChevron: { fontFamily: fonts.regular, fontSize: fontPercentage(30), color: colors.text, lineHeight: fontPercentage(32) },
-  headerTitle: { fontFamily: fonts.medium, fontSize: fontPercentage(fontSize.lg), color: colors.text },
+  backChevron: { fontFamily: fonts.regular, fontSize: fontPercentage(30), color: night.text, lineHeight: fontPercentage(32) },
+  headerTitle: { fontFamily: fonts.medium, fontSize: fontPercentage(fontSize.lg), color: night.text },
   headerSpacer: { width: widthPercentage(spacing.xl) },
 
-  hero: { width: '100%', height: heightPercentage(220), backgroundColor: colors.skeleton },
+  hero: { width: '100%', height: heightPercentage(220), backgroundColor: night.surfaceHigh },
   caption: {
     fontFamily: fonts.regular,
     fontSize: fontPercentage(fontSize.xs),
-    color: colors.textTertiary,
+    color: night.textFaint,
     paddingHorizontal: widthPercentage(spacing.xl),
     paddingTop: heightPercentage(spacing.sm),
   },
@@ -198,7 +202,7 @@ const styles = StyleSheet.create({
   category: {
     fontFamily: fonts.bold,
     fontSize: fontPercentage(fontSize.xs),
-    color: colors.accentText,
+    color: night.accent,
     marginBottom: heightPercentage(spacing.sm),
   },
   // 기사 제목 24 / 소제목 22 는 2pt 차이뿐이라 둘이 같은 급으로 읽혔다
@@ -206,7 +210,7 @@ const styles = StyleSheet.create({
   title: {
     fontFamily: fonts.bold,
     fontSize: fontPercentage(fontSize.display),
-    color: colors.text,
+    color: night.text,
     lineHeight: fontPercentage(38),
     letterSpacing: -0.5,
   },
@@ -216,19 +220,19 @@ const styles = StyleSheet.create({
     marginTop: heightPercentage(spacing.md),
     marginBottom: heightPercentage(spacing.xl),
   },
-  source: { fontFamily: fonts.medium, fontSize: fontPercentage(fontSize.sm), color: colors.textSecondary },
-  metaDot: { marginHorizontal: widthPercentage(spacing.sm), color: colors.textTertiary },
-  date: { fontFamily: fonts.regular, fontSize: fontPercentage(fontSize.sm), color: colors.textTertiary },
+  source: { fontFamily: fonts.medium, fontSize: fontPercentage(fontSize.sm), color: night.textDim },
+  metaDot: { marginHorizontal: widthPercentage(spacing.sm), color: night.textFaint },
+  date: { fontFamily: fonts.regular, fontSize: fontPercentage(fontSize.sm), color: night.textFaint },
   // 리드문도 읽는 텍스트다 — 본문(17)보다 한 단 아래인 16 으로 두되 행간은 넉넉히.
   summary: {
     fontFamily: fonts.regular,
     fontSize: fontPercentage(fontSize.md),
-    color: colors.textSecondary,
+    color: night.textDim,
     lineHeight: fontPercentage(27),
     letterSpacing: -0.3,
     paddingLeft: widthPercentage(spacing.md),
     borderLeftWidth: 3,
-    borderLeftColor: colors.border,
+    borderLeftColor: night.line,
     marginBottom: heightPercentage(spacing.xl),
   },
   tagRow: {
@@ -237,30 +241,30 @@ const styles = StyleSheet.create({
     marginTop: heightPercentage(spacing.xl),
   },
   tagChip: {
-    backgroundColor: colors.bgSubtle,
+    backgroundColor: night.surface,
     borderRadius: radius.pill,
     paddingHorizontal: widthPercentage(spacing.md),
     paddingVertical: heightPercentage(spacing.xs),
     marginRight: widthPercentage(spacing.sm),
     marginBottom: heightPercentage(spacing.sm),
   },
-  tagText: { fontFamily: fonts.medium, fontSize: fontPercentage(fontSize.xs), color: colors.textSecondary },
+  tagText: { fontFamily: fonts.medium, fontSize: fontPercentage(fontSize.xs), color: night.textDim },
   sources: {
     marginTop: heightPercentage(spacing.xxl),
     borderTopWidth: 1,
-    borderTopColor: colors.divider,
+    borderTopColor: night.line,
     paddingTop: heightPercentage(spacing.lg),
   },
   sourcesTitle: {
     fontFamily: fonts.semibold,
     fontSize: fontPercentage(fontSize.sm),
-    color: colors.textSecondary,
+    color: night.textDim,
     marginBottom: heightPercentage(spacing.sm),
   },
   sourceLink: {
     fontFamily: fonts.regular,
     fontSize: fontPercentage(fontSize.sm),
-    color: colors.accentText,
+    color: night.accent,
     lineHeight: fontPercentage(22),
   },
 });

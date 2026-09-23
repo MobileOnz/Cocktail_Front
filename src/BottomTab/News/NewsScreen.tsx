@@ -22,7 +22,7 @@ import EmptyState from '../../Components/common/EmptyState';
 import RemoteImage from '../../Components/common/RemoteImage';
 import SkeletonList from '../../Components/common/SkeletonList';
 import {formatDate} from '../../lib/date';
-import {colors, fonts, radius} from '../../lib/theme';
+import {fonts, night, round, space} from '../../lib/theme';
 
 /** 서버 기본값과 맞춘다(BE: MagazineService.DEFAULT_SIZE). */
 const PAGE_SIZE = 20;
@@ -182,7 +182,7 @@ const NewsScreen = () => {
           uri={item.imageUrl}
           style={styles.newsImage}
           resizeMode="cover"
-          tone="light"
+          tone="dark"
           label={item.title}
           accessibilityLabel={`${item.title} 이미지`}
         />
@@ -327,162 +327,129 @@ const NewsScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8F9FA',
+    backgroundColor: night.ink,
   },
   header: {
-    paddingHorizontal: 20,
-    paddingBottom: 15,
-    backgroundColor: '#FFFFFF',
+    paddingHorizontal: space.gutter,
+    paddingBottom: space.md,
   },
   headerTitle: {
-    fontSize: fontPercentage(22),
-    fontFamily: 'Pretendard-Bold',
-    color: '#000',
+    fontSize: fontPercentage(24),
+    fontFamily: fonts.bold,
+    color: night.text,
   },
+
+  // 전체 / 스토리 / 가이드 — 하나만 고르는 세그먼트다.
+  // 예전엔 셋 다 회색 알약에 흰 바 아래 실선까지 있어 선이 두 겹으로 겹쳤다.
+  // 고른 것만 채우고 나머지는 글자만 둔다. 무엇이 켜졌는지는 채움이 말한다.
   tabBar: {
-    backgroundColor: '#FFFFFF',
-    borderBottomWidth: 1,
-    borderBottomColor: '#F1F3F5',
-    // 태그 바가 위로 접힐 때 이 바 뒤로 들어가야 한다. 불투명 배경 + 더 높은 z 순서.
     zIndex: 3,
   },
   tabBarContent: {
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingHorizontal: space.gutter,
+    paddingVertical: space.sm,
+    columnGap: space.xs,
   },
   tabItem: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
-    marginRight: 8,
-    backgroundColor: '#F1F3F5',
+    paddingHorizontal: space.md,
+    paddingVertical: space.sm,
+    borderRadius: round.pill,
   },
   tabItemActive: {
-    backgroundColor: '#000',
+    backgroundColor: night.accent,
   },
   tabLabel: {
     fontSize: fontPercentage(14),
-    fontFamily: 'Pretendard-Medium',
-    color: '#495057',
+    fontFamily: fonts.medium,
+    color: night.textDim,
   },
   tabLabelActive: {
-    color: '#FFFFFF',
+    color: night.onAccent,
   },
+
+  // 태그는 껐다 켰다 하는 토글이라 눌리는 것임을 형태로 알려야 한다.
+  // 레시피북의 필터 칩과 같은 말을 쓴다(표면색 + 얇은 선).
   tagBar: {
-    marginTop: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.divider,
-  },
-  /**
-   * 목록 위에 떠 있는 태그 바.
-   * 레이아웃 흐름에서 빼야 접힐 때 리스트 높이가 흔들리지 않는다(되먹임 진동 방지).
-   * 리스트는 contentContainerStyle 의 paddingTop 으로 이만큼을 비워 둔다.
-   */
-  tagBarFloating: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    zIndex: 1,
-    backgroundColor: colors.bg,
+    paddingBottom: space.sm,
   },
   tagBarContent: {
-    paddingHorizontal: 16,
-    paddingBottom: 12,
-    columnGap: 8,
+    paddingHorizontal: space.gutter,
+    paddingBottom: space.md,
+    columnGap: space.sm,
   },
   tagChip: {
-    paddingHorizontal: 12,
+    paddingHorizontal: space.md,
     paddingVertical: 6,
-    borderRadius: radius.pill,
+    borderRadius: round.pill,
     borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.bg,
+    borderColor: night.line,
+    backgroundColor: night.surface,
   },
   tagChipActive: {
-    backgroundColor: colors.text,
-    borderColor: colors.text,
+    backgroundColor: night.accent,
+    borderColor: night.accent,
   },
   tagChipText: {
     fontFamily: fonts.medium,
     fontSize: fontPercentage(13),
-    color: colors.textSecondary,
+    color: night.textDim,
   },
   tagChipTextActive: {
-    color: colors.textInverse,
+    color: night.onAccent,
   },
+
   footerSpinner: {
-    paddingVertical: 20,
+    paddingVertical: space.xl,
   },
   scrollContent: {
-    padding: 16,
     paddingBottom: 100,
   },
-  // iOS 에서 overflow:'hidden' 은 masksToBounds 라 그림자를 통째로 잘라낸다.
-  // 그림자가 안 보이면 카드(#FFFFFF)와 배경(#F8F9FA)의 명도차가 2% 뿐이라 경계가 사라진다.
-  // 썸네일이 거의 없는 현재 데이터에선 그림자보다 테두리가 정직하다.
+
+  // 테두리가 있던 이유는 카드(#FFFFFF)와 배경(#F8F9FA)의 명도차가 2% 뿐이라
+  // 선이 없으면 경계가 사라졌기 때문이다. 배경이 검어진 지금은 그 이유가 없다 —
+  // 사진의 둥근 모서리가 곧 카드 모양이고, 글은 배경 위에 그대로 앉는다.
   newsCard: {
-    marginBottom: 20,
-    borderRadius: 16,
-    backgroundColor: colors.bg,
-    borderWidth: 1,
-    borderColor: colors.border,
-    overflow: 'hidden',
+    marginHorizontal: space.gutter,
+    marginBottom: space.xxl,
   },
-  // QA: 풀블리드가 답답하다 → 카드 안쪽으로 물리고 모서리를 둥글린다.
   newsImage: {
-    marginHorizontal: 12,
-    marginTop: 12,
-    width: undefined,
+    width: '100%',
     height: heightPercentage(170),
-    borderRadius: radius.md,
-    backgroundColor: colors.skeleton,
+    borderRadius: round.md,
+    backgroundColor: night.surfaceHigh,
   },
   newsContent: {
-    padding: 16,
+    paddingTop: space.md,
   },
   newsMeta: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: space.sm,
   },
   newsCategoryText: {
     fontSize: fontPercentage(12),
-    color: colors.accentText,
-    fontFamily: 'Pretendard-Bold',
+    color: night.accent,
+    fontFamily: fonts.bold,
   },
   newsDate: {
     fontFamily: fonts.regular,
     fontSize: fontPercentage(12),
-    color: '#ADB5BD',
+    color: night.textFaint,
   },
   newsTitle: {
     fontSize: fontPercentage(17),
-    fontFamily: 'Pretendard-Medium',
-    color: '#212529',
-    marginBottom: 8,
-    lineHeight: 24,
+    fontFamily: fonts.semibold,
+    color: night.text,
+    marginBottom: space.sm,
+    lineHeight: fontPercentage(24),
   },
   newsSummary: {
     marginTop: 6,
     fontFamily: fonts.regular,
     fontSize: fontPercentage(14),
     lineHeight: fontPercentage(21),
-    color: colors.textSecondary,
-  },
-  newsAuthor: {
-    fontSize: fontPercentage(13),
-    color: '#868E96',
-    fontFamily: 'Pretendard-Regular',
-  },
-  emptyContainer: {
-    alignItems: 'center',
-    marginTop: 60,
-  },
-  emptyText: {
-    color: '#ADB5BD',
-    fontFamily: fonts.regular,
-    fontSize: fontPercentage(15),
+    color: night.textDim,
   },
 });
 

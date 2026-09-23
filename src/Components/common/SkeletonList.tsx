@@ -3,7 +3,7 @@
 import React, { useEffect, useRef } from 'react';
 import { View, StyleSheet, Animated, Easing } from 'react-native';
 import { heightPercentage, widthPercentage } from '../../assets/styles/FigmaScreen';
-import { colors, radius, spacing } from '../../lib/theme';
+import { night, radius, spacing } from '../../lib/theme';
 
 type Variant = 'card' | 'row' | 'step';
 
@@ -81,8 +81,10 @@ const SkeletonList: React.FC<Props> = ({ count = 4, variant = 'card' }) => {
 
 export default SkeletonList;
 
+// 스켈레톤은 배경 위에 얹히는 '자리 표시'다. 밝은 회색(colors.skeleton)은
+// 검은 배경에서 흰 덩어리로 튀어 내용이 온 줄 알게 만든다.
 const bar = {
-  backgroundColor: colors.skeleton,
+  backgroundColor: night.surfaceHigh,
   borderRadius: radius.sm,
 };
 

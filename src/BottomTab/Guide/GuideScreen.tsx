@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
+  Image,
   View,
   Text,
   TouchableOpacity,
@@ -15,7 +16,8 @@ import { widthPercentage, heightPercentage, fontPercentage } from '../../assets/
 import RemoteImage from '../../Components/common/RemoteImage';
 import GuideDetailViewModel from './GuideDetailViewModel';
 import { GuideSummary } from '../../model/domain/GuideSummary';
-import { colors, fonts } from '../../lib/theme';
+import { LinearGradient } from 'react-native-linear-gradient';
+import {fonts, night, round, space, koreanBreak} from '../../lib/theme';
 
 type GuideSreenNavigationProp = StackNavigationProp<
   RootStackParamList,
@@ -91,7 +93,27 @@ const GuideScreen: React.FC<Props> = ({ navigation, embedded = false }) => {
       {/* 상단 뷰 — embedded 일 때는 제목을 부모(RecipeBookScreen)가 그리므로 보기전환 버튼만 남긴다 */}
       <View style={[styles.header, embedded && styles.headerEmbedded]}>
 
-        {!embedded && <Text style={styles.headerTitle}>칵테일 가이드</Text>}
+        {/* 스택으로 밀어 올린 화면인데 되돌아갈 컨트롤이 없었다.
+            iOS 는 가장자리 스와이프, 안드로이드는 하드웨어 백이 있지만 눈에 보이는 길이 없다. */}
+        {!embedded && (
+          <View style={styles.titleRow}>
+            {navigation?.canGoBack?.() && (
+              <TouchableOpacity
+                onPress={() => navigation.goBack()}
+                accessibilityRole="button"
+                accessibilityLabel="뒤로 가기"
+                hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+                style={styles.backBtn}
+              >
+                <Image
+                  source={require('../../assets/drawable/left-chevron.png')}
+                  style={styles.backIcon}
+                />
+              </TouchableOpacity>
+            )}
+            <Text style={styles.headerTitle}>칵테일 가이드</Text>
+          </View>
+        )}
 
         <View style={styles.controls}>
           <TouchableOpacity
@@ -188,14 +210,19 @@ const ListView = ({ data, navigation } : {
             accessibilityLabel={item.title}
           />
 
-          {/* 이미지가 밝아도 글씨가 읽히도록 하단 스크림을 깐다. */}
-          <View style={styles.scrim} pointerEvents="none" />
+          {/* 이미지가 밝아도 글씨가 읽히도록 하단 스크림을 깐다.
+              평평한 반투명 사각형은 사진 한가운데 가로 경계선을 남겼다 — 투명에서 검정으로 흘린다. */}
+          <LinearGradient
+            colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0.75)']}
+            style={styles.scrim}
+            pointerEvents="none"
+          />
 
           <View style={styles.bottomTextContainer}>
               <View style={styles.tagContainer}>
                 <Text style={styles.listBadge}>Part.{getPart(item.part)}</Text>
               </View>
-              <Text style={styles.listText}>{item.title}</Text>
+              <Text style={styles.listText} {...koreanBreak}>{item.title}</Text>
           </View>
         </TouchableOpacity>
       ))}
@@ -233,13 +260,17 @@ const GridView = ({ data, navigation }
               accessibilityLabel={item.title}
             />
 
-            <View style={styles.scrimGrid} pointerEvents="none" />
+            <LinearGradient
+            colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0.75)']}
+            style={styles.scrimGrid}
+            pointerEvents="none"
+          />
 
             <View style={styles.bottomGrideTextContainer}>
                 <View style={styles.tagGridContainer}>
                   <Text style={styles.listGridBadge}>Part.{getPart(item.part)}</Text>
                 </View>
-                <Text style={styles.listGridText}>{item.title}</Text>
+                <Text style={styles.listGridText} {...koreanBreak}>{item.title}</Text>
             </View>
         </TouchableOpacity>
       )}
@@ -285,25 +316,39 @@ const getPart = (value: number) => {
 const styles = StyleSheet.create({
   rootContainer: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: night.ink,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingTop: heightPercentage(14),
-    paddingLeft: widthPercentage(16),
-    paddingRight: widthPercentage(16),
+    paddingLeft: space.gutter,
+    paddingRight: space.gutter,
     paddingBottom: heightPercentage(10),
   },
   headerEmbedded: {
     justifyContent: 'flex-end',
     paddingTop: heightPercentage(8),
   },
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  backBtn: {
+    marginRight: space.sm,
+    marginLeft: -space.sm,
+    padding: 4,
+  },
+  backIcon: {
+    width: widthPercentage(22),
+    height: widthPercentage(22),
+    tintColor: night.text,
+  },
   headerTitle: {
     fontSize: fontPercentage(20),
-    color: '#1B1B1B',
-    fontFamily: fonts.medium,
+    color: night.text,
+    fontFamily: fonts.semibold,
   },
   icon: {
     width: widthPercentage(24),
@@ -325,11 +370,11 @@ const styles = StyleSheet.create({
   sortText: {
     fontSize: fontPercentage(13),
     fontFamily: 'Pretendard-Medium',
-    color: colors.textSecondary,
+    color: night.textDim,
   },
   viewSeg: {
     flexDirection: 'row',
-    backgroundColor: colors.bgMuted,
+    backgroundColor: night.surface,
     borderRadius: 8,
     padding: 2,
   },
@@ -339,28 +384,28 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
   viewSegBtnActive: {
-    backgroundColor: colors.bg,
+    backgroundColor: night.surfaceHigh,
   },
   viewSegGlyph: {
     fontFamily: fonts.regular,
     fontSize: fontPercentage(14),
-    color: colors.textTertiary,
+    color: night.textFaint,
   },
   viewSegGlyphActive: {
-    color: colors.text,
+    color: night.text,
   },
   compactRow: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: heightPercentage(14),
     borderBottomWidth: 1,
-    borderBottomColor: colors.divider,
+    borderBottomColor: night.line,
     gap: widthPercentage(10),
   },
   compactBadge: {
     fontSize: fontPercentage(12),
     fontFamily: 'Pretendard-SemiBold',
-    color: colors.textTertiary,
+    color: night.textFaint,
     width: widthPercentage(48),
   },
   compactBody: {
@@ -372,14 +417,14 @@ const styles = StyleSheet.create({
   compactTitle: {
     flexShrink: 1,
     fontSize: fontPercentage(15),
-    fontFamily: 'Pretendard-Regular',
-    color: colors.text,
+    fontFamily: fonts.regular,
+    color: night.text,
   },
   compactCategory: {
     fontSize: fontPercentage(11),
     fontFamily: 'Pretendard-Medium',
-    color: colors.textTertiary,
-    backgroundColor: colors.bgMuted,
+    color: night.textDim,
+    backgroundColor: night.surface,
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: 4,
@@ -388,48 +433,47 @@ const styles = StyleSheet.create({
   compactChevron: {
     fontFamily: fonts.regular,
     fontSize: fontPercentage(18),
-    color: colors.textTertiary,
+    color: night.textFaint,
   },
-  categoryBar: {
-    backgroundColor: colors.bg,
-  },
+  categoryBar: {},
   categoryBarContent: {
-    paddingHorizontal: widthPercentage(16),
+    paddingHorizontal: space.gutter,
     paddingVertical: heightPercentage(4),
   },
+  // 매거진의 전체/스토리/가이드 세그먼트와 같은 말을 쓴다 —
+  // 고른 것만 채우고 나머지는 글자만 둔다.
   categoryChip: {
     paddingHorizontal: 16,
     paddingVertical: 8,
-    borderRadius: 20,
+    borderRadius: round.pill,
     marginRight: 8,
-    backgroundColor: colors.bgMuted,
   },
   categoryChipActive: {
-    backgroundColor: colors.bgInverse,
+    backgroundColor: night.accent,
   },
   categoryLabel: {
     fontSize: fontPercentage(14),
-    fontFamily: 'Pretendard-Medium',
-    color: colors.textSecondary,
+    fontFamily: fonts.medium,
+    color: night.textDim,
   },
   categoryLabelActive: {
-    color: colors.textInverse,
+    color: night.onAccent,
   },
 
   listRoot: {
-    marginHorizontal: widthPercentage(20),
+    marginHorizontal: space.gutter,
     marginTop: heightPercentage(16),
   },
 
   listItem: {
     position: 'relative',
     marginBottom: heightPercentage(16),
-    borderRadius: 8,
+    borderRadius: round.md,
   },
   listImage: {
     width: '100%',
     height: heightPercentage(436),
-    borderRadius: 8,
+    borderRadius: round.md,
   },
   // 사진 하단을 살짝 눌러 흰 글씨의 대비를 확보한다.
   scrim: {
@@ -437,20 +481,18 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    height: heightPercentage(140),
-    borderBottomLeftRadius: 8,
-    borderBottomRightRadius: 8,
-    backgroundColor: 'rgba(0,0,0,0.35)',
+    height: heightPercentage(180),
+    borderBottomLeftRadius: round.md,
+    borderBottomRightRadius: round.md,
   },
   scrimGrid: {
     position: 'absolute',
     left: 0,
     right: 0,
     bottom: 0,
-    height: 80,
-    borderBottomLeftRadius: 8,
-    borderBottomRightRadius: 8,
-    backgroundColor: 'rgba(0,0,0,0.35)',
+    height: 100,
+    borderBottomLeftRadius: round.md,
+    borderBottomRightRadius: round.md,
   },
 
   bottomTextContainer: {
@@ -484,13 +526,13 @@ const styles = StyleSheet.create({
   gridItem: {
     position: 'relative',
     marginBottom: heightPercentage(16),
-    borderRadius: 8,
+    borderRadius: round.md,
     width: '48%',
   },
   gridImage: {
     width: '100%',
     height: 212,
-    borderRadius: 8,
+    borderRadius: round.md,
   },
   bottomGrideTextContainer: {
     position: 'absolute',

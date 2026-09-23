@@ -104,6 +104,7 @@ const AllCocktailScreen = ({navigation, embedded = false}: Props) => {
     ({item}: {item: CocktailCardModel}) => (
       <View style={styles.cardWrapper}>
         <CocktailCard
+          width={CARD_WIDTH}
           id={item.id}
           name={item.name}
           type={item.type}
@@ -287,6 +288,10 @@ const AllCocktailScreen = ({navigation, embedded = false}: Props) => {
 
 export default AllCocktailScreen;
 
+/** 2열 그리드 한 칸의 폭. 카드도 같은 값을 받아 이미지가 칼럼을 넘지 않게 한다. */
+const CARD_WIDTH =
+  (Dimensions.get('window').width - space.gutter * 2 - space.md) / 2;
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -374,7 +379,7 @@ const styles = StyleSheet.create({
     marginBottom: space.lg,
   },
   cardWrapper: {
-    width: (Dimensions.get('window').width - space.gutter * 2 - space.md) / 2,
+    width: CARD_WIDTH,
   },
   emptyContainer: {
     flex: 1,

@@ -1,9 +1,9 @@
-import { Image, Platform, StyleSheet, Text, View, FlatList } from 'react-native';
+import { Dimensions, Image, Platform, StyleSheet, Text, View, FlatList } from 'react-native';
 import React, { useCallback, useRef } from 'react';
 import { Pressable, TouchableOpacity } from 'react-native-gesture-handler';
 import { ActivityIndicator } from 'react-native-paper';
 import { fontPercentage, heightPercentage, widthPercentage } from '../../assets/styles/FigmaScreen';
-import { colors } from '../../lib/theme';
+import {fonts, night, round, space, koreanBreak} from '../../lib/theme';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../Navigation/Navigation';
 import CocktailCard from '../../Components/CocktailCard';
@@ -49,12 +49,16 @@ const SearchResultScreen = ({ navigation, route }: Props) => {
             {/* 상단 검색바 */}
             <View style={styles.searchContainer}>
               <TouchableOpacity onPress={() => navigation.goBack()}>
-                <Icon name="chevron-back-sharp" size={24} color="#000" style={{ marginRight: widthPercentage(8) }} />
+                <Icon name="chevron-back-sharp" size={24} color={night.text} style={{ marginRight: widthPercentage(8) }} />
               </TouchableOpacity>
 
               {/* 검색어 칸이 View 라 아예 누를 수 없었다 — 검색 결과에서 검색어를 고치려면
                   뒤로 갔다가 다시 들어와야 했다(QA: "검색 후 검색창 클릭이 안 됩니다").
                   누르면 기존 검색어를 채운 채로 검색 화면에 돌아간다. */}
+              {/* flex:1 을 제스처핸들러 TouchableOpacity 에 직접 주면 폭이 내용만큼으로
+                  줄어든다(검색창이 화면 왼쪽에 작게 붙어 있던 원인). 늘어나는 역할은
+                  평범한 View 에 맡기고, 터치는 그 안에서 받는다. */}
+              <View style={styles.searchFill}>
               <TouchableOpacity
                 style={styles.search}
                 activeOpacity={0.7}
@@ -66,16 +70,17 @@ const SearchResultScreen = ({ navigation, route }: Props) => {
                   style={{
                     width: 24,
                     height: 24,
-                    tintColor: '#D9D9D9',
+                    tintColor: night.textFaint,
                   }}
                   resizeMode="contain"
                 />
-                <Text style={styles.searchText}>{keyword}</Text>
+                <Text style={styles.searchText} numberOfLines={1}>{keyword}</Text>
               </TouchableOpacity>
+              </View>
               <TouchableOpacity onPress={() => navigation.navigate('BottomTabNavigator', {
                 screen: '레시피북',
               })}>
-                <EIcon name="close" size={24} color="#000" style={{ marginLeft: widthPercentage(14) }} />
+                <EIcon name="close" size={24} color={night.text} style={{ marginLeft: widthPercentage(14) }} />
               </TouchableOpacity>
             </View>
 
@@ -93,12 +98,12 @@ const SearchResultScreen = ({ navigation, route }: Props) => {
           <View style={styles.emptyContainer}>
             {vm.loading && <ActivityIndicator size="large" />}
             {!vm.loading && vm.error && (
-              <Text style={styles.text}>{vm.error}</Text>
+              <Text style={styles.text} {...koreanBreak}>{vm.error}</Text>
             )}
             {!vm.loading && !vm.error && vm.results?.length === 0 && (
               <View style={{ alignItems: 'center' }}>
-                <Text style={styles.text}>아직 준비된 칵테일이 없네요.</Text>
-                <Text style={styles.text}>다른 키워드로 다시 검색해보시겠어요?</Text>
+                <Text style={styles.text} {...koreanBreak}>아직 준비된 칵테일이 없네요.</Text>
+                <Text style={styles.text} {...koreanBreak}>다른 키워드로 다시 검색해보시겠어요?</Text>
               </View>
             )}
           </View>
@@ -107,6 +112,7 @@ const SearchResultScreen = ({ navigation, route }: Props) => {
         renderItem={({ item }) => (
           <View style={styles.cardWrapper}>
             <CocktailCard
+              width={CARD_WIDTH}
               id={item.id}
               name={item.name}
               type={item.type}
@@ -129,7 +135,7 @@ const SearchResultScreen = ({ navigation, route }: Props) => {
         footer={
           <View style={styles.footer}>
             <Pressable style={[styles.resetButton]} onPress={() => { filterRef.current?.reset(); }} >
-              <MIcon name="refresh" size={20} color="#444" style={styles.resetIcon} />
+              <MIcon name="refresh" size={20} color={night.textDim} style={styles.resetIcon} />
               <Text style={styles.resetText}>초기화</Text>
             </Pressable>
 
@@ -156,27 +162,32 @@ const SearchResultScreen = ({ navigation, route }: Props) => {
 };
 
 export default SearchResultScreen;
+
+/** 2열 그리드 한 칸의 폭. 레시피북과 같은 계산을 쓴다. */
+const CARD_WIDTH =
+  (Dimensions.get('window').width - space.gutter * 2 - space.md) / 2;
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.bg,
+    backgroundColor: night.ink,
   },
   closeButton: {
     padding: 10,
   },
   searchText: {
-    fontFamily: 'Pretendard-Regular',
+    fontFamily: fonts.regular,
     fontSize: fontPercentage(16),
-    color: '#000',
+    color: night.text,
     marginLeft: 8,
   },
   text: {
-    color: '#BDBDBD',
-    fontFamily: 'Pretendard-Regular',
+    color: night.textDim,
+    fontFamily: fonts.regular,
     fontSize: fontPercentage(16), textAlign: 'center',
   },
   searchContainer: {
-    paddingHorizontal: widthPercentage(16),
+    paddingHorizontal: space.gutter,
     flexDirection: 'row',
     alignItems: 'center',
     // SafeAreaView edges={['top']} 가 이미 상태바를 비켜준다.
@@ -188,35 +199,34 @@ const styles = StyleSheet.create({
     marginRight: 4,
 
   },
-  search: {
+  searchFill: {
     flex: 1,
+  },
+  search: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F5F5F5',
+    backgroundColor: night.surface,
     height: heightPercentage(42),
-    borderRadius: 8,
+    borderRadius: round.sm,
     paddingHorizontal: 12,
     justifyContent: 'flex-start',
   },
 
   filterRow: {
-    paddingHorizontal: widthPercentage(8),
     paddingTop: 4,
-    paddingBottom: heightPercentage(16),
+    paddingBottom: space.sm,
   },
   listContent: {
     paddingBottom: 24,
   },
   row: {
     flexDirection: 'row',
-    justifyContent: 'flex-start',
-    paddingHorizontal: widthPercentage(16),
-    marginBottom: 16,
-    gap: 15,
+    justifyContent: 'space-between',
+    paddingHorizontal: space.gutter,
+    marginBottom: space.lg,
   },
   cardWrapper: {
-    width: widthPercentage(160),
-    alignItems: 'center',
+    width: CARD_WIDTH,
   },
 
   emptyContainer: {
@@ -230,12 +240,9 @@ const styles = StyleSheet.create({
     gap: 12,
     paddingHorizontal: 16,
     paddingVertical: 12,
-    backgroundColor: colors.bg,
-
-
+    backgroundColor: night.ink,
     borderTopWidth: 1,
-    borderTopColor: '#FFFFFF',
-
+    borderTopColor: night.line,
 
     ...Platform.select({
       ios: {
@@ -259,10 +266,9 @@ const styles = StyleSheet.create({
     height: heightPercentage(50),
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#D0D0D0',
+    borderColor: night.line,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: colors.bg,
   },
   applyButton: {
     flex: 2,
@@ -270,16 +276,16 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#313131',
+    backgroundColor: night.accent,
   },
   resetText: {
-    fontFamily: 'Pretendard-Medium',
+    fontFamily: fonts.medium,
     fontSize: 14,
-    color: '#444444',
+    color: night.textDim,
   },
   applyText: {
-    fontFamily: 'Pretendard-Medium',
+    fontFamily: fonts.medium,
     fontSize: 14,
-    color: '#FFFFFF',
+    color: night.onAccent,
   },
 });

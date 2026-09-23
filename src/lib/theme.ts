@@ -221,3 +221,17 @@ export const card = {
   borderRadius: round.md,
   gap: space.md,
 } as const;
+
+/**
+ * 한글 줄바꿈.
+ *
+ * 기본 규칙은 한글을 글자 단위로 끊어서 "게다/가", "메뉴/와", "100/여 년" 처럼
+ * 단어와 조사 한가운데가 꺾인다. 영문 위주로 만들어진 기본값이라 그렇다.
+ * 읽으라고 내놓은 텍스트(제목·리드·본문·설명)에는 전부 붙인다.
+ *
+ *   <Text style={...} {...koreanBreak}>
+ */
+export const koreanBreak = {
+  lineBreakStrategyIOS: 'hangul-word',
+  textBreakStrategy: 'balanced',
+} as const;

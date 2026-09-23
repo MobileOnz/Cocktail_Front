@@ -4,6 +4,7 @@ import { View, Image, Text, StyleSheet, Pressable } from 'react-native';
 import PillStyleStatus from '../Components/PillStyleStatus';
 import RemoteImage from './common/RemoteImage';
 import { fontPercentage, heightPercentage, widthPercentage } from '../assets/styles/FigmaScreen';
+import { fonts, night, round, space } from '../lib/theme';
 
 type Props = {
   id: number;
@@ -11,6 +12,8 @@ type Props = {
   image: string;
   type: string;
   bookmarked?: boolean;
+  /** 그리드에 놓일 때 부모가 계산한 칼럼 폭. 없으면 가로 캐러셀용 기본 폭. */
+  width?: number;
   onPress?: () => void;
   onToggleBookmark?: (id: number, nextStatus: boolean) => void;
 };
@@ -21,11 +24,12 @@ const CocktailCard = React.memo(function CocktailCard({
   type,
   image,
   bookmarked = false,
+  width = DEFAULT_WIDTH,
   onPress,
   onToggleBookmark,
 }: Props) {
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { width }]}>
       <Pressable onPress={onPress} style={[styles.card]}>
         {/* 이미지 영역 */}
         <View style={styles.imageWrap}>
@@ -34,7 +38,7 @@ const CocktailCard = React.memo(function CocktailCard({
               RemoteImage 는 로딩/실패에도 같은 크기의 자리를 지킨다. */}
           <RemoteImage
             uri={image}
-            style={styles.image}
+            style={[styles.image, { width }]}
             resizeMode="cover"
             label={name}
             tone="light"
@@ -77,10 +81,13 @@ const CocktailCard = React.memo(function CocktailCard({
 export default CocktailCard;
 
 
+const DEFAULT_WIDTH = widthPercentage(160);
+
 const styles = StyleSheet.create({
+  // 폭은 부모가 정한다(그리드는 칼럼 폭, 캐러셀은 기본값).
+  // 예전엔 카드가 고정 폭이라 레시피북 2열 그리드의 칼럼보다 살짝 넓어 우측이 밀려 나갔다.
   container: {
-    width: widthPercentage(160),
-    alignItems: 'center',
+    alignItems: 'stretch',
   },
   card: {
     overflow: 'hidden',
@@ -90,31 +97,31 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   image: {
-    borderRadius: 8,
-    width: widthPercentage(160),
+    borderRadius: round.sm,
     height: heightPercentage(220),
   },
   pillWrap: {
     position: 'absolute',
-    top: 8,
-    left: 8,
+    top: space.sm,
+    left: space.sm,
   },
   bookmarkBtn: {
     position: 'absolute',
-    top: 8,
-    right: 8,
+    top: space.sm,
+    right: space.sm,
     width: 28,
     height: 28,
     alignItems: 'center',
     justifyContent: 'center',
   },
+  // 어두운 배경으로 바뀌었는데 글자색이 #1B1B1B 로 남아 있어 이름이 보이지 않았다.
+  // 서체도 Regular 16 에 좌우 여백 10 이라 이미지 왼쪽 선과 어긋나 붕 떠 보였다.
+  // → 밝은 본문색 + Medium, 이미지 왼쪽에 맞춰 흘려보낸다.
   title: {
-    fontFamily: 'Pretendard-Regular',
-    fontSize: fontPercentage(16),
-    color: '#1B1B1B',
-    paddingHorizontal: 10,
-    paddingVertical: 10,
-    alignSelf: 'flex-start',
-
+    fontFamily: fonts.medium,
+    fontSize: fontPercentage(15),
+    lineHeight: fontPercentage(20),
+    color: night.text,
+    marginTop: space.sm,
   },
 });

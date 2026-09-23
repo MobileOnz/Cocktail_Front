@@ -5,17 +5,8 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image, Pressable } from 'react-native';
 import { fontPercentage, heightPercentage, widthPercentage } from '../../assets/styles/FigmaScreen';
-import { colors, fonts, fontSize, radius, spacing } from '../../lib/theme';
+import {fonts, fontSize, koreanBreak, radius, spacing, night} from '../../lib/theme';
 import type { MagazineBlock, MagazineMark, CocktailSpecRow } from '../../types/api';
-
-/**
- * 한글은 기본 줄바꿈 규칙에서 단어 중간이 꺾인다("아\n이스"). 장문일수록 눈에 띈다.
- * 매거진 본문·제목처럼 읽는 텍스트에는 모두 붙인다.
- */
-const koreanBreak = {
-  lineBreakStrategyIOS: 'hangul-word',
-  textBreakStrategy: 'balanced',
-} as const;
 
 type Segment = { t: string; bold: boolean };
 
@@ -133,7 +124,7 @@ const styles = StyleSheet.create({
   paragraph: {
     fontFamily: fonts.regular,
     fontSize: fontPercentage(17),
-    color: colors.text,
+    color: night.text,
     lineHeight: fontPercentage(30), // 1.76배
     letterSpacing: -0.3, // Pretendard 한글은 살짝 좁혀야 덩어리로 읽힌다
     marginBottom: heightPercentage(18), // 문단 사이를 행간보다 확실히 크게
@@ -143,13 +134,13 @@ const styles = StyleSheet.create({
     width: '100%',
     height: heightPercentage(200),
     borderRadius: radius.md,
-    backgroundColor: colors.skeleton,
+    backgroundColor: night.surfaceHigh,
     marginVertical: heightPercentage(spacing.md),
   },
   blockImageCaption: {
     fontFamily: fonts.regular,
     fontSize: fontPercentage(fontSize.xs),
-    color: colors.textTertiary,
+    color: night.textFaint,
     marginTop: -heightPercentage(spacing.xs),
     marginBottom: heightPercentage(spacing.md),
   },
@@ -159,7 +150,7 @@ const styles = StyleSheet.create({
   heading: {
     fontFamily: fonts.bold,
     fontSize: fontPercentage(fontSize.xl),
-    color: colors.text,
+    color: night.text,
     lineHeight: fontPercentage(29),
     letterSpacing: -0.4,
     marginTop: heightPercentage(spacing.xxl),
@@ -167,38 +158,38 @@ const styles = StyleSheet.create({
   },
   quote: {
     borderLeftWidth: 3,
-    borderLeftColor: colors.accent,
+    borderLeftColor: night.accent,
     paddingLeft: widthPercentage(spacing.md),
     marginVertical: heightPercentage(spacing.md),
   },
   quoteText: {
     fontFamily: fonts.regular,
     fontSize: fontPercentage(fontSize.md),
-    color: colors.textSecondary,
+    color: night.textDim,
     lineHeight: fontPercentage(28),
     letterSpacing: -0.3,
   },
   quoteCite: {
     fontFamily: fonts.regular,
     fontSize: fontPercentage(fontSize.sm),
-    color: colors.textTertiary,
+    color: night.textFaint,
     marginTop: heightPercentage(spacing.xs),
   },
+  // 밝은 배경에서는 카드와 바탕의 명도차가 거의 없어 선이 필요했다.
+  // 검은 바탕에서는 표면색만으로 경계가 읽히므로 선을 뺀다.
   specCard: {
-    backgroundColor: colors.bgSubtle,
+    backgroundColor: night.surface,
     borderRadius: radius.lg,
-    borderWidth: 1,
-    borderColor: colors.border,
     overflow: 'hidden',
     marginVertical: heightPercentage(spacing.md),
   },
-  specImage: { width: '100%', height: heightPercentage(160), backgroundColor: colors.skeleton },
+  specImage: { width: '100%', height: heightPercentage(160), backgroundColor: night.surfaceHigh },
   specBody: { padding: widthPercentage(spacing.lg) },
-  specName: { fontFamily: fonts.bold, fontSize: fontPercentage(fontSize.lg), color: colors.text },
+  specName: { fontFamily: fonts.bold, fontSize: fontPercentage(fontSize.lg), color: night.text },
   specNameEn: {
     fontFamily: fonts.regular,
     fontSize: fontPercentage(fontSize.sm),
-    color: colors.textTertiary,
+    color: night.textFaint,
     marginBottom: heightPercentage(spacing.sm),
   },
   specRows: { marginTop: heightPercentage(spacing.xs) },
@@ -207,18 +198,18 @@ const styles = StyleSheet.create({
     width: widthPercentage(72),
     fontFamily: fonts.medium,
     fontSize: fontPercentage(fontSize.sm),
-    color: colors.textTertiary,
+    color: night.textFaint,
   },
   specVal: {
     flex: 1,
     fontFamily: fonts.medium,
     fontSize: fontPercentage(fontSize.sm),
-    color: colors.text,
+    color: night.text,
   },
   specLink: {
     marginTop: heightPercentage(spacing.md),
     fontFamily: fonts.semibold,
     fontSize: fontPercentage(fontSize.sm),
-    color: colors.accentText,
+    color: night.accent,
   },
 });

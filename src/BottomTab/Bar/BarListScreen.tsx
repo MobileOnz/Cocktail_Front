@@ -19,7 +19,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { useTabBarSpace } from '../../lib/layout';
-import { bar as barTheme, fonts, night, space, round } from '../../lib/theme';
+import { fonts, night, space, round } from '../../lib/theme';
 import RemoteImage from '../../Components/common/RemoteImage';
 import Geolocation from 'react-native-geolocation-service';
 import ErrorState from '../../Components/common/ErrorState';
@@ -148,7 +148,7 @@ const BarListScreen: React.FC = () => {
   return (
     <View style={[styles.container, { paddingTop: insets.top + 12 }]}>
       {/* 바 도메인도 라이트로 통일됐다 → 상태바 글씨는 어둡게. 상세 화면도 같은 설정이다. */}
-      <StatusBar barStyle="dark-content" backgroundColor={barTheme.bg} />
+      <StatusBar barStyle="light-content" backgroundColor={night.ink} />
       <Text style={styles.title}>바</Text>
 
       <View style={styles.segmentBar}>
@@ -246,7 +246,7 @@ const styles = StyleSheet.create({
   segmentActive: { backgroundColor: night.accent, borderColor: night.accent },
   segmentText: { color: night.textDim, fontSize: 13, fontFamily: fonts.medium },
   segmentTextActive: { color: night.onAccent },
-  // 카드 한 장 — 다른 화면의 카드와 같은 테두리·모서리·여백을 쓴다.
+  // 카드 한 장 — 테두리 없이 사진의 둥근 모서리가 카드 모양이 된다(홈·매거진과 같은 말).
   // 홈과 같은 규칙 — 테두리·배경 없이 사진이 카드 모양을 만든다.
   barCard: {
     marginHorizontal: space.gutter,
