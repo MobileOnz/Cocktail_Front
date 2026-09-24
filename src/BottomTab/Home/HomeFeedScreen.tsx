@@ -9,6 +9,7 @@ import {
   ScrollView,
   Image,
   TouchableOpacity,
+  Pressable,
   RefreshControl,
   StatusBar,
 } from 'react-native';
@@ -22,7 +23,6 @@ import {
 import instance from '../../tokenRequest/axios_interceptor';
 import {unwrap, toUserMessage} from '../../lib/api';
 import {fonts, fontSize, spacing, night, space, round, koreanBreak} from '../../lib/theme';
-import {RECOMMENDATION_WEB_URL} from '@env';
 import type {
   FeedItem,
   Hero,
@@ -234,6 +234,7 @@ const HomeFeedScreen = () => {
             source={{uri: hero.imageUrl}}
             style={styles.heroImage}
             resizeMode="cover"
+            resizeMethod="resize"
           />
         )}
         <View style={styles.heroBody}>
@@ -261,6 +262,7 @@ const HomeFeedScreen = () => {
           source={{uri: item.imageUrl}}
           style={styles.newsImage}
           resizeMode="cover"
+          resizeMethod="resize"
         />
       )}
       <View style={styles.newsBody}>
@@ -301,6 +303,7 @@ const HomeFeedScreen = () => {
           source={{uri: item.imageUrl}}
           style={styles.newsImage}
           resizeMode="cover"
+          resizeMethod="resize"
         />
       )}
       <View style={styles.newsBody}>
@@ -314,6 +317,19 @@ const HomeFeedScreen = () => {
         </Text>
       </View>
     </TouchableOpacity>
+  );
+
+  const renderRecommendButton = () => (
+    <Pressable
+      style={({pressed}) => [styles.recommendCta, pressed && styles.recommendCtaPressed]}
+      onPress={() => navigation.navigate('RecommendationIntro')}
+      android_ripple={{color: 'rgba(0,0,0,0.12)'}}
+      accessibilityRole="button"
+      accessibilityLabel="맞춤 칵테일 추천받기"
+      accessibilityHint="질문 몇 개에 답하면 취향에 가까운 칵테일을 골라줍니다">
+      <Text style={styles.recommendCtaTitle}>맞춤 칵테일 추천받기</Text>
+      <Text style={styles.recommendCtaArrow} accessible={false}>›</Text>
+    </Pressable>
   );
 
   // 초기 로딩: 스켈레톤
@@ -331,6 +347,7 @@ const HomeFeedScreen = () => {
           />
           <TopRightMenu tint={night.text} />
         </View>
+        {renderRecommendButton()}
         <SkeletonList count={3} variant="card" />
       </SafeAreaView>
     );
@@ -351,6 +368,7 @@ const HomeFeedScreen = () => {
           />
           <TopRightMenu tint={night.text} />
         </View>
+        {renderRecommendButton()}
         <ErrorState message={error} onRetry={() => fetchPage('initial')} />
       </SafeAreaView>
     );
@@ -399,25 +417,7 @@ const HomeFeedScreen = () => {
 
         {renderHero()}
 
-        {/* 추천은 별도 웹앱(RECOMMENDATION_WEB_URL)을 웹뷰로 띄운다. 주소가 없으면
-            눌러봐야 '연결할 수 없어요' 화면이 뜨므로, 아예 내보이지 않는다.
-            홈에 문 모양만 있고 열리지 않는 문을 두지 않는다.
-            표면색 박스로 감싸 봤더니 테두리 없는 홈에서 저것만 덩어리로 튀었고,
-            아이콘 + 2줄 텍스트 탓에 좌측 선도 히어로·섹션 헤더의 거터와 어긋났다.
-            → 배경 없이 한 줄로 두고 거터에 맞춘다. */}
-        {RECOMMENDATION_WEB_URL ? (
-          <TouchableOpacity
-            style={styles.recommendCta}
-            onPress={() => navigation.navigate('RecommendationIntro')}
-            accessibilityRole="button"
-            accessibilityLabel="나에게 맞는 칵테일 추천 받기"
-            accessibilityHint="질문 몇 개에 답하면 취향에 가까운 칵테일을 골라줍니다">
-            <Text style={styles.recommendCtaTitle}>
-              나에게 맞는 칵테일 추천 받기
-            </Text>
-            <Text style={styles.recommendCtaArrow}>›</Text>
-          </TouchableOpacity>
-        ) : null}
+        {renderRecommendButton()}
 
         {latestNews.length > 0 && (
           <View>
@@ -449,6 +449,7 @@ const HomeFeedScreen = () => {
                       source={{uri: n.imageUrl}}
                       style={styles.newsHImage}
                       resizeMode="cover"
+                      resizeMethod="resize"
                     />
                   )}
                   <Text style={styles.newsHCategory} numberOfLines={1}>
@@ -500,6 +501,7 @@ const HomeFeedScreen = () => {
                       source={{uri: c.imageUrl}}
                       style={styles.cocktailImage}
                       resizeMode="cover"
+                      resizeMethod="resize"
                     />
                   )}
                   <Text style={styles.cocktailName} numberOfLines={1}>
@@ -648,18 +650,26 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     marginHorizontal: space.gutter,
-    marginTop: space.xxl,
-    paddingVertical: space.sm,
+    marginTop: space.lg,
+    minHeight: 52,
+    paddingHorizontal: space.lg,
+    paddingVertical: space.md,
+    borderRadius: round.sm,
+    backgroundColor: night.accent,
+    overflow: 'hidden',
   },
+  recommendCtaPressed: {opacity: 0.8},
   recommendCtaTitle: {
+    flex: 1,
+    marginRight: space.md,
     fontFamily: fonts.semibold,
     fontSize: fontPercentage(fontSize.base),
-    color: night.accent,
+    color: night.onAccent,
   },
   recommendCtaArrow: {
     fontFamily: fonts.regular,
     fontSize: fontPercentage(fontSize.xl),
-    color: night.accent,
+    color: night.onAccent,
   },
 
   sectionHeader: {

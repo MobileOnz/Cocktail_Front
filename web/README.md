@@ -20,11 +20,9 @@ npm.cmd start
 - 같은 Wi-Fi의 실제 휴대폰: `http://192.168.45.181:5173` (현재 PC Wi-Fi 주소이며 네트워크 변경 시 달라집니다.)
 - 유선 네트워크를 통한 접속: `http://192.168.55.83:5173`
 
-앱의 기존 추천 시작 버튼은 `RecommendationScreen` 경로에서 `RecommendationWebScreen.tsx`를 엽니다. 웹 디자인과 애니메이션을 그대로 사용하며, Android 뒤로가기는 이전 질문으로 이동하고 첫 질문에서는 앱으로 돌아갑니다. 웹 상단 ONZ 로고를 눌러도 앱으로 돌아갑니다.
+앱의 기존 추천 시작 버튼은 `RecommendationScreen` 경로에서 `RecommendationWebScreen.tsx`를 열고, `https://onz-homepage.vercel.app/recommend/`에 접속합니다. 질문 이동은 웹페이지의 버튼으로 진행하며, 앱 상단 뒤로가기 또는 Android 뒤로가기는 추천 소개 화면으로 돌아갑니다.
 
-Android 개발 빌드의 기본 주소는 `http://10.0.2.2:5173`, iOS는 `http://localhost:5173`입니다. 실제 휴대폰에서는 `Cocktail_Front/.env`에 `RECOMMENDATION_WEB_URL=http://192.168.45.181:5173`을 지정하고 Metro를 재시작하세요. 실제 휴대폰의 `localhost`는 PC가 아닌 휴대폰 자신입니다. 배포 빌드는 로컬 주소를 기본으로 사용하지 않으므로 배포된 HTTPS 웹 주소를 설정해야 합니다. iOS 빌드는 Mac에서 `bundle exec pod install` 후 재빌드하세요.
-
-Android debug manifest는 이미 로컬 HTTP를 허용합니다. 같은 네트워크에서도 접속되지 않으면 PC 방화벽의 5173 포트 허용 여부를 확인하세요. 기존 앱의 로그인 진입 조건은 유지됩니다.
+앱 웹뷰는 개발·배포 빌드 모두 위 HTTPS 주소를 사용합니다. 이 폴더의 로컬 웹 프로젝트는 독립적으로 실행할 수 있습니다. iOS에서 네이티브 의존성을 처음 설치할 때는 Mac에서 `bundle exec pod install` 후 재빌드하세요.
 
 ## 실제 추천 서버 연결
 
@@ -51,3 +49,7 @@ API 주소가 없으면 **고정 모히토 예시를 표시하는 데모 모드*
 원본 `RecommendationScreen.tsx`, `VideoViewModel.tsx`, `RecommendCocktailDataSource.tsx`, `CocktailRec.tsx`를 기준으로 분리했습니다. 현재 원본 폴더에는 서버의 추천 계산 알고리즘·가중치·칵테일 데이터베이스가 없으므로 해당 로직은 이전하지 않았습니다. 백엔드 소스가 제공되면 `recommendation.mjs`의 호출 경계를 기준으로 연결하거나 계산 로직을 추가할 수 있습니다. 앱 로그인, 북마크, 분석 이벤트, 앱 내비게이션은 이번 독립 웹의 범위에 포함하지 않았습니다.
 
 `npm.cmd test`는 응답 코드, 아이콘 존재, API 요청 계약, 빈 응답·인증 오류·시간 초과, 정적 파일 및 HTTP 경로를 확인합니다. 실제 백엔드 연동과 브라우저 화면은 별도 확인이 필요합니다.
+
+### 앱 내부 모바일 디자인
+
+현재 앱이 여는 호스팅 페이지에는 `src/Screens/recommendationWebTheme.ts`가 앱 전용 스타일을 적용합니다. 질문·추천 API는 기존 웹페이지가 담당하고, 네이티브 헤더와 앱의 어두운 배경·황동색 버튼을 연결합니다. 로컬 `web/public`이나 공개 웹사이트 디자인을 변경하는 것은 아닙니다. 호스팅 페이지의 CSS 클래스가 바뀌면 이 스타일과 질문→결과 흐름을 함께 재검증하세요.

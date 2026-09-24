@@ -1,17 +1,13 @@
 // RecommendationIntroScreen.tsx
 // 홈의 '나에게 맞는 칵테일 추천 받기' → 여기 → RecommendationScreen(웹뷰 문답).
-//
-// 이력: 원래는 밝은 그라데이션 배경에 잔 아이콘이 화면 높이의 절반을 차지하고,
-// 본문은 가운데 정렬, 버튼은 absolute 로 바닥에 붙어 있었다. 앱이 밤 테마로 바뀌면서
-// 이 화면만 밝은 채로 남아 눈에 띄게 겉돌았고, 무엇을 하는 화면인지도 읽히지 않았다.
-// → 배경/서체를 앱 토큰으로 맞추고, 정렬을 다른 화면과 같은 좌측 거터에 세웠다.
-//   잔 실루엣은 화면을 채우는 히어로가 아니라 제목 위의 작은 표식으로 내린다.
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
   AccessibilityInfo,
   Animated,
   Image,
   Pressable,
+  ScrollView,
+  useWindowDimensions,
   StatusBar,
   StyleSheet,
   Text,
@@ -20,7 +16,7 @@ import {
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {RootStackParamList} from '../../Navigation/Navigation';
-import {fontPercentage, widthPercentage} from '../../assets/styles/FigmaScreen';
+import {useIsFocused} from '@react-navigation/native';
 import {fonts, night, round, space} from '../../lib/theme';
 
 /** 표식으로 돌려 쓰는 잔 실루엣. 흰 단색이라 어두운 배경에서 tintColor 로 물들인다. */
@@ -40,9 +36,12 @@ type Props = {
 
 const RecommendationIntroScreen: React.FC<Props> = ({navigation}) => {
   const insets = useSafeAreaInsets();
+  const {width, height} = useWindowDimensions();
+  const focused = useIsFocused();
+  const glassSize = Math.min(width * 0.55, height * 0.3, 260);
   const opacity = useRef(new Animated.Value(1)).current;
   const [index, setIndex] = useState(0);
-  const [stillness, setStillness] = useState(false);
+  const [stillness, setStillness] = useState(true);
 
   // 손대지 않았는데 움직이는 요소는 이 화면에 이것 하나뿐이다.
   // 모션 줄이기를 켠 사람에게는 그 하나도 멈춘다.
@@ -66,7 +65,8 @@ const RecommendationIntroScreen: React.FC<Props> = ({navigation}) => {
   // 예전 구현은 애니메이션 콜백 안에서 자기를 다시 부르며 setTimeout 을 쌓았고
   // 정리 경로가 없어 화면을 떠난 뒤에도 계속 돌았다. 타이머를 밖에서 쥐고 끊는다.
   useEffect(() => {
-    if (stillness) {
+    opacity.setValue(1);
+    if (stillness || !focused) {
       return;
     }
     let alive = true;
@@ -105,7 +105,7 @@ const RecommendationIntroScreen: React.FC<Props> = ({navigation}) => {
       clearTimeout(timer);
       opacity.stopAnimation();
     };
-  }, [opacity, stillness]);
+  }, [opacity, stillness, focused]);
 
   // 예전엔 뒤로가기가 홈 탭으로 navigation.reset 을 했다. 어디서 들어왔든 홈으로
   // 튕겨 나가고 스택도 날아간다. 들어온 자리로 돌려보내는 게 맞다.
@@ -122,7 +122,15 @@ const RecommendationIntroScreen: React.FC<Props> = ({navigation}) => {
   }, [navigation]);
 
   return (
-    <View style={[styles.screen, {paddingTop: insets.top}]}>
+    <View
+      style={[
+        styles.screen,
+        {
+          paddingTop: insets.top,
+          paddingLeft: insets.left,
+          paddingRight: insets.right,
+        },
+      ]}>
       <StatusBar barStyle="light-content" backgroundColor={night.ink} />
 
       <Pressable
@@ -137,14 +145,21 @@ const RecommendationIntroScreen: React.FC<Props> = ({navigation}) => {
         />
       </Pressable>
 
-      <View style={styles.body}>
-        <Animated.Image
-          source={GLASSES[index]}
-          resizeMode="contain"
-          accessibilityElementsHidden
-          importantForAccessibility="no"
-          style={[styles.glass, {opacity}]}
-        />
+      <ScrollView
+        contentContainerStyle={styles.body}
+        showsVerticalScrollIndicator={false}>
+        <View style={styles.artwork}>
+          <Animated.Image
+            source={GLASSES[index]}
+            resizeMode="contain"
+            accessibilityElementsHidden
+            importantForAccessibility="no"
+            style={[
+              styles.glass,
+              {opacity, width: glassSize, height: glassSize},
+            ]}
+          />
+        </View>
 
         <Text
           style={styles.title}
@@ -158,7 +173,7 @@ const RecommendationIntroScreen: React.FC<Props> = ({navigation}) => {
           textBreakStrategy="balanced">
           질문 몇 개에 답하면{'\n'}취향에 가까운 한 잔을 골라드려요.
         </Text>
-      </View>
+      </ScrollView>
 
       <View style={[styles.footer, {paddingBottom: insets.bottom + space.xl}]}>
         <Pressable
@@ -182,52 +197,53 @@ const styles = StyleSheet.create({
     backgroundColor: night.ink,
   },
   back: {
-    width: widthPercentage(40),
-    height: widthPercentage(40),
+    width: 48,
+    height: 48,
     marginLeft: space.sm,
     alignItems: 'center',
     justifyContent: 'center',
   },
   backIcon: {
-    width: widthPercentage(24),
-    height: widthPercentage(24),
+    width: 24,
+    height: 24,
     tintColor: night.text,
   },
   pressed: {
     opacity: 0.7,
   },
   body: {
-    flex: 1,
-    justifyContent: 'flex-end',
+    flexGrow: 1,
     paddingHorizontal: space.gutter,
     paddingBottom: space.xxxl,
   },
-  // 제목 위 표식. 예전의 400pt 짜리 히어로가 아니라, 제목에 딸린 크기로 둔다.
-  glass: {
-    width: widthPercentage(64),
-    height: widthPercentage(64),
-    marginLeft: -space.xs,
-    marginBottom: space.xl,
-    tintColor: night.accent,
+  artwork: {
+    flexGrow: 1,
+    minHeight: 180,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: space.xl,
   },
+  glass: {tintColor: night.accent},
   title: {
     fontFamily: fonts.bold,
-    fontSize: fontPercentage(28),
-    lineHeight: fontPercentage(40),
+    fontSize: 28,
+    lineHeight: 40,
     color: night.text,
   },
   lead: {
     marginTop: space.md,
     fontFamily: fonts.regular,
-    fontSize: fontPercentage(15),
-    lineHeight: fontPercentage(24),
+    fontSize: 15,
+    lineHeight: 24,
     color: night.textDim,
   },
   footer: {
     paddingHorizontal: space.gutter,
   },
   cta: {
-    height: 52,
+    minHeight: 52,
+    paddingVertical: space.md,
+    paddingHorizontal: space.lg,
     borderRadius: round.sm,
     alignItems: 'center',
     justifyContent: 'center',
@@ -236,7 +252,7 @@ const styles = StyleSheet.create({
   },
   ctaText: {
     fontFamily: fonts.semibold,
-    fontSize: fontPercentage(16),
+    fontSize: 16,
     color: night.onAccent,
   },
 });

@@ -1,81 +1,157 @@
-import React, { useCallback, useRef, useState } from 'react';
-import { ActivityIndicator, BackHandler, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useFocusEffect } from '@react-navigation/native';
-import { StackScreenProps } from '@react-navigation/stack';
+import React, {
+  useCallback,
+  useState,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+} from 'react';
+import {
+  AccessibilityInfo,
+  ActivityIndicator,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  useWindowDimensions,
+} from 'react-native';
+import {SafeAreaView} from 'react-native-safe-area-context';
+import {StackScreenProps} from '@react-navigation/stack';
 import WebView from 'react-native-webview';
-import { RECOMMENDATION_WEB_URL } from '@env';
-import type { RootStackParamList } from '../Navigation/Navigation';
+import {night, fonts, round} from '../lib/theme';
+import {recommendationWebTheme} from './recommendationWebTheme';
+import type {RootStackParamList} from '../Navigation/Navigation';
 
 type Props = StackScreenProps<RootStackParamList, 'RecommendationScreen'>;
-const webUrl = RECOMMENDATION_WEB_URL || (__DEV__
-  ? Platform.select({ android: 'http://10.0.2.2:5173', default: 'http://localhost:5173' })
-  : '');
+const webUrl = 'https://onz-homepage.vercel.app/recommend/';
 
-export default function RecommendationWebScreen({ navigation }: Props) {
-  const webview = useRef<WebView>(null);
-  const [failed, setFailed] = useState(false);
+export default function RecommendationWebScreen({navigation}: Props) {
+  const webView = useRef<WebView>(null);
+  const {fontScale} = useWindowDimensions();
   const [ready, setReady] = useState(false);
+  const [reducedMotion, setReducedMotion] = useState(true);
+  useEffect(() => {
+    let active = true;
+    AccessibilityInfo.isReduceMotionEnabled().then(value => {
+      if (active) {
+        setReducedMotion(value);
+      }
+    });
+    const subscription = AccessibilityInfo.addEventListener(
+      'reduceMotionChanged',
+      setReducedMotion,
+    );
+    return () => {
+      active = false;
+      subscription.remove();
+    };
+  }, []);
+  const themeScript = recommendationWebTheme(fontScale, reducedMotion);
+  useEffect(() => {
+    webView.current?.injectJavaScript(themeScript);
+  }, [themeScript]);
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerStyle: {backgroundColor: night.ink},
+      headerTintColor: night.text,
+      headerTitleStyle: {fontFamily: fonts.semibold, fontSize: 17},
+      headerShadowVisible: false,
+      headerBackTitle: '뒤로',
+      title: '맞춤 추천',
+    });
+  }, [navigation]);
+  const [failed, setFailed] = useState(false);
   const [revision, setRevision] = useState(0);
   const close = useCallback(() => navigation.goBack(), [navigation]);
 
-  useFocusEffect(useCallback(() => {
-    const listener = BackHandler.addEventListener('hardwareBackPress', () => {
-      if (!ready || failed || !webUrl) {
-        close();
-      } else {
-        webview.current?.injectJavaScript("window.dispatchEvent(new Event('onz:native-back')); true;");
-      }
-      return true;
-    });
-    return () => listener.remove();
-  }, [close, failed, ready]));
-
   return (
-    <SafeAreaView style={styles.container}>
-      {failed || !webUrl ? (
+    <SafeAreaView style={styles.container} edges={['bottom', 'left', 'right']}>
+      <StatusBar barStyle="light-content" backgroundColor={night.ink} />
+      {failed ? (
         <View style={styles.message}>
           <Text style={styles.title}>추천 화면에 연결할 수 없어요</Text>
           <Text style={styles.description}>잠시 후 다시 시도해주세요.</Text>
-          {!!webUrl && <TouchableOpacity accessibilityRole="button" style={styles.button} onPress={() => {
-            setFailed(false); setReady(false); setRevision(value => value + 1);
-          }}><Text style={styles.buttonText}>다시 시도</Text></TouchableOpacity>}
-          <TouchableOpacity accessibilityRole="button" onPress={close}><Text style={styles.description}>돌아가기</Text></TouchableOpacity>
+          <TouchableOpacity
+            accessibilityRole="button"
+            style={styles.button}
+            onPress={() => {
+              setReady(false);
+              setFailed(false);
+              setRevision(value => value + 1);
+            }}>
+            <Text style={styles.buttonText}>다시 시도</Text>
+          </TouchableOpacity>
+          <TouchableOpacity accessibilityRole="button" onPress={close}>
+            <Text style={styles.description}>돌아가기</Text>
+          </TouchableOpacity>
         </View>
       ) : (
         <WebView
+          ref={webView}
           key={revision}
-          ref={webview}
-          source={{ uri: webUrl }}
+          injectedJavaScript={themeScript}
+          textZoom={100}
+          source={{uri: webUrl}}
           style={styles.container}
-          originWhitelist={[webUrl.replace(/\/$/, '')]}
-          onShouldStartLoadWithRequest={request => request.url === 'about:blank' || request.url === webUrl || request.url.startsWith(webUrl.replace(/\/$/, '') + '/')}
+          originWhitelist={['https://onz-homepage.vercel.app']}
+          onShouldStartLoadWithRequest={request =>
+            request.url === 'about:blank' ||
+            request.url === webUrl ||
+            request.url.startsWith(webUrl.replace(/\/$/, '') + '/')
+          }
           javaScriptEnabled
           domStorageEnabled
           setSupportMultipleWindows={false}
-          startInLoadingState
-          renderLoading={() => <View style={styles.loading}><ActivityIndicator color="#798b55" accessibilityLabel="추천 화면 불러오는 중" /></View>}
-          onLoadStart={() => setReady(false)}
-          onLoadEnd={() => setReady(true)}
           onError={() => setFailed(true)}
           onHttpError={() => setFailed(true)}
           onContentProcessDidTerminate={() => setFailed(true)}
           onRenderProcessGone={() => setFailed(true)}
           onMessage={event => {
-            if (event.nativeEvent.data === 'onz:close') { close(); }
+            if (event.nativeEvent.data === 'onz:ready') {
+              setReady(true);
+            }
+            if (event.nativeEvent.data === 'onz:close') {
+              close();
+            }
           }}
         />
+      )}
+      {!failed && !ready && (
+        <View style={styles.loading}>
+          <ActivityIndicator
+            color={night.accent}
+            accessibilityLabel="추천 화면 불러오는 중"
+          />
+          <Text style={styles.description}>취향을 고를 준비를 하고 있어요</Text>
+        </View>
       )}
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f7f6f2' },
-  loading: { ...StyleSheet.absoluteFillObject, alignItems: 'center', justifyContent: 'center', backgroundColor: '#f7f6f2' },
-  message: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 24 },
-  title: { color: '#25291f', fontSize: 20 },
-  description: { color: '#727a67', marginVertical: 20 },
-  button: { backgroundColor: '#34452b', paddingHorizontal: 28, paddingVertical: 14, borderRadius: 8 },
-  buttonText: { color: '#fff' },
+  container: {flex: 1, backgroundColor: night.ink},
+  loading: {
+    ...StyleSheet.absoluteFillObject,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: night.ink,
+  },
+  message: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 24,
+  },
+  title: {color: night.text, fontSize: 20, fontFamily: fonts.bold},
+  description: {color: night.textDim, marginVertical: 20},
+  button: {
+    backgroundColor: night.accent,
+    paddingHorizontal: 28,
+    paddingVertical: 14,
+    borderRadius: round.sm,
+    minHeight: 52,
+    justifyContent: 'center',
+  },
+  buttonText: {color: night.onAccent, fontFamily: fonts.semibold},
 });

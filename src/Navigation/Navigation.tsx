@@ -126,7 +126,7 @@ const Navigation: React.FC<NavigationProps> = memo(({ isOnboarded, setIsOnboarde
             <Stack.Screen name="CocktailDetailScreen" component={CocktailDetailScreen} />
             <Stack.Screen name="SearchScreen" component={SearchScreen} />
             <Stack.Screen name="SearchResultScreen" component={SearchResultScreen} />
-            <Stack.Screen name="RecommendationScreen" component={RecommendationWebScreen} />
+            <Stack.Screen name="RecommendationScreen" component={RecommendationWebScreen} options={{ headerShown: true, title: '맞춤 추천' }} />
             <Stack.Screen name="RecommendationIntro" component={RecommendationIntroScreen} />
             <Stack.Screen name="BarDetailScreen" component={require('../Screens/Bar/BarDetailScreen').default} />
             <Stack.Screen name="VisitedBarsScreen" component={require('../Screens/Bar/VisitedBarsScreen').default} />
