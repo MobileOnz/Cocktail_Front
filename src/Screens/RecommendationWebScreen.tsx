@@ -8,6 +8,8 @@ import React, {
 import {
   AccessibilityInfo,
   ActivityIndicator,
+  BackHandler,
+  Platform,
   StatusBar,
   StyleSheet,
   Text,
@@ -15,6 +17,7 @@ import {
   View,
   useWindowDimensions,
 } from 'react-native';
+import {HeaderBackButton} from '@react-navigation/elements';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {StackScreenProps} from '@react-navigation/stack';
 import WebView from 'react-native-webview';
@@ -50,6 +53,47 @@ export default function RecommendationWebScreen({navigation}: Props) {
   useEffect(() => {
     webView.current?.injectJavaScript(themeScript);
   }, [themeScript]);
+  const [failed, setFailed] = useState(false);
+  const [revision, setRevision] = useState(0);
+  const close = useCallback(() => navigation.goBack(), [navigation]);
+
+  /**
+   * 뒤로가기는 웹뷰를 거쳐야 한다.
+   *
+   * 설문은 웹앱 안에서 6단계로 진행되는데, 그 단계를 아는 건 웹앱뿐이다.
+   * 네이티브가 바로 화면을 닫아버리면 "한 문항 앞으로" 가 불가능해지고,
+   * 1번을 잘못 고른 사람은 6문항을 처음부터 다시 해야 한다.
+   *
+   * 그래서 뒤로가기 신호를 웹앱에 넘기고(onz:native-back), 더 돌아갈 곳이
+   * 없을 때 웹앱이 돌려주는 onz:close 를 받아 그때 화면을 닫는다.
+   * 웹앱은 이 이벤트를 이미 듣고 있다 — 예전 구현에 있던 이 다리가
+   * 웹뷰 리라이트 때 사라지면서 계약의 한쪽 끝만 남아 있었다.
+   *
+   * 아직 로드되지 않았거나 실패한 상태에서는 웹앱이 답할 수 없으므로 바로 닫는다.
+   * 안 그러면 로딩 중에 갇힌다.
+   */
+  const requestBack = useCallback(() => {
+    if (!ready || failed) {
+      close();
+      return;
+    }
+    webView.current?.injectJavaScript(
+      "window.dispatchEvent(new Event('onz:native-back')); true;",
+    );
+  }, [close, failed, ready]);
+
+  // 안드로이드 하드웨어 백. 리라이트 때 빠져서 설문 도중에 눌러도 화면이 통째로 닫혔다.
+  useEffect(() => {
+    if (Platform.OS !== 'android') {
+      return;
+    }
+    const sub = BackHandler.addEventListener('hardwareBackPress', () => {
+      requestBack();
+      return true;
+    });
+    return () => sub.remove();
+  }, [requestBack]);
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerStyle: {backgroundColor: night.ink},
@@ -58,11 +102,18 @@ export default function RecommendationWebScreen({navigation}: Props) {
       headerShadowVisible: false,
       headerBackTitle: '뒤로',
       title: '맞춤 추천',
+      // 기본 뒤로가기는 화면을 바로 pop 한다. iOS 에는 하드웨어 백이 없어
+      // 이 버튼이 유일한 길이므로, 여기서도 웹앱을 거치게 바꾼다.
+      headerLeft: props => (
+        <HeaderBackButton
+          {...props}
+          label="뒤로"
+          tintColor={night.text}
+          onPress={requestBack}
+        />
+      ),
     });
-  }, [navigation]);
-  const [failed, setFailed] = useState(false);
-  const [revision, setRevision] = useState(0);
-  const close = useCallback(() => navigation.goBack(), [navigation]);
+  }, [navigation, requestBack]);
 
   return (
     <SafeAreaView style={styles.container} edges={['bottom', 'left', 'right']}>
