@@ -323,7 +323,7 @@ const HomeFeedScreen = () => {
     <Pressable
       style={({pressed}) => [styles.recommendCta, pressed && styles.recommendCtaPressed]}
       onPress={() => navigation.navigate('RecommendationIntro')}
-      android_ripple={{color: 'rgba(0,0,0,0.12)'}}
+      android_ripple={{color: 'rgba(233,184,114,0.14)'}}
       accessibilityRole="button"
       accessibilityLabel="맞춤 칵테일 추천받기"
       accessibilityHint="질문 몇 개에 답하면 취향에 가까운 칵테일을 골라줍니다">
@@ -417,8 +417,6 @@ const HomeFeedScreen = () => {
 
         {renderHero()}
 
-        {renderRecommendButton()}
-
         {latestNews.length > 0 && (
           <View>
             <View style={styles.sectionHeader}>
@@ -467,6 +465,10 @@ const HomeFeedScreen = () => {
             </ScrollView>
           </View>
         )}
+
+        {/* 사진 바로 아래에 색면 버튼을 두면 '오늘의 추천' 사진과 시선을 다툰다.
+            한 섹션 내려 사진과 떼어 놓는다. */}
+        {renderRecommendButton()}
 
         {cocktails.length > 0 && (
           <View>
@@ -645,6 +647,13 @@ const styles = StyleSheet.create({
     lineHeight: fontPercentage(20),
   },
 
+  // 액센트로 면을 채우면 사진보다 세져 홈에서 혼자 튄다. 이 화면의 주인공은 사진이다.
+  // 채움은 유지하되 표면색으로 낮추고, 액센트는 글자와 화살표에만 남긴다.
+  //
+  // surface 만으로는 배경과 대비가 1.08:1 이라 면이 보이지 않아 그냥 글자처럼 읽힌다.
+  // 눌리는 것임을 알리려면 윤곽이 필요하다 — 레시피북·매거진의 필터 칩과 같은 말
+  // (한 단 밝은 면 + 얇은 선)을 쓴다. 카드에 테두리를 두르지 않는 것과 어긋나지 않는다.
+  // 카드는 읽는 것이고 이건 누르는 것이다.
   recommendCta: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -655,7 +664,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: space.lg,
     paddingVertical: space.md,
     borderRadius: round.sm,
-    backgroundColor: night.accent,
+    backgroundColor: night.surfaceHigh,
+    borderWidth: 1,
+    borderColor: night.line,
     overflow: 'hidden',
   },
   recommendCtaPressed: {opacity: 0.8},
@@ -664,12 +675,12 @@ const styles = StyleSheet.create({
     marginRight: space.md,
     fontFamily: fonts.semibold,
     fontSize: fontPercentage(fontSize.base),
-    color: night.onAccent,
+    color: night.accent,
   },
   recommendCtaArrow: {
     fontFamily: fonts.regular,
     fontSize: fontPercentage(fontSize.xl),
-    color: night.onAccent,
+    color: night.accent,
   },
 
   sectionHeader: {
