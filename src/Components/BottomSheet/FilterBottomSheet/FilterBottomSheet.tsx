@@ -30,6 +30,12 @@ const tasteOptions = [
   '기타 & 특별한 맛(Etc. & Unique Flavors)',
 ];
 
+// 서버는 등록된 별칭이 없으면 라벨 그대로 base 를 부분일치시킨다
+// (BaseMappingUtil.aliasesOf). 그래서 여기 라벨은 DB 의 base 표기와 같아야 한다.
+//
+// '무알코올' 은 신규 425종과 함께 들어온 베이스다. 서버의 '기타'(ETC_BASES) 에
+// 묻어두면 20종이 소주·사케·맥주와 섞여 찾기 어려워진다 — 술을 못/안 마시는
+// 사람에게는 이게 목록 전체이므로 독립 라벨로 둔다.
 const baseOptions = [
   '진',
   '위스키',
@@ -39,6 +45,7 @@ const baseOptions = [
   '브랜디',
   '리큐르',
   '와인',
+  '무알코올',
   '기타',
 ];
 export type FilterBottomSheetRef = {
