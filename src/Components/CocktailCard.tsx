@@ -9,7 +9,8 @@ import { fonts, night, round, space } from '../lib/theme';
 type Props = {
   id: number;
   name: string;
-  image: string;
+  /** 사진이 없는 칵테일이 있다. RemoteImage 가 '이미지 준비중' 자리를 그린다. */
+  image: string | null;
   type: string;
   bookmarked?: boolean;
   /** 그리드에 놓일 때 부모가 계산한 칼럼 폭. 없으면 가로 캐러셀용 기본 폭. */

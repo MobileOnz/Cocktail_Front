@@ -200,7 +200,7 @@ const Home = () => {
 
             <View style={styles.mainImageClip}>
               <FastImage
-                source={{ uri: vm.randomCocktail?.image, priority: FastImage.priority.high }}
+                source={{ uri: vm.randomCocktail?.image ?? undefined, priority: FastImage.priority.high }}
                 style={styles.mainImage}
                 resizeMode={FastImage.resizeMode.cover}
               />
@@ -360,7 +360,7 @@ const Home = () => {
                   <View key={item.id} style={styles.newCocktailRow}>
 
                     <FastImage
-                      source={{ uri: item.image, priority: FastImage.priority.normal }}
+                      source={{ uri: item.image ?? undefined, priority: FastImage.priority.normal }}
                       style={styles.newCocktailImage}
                       resizeMode={FastImage.resizeMode.cover}
                     />

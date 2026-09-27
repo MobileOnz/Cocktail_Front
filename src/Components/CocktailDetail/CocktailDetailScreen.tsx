@@ -19,7 +19,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import instance from '../../tokenRequest/axios_interceptor';
 import { unwrap } from '../../lib/api';
 import type { CocktailStep as CocktailStepDto } from '../../types/api';
-import { colors, fonts } from '../../lib/theme';
+import { colors, fonts, night } from '../../lib/theme';
 type Props = NativeStackScreenProps<RootStackParamList, 'CocktailDetailScreen'>;
 
 /**
@@ -168,13 +168,17 @@ export function CocktailDetailScreen({ route }: Props) {
   const [heroErrored, setHeroErrored] = useState(false);
   const { showToast } = useToast();
 
+  const heroUri = vm.detail
+    ? (heroErrored
+        ? vm.detail.imageUrl
+        : (vm.detail.imageUrlDetail ?? vm.detail.imageUrl))
+    : null;
+
   const handleShare = async () => {
     if (!vm.detail) { return; }
     const url = `https://onz-cocktail.kr/cocktail/${vm.detail.id}`;
     const message = `${vm.detail.korName} 칵테일을 확인해보세요!\n\n${url}`;
-    const imgUri = heroErrored
-      ? vm.detail.imageUrl
-      : (vm.detail.imageUrlDetail ?? vm.detail.imageUrl);
+    const imgUri = heroUri;
 
     // 칵테일 이미지를 로컬 파일로 받아 함께 공유한다.
     // (RN Android 는 원격 URL·base64 첨부가 불안정해 로컬 파일 경로로 넘긴다.)
@@ -187,6 +191,12 @@ export function CocktailDetailScreen({ route }: Props) {
       const copied = /copy|pasteboard|clipboard/i.test(target);
       showToast(copied ? '링크가 복사되었습니다.' : '공유했습니다.');
     };
+
+    // 사진이 없으면 이미지 첨부를 건너뛰고 링크만 보낸다.
+    if (!imgUri) {
+      notify(await RNShare.open({title: vm.detail.korName, message, failOnCancel: false}));
+      return;
+    }
 
     try {
       const local = await ImageResizer.createResizedImage(imgUri, 1200, 1600, 'JPEG', 90);
@@ -284,15 +294,22 @@ export function CocktailDetailScreen({ route }: Props) {
       })}
     >
       <View style={styles.imageContainer}>
-        <Image
-          source={{
-            uri: heroErrored
-              ? vm.detail.imageUrl
-              : (vm.detail.imageUrlDetail ?? vm.detail.imageUrl),
-          }}
-          style={styles.image}
-          onError={() => setHeroErrored(true)}
-        />
+        {/* 사진이 없는 칵테일이 있다(배경이 어수선해 내렸고 대체본이 아직 없다).
+            uri 가 비면 Image 에 넘기지 않고 자리만 남긴다 — 넘기면 렌더가 깨진다. */}
+        {heroUri ? (
+          <Image
+            source={{uri: heroUri}}
+            style={styles.image}
+            onError={() => setHeroErrored(true)}
+          />
+        ) : (
+          // 사진이 없어도 같은 높이를 차지해야 한다. 안 그러면 히어로가 0 으로 접혀
+          // 이름·스펙과 뒤로가기 버튼이 상태바 위로 밀려 올라간다.
+          <View style={[styles.image, styles.imageFallback]}>
+            <Icon name="wine-outline" size={64} color={night.textFaint} />
+            <Text style={styles.imageFallbackText}>이미지 준비중</Text>
+          </View>
+        )}
 
         {/* 07안 — 사진 크기를 유지한 채 하단 그라데이션 위에 이름과 핵심 스펙을 얹는다.
             스크롤하기 전에 "무엇을 마시는지 / 얼마나 센지 / 어떤 잔에 만드는지"가 다 보인다.
@@ -733,6 +750,17 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     position: 'relative',
+  },
+  imageFallback: {
+    backgroundColor: night.surfaceHigh,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+  },
+  imageFallbackText: {
+    fontFamily: 'Pretendard-Medium',
+    fontSize: 14,
+    color: night.textFaint,
   },
 
   // 이미지

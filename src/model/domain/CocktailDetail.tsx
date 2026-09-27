@@ -10,9 +10,10 @@ export interface CocktailDetail {
     ingredients: string[];
     style: string;
     glassType: string;
-    glassImageUrl: string;
+    glassImageUrl: string | null;
     base: string;
-    imageUrl: string;
+    /** 사진이 없는 칵테일이 있다(대체본 미확보). 화면은 빈 자리를 그린다. */
+    imageUrl: string | null;
     flavors: string[];
     moods: string[];
     isBookmarked: boolean;
