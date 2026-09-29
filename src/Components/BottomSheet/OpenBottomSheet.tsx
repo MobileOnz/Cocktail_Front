@@ -13,7 +13,7 @@ import BottomSheet, {
   BottomSheetScrollView,
 } from '@gorhom/bottom-sheet';
 import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
-import {colors} from '../../lib/theme';
+import {night} from '../../lib/theme';
 import {TAB_BAR_GAP, TAB_BAR_HEIGHT} from '../../lib/layout';
 import {StyleSheet, TouchableOpacity, View} from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -76,7 +76,7 @@ const OpenBottomSheet = forwardRef<OpenBottomSheetHandle, OpenBottomSheetProps>(
             <SafeAreaView
               edges={['bottom']}
               style={{
-                backgroundColor: colors.bg,
+                backgroundColor: night.ink,
                 paddingBottom: tabBarClearance,
               }}>
               {footer}
@@ -101,13 +101,13 @@ const OpenBottomSheet = forwardRef<OpenBottomSheetHandle, OpenBottomSheetProps>(
         enableOverDrag={false}
         enableHandlePanningGesture={false}
         enableContentPanningGesture={false} // “시트 드래그” 막기
-        backgroundStyle={{backgroundColor: colors.bg}}
-        handleIndicatorStyle={{backgroundColor: colors.bg}}>
+        backgroundStyle={{backgroundColor: night.ink}}
+        handleIndicatorStyle={{backgroundColor: night.ink}}>
         <View style={styles.fixedHeader}>
           <TouchableOpacity
             onPress={() => bottomSheetRef.current?.close()}
             style={styles.closeButton}>
-            <MaterialIcons name="close" size={26} color="#000" />
+            <MaterialIcons name="close" size={26} color={night.text} />
           </TouchableOpacity>
         </View>
         <BottomSheetScrollView

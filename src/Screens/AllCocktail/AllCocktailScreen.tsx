@@ -257,7 +257,7 @@ const AllCocktailScreen = ({navigation, embedded = false}: Props) => {
               <MIcon
                 name="refresh"
                 size={20}
-                color="#444"
+                color={night.textDim}
                 style={styles.resetIcon}
               />
               <Text style={styles.resetText}>초기화</Text>

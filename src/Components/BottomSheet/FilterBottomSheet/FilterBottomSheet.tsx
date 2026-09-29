@@ -8,8 +8,7 @@ import {
 } from 'react-native';
 
 import { FilterState, useFilterBottomSheetViewModel } from './FilterBottomSheetViewModel';
-import { colors } from '../../../lib/theme';
-import { heightPercentage } from '../../../assets/styles/FigmaScreen';
+import { night } from '../../../lib/theme';
 
 
 const sortOptions = ['최신순', '인기순'] as const;
@@ -210,21 +209,13 @@ export const FilterBottomSheet = forwardRef<FilterBottomSheetRef, Props>(
 export default FilterBottomSheet;
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingHorizontal: 20,
-    paddingTop: 16,
-    paddingBottom: 8,
-  },
   section: {
     marginBottom: 20,
   },
   sectionTitle: {
     fontFamily: 'Pretendard-Regular',
     fontSize: 15,
-    color: '#1B1B1B',
+    color: night.text,
     marginBottom: 10,
   },
   radioGroup: {
@@ -240,24 +231,24 @@ const styles = StyleSheet.create({
     height: 18,
     borderRadius: 9,
     borderWidth: 1.5,
-    borderColor: '#C8C8C8',
+    borderColor: night.textFaint,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 8,
   },
   radioOuterSelected: {
-    borderColor: '#111111',
+    borderColor: night.accent,
   },
   radioInner: {
     width: 10,
     height: 10,
     borderRadius: 5,
-    backgroundColor: '#111111',
+    backgroundColor: night.accent,
   },
   radioLabel: {
     fontFamily: 'Pretendard-Medium',
     fontSize: 14,
-    color: '#1B1B1B',
+    color: night.text,
   },
   tagGroup: {
     flexDirection: 'row',
@@ -269,59 +260,19 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     borderRadius: 999,
     borderWidth: 1,
-    borderColor: '#E0E0E0',
-    backgroundColor: colors.bg,
+    borderColor: night.line,
+    backgroundColor: night.surface,
   },
   tagSelected: {
-    backgroundColor: '#111111',
-    borderColor: '#111111',
+    backgroundColor: night.accent,
+    borderColor: night.accent,
   },
   tagText: {
     fontFamily: 'Pretendard-Medium',
     fontSize: 13,
-    color: '#333333',
+    color: night.textDim,
   },
   tagTextSelected: {
-    color: '#FFFFFF',
-  },
-  footer: {
-    paddingTop: 12,
-    backgroundColor: colors.bg,
-    flexDirection: 'row',
-    columnGap: 12,
-    borderTopWidth: 1,
-    borderTopColor: '#EDEDED',
-    zIndex: 10,
-    elevation: 10,
-  },
-  resetButton: {
-    flex: 1,
-    height: heightPercentage(50),
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#D0D0D0',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.bg,
-  },
-  applyButton: {
-    flex: 1,
-    height: heightPercentage(50),
-    borderRadius: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#111111',
-  },
-  resetText: {
-    fontFamily: 'Pretendard-Medium',
-    fontSize: 14,
-    color: '#444444',
-
-  },
-  applyText: {
-    fontFamily: 'Pretendard-Medium',
-    fontSize: 14,
-    color: '#FFFFFF',
-
+    color: night.onAccent,
   },
 });
