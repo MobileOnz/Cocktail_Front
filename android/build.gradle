@@ -44,6 +44,12 @@ allprojects {
 }
 
 subprojects {
+    // Play 16KB 페이지 요구: NDK 27 은 기본 4KB 정렬이라, 소스에서 빌드하는 네이티브 라이브러리
+    // (react-native-mmkv, react-native-vision-camera 등)에 16KB 정렬을 켠다. NDK 28+ 로 올리면 기본값이라 지워도 된다.
+    plugins.withId('com.android.library') {
+        android.defaultConfig.externalNativeBuild.cmake.arguments "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON"
+    }
+
     afterEvaluate { project ->
         if (project.hasProperty('android')) {
             def current = project.android.compileSdkVersion
