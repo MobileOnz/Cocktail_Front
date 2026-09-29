@@ -82,10 +82,21 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Configure NDK (use pre-installed 28.2.13676358)
+      # 28.2 로 고정해 뒀다가 build.gradle 이 27 로 돌아가면서 [CXX1104] 로 깨졌다.
+      # cd-qa 와 같이 build.gradle 을 단일 출처로 삼고, 러너에 없는 버전이면 설치한다.
+      - name: Configure NDK (build.gradle 의 ndkVersion 을 따른다)
         run: |
-          printf 'sdk.dir=%s\nndk.dir=%s/ndk/28.2.13676358\n' \
-            "${ANDROID_HOME}" "${ANDROID_HOME}" > android/local.properties
+          NDK_VERSION=$(grep -o 'ndkVersion = "[^"]*"' android/build.gradle | head -1 | cut -d'"' -f2)
+          if [ -z "$NDK_VERSION" ]; then
+            echo "build.gradle 에서 ndkVersion 을 찾지 못했다." >&2
+            exit 1
+          fi
+          echo "ndkVersion=$NDK_VERSION"
+          if [ ! -d "${ANDROID_HOME}/ndk/${NDK_VERSION}" ]; then
+            yes | "${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager" --install "ndk;${NDK_VERSION}"
+          fi
+          printf 'sdk.dir=%s\nndk.dir=%s/ndk/%s\n' \
+            "${ANDROID_HOME}" "${ANDROID_HOME}" "${NDK_VERSION}" > android/local.properties
 
       - name: Decode keystore
         run: |
