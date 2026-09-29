@@ -339,7 +339,7 @@ const HomeFeedScreen = () => {
         <StatusBar barStyle="light-content" backgroundColor={night.ink} />
         <View style={styles.appbar}>
           <Image
-            source={require('../../assets/drawable/onz_logo.png')}
+            source={require('../../../android/app/src/main/res/drawable/launch_screen.png')}
             style={styles.brand}
             resizeMode="contain"
             accessibilityRole="image"
@@ -360,7 +360,7 @@ const HomeFeedScreen = () => {
         <StatusBar barStyle="light-content" backgroundColor={night.ink} />
         <View style={styles.appbar}>
           <Image
-            source={require('../../assets/drawable/onz_logo.png')}
+            source={require('../../../android/app/src/main/res/drawable/launch_screen.png')}
             style={styles.brand}
             resizeMode="contain"
             accessibilityRole="image"
@@ -392,7 +392,7 @@ const HomeFeedScreen = () => {
         }>
         <View style={styles.appbar}>
           <Image
-            source={require('../../assets/drawable/onz_logo.png')}
+            source={require('../../../android/app/src/main/res/drawable/launch_screen.png')}
             style={styles.brand}
             resizeMode="contain"
             accessibilityRole="image"
@@ -559,13 +559,10 @@ const styles = StyleSheet.create({
     paddingTop: space.sm,
     paddingBottom: space.md,
   },
-  // 텍스트 'onz' 대신 브랜드 워드마크(240×68, 비율 3.53:1)를 쓴다.
-  // 높이를 기존 텍스트와 비슷하게 잡고 폭은 비율로 따라간다.
-  // 로고 PNG 는 브랜드 자주색(#21103C)이 구워져 있어 자주색 배경에서 사라진다.
-  // 알파 채널이 있으므로 tint 로 밝게 칠해 쓴다.
+  // 스플래시 워드마크(202×78)를 재사용하고 다크 배경에 맞춰 밝게 표시한다.
   brand: {
     height: heightPercentage(26),
-    width: heightPercentage(26) * (240 / 68),
+    width: heightPercentage(26) * (202 / 78),
     tintColor: night.text,
   },
   appbarActions: {
