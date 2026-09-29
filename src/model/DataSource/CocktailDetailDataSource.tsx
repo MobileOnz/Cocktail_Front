@@ -37,12 +37,14 @@ export class CocktailDetailDataSource {
     }
     async fetchCocktailReaction(cocktailId: string) {
         try {
+
             const res = await instance.get(`/api/v2/cocktails/${cocktailId}/reactions`);
             return res.data?.myReaction ?? null;
         } catch (error) {
-            console.error('칵테일 반응 API 에러:', error);
-            return null;
+            console.error('칵테일 추천 API 에러:', error);
+            throw error;
         }
+
     }
 
     async postCocktailReaction(cocktailId: string, reactionType: string) {

@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image} from 'react-native';
 import Modal from 'react-native-modal'; // ✅ react-native-modal 사용
 import { widthPercentage, heightPercentage, fontPercentage } from '../assets/styles/FigmaScreen';
+import { fonts } from '../lib/theme';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
@@ -84,7 +85,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: fontPercentage(18),
-    fontWeight: 'bold',
+    fontFamily: fonts.bold,
     paddingTop : heightPercentage(20),
     marginBottom: heightPercentage(20),
   },
@@ -96,10 +97,11 @@ const styles = StyleSheet.create({
   },
   subTitle: {
     fontSize: fontPercentage(18),
-    fontWeight: 'bold',
+    fontFamily: fonts.bold,
     marginBottom: heightPercentage(8),
   },
   description: {
+    fontFamily: fonts.regular,
     fontSize: fontPercentage(14),
     color: '#7D7A6F',
     marginBottom: heightPercentage(24),
@@ -122,7 +124,7 @@ const styles = StyleSheet.create({
   cancelText: {
     fontSize: fontPercentage(16),
     color: '#7D7A6F',
-    fontWeight: 'bold',
+    fontFamily: fonts.bold,
   },
   loginButton: {
     width: wp(45),
@@ -135,6 +137,6 @@ const styles = StyleSheet.create({
   loginText: {
     fontSize: fontPercentage(16),
     color: '#FFFFFF',
-    fontWeight: 'bold',
+    fontFamily: fonts.bold,
   },
 });

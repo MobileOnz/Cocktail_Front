@@ -1,5 +1,63 @@
 import { track } from '@amplitude/analytics-react-native';
 
+// Only this versioned, aggregate-event contract may cross the WebView boundary.
+const recommendationAnswers: Record<string, readonly string[]> = {
+    taste: ['SWEET', 'SOUR', 'BITTER', 'BALANCED', 'UNKNOWN'],
+    aroma: ['CITRUS', 'FRUIT', 'BERRY', 'HERBAL', 'COFFEE', 'CREAMY', 'DEEP', 'UNKNOWN'],
+    alcohol: ['BARELY', 'MILD', 'MEDIUM', 'STRONG', 'UNKNOWN'],
+    texture: ['FIZZY', 'LIGHT', 'BALANCED', 'RICH', 'UNKNOWN'],
+    occasion: ['PARTY', 'MEAL', 'DESSERT', 'SLOW', 'REFRESH', 'APERITIF', 'BRUNCH', 'UNKNOWN'],
+    adventure: ['1', '2', '3', '4', '5'],
+};
+const recommendationFields: Record<string, readonly string[]> = {
+    recommendation_started: [],
+    submit_answer_recommend: ['question_step', 'question_key', 'answer_code'],
+    recommendation_requested: ['request_id'],
+    recommendation_result_viewed: ['request_id', 'result_count'],
+    recommendation_detail_expanded: ['request_id', 'cocktail_id', 'position'],
+    recommendation_failed: ['request_id', 'failure_stage', 'error_code'],
+};
+
+export function trackRecommendationMessage(raw: string, seen: Set<string>) {
+    if (raw.length > 2048) { return; }
+    try {
+        const message = JSON.parse(raw);
+        if (message?.type !== 'onz:analytics' ||
+            !Object.prototype.hasOwnProperty.call(recommendationFields, message.event)) { return; }
+        const p = message.properties;
+        const uuid = (v: unknown) => typeof v === 'string' &&
+            /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(v);
+        if (!p || p.flow_version !== 'web_v1_six_questions' ||
+            !uuid(p.recommendation_session_id) || !uuid(p.event_id) || seen.has(p.event_id)) { return; }
+        const fields = recommendationFields[message.event];
+        const common = ['flow_version', 'recommendation_session_id', 'event_id'];
+        if (Object.keys(p).some(key => !common.includes(key) && !fields.includes(key))) { return; }
+        const positive = (v: unknown) => typeof v === 'number' && Number.isSafeInteger(v) && v > 0;
+        if (fields.includes('request_id') &&
+            !(message.event === 'recommendation_failed' && p.failure_stage === 'validation') &&
+            !uuid(p.request_id)) { return; }
+        if (message.event === 'submit_answer_recommend' &&
+            (!positive(p.question_step) || Object.keys(recommendationAnswers)[p.question_step - 1] !== p.question_key ||
+             !recommendationAnswers[p.question_key]?.includes(p.answer_code))) { return; }
+        if (message.event === 'recommendation_result_viewed' && !positive(p.result_count)) { return; }
+        if (message.event === 'recommendation_detail_expanded' &&
+            (!positive(p.position) || typeof p.cocktail_id !== 'string' || !/^[A-Za-z0-9_-]{1,80}$/.test(p.cocktail_id))) { return; }
+        if (message.event === 'recommendation_failed') {
+            const errors: Record<string, readonly string[]> = {
+                validation: ['invalid_answers'], request: ['network_error', 'timeout'],
+                response: ['http_error', 'invalid_response', 'empty_results'], render: ['render_error'],
+            };
+            if (!errors[p.failure_stage]?.includes(p.error_code) ||
+                (p.failure_stage === 'validation' && p.request_id !== undefined)) { return; }
+        }
+        seen.add(p.event_id);
+        // Retained for this WebView screen lifetime; repeated user actions have new IDs.
+        try {
+            void track(message.event, p, {insert_id: p.event_id}).promise.catch(() => {});
+        } catch { seen.delete(p.event_id); }
+    } catch { /* Malformed messages must not affect navigation. */ }
+}
+
 // 홈
 export function trackViewHomeOncePerSession(params: {
     userType: string;

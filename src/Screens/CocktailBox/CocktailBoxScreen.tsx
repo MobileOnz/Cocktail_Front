@@ -1,16 +1,27 @@
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View, FlatList } from 'react-native';
 import React from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ActivityIndicator } from 'react-native-paper';
+import { ActivityIndicator, Appbar } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import { fontPercentage, heightPercentage, widthPercentage } from '../../assets/styles/FigmaScreen';
 import useCocktailBoxViewModel from './CocktailBoxViewModel';
-import { FlatList } from 'react-native-gesture-handler';
+
 import CocktailCard from '../../Components/CocktailCard';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { colors, fonts, radius } from '../../lib/theme';
+import type { ArchiveTab } from '../../model/DataSource/BookMarksDataSource';
+/** 보관함 탭 — 저장 말고도 내가 남긴 기록으로 칵테일을 되찾을 수 있어야 한다. */
+const TABS: { key: ArchiveTab; label: string; emptyTitle: string; emptySub: string }[] = [
+    { key: 'BOOKMARK', label: '저장', emptyTitle: '아직 저장한 칵테일이 없네요.', emptySub: '마음에 드는 칵테일을 찾아볼까요?' },
+    { key: 'MADE', label: '만들어봤어요', emptyTitle: '아직 만들어본 칵테일이 없어요.', emptySub: '레시피를 보고 한 잔 만들어보세요.' },
+    { key: 'RECOMMEND', label: '좋아요', emptyTitle: '아직 좋아요한 칵테일이 없어요.', emptySub: '상세 화면에서 반응을 남길 수 있어요.' },
+    { key: 'HARD', label: '어려워요', emptyTitle: '어려워요로 표시한 칵테일이 없어요.', emptySub: '만들기 어려웠던 칵테일을 표시해두면 여기 모여요.' },
+];
+
 const CocktailBoxScreen = () => {
     const navigation = useNavigation<any>();
     const vm = useCocktailBoxViewModel();
+    const current = TABS.find(t => t.key === vm.tab) ?? TABS[0];
     return (
         <SafeAreaView style={styles.container}>
             <FlatList
@@ -23,12 +34,43 @@ const CocktailBoxScreen = () => {
 
                 // 상단 헤더를 리스트의 일부로 설정
                 ListHeaderComponent={
-                    <View style={styles.header}>
-                        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.headerSide}>
-                            <Icon name="chevron-back-sharp" size={24} color="#000" />
-                        </TouchableOpacity>
-                        <Text style={styles.headerTitle}>칵테일 보관함</Text>
-                        <View style={styles.headerSide} />
+                    <View>
+                        {/* SafeAreaView 가 이미 상단 inset 을 준다.
+                            Appbar 이 statusBarHeight 를 또 더하면 헤더가 통째로 내려앉는다. */}
+                        <Appbar.Header statusBarHeight={0} style={{ backgroundColor: '#FFFFFF' }}>
+                            <TouchableOpacity style={{ paddingLeft: 20 }}
+                                onPress={() => navigation.goBack()}>
+                                <Icon
+                                    name="chevron-back-sharp"
+                                    size={24}
+                                    color="#000"
+                                    style={{ marginRight: widthPercentage(8) }}
+                                />
+                            </TouchableOpacity>
+                            <View style={{ flex: 0.8, alignItems: 'center' }}>
+                                <Text style={{ fontSize: fontPercentage(16), fontFamily: 'Pretendard-SemiBold', color: '#1B1B1B' }}>칵테일 보관함</Text>
+                            </View>
+
+                        </Appbar.Header>
+
+                        <View style={styles.tabBar}>
+                            {TABS.map(t => {
+                                const on = vm.tab === t.key;
+                                return (
+                                    <TouchableOpacity
+                                        key={t.key}
+                                        style={[styles.tab, on && styles.tabOn]}
+                                        onPress={() => vm.setTab(t.key)}
+                                        accessibilityRole="button"
+                                        accessibilityState={{ selected: on }}
+                                    >
+                                        <Text style={[styles.tabText, on && styles.tabTextOn]} numberOfLines={1}>
+                                            {t.label}
+                                        </Text>
+                                    </TouchableOpacity>
+                                );
+                            })}
+                        </View>
                     </View>
                 }
 
@@ -39,8 +81,8 @@ const CocktailBoxScreen = () => {
                             <ActivityIndicator size="large" color="#111" />
                         ) : (
                             <View style={styles.textContainer}>
-                                <Text style={styles.emptyTitle}>아직 저장한 칵테일이 없네요.</Text>
-                                <Text style={styles.emptySub}>마음에 드는 칵테일을 찾아볼까요?</Text>
+                                <Text style={styles.emptyTitle}>{current.emptyTitle}</Text>
+                                <Text style={styles.emptySub}>{current.emptySub}</Text>
                             </View>
                         )}
                     </View>
@@ -53,7 +95,7 @@ const CocktailBoxScreen = () => {
                             name={item.name}
                             type={item.type}
                             image={item.image}
-                            bookmarked={true}
+                            bookmarked={vm.tab === 'BOOKMARK' ? true : item.isBookmarked}
                             onPress={() =>
                                 navigation.navigate('CocktailDetailScreen', { cocktailId: item.id })
                             }
@@ -69,30 +111,31 @@ const CocktailBoxScreen = () => {
 export default CocktailBoxScreen;
 
 const styles = StyleSheet.create({
+    tabBar: {
+        flexDirection: 'row',
+        columnGap: widthPercentage(6),
+        paddingHorizontal: widthPercentage(16),
+        paddingBottom: heightPercentage(12),
+    },
+    tab: {
+        flex: 1,
+        paddingVertical: heightPercentage(8),
+        borderRadius: radius.pill,
+        borderWidth: 1,
+        borderColor: colors.border,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    tabOn: { backgroundColor: colors.text, borderColor: colors.text },
+    tabText: { fontFamily: fonts.medium, fontSize: fontPercentage(12), color: colors.textSecondary },
+    tabTextOn: { color: colors.textInverse, fontFamily: fonts.semibold },
     container: {
         flex: 1,
-        backgroundColor: '#FFF',
-    },
-    header: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        height: heightPercentage(52),
-        paddingHorizontal: widthPercentage(16),
-        marginBottom: heightPercentage(8),
-    },
-    headerTitle: {
-        fontSize: fontPercentage(16),
-        fontFamily: 'Pretendard-SemiBold',
-        color: '#1B1B1B',
-    },
-    headerSide: {
-        width: widthPercentage(32),
-        alignItems: 'flex-start',
+        backgroundColor: '#FFFFFF',
     },
     // 헤더 관련 스타일 (SearchResultScreen 양식 참고)
     headerContainer: {
-        backgroundColor: '#FFF',
+        backgroundColor: '#FFFFFF',
         marginBottom: 10,
     },
     headerContent: {
@@ -110,9 +153,13 @@ const styles = StyleSheet.create({
     },
     text: {
         color: '#BDBDBD',
-        fontWeight: '600',
         fontFamily: 'Pretendard',
         fontSize: fontPercentage(16),
+    },
+    headerTitle: {
+        fontSize: fontPercentage(20),
+        fontFamily: fonts.bold,
+        color: '#1B1B1B',
     },
     headerDivider: {
         height: 1,
@@ -145,13 +192,13 @@ const styles = StyleSheet.create({
     },
     emptyTitle: {
         fontSize: fontPercentage(16),
-        fontWeight: '600',
+        fontFamily: fonts.medium,
         color: '#1B1B1B',
         marginBottom: 4,
     },
     emptySub: {
         fontSize: fontPercentage(14),
         color: '#BDBDBD',
-        fontWeight: '500',
+        fontFamily: fonts.medium,
     },
 });

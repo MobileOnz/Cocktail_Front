@@ -7,6 +7,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AuthError, AuthErrorType } from '../../../model/domain/AuthError';
 import { AuthRemoteDataSource } from '../../../model/DataSource/AuthRemoteDataSource';
 import { AppleDataSource } from '../../../model/DataSource/AppleDataSource';
+import { syncSentryUser } from '../../../tokenRequest/Token';
+
+/** 로그인 결과의 토큰을 저장하고 Sentry user 를 맞춘다. 4개 소셜 로그인이 공유한다. */
+const persistTokens = async (accessToken: string, refreshToken: string) => {
+  await AsyncStorage.setItem('accessToken', accessToken);
+  await AsyncStorage.setItem('refreshToken', refreshToken);
+  await syncSentryUser(accessToken);
+};
 
 const AuthViewModel = () => {
   const repository = useMemo(
@@ -28,8 +36,7 @@ const AuthViewModel = () => {
 
       if (result.type === 'token') {
         // 토큰 저장
-        await AsyncStorage.setItem('accessToken', result.accessToken);
-        await AsyncStorage.setItem('refreshToken', result.refreshToken);
+        await persistTokens(result.accessToken, result.refreshToken);
       }
 
       return result;
@@ -53,8 +60,7 @@ const AuthViewModel = () => {
       // 기존 회원
       if (result.type === 'token') {
         // 토큰 저장
-        await AsyncStorage.setItem('accessToken', result.accessToken);
-        await AsyncStorage.setItem('refreshToken', result.refreshToken);
+        await persistTokens(result.accessToken, result.refreshToken);
       }
       return result;
 
@@ -77,8 +83,7 @@ const AuthViewModel = () => {
       // 기존 회원
       if (result.type === 'token') {
         // 토큰 저장
-        await AsyncStorage.setItem('accessToken', result.accessToken);
-        await AsyncStorage.setItem('refreshToken', result.refreshToken);
+        await persistTokens(result.accessToken, result.refreshToken);
       }
       return result;
 
@@ -101,8 +106,7 @@ const AuthViewModel = () => {
       // 기존 회원
       if (result.type === 'token') {
         // 토큰 저장
-        await AsyncStorage.setItem('accessToken', result.accessToken);
-        await AsyncStorage.setItem('refreshToken', result.refreshToken);
+        await persistTokens(result.accessToken, result.refreshToken);
       }
       return result;
 

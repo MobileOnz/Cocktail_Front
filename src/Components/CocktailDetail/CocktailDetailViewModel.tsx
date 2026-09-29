@@ -4,8 +4,9 @@ import { ICocktailDetailRepository } from '../../model/repository/CocktailDetail
 import { di } from '../../DI/Container';
 import instance from '../../tokenRequest/axios_interceptor';
 import Toast from 'react-native-toast-message';
+import { navigateToLogin } from '../../lib/navigationRef';
 import { getToken } from '../../tokenRequest/Token';
-import { getPerformance } from '@react-native-firebase/perf';
+import perf from '@react-native-firebase/perf';
 import { trackViewCocktailDetail, stay10sPageCocktailDetail } from '../../analytics/eventProperty';
 
 type UseCocktailDetailDeps = {
@@ -15,7 +16,7 @@ type UseCocktailDetailDeps = {
 type ReactionType = 'RECOMMEND' | 'HARD';
 
 const fetchDetailData = async (id: number, repository: ICocktailDetailRepository) => {
-    const trace = await getPerformance().newTrace('DetailScreen_Load');
+    const trace = await perf().newTrace('DetailScreen_Load');
     await trace.start();
     try {
         const token = await getToken();
@@ -24,9 +25,14 @@ const fetchDetailData = async (id: number, repository: ICocktailDetailRepository
             token ? repository.fetchCocktailRecommendations(id.toString()) : Promise.resolve(null),
         ]);
 
-        let recommendedCocktails = [];
+        let recommendedCocktails: any[] = [];
         if (detailData?.style) {
-            recommendedCocktails = await repository.recommendCocktails(detailData.style);
+            const sameStyle = await repository.recommendCocktails(detailData.style);
+            // 같은 스타일로만 뽑다 보니 지금 보고 있는 칵테일이 그대로 첫 칸에 들어왔다.
+            // "이런 칵테일은 어떠세요?"에 자기 자신을 권할 수는 없다.
+            recommendedCocktails = (sameStyle ?? []).filter(
+                (c: any) => Number(c?.id) !== Number(id),
+            );
         }
 
         await trace.stop();
@@ -53,26 +59,40 @@ const useCocktailDetailViewModel = (id: number, deps?: UseCocktailDetailDeps) =>
         staleTime: 1000 * 60 * 60 * 24, // 24시간
     });
 
+    // 캐시가 정본. `?? myReaction` 으로 합치면 반응 '해제'가 옛 값으로 되살아난다.
+    const currentReaction: ReactionType | null = data ? (data.myReaction ?? null) : myReaction;
+
     const checkToken = async () => {
         const token = await getToken();
         if (!token) {
+            // 이 훅에는 navigation 이 없어서 전역 ref 로 이동한다.
             Toast.show({ type: 'error', text1: '로그인이 필요합니다.' });
+            navigateToLogin();
             return false;
         }
         return true;
     };
 
+    // 캐시와 로컬 상태를 함께 옮긴다.
+    // staleTime 이 24시간이라 캐시를 놔두면 화면을 다시 열 때 남긴 반응이 사라진다.
+    const applyReaction = (v: ReactionType | null) => {
+        setMyReaction(v);
+        queryClient.setQueryData(['cocktailDetail', id], (old: any) =>
+            old ? { ...old, myReaction: v } : old,
+        );
+    };
+
     const handleReaction = async (type: ReactionType) => {
         if (!(await checkToken())) { return; }
-        const prev = myReaction;
-        const next = myReaction === type ? null : type;
-        setMyReaction(next);
+        const prev = currentReaction;
+        const next = prev === type ? null : type;
+        applyReaction(next);
         try {
             const res = await repository.postCocktailRecommendation(id.toString(), type);
             console.log('[Reaction 성공] 추천수:', res.data.recommendCount);
             console.log('[Reaction 성공] hardCount:', res.data.hardCount);
         } catch (e) {
-            setMyReaction(prev);
+            applyReaction(prev);
             Toast.show({ type: 'error', text1: '반응을 등록하지 못했습니다.' });
         }
     };
@@ -116,7 +136,7 @@ const useCocktailDetailViewModel = (id: number, deps?: UseCocktailDetailDeps) =>
         queryClient.invalidateQueries({ queryKey: ['homeData'] });
 
         try {
-            await instance.post(`/api/v2/cocktails/${cocktailId}/bookmarks`);
+            await instance.post(`/api/v2/cocktails/${cocktailId}/bookmarks`, undefined, { authPrompt: true });
         } catch (error: any) {
             console.error('북마크 처리 중 에러:', error);
             queryClient.invalidateQueries({ queryKey: ['cocktailDetail', id] });
@@ -130,7 +150,7 @@ const useCocktailDetailViewModel = (id: number, deps?: UseCocktailDetailDeps) =>
         recommendedCocktails: data?.recommendedCocktails ?? [],
         bookmarked,
         handleReaction,
-        myReaction: data?.myReaction ?? myReaction,
+        myReaction: currentReaction,
         trackViewDetail,
         trackStay10s,
     };

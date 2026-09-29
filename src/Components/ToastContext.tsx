@@ -1,6 +1,7 @@
 // src/contexts/ToastContext.tsx
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 import {Text, StyleSheet, Animated } from 'react-native';
+import { fonts } from '../lib/theme';
 
 type ToastContextType = {
   showToast: (message: string) => void;
@@ -63,7 +64,8 @@ const styles = StyleSheet.create({
     zIndex: 999,
   },
   toastText: {
-    color: '#fff',
+    color: '#FFFFFF',
+    fontFamily: fonts.regular,
     fontSize: 14,
   },
 });

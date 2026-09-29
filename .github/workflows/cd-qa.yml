@@ -19,15 +19,25 @@ concurrency:
 #   ANDROID_KEY_PASSWORD            - 키 비밀번호
 #   FIREBASE_TOKEN                  - firebase login:ci 로 발급
 #   FIREBASE_ANDROID_APP_ID         - 1:513269758316:android:8f3b11afa11de306391b49
+#   FIREBASE_IOS_APP_ID             - 1:513269758316:ios:66fdd942934a6d90391b49
+#                                     (없으면 iOS Firebase 배포만 건너뛴다)
 #
 # [iOS]
 #   IOS_DIST_CERT_P12_BASE64        - 배포용 .p12 인증서 base64
 #   IOS_DIST_CERT_PASSWORD          - .p12 비밀번호
 #   IOS_APP_STORE_PROFILE_BASE64    - App Store 배포 프로비저닝 프로파일 base64
+#   IOS_ADHOC_PROFILE_BASE64        - Ad Hoc 프로비저닝 프로파일 base64 (선택)
+#                                     Firebase 배포용. 테스터 기기 UDID 가 등록된
+#                                     프로파일이어야 하고, 기기가 늘 때마다 재발급·갱신.
+#                                     base64 -i AdHoc.mobileprovision | pbcopy
 #   APPLE_TEAM_ID                   - Apple Developer Team ID
 #   APP_STORE_CONNECT_API_KEY_ID    - ASC API Key ID
 #   APP_STORE_CONNECT_API_ISSUER_ID - ASC API Issuer ID
 #   APP_STORE_CONNECT_API_KEY_CONTENT - .p8 파일 내용 (-----BEGIN PRIVATE KEY----- 포함)
+#
+# [공통]
+#   SENTRY_AUTH_TOKEN              - sourcemap/dSYM/ProGuard 매핑 업로드용
+#                                   (sentry.io → Settings → Auth Tokens, project:releases 스코프)
 # ────────────────────────────────────────────────
 
 jobs:
@@ -60,20 +70,49 @@ jobs:
 
       - name: Create .env file
         run: |
+          # QA 내부배포: 로컬 BE(신규 바/뉴스/채팅/매거진 포함)를 Tailscale Funnel 로 노출한 고정 URL.
+          # cloudflared quick 터널과 달리 재발급되지 않으므로 APK 를 다시 굽지 않아도 계속 유효하다.
+          # 프로덕션(onz-cocktail.kr)에는 아직 신규 기능이 없어 QA 만 이 주소를 바라본다.
           echo "API_BASE_URL=http://onz-cocktail.kr/onz" >> .env
           echo "GOOGLE_PLACES_API_KEY=AIzaSyDeWHr3QIavBa4RGYwZly8h0sNTfLmQ" >> .env
           echo "GOOGLE_CLIENT_ID=1058340377075-vt8u6qabph0f0van79eqhkt9j2f1jkbe.apps.googleusercontent.com" >> .env
           echo "GOOGLE_REDIRECT_URI=com.googleusercontent.apps.1058340377075-vt8u6qabph0f0van79eqhkt9j2f1jkbe:/oauth2redirect/google" >> .env
+          echo "SENTRY_ENV=qa" >> .env
+
+      - name: Create sentry.properties
+        run: |
+          # sentry.gradle / sentry-xcode 스크립트가 sourcemap·ProGuard 매핑을 업로드하려면 필요.
+          # 없으면 업로드가 조용히 스킵돼 프로덕션 스택이 난독화된 채로 온다.
+          for d in android ios; do
+            printf 'auth.token=%s\ndefaults.org=onz-yt\ndefaults.project=react-native\ndefaults.url=https://sentry.io/\n' \
+              "${{ secrets.SENTRY_AUTH_TOKEN }}" > "$d/sentry.properties"
+          done
 
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
 
-      - name: Configure NDK (use pre-installed 28.2.13676358)
+      # 러너 프리인스톨 버전(28.2)을 여기 박아 두고 있었는데, build.gradle 은
+      # vision-camera 링크 크래시 때문에 27.1 로 되돌아갔다(21974d71). 둘이 어긋나
+      # [CXX1104] 로 APK 빌드가 깨졌다 → build.gradle 을 단일 출처로 삼고, 러너에
+      # 없는 버전이면 설치한다.
+      - name: Configure NDK (build.gradle 의 ndkVersion 을 따른다)
         run: |
-          printf 'sdk.dir=%s\nndk.dir=%s/ndk/28.2.13676358\n' \
-            "${ANDROID_HOME}" "${ANDROID_HOME}" > android/local.properties
+          NDK_VERSION=$(grep -o 'ndkVersion = "[^"]*"' android/build.gradle | head -1 | cut -d'"' -f2)
+          if [ -z "$NDK_VERSION" ]; then
+            echo "build.gradle 에서 ndkVersion 을 찾지 못했다." >&2
+            exit 1
+          fi
+          echo "ndkVersion=$NDK_VERSION"
+          if [ ! -d "${ANDROID_HOME}/ndk/${NDK_VERSION}" ]; then
+            echo "러너에 없다 → sdkmanager 로 설치."
+            # 라이선스 미동의 시 프롬프트에서 멈춰 잡이 타임아웃된다. 러너 이미지가 바뀌어
+            # $ANDROID_HOME/licenses 가 비는 경우를 대비해 동의를 파이프로 넣는다.
+            yes | "${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager" --install "ndk;${NDK_VERSION}"
+          fi
+          printf 'sdk.dir=%s\nndk.dir=%s/ndk/%s\n' \
+            "${ANDROID_HOME}" "${ANDROID_HOME}" "${NDK_VERSION}" > android/local.properties
 
       - name: Decode keystore
         run: |
@@ -100,7 +139,7 @@ jobs:
   # iOS → TestFlight
   # ──────────────────────────────────────────────
   ios-testflight:
-    name: iOS → TestFlight
+    name: iOS → TestFlight (+ Firebase, 시크릿 있을 때만)
     runs-on: macos-latest
 
     env:
@@ -122,10 +161,21 @@ jobs:
 
       - name: Create .env file
         run: |
+          # Android 잡과 동일한 QA 주소를 바라본다. Tailscale Funnel 고정 주소라 자동 갱신이 필요 없다.
           echo "API_BASE_URL=http://onz-cocktail.kr/onz" >> .env
           echo "GOOGLE_PLACES_API_KEY=AIzaSyDeWHr3QIavBa4RGYwZly8h0sNTfLmQ" >> .env
           echo "GOOGLE_CLIENT_ID=1058340377075-vt8u6qabph0f0van79eqhkt9j2f1jkbe.apps.googleusercontent.com" >> .env
           echo "GOOGLE_REDIRECT_URI=com.googleusercontent.apps.1058340377075-vt8u6qabph0f0van79eqhkt9j2f1jkbe:/oauth2redirect/google" >> .env
+          echo "SENTRY_ENV=qa" >> .env
+
+      - name: Create sentry.properties
+        run: |
+          # sentry-xcode 스크립트가 sourcemap·dSYM 을 업로드하려면 필요.
+          # 없으면 업로드가 조용히 스킵돼 프로덕션 스택이 난독화된 채로 온다.
+          for d in android ios; do
+            printf 'auth.token=%s\ndefaults.org=onz-yt\ndefaults.project=react-native\ndefaults.url=https://sentry.io/\n' \
+              "${{ secrets.SENTRY_AUTH_TOKEN }}" > "$d/sentry.properties"
+          done
 
       - uses: ruby/setup-ruby@v1
         with:
@@ -257,6 +307,89 @@ jobs:
             --file $(find $RUNNER_TEMP/ipa -name "*.ipa" | head -1) \
             --apiKey "$API_KEY_ID" \
             --apiIssuer "$API_ISSUER_ID"
+
+      # ── Firebase App Distribution (선택) ────────────────────────────
+      # TestFlight 는 테스터를 App Store Connect 팀에 넣어야 해서, 팀 계정을
+      # 줄 수 없는 사람에게는 못 돌린다. 그런 테스터용으로 같은 아카이브를
+      # ad-hoc 으로 한 번 더 export 해서 Firebase 로 보낸다.
+      #
+      # ad-hoc 은 기기 UDID 가 프로파일에 박혀 있어야만 설치된다. 테스터가
+      # 늘면 Apple Developer 포털에서 UDID 를 추가하고 프로파일을 재발급해
+      # IOS_ADHOC_PROFILE_BASE64 를 갱신해야 한다. 그 품이 싫으면 TestFlight 다.
+      #
+      # 두 시크릿이 없으면 통째로 건너뛴다. TestFlight 경로는 영향받지 않는다.
+      - name: Check Firebase iOS secrets
+        id: fb_ios
+        env:
+          ADHOC_PROFILE: ${{ secrets.IOS_ADHOC_PROFILE_BASE64 }}
+          FIREBASE_IOS_APP_ID: ${{ secrets.FIREBASE_IOS_APP_ID }}
+        run: |
+          if [ -n "$ADHOC_PROFILE" ] && [ -n "$FIREBASE_IOS_APP_ID" ]; then
+            echo "ready=true" >> $GITHUB_OUTPUT
+          else
+            echo "ready=false" >> $GITHUB_OUTPUT
+            echo "::notice::IOS_ADHOC_PROFILE_BASE64 또는 FIREBASE_IOS_APP_ID 가 없어 Firebase iOS 배포를 건너뜁니다."
+          fi
+
+      - name: Import ad-hoc provisioning profile
+        if: steps.fb_ios.outputs.ready == 'true'
+        env:
+          PROFILE_BASE64: ${{ secrets.IOS_ADHOC_PROFILE_BASE64 }}
+        run: |
+          PP_PATH=$RUNNER_TEMP/adhoc.mobileprovision
+          echo "$PROFILE_BASE64" | python3 -c "import base64,sys; sys.stdout.buffer.write(base64.b64decode(sys.stdin.read().replace('\n','').replace('\r','').replace(' ','')))" > $PP_PATH
+
+          PP_UUID=$(/usr/libexec/PlistBuddy -c "Print :UUID" \
+            /dev/stdin <<< $(security cms -D -i $PP_PATH))
+
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles/$PP_UUID.mobileprovision
+
+          # 프로파일에 박힌 기기 수를 남겨둔다. "설치가 안 된다"는 문의는
+          # 십중팔구 그 기기 UDID 가 여기 없는 경우라, 로그만 보고 판별된다.
+          security cms -D -i $PP_PATH > $RUNNER_TEMP/adhoc.plist
+          DEVICE_COUNT=$(/usr/libexec/PlistBuddy -c "Print :ProvisionedDevices" $RUNNER_TEMP/adhoc.plist 2>/dev/null | grep -cE '^\s{4}[0-9a-fA-F]' || true)
+          echo "ad-hoc 프로파일 UUID=$PP_UUID / 등록된 기기 ${DEVICE_COUNT:-0}대"
+
+          echo "ADHOC_PROFILE_UUID=$PP_UUID" >> $GITHUB_ENV
+
+      # 아카이브를 다시 만들지 않는다. exportArchive 가 지정한 프로파일로 다시
+      # 서명하므로, TestFlight 용으로 만든 .xcarchive 를 그대로 재사용한다.
+      # (여기서 아카이브를 또 뜨면 잡 시간이 두 배가 된다)
+      - name: Export IPA (ad-hoc)
+        if: steps.fb_ios.outputs.ready == 'true'
+        run: |
+          cat > $RUNNER_TEMP/ExportOptionsAdHoc.plist << PLIST
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0"><dict>
+            <key>method</key><string>ad-hoc</string>
+            <key>teamID</key><string>${{ secrets.APPLE_TEAM_ID }}</string>
+            <key>signingStyle</key><string>manual</string>
+            <key>signingCertificate</key><string>iPhone Distribution</string>
+            <key>provisioningProfiles</key><dict>
+              <key>org.reactjs.native.example.Cocktail-Front</key><string>${ADHOC_PROFILE_UUID}</string>
+            </dict>
+          </dict></plist>
+          PLIST
+
+          xcodebuild -exportArchive \
+            -archivePath $RUNNER_TEMP/Cocktail_Front.xcarchive \
+            -exportOptionsPlist $RUNNER_TEMP/ExportOptionsAdHoc.plist \
+            -exportPath $RUNNER_TEMP/ipa-adhoc
+
+          echo "ADHOC_IPA=$(find $RUNNER_TEMP/ipa-adhoc -name '*.ipa' | head -1)" >> $GITHUB_ENV
+
+      - name: Upload to Firebase App Distribution
+        if: steps.fb_ios.outputs.ready == 'true'
+        uses: wzieba/Firebase-Distribution-Github-Action@v1
+        with:
+          appId: ${{ secrets.FIREBASE_IOS_APP_ID }}
+          token: ${{ secrets.FIREBASE_TOKEN }}
+          groups: testers
+          file: ${{ env.ADHOC_IPA }}
+          releaseNotes: |
+            Branch: ${{ github.ref_name }} Commit: ${{ github.sha }}
 
       - name: Cleanup keychain
         if: always()

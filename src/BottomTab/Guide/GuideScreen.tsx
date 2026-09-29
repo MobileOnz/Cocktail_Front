@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import {
+  Image,
   View,
   Text,
   TouchableOpacity,
   StyleSheet,
-  Image,
   ScrollView,
   FlatList,
   ActivityIndicator,
@@ -13,8 +13,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../../Navigation/Navigation';
 import { widthPercentage, heightPercentage, fontPercentage } from '../../assets/styles/FigmaScreen';
+import RemoteImage from '../../Components/common/RemoteImage';
 import GuideDetailViewModel from './GuideDetailViewModel';
 import { GuideSummary } from '../../model/domain/GuideSummary';
+import { LinearGradient } from 'react-native-linear-gradient';
+import {fonts, night, round, space, koreanBreak} from '../../lib/theme';
 
 type GuideSreenNavigationProp = StackNavigationProp<
   RootStackParamList,
@@ -22,12 +25,49 @@ type GuideSreenNavigationProp = StackNavigationProp<
 >;
 
 interface Props {
-  navigation: GuideSreenNavigationProp;
+  navigation: GuideSreenNavigationProp | any;
+  /** RecipeBookScreen 안에 세그먼트로 들어갈 때 자체 헤더/세이프에어리어를 생략한다. */
+  embedded?: boolean;
 }
 
-const GuideScreen: React.FC<Props> = ({ navigation }) => {
-  const [viewType, setviewType] = useState(0);   // 보기 방식
+const GuideScreen: React.FC<Props> = ({ navigation, embedded = false }) => {
+  // 보기 방식: 0=카드(큰 썸네일) / 1=그리드 / 2=줄글(텍스트 리스트)
+  const [viewType, setviewType] = useState(0);
+  // 정렬: part 순(기본) / 제목 가나다순
+  const [sortMode, setSortMode] = useState<'part' | 'name'>('part');
+  // null = 전체. 카테고리 목록은 서버 데이터에서 등장 순서대로 뽑는다 —
+  // 어드민에서 카테고리를 추가하면 앱 수정 없이 탭이 늘어난다.
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const { guideList, getGuideList, loading } = GuideDetailViewModel();
+
+  const categories = React.useMemo(() => {
+    const seen: string[] = [];
+    let hasUncategorized = false;
+    guideList.forEach(g => {
+      const c = g.category?.trim();
+      if (c) {
+        if (!seen.includes(c)) { seen.push(c); }
+      } else {
+        hasUncategorized = true;
+      }
+    });
+    return hasUncategorized && seen.length > 0 ? [...seen, '기타'] : seen;
+  }, [guideList]);
+
+  const filteredList = React.useMemo(() => {
+    if (selectedCategory === null) { return guideList; }
+    return guideList.filter(g => (g.category?.trim() || '기타') === selectedCategory);
+  }, [guideList, selectedCategory]);
+
+  const displayList = React.useMemo(() => {
+    const arr = [...filteredList];
+    if (sortMode === 'name') {
+      arr.sort((a, b) => a.title.localeCompare(b.title, 'ko'));
+    } else {
+      arr.sort((a, b) => a.part - b.part);
+    }
+    return arr;
+  }, [filteredList, sortMode]);
 
   useEffect(() => {
     getGuideList();
@@ -46,44 +86,98 @@ const GuideScreen: React.FC<Props> = ({ navigation }) => {
     );
   }
 
-  const handleViewType = () => {
-    setviewType(viewType === 0 ? 1 : 0);
-  };
+  const Root: React.ComponentType<any> = embedded ? View : SafeAreaView;
 
   return (
-    <SafeAreaView style={styles.rootContainer}>
-      {/* 상단 뷰 */}
-      <View style={styles.header}>
+    <Root style={styles.rootContainer}>
+      {/* 상단 뷰 — embedded 일 때는 제목을 부모(RecipeBookScreen)가 그리므로 보기전환 버튼만 남긴다 */}
+      <View style={[styles.header, embedded && styles.headerEmbedded]}>
 
-        <Text style={styles.headerTitle}>콘텐츠</Text>
-
-        <TouchableOpacity
-          onPress={handleViewType}
-        >
-          {viewType === 0 ? (
-          <Image
-            source={require('../../assets/drawable/viewMenu.png')}
-            style={styles.icon}
-          />
-        ) : (
-          <Image
-            source={require('../../assets/drawable/gridType.png')}
-            style={styles.icon}
-          />
+        {/* 스택으로 밀어 올린 화면인데 되돌아갈 컨트롤이 없었다.
+            iOS 는 가장자리 스와이프, 안드로이드는 하드웨어 백이 있지만 눈에 보이는 길이 없다. */}
+        {!embedded && (
+          <View style={styles.titleRow}>
+            {navigation?.canGoBack?.() && (
+              <TouchableOpacity
+                onPress={() => navigation.goBack()}
+                accessibilityRole="button"
+                accessibilityLabel="뒤로 가기"
+                hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+                style={styles.backBtn}
+              >
+                <Image
+                  source={require('../../assets/drawable/left-chevron.png')}
+                  style={styles.backIcon}
+                />
+              </TouchableOpacity>
+            )}
+            <Text style={styles.headerTitle}>칵테일 가이드</Text>
+          </View>
         )}
-        </TouchableOpacity>
+
+        <View style={styles.controls}>
+          <TouchableOpacity
+            onPress={() => setSortMode(m => (m === 'part' ? 'name' : 'part'))}
+            style={styles.sortBtn}
+            accessibilityRole="button"
+            accessibilityLabel={sortMode === 'part' ? '가나다순으로 정렬' : '기본순으로 정렬'}
+            hitSlop={{ top: 10, bottom: 10, left: 6, right: 6 }}
+          >
+            <Text style={styles.sortText}>{sortMode === 'part' ? '기본순' : '가나다순'} ↕</Text>
+          </TouchableOpacity>
+          <View style={styles.viewSeg}>
+            {([
+              { mode: 0, glyph: '▤', label: '카드 보기' },
+              { mode: 1, glyph: '▦', label: '그리드 보기' },
+              { mode: 2, glyph: '☰', label: '줄글 보기' },
+            ] as const).map(v => (
+              <TouchableOpacity
+                key={v.mode}
+                onPress={() => setviewType(v.mode)}
+                style={[styles.viewSegBtn, viewType === v.mode && styles.viewSegBtnActive]}
+                accessibilityRole="button"
+                accessibilityLabel={v.label}
+                accessibilityState={{ selected: viewType === v.mode }}
+              >
+                <Text style={[styles.viewSegGlyph, viewType === v.mode && styles.viewSegGlyphActive]}>{v.glyph}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
       </View>
+
+      {categories.length >= 2 && (
+        <View style={styles.categoryBar}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.categoryBarContent}>
+            {[null, ...categories].map(cat => (
+              <TouchableOpacity
+                key={cat ?? '전체'}
+                style={[styles.categoryChip, selectedCategory === cat && styles.categoryChipActive]}
+                onPress={() => setSelectedCategory(cat)}
+                accessibilityRole="button"
+                accessibilityState={{ selected: selectedCategory === cat }}
+              >
+                <Text style={[styles.categoryLabel, selectedCategory === cat && styles.categoryLabelActive]}>
+                  {cat ?? '전체'}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
+      )}
 
       <View style={styles.centralContainer}>
         {!loading && (
           viewType === 0 ? (
-            <ListView data={guideList} navigation={navigation} />
+            <ListView data={displayList} navigation={navigation} />
+          ) : viewType === 1 ? (
+            <GridView data={displayList} navigation={navigation} />
           ) : (
-            <GridView data={guideList} navigation={navigation} />
+            <CompactView data={displayList} navigation={navigation} />
           )
         )}
       </View>
-    </SafeAreaView>
+    </Root>
   );
 
 };
@@ -103,15 +197,32 @@ const ListView = ({ data, navigation } : {
           activeOpacity={0.95}
           key={item.part}
           style={styles.listItem}
-          onPress={() => navigation.navigate('GuideDetailScreen', {id: item.part, src: item.imageUrl, title: item.title})}
+          onPress={() => navigation.navigate('NewsDetailScreen', { newsId: item.part })}
         >
-          <Image source={{ uri: item.imageUrl}} style={styles.listImage} />
+          {/* 흰 글씨를 사진 위에 얹는 카드다. 사진이 늦게 오면 흰 배경 + 흰 글씨가 되어
+              화면이 통째로 백지로 보였다(QA I-09). 어두운 플레이스홀더가 그 사이를 메운다. */}
+          <RemoteImage
+            uri={item.imageUrl}
+            style={styles.listImage}
+            resizeMode="cover"
+            tone="dark"
+            glyphSize={44}
+            accessibilityLabel={item.title}
+          />
+
+          {/* 이미지가 밝아도 글씨가 읽히도록 하단 스크림을 깐다.
+              평평한 반투명 사각형은 사진 한가운데 가로 경계선을 남겼다 — 투명에서 검정으로 흘린다. */}
+          <LinearGradient
+            colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0.75)']}
+            style={styles.scrim}
+            pointerEvents="none"
+          />
 
           <View style={styles.bottomTextContainer}>
               <View style={styles.tagContainer}>
                 <Text style={styles.listBadge}>Part.{getPart(item.part)}</Text>
               </View>
-              <Text style={styles.listText}>{item.title}</Text>
+              <Text style={styles.listText} {...koreanBreak}>{item.title}</Text>
           </View>
         </TouchableOpacity>
       ))}
@@ -138,20 +249,63 @@ const GridView = ({ data, navigation }
           activeOpacity={0.9}
           key={item.part}
           style={styles.gridItem}
-          onPress={() => navigation.navigate('GuideDetailScreen', {id: item.part, src: item.imageUrl, title: item.title})}
+          onPress={() => navigation.navigate('NewsDetailScreen', { newsId: item.part })}
         >
-            <Image source={{ uri: item.imageUrl}} style={styles.gridImage} />
+            <RemoteImage
+              uri={item.imageUrl}
+              style={styles.gridImage}
+              resizeMode="cover"
+              tone="dark"
+              glyphSize={30}
+              accessibilityLabel={item.title}
+            />
+
+            <LinearGradient
+            colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0.75)']}
+            style={styles.scrimGrid}
+            pointerEvents="none"
+          />
 
             <View style={styles.bottomGrideTextContainer}>
                 <View style={styles.tagGridContainer}>
                   <Text style={styles.listGridBadge}>Part.{getPart(item.part)}</Text>
                 </View>
-                <Text style={styles.listGridText}>{item.title}</Text>
+                <Text style={styles.listGridText} {...koreanBreak}>{item.title}</Text>
             </View>
         </TouchableOpacity>
       )}
       keyExtractor={(item: GuideSummary) => item.part.toString()}
     />
+  );
+};
+
+const CompactView = ({ data, navigation } : {
+  data: GuideSummary[],
+  navigation: any
+}) => {
+  return (
+    <ScrollView
+      style={styles.listRoot}
+      contentContainerStyle={{ paddingBottom: heightPercentage(100) }}
+      showsVerticalScrollIndicator={false}
+    >
+      {data.map((item: GuideSummary) => (
+        <TouchableOpacity
+          key={item.part}
+          style={styles.compactRow}
+          onPress={() => navigation.navigate('NewsDetailScreen', { newsId: item.part })}
+          accessibilityRole="button"
+          accessibilityLabel={`가이드 ${item.title} 열기`}
+        >
+          <Text style={styles.compactBadge}>Part.{getPart(item.part)}</Text>
+          <View style={styles.compactBody}>
+            <Text style={styles.compactTitle} numberOfLines={1}>{item.title}</Text>
+            {item.category ? <Text style={styles.compactCategory}>{item.category}</Text> : null}
+          </View>
+          <Text style={styles.compactChevron}>›</Text>
+        </TouchableOpacity>
+      ))}
+    </ScrollView>
   );
 };
 
@@ -162,21 +316,39 @@ const getPart = (value: number) => {
 const styles = StyleSheet.create({
   rootContainer: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: night.ink,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingTop: heightPercentage(14),
-    paddingLeft: widthPercentage(16),
-    paddingRight: widthPercentage(16),
+    paddingLeft: space.gutter,
+    paddingRight: space.gutter,
     paddingBottom: heightPercentage(10),
+  },
+  headerEmbedded: {
+    justifyContent: 'flex-end',
+    paddingTop: heightPercentage(8),
+  },
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  backBtn: {
+    marginRight: space.sm,
+    marginLeft: -space.sm,
+    padding: 4,
+  },
+  backIcon: {
+    width: widthPercentage(22),
+    height: widthPercentage(22),
+    tintColor: night.text,
   },
   headerTitle: {
     fontSize: fontPercentage(20),
-    color: '#1B1B1B',
-    fontWeight: '600',
+    color: night.text,
+    fontFamily: fonts.semibold,
   },
   icon: {
     width: widthPercentage(24),
@@ -184,24 +356,143 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
   },
   centralContainer: {
+    flex: 1
+  },
+  controls: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: widthPercentage(10),
+  },
+  sortBtn: {
+    paddingHorizontal: widthPercentage(4),
+    paddingVertical: 4,
+  },
+  sortText: {
+    fontSize: fontPercentage(13),
+    fontFamily: 'Pretendard-Medium',
+    color: night.textDim,
+  },
+  viewSeg: {
+    flexDirection: 'row',
+    backgroundColor: night.surface,
+    borderRadius: 8,
+    padding: 2,
+  },
+  viewSegBtn: {
+    paddingHorizontal: widthPercentage(8),
+    paddingVertical: 4,
+    borderRadius: 6,
+  },
+  viewSegBtnActive: {
+    backgroundColor: night.surfaceHigh,
+  },
+  viewSegGlyph: {
+    fontFamily: fonts.regular,
+    fontSize: fontPercentage(14),
+    color: night.textFaint,
+  },
+  viewSegGlyphActive: {
+    color: night.text,
+  },
+  compactRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: heightPercentage(14),
+    borderBottomWidth: 1,
+    borderBottomColor: night.line,
+    gap: widthPercentage(10),
+  },
+  compactBadge: {
+    fontSize: fontPercentage(12),
+    fontFamily: 'Pretendard-SemiBold',
+    color: night.textFaint,
+    width: widthPercentage(48),
+  },
+  compactBody: {
     flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: widthPercentage(8),
+  },
+  compactTitle: {
+    flexShrink: 1,
+    fontSize: fontPercentage(15),
+    fontFamily: fonts.regular,
+    color: night.text,
+  },
+  compactCategory: {
+    fontSize: fontPercentage(11),
+    fontFamily: 'Pretendard-Medium',
+    color: night.textDim,
+    backgroundColor: night.surface,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
+    overflow: 'hidden',
+  },
+  compactChevron: {
+    fontFamily: fonts.regular,
+    fontSize: fontPercentage(18),
+    color: night.textFaint,
+  },
+  categoryBar: {},
+  categoryBarContent: {
+    paddingHorizontal: space.gutter,
+    paddingVertical: heightPercentage(4),
+  },
+  // 매거진의 전체/스토리/가이드 세그먼트와 같은 말을 쓴다 —
+  // 고른 것만 채우고 나머지는 글자만 둔다.
+  categoryChip: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: round.pill,
+    marginRight: 8,
+  },
+  categoryChipActive: {
+    backgroundColor: night.accent,
+  },
+  categoryLabel: {
+    fontSize: fontPercentage(14),
+    fontFamily: fonts.medium,
+    color: night.textDim,
+  },
+  categoryLabelActive: {
+    color: night.onAccent,
   },
 
   listRoot: {
-    marginHorizontal: widthPercentage(20),
+    marginHorizontal: space.gutter,
     marginTop: heightPercentage(16),
   },
 
   listItem: {
     position: 'relative',
     marginBottom: heightPercentage(16),
-    borderRadius: 8,
+    borderRadius: round.md,
   },
   listImage: {
     width: '100%',
     height: heightPercentage(436),
-    borderRadius: 8,
-    resizeMode: 'cover',
+    borderRadius: round.md,
+  },
+  // 사진 하단을 살짝 눌러 흰 글씨의 대비를 확보한다.
+  scrim: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: heightPercentage(180),
+    borderBottomLeftRadius: round.md,
+    borderBottomRightRadius: round.md,
+  },
+  scrimGrid: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: 100,
+    borderBottomLeftRadius: round.md,
+    borderBottomRightRadius: round.md,
   },
 
   bottomTextContainer: {
@@ -221,28 +512,27 @@ const styles = StyleSheet.create({
   },
 
   listBadge: {
-    color: '#ffffffff',
+    color: '#FFFFFF',
     fontSize: fontPercentage(12),
-    fontWeight: '500',
+    fontFamily: fonts.medium,
   },
   listText: {
-    color: '#ffffffff',
+    color: '#FFFFFF',
     fontSize: fontPercentage(22),
-    fontWeight: '600',
+    fontFamily: fonts.medium,
     marginTop: heightPercentage(10),
   },
   // 그리드 UI
   gridItem: {
     position: 'relative',
     marginBottom: heightPercentage(16),
-    borderRadius: 8,
+    borderRadius: round.md,
     width: '48%',
   },
   gridImage: {
     width: '100%',
     height: 212,
-    borderRadius: 8,
-    resizeMode: 'cover',
+    borderRadius: round.md,
   },
   bottomGrideTextContainer: {
     position: 'absolute',
@@ -260,14 +550,14 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
   },
   listGridBadge: {
-    color: '#ffffffff',
+    color: '#FFFFFF',
     fontSize: fontPercentage(10),
-    fontWeight: '500',
+    fontFamily: fonts.medium,
   },
   listGridText: {
-    color: '#ffffffff',
+    color: '#FFFFFF',
     fontSize: fontPercentage(14),
-    fontWeight: '600',
+    fontFamily: fonts.semibold,
     marginTop: heightPercentage(6),
   },
 

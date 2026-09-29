@@ -3,6 +3,7 @@ import axios from 'axios';
 import { API_BASE_URL } from '@env';
 import { SignUpResponse } from '../domain/SignupResponse';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Sentry from '@sentry/react-native';
 
 export class AuthRemoteDataSource {
 
@@ -38,6 +39,7 @@ export class AuthRemoteDataSource {
       // 필요 시 로컬 스토리지 토큰 삭제
       await AsyncStorage.removeItem('accessToken');
       await AsyncStorage.removeItem('refreshToken');
+      Sentry.setUser(null);
 
       return response.status;
     } catch (error: any) {

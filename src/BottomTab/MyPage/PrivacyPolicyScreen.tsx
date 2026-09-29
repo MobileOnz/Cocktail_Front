@@ -1,8 +1,8 @@
 import React from 'react';
-import { Text, ScrollView, StyleSheet, View, TouchableOpacity, Image} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { Text, ScrollView, StyleSheet, SafeAreaView, View, TouchableOpacity, Image} from 'react-native';
 import { widthPercentage, heightPercentage, fontPercentage } from '../../assets/styles/FigmaScreen';
 import { useNavigation } from '@react-navigation/native';
+import { fonts } from '../../lib/theme';
 
 
 const PrivacyPolicyScreen = () => {
@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: fontPercentage(20),
-    fontFamily: 'Pretendard-SemiBold',
+    fontFamily: fonts.medium,
     color: '#1B1B1B',
   },
   backIcon: {
@@ -126,13 +126,13 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: fontPercentage(14),
-    fontFamily: 'Pretendard-SemiBold',
+    fontFamily: fonts.semibold,
     marginTop: heightPercentage(16),
     color: '#171719',
   },
   sectionContent: {
+    fontFamily: fonts.regular,
     fontSize: fontPercentage(12),
-    fontFamily: 'Pretendard-Regular',
     marginTop: heightPercentage(8),
     color: '#171719',
   },

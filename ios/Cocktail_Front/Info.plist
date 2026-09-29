@@ -98,6 +98,8 @@
 			</dict>
 		</dict>
 	</dict>
+	<key>NSCameraUsageDescription</key>
+	<string>매장 테이블의 ONZ QR 코드를 스캔해 메뉴 가격을 확인하기 위해 카메라를 사용합니다.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>이 앱은 백그라운드에서 위치를 사용합니다.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
@@ -131,24 +133,6 @@
 		<string>Pretendard-Regular.otf</string>
 		<string>Pretendard-SemiBold.otf</string>
 		<string>Pretendard-Thin.otf</string>
-		<string>NotoSerif-ExtraLightItalic.ttf</string>
-		<string>NotoSerif-LightItalic.ttf</string>
-		<string>NotoSerif-SemiBoldItalic.ttf</string>
-		<string>NotoSerif-MediumItalic.ttf</string>
-		<string>NotoSerif-BoldItalic.ttf</string>
-		<string>NotoSerif-Regular.ttf</string>
-		<string>NotoSerif-ThinItalic.ttf</string>
-		<string>NotoSerif-ExtraLight.ttf</string>
-		<string>NotoSerif-Black.ttf</string>
-		<string>NotoSerif-Medium.ttf</string>
-		<string>NotoSerif-BlackItalic.ttf</string>
-		<string>NotoSerif-ExtraBoldItalic.ttf</string>
-		<string>NotoSerif-Thin.ttf</string>
-		<string>NotoSerif-SemiBold.ttf</string>
-		<string>NotoSerif-Italic.ttf</string>
-		<string>NotoSerif-Light.ttf</string>
-		<string>NotoSerif-Bold.ttf</string>
-		<string>NotoSerif-ExtraBold.ttf</string>
 	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>BootSplash</string>
@@ -159,8 +143,6 @@
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>

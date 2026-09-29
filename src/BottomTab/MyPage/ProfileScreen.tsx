@@ -17,6 +17,7 @@ import { RouteProp, useNavigation } from '@react-navigation/native';
 import { RootStackParamList } from '../../Navigation/Navigation';
 import MyPageViewModel from './MyPageViewModel';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { fonts } from '../../lib/theme';
 type ProfileScreenRouteProp = RouteProp<RootStackParamList, 'ProfileScreen'>;
 
 interface Props {
@@ -28,7 +29,7 @@ const ProfileScreen: React.FC<Props> = ({ route }: Props) => {
   const { user } = route.params;
   console.log(user);
 
-  const navigation = useNavigation();
+  const navigation = useNavigation<any>();
   const { loading, nickname, setNickname, profileUri, setProfileUri, handleProfileImageChange, updateUserProfile } = MyPageViewModel();
   // const [newNickname, setNewNickname] = useState('');
   // const [initialProfileUri, setInitialProfileUri] = useState<string | null>(user.profileUrl || null);
@@ -296,7 +297,7 @@ const ProfileScreen: React.FC<Props> = ({ route }: Props) => {
                   <Text
                     style={[
                       styles.accessoryDoneText,
-                      colorScheme === 'dark' && { color: '#fff' },
+                      colorScheme === 'dark' && { color: '#FFFFFF' },
                     ]}
                   >
                     완료
@@ -326,7 +327,7 @@ const ProfileScreen: React.FC<Props> = ({ route }: Props) => {
         </Text>
       </TouchableOpacity> */}
 
-
+      
     </SafeAreaView>
   );
 };
@@ -334,7 +335,7 @@ const ProfileScreen: React.FC<Props> = ({ route }: Props) => {
 export default ProfileScreen;
 
 
-const renderAccountItem = (text: string, iconUrl: string) => {
+const renderAccountItem = (text: string, iconUrl: any) => {
   return (
     <View style={styles.accountItem}>
       <Image
@@ -394,7 +395,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: fontPercentage(20),
-    fontWeight: '600',
+    fontFamily: fonts.medium,
     color: '#1B1B1B',
   },
   backIcon: {
@@ -435,14 +436,14 @@ const styles = StyleSheet.create({
   nicknameLabel: {
     fontSize: fontPercentage(14),
     color: '#BDBDBD',
-    fontWeight: '500',
+    fontFamily: fonts.medium,
     paddingVertical: heightPercentage(8),
     paddingHorizontal: widthPercentage(20),
   },
   accountLabel: {
     fontSize: fontPercentage(14),
     color: '#BDBDBD',
-    fontWeight: '500',
+    fontFamily: fonts.medium,
     paddingVertical: heightPercentage(8),
     paddingHorizontal: widthPercentage(20),
     marginTop: heightPercentage(16),
@@ -471,14 +472,14 @@ const styles = StyleSheet.create({
   nickNameText: {
     fontSize: fontPercentage(16),
     color: '#1B1B1B',
-    fontWeight: '500',
+    fontFamily: fonts.regular,
     flex: 1,
   },
   editNickBtn: {
     height: heightPercentage(32),
     borderRadius: 8,
     borderColor: '#E0E0E0',
-    backgroundColor: '#ffffffff',
+    backgroundColor: '#FFFFFF',
     borderWidth: 1,
     justifyContent: 'center',
     paddingVertical: heightPercentage(8),
@@ -487,10 +488,11 @@ const styles = StyleSheet.create({
   editNickName: {
     fontSize: fontPercentage(12),
     color: '#1B1B1B',
-    fontWeight: '500',
+    fontFamily: fonts.medium,
   },
   nicknameInput: {
     flex: 1,
+    fontFamily: fonts.regular,
     fontSize: fontPercentage(16),
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
@@ -505,7 +507,7 @@ const styles = StyleSheet.create({
   accountText: {
     fontSize: fontPercentage(13),
     color: '#616161',
-    fontWeight: '400',
+    fontFamily: fonts.regular,
     marginLeft: widthPercentage(8),
   },
   quitText: {
@@ -513,7 +515,7 @@ const styles = StyleSheet.create({
     fontSize: fontPercentage(14),
     color: '#616161',
     textAlign: 'right',
-    fontWeight: '500',
+    fontFamily: fonts.medium,
     marginHorizontal: widthPercentage(20),
   },
   saveButton: {
@@ -534,7 +536,7 @@ const styles = StyleSheet.create({
   },
   saveButtonText: {
     fontSize: fontPercentage(16),
-    fontWeight: 'bold',
+    fontFamily: fonts.bold,
   },
   activeButtonText: {
     color: '#FFFFFF',
@@ -560,7 +562,7 @@ const styles = StyleSheet.create({
   },
   accessoryDoneText: {
     fontSize: fontPercentage(16),
-    fontWeight: '500',
+    fontFamily: fonts.regular,
     color: '#007AFF', // iOS 기본 파란 텍스트
   },
   accessoryLight: {

@@ -12,7 +12,6 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../../Navigation/Navigation';
 import { widthPercentage, heightPercentage, fontPercentage } from '../../assets/styles/FigmaScreen';
 import RecommendationViewModel from './RecommendationViewModel.tsx';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 type RecommendationSreenNavigationProp = StackNavigationProp<
   RootStackParamList,
@@ -26,7 +25,6 @@ interface Props {
 
 
 const RecommendationScreen: React.FC<Props> = ({ navigation }) => {
-  const insets = useSafeAreaInsets();
   const { currentStep, setCurrentStep, selectedAnswers, setSelectedAnswers, submitAmplifyRecommend } = RecommendationViewModel();
 
   // [버튼] 다음 단계 이동
@@ -35,7 +33,7 @@ const RecommendationScreen: React.FC<Props> = ({ navigation }) => {
     if (currentStep < 4) {
       setCurrentStep(currentStep + 1);
     } else {
-      navigation.navigate('LoadingVideoScreen', { answers: selectedAnswers });
+      navigation.navigate('LoadingVideoScreen', { answers: selectedAnswers as number[] });
     }
   };
 
@@ -61,7 +59,7 @@ const RecommendationScreen: React.FC<Props> = ({ navigation }) => {
     <View style={styles.container}>
 
       {/* 상단 뷰 */}
-      <View style={[styles.header, { marginTop: insets.top + heightPercentage(8) }]}>
+      <View style={styles.header}>
         <TouchableOpacity
           onPress={handleBackBtn}
           style={styles.icon}
@@ -104,7 +102,7 @@ const RecommendationScreen: React.FC<Props> = ({ navigation }) => {
 
 
       {/* 바텀 뷰 */}
-      <View style={[styles.bottomContainer, { bottom: insets.bottom + 20 }]}>
+      <View style={styles.bottomContainer}>
         <TouchableOpacity
           style={[
             styles.confirmButton,
@@ -124,8 +122,14 @@ const RecommendationScreen: React.FC<Props> = ({ navigation }) => {
 
 export default RecommendationScreen;
 
+interface QuestionProps {
+  currentStep: number;
+  selectedAnswers: (number | null)[];
+  onSelectQuestion: (answerId: number) => void;
+}
+
 // 1단계 질문
-const Question1 = ({ currentStep, selectedAnswers, onSelectQuestion }) => {
+const Question1: React.FC<QuestionProps> = ({ currentStep, selectedAnswers, onSelectQuestion }) => {
 
   const questions = [
     {
@@ -187,7 +191,7 @@ const Question1 = ({ currentStep, selectedAnswers, onSelectQuestion }) => {
 };
 
 // 2단계 질문
-const Question2 = ({ currentStep, selectedAnswers, onSelectQuestion }) => {
+const Question2: React.FC<QuestionProps> = ({ currentStep, selectedAnswers, onSelectQuestion }) => {
 
   const questions = [
     {
@@ -244,7 +248,7 @@ const Question2 = ({ currentStep, selectedAnswers, onSelectQuestion }) => {
 };
 
 // 3단계 질문
-const Question3 = ({ currentStep, selectedAnswers, onSelectQuestion }) => {
+const Question3: React.FC<QuestionProps> = ({ currentStep, selectedAnswers, onSelectQuestion }) => {
   const questions = [
     {
       id: 1,
@@ -297,7 +301,7 @@ const Question3 = ({ currentStep, selectedAnswers, onSelectQuestion }) => {
 };
 
 // 4단계 질문
-const Question4 = ({ currentStep, selectedAnswers, onSelectQuestion }) => {
+const Question4: React.FC<QuestionProps> = ({ currentStep, selectedAnswers, onSelectQuestion }) => {
 
   const questions = [
     {
@@ -355,7 +359,7 @@ const Question4 = ({ currentStep, selectedAnswers, onSelectQuestion }) => {
 };
 
 // 5단계 질문
-const Question5 = ({ currentStep, selectedAnswers, onSelectQuestion }) => {
+const Question5: React.FC<QuestionProps> = ({ currentStep, selectedAnswers, onSelectQuestion }) => {
 
   const questions = [
     {
@@ -399,8 +403,17 @@ const Question5 = ({ currentStep, selectedAnswers, onSelectQuestion }) => {
   );
 };
 
+interface QuestionBoxProps {
+  id: number;
+  currentId: (number | null)[];
+  icon: any;
+  title: string;
+  subTitle?: string;
+  step: number;
+  onPress: () => void;
+}
 
-const QuestionBox = ({ id, currentId, icon, title, subTitle, step, onPress }) => {
+const QuestionBox: React.FC<QuestionBoxProps> = ({ id, currentId, icon, title, subTitle, step, onPress }) => {
 
   let boxStyle = styles.commonInnerBox;
 
@@ -427,7 +440,12 @@ const QuestionBox = ({ id, currentId, icon, title, subTitle, step, onPress }) =>
   );
 };
 
-const ProgressBar = ({ currentStep, totalSteps }) => {
+interface ProgressBarProps {
+  currentStep: number;
+  totalSteps: number;
+}
+
+const ProgressBar: React.FC<ProgressBarProps> = ({ currentStep, totalSteps }) => {
   const progressAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -458,12 +476,13 @@ const ProgressBar = ({ currentStep, totalSteps }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffff',
+    backgroundColor: '#FFFFFF',
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    marginTop: heightPercentage(50),
     paddingHorizontal: widthPercentage(15),
     paddingVertical: widthPercentage(10),
   },
@@ -479,7 +498,7 @@ const styles = StyleSheet.create({
   },
 
   question: {
-    fontFamily: 'Pretandard-SemiBold',
+    fontFamily: 'Pretendard-Medium',
     fontSize: fontPercentage(16),
     color: '#1B1B1B',
     marginLeft: widthPercentage(12),
@@ -487,7 +506,7 @@ const styles = StyleSheet.create({
 
   subquestion: {
     fontSize: fontPercentage(12),
-    fontFamily: 'Pretandard-SemiBold',
+    fontFamily: 'Pretendard-SemiBold',
     color: '#616161',
     marginLeft: widthPercentage(12),
   },
@@ -517,7 +536,7 @@ const styles = StyleSheet.create({
   confirmButtonText: {
     fontSize: fontPercentage(16),
     color: '#FFFFFF',
-    fontFamily: 'Pretandard-SemiBold',
+    fontFamily: 'Pretendard-Medium',
     textAlign: 'center',
   },
 
@@ -527,20 +546,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#FFFFFF',
+    bottom: 40,
   },
 
   titleIntroduceText: {
 
     fontSize: fontPercentage(20),
     color: '#1B1B1B',
-    fontFamily: 'Pretandard-SemiBold',
+    fontFamily: 'Pretendard-Medium',
     textAlign: 'center',
   },
 
   description: {
     fontSize: fontPercentage(14),
     color: '#BDBDBD',
-    fontFamily: 'Pretandard-SemiBold',
+    fontFamily: 'Pretendard-SemiBold',
     textAlign: 'center',
     paddingBottom: heightPercentage(20),
   },

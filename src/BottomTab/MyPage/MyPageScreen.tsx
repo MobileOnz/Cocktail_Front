@@ -1,18 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, Image, TouchableOpacity, ActivityIndicator, Linking, Platform } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { StyleSheet, Text, View, Image, TouchableOpacity, SafeAreaView, ActivityIndicator, Linking, Platform } from 'react-native';
 import { widthPercentage, heightPercentage, fontPercentage } from '../../assets/styles/FigmaScreen';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../../Navigation/Navigation';
 import MyPageViewModel from './MyPageViewModel';
 import { User } from '../../model/domain/User';
+import { BAR_TAB_ENABLED } from '../../lib/flags';
 // import WithdrawBottomSheet from '../BottomSheet/WithdrawBottomSheet';
 import SignOutModal from '../../Components/SignOutModal';
 import WithdrawConfirmModal from '../../Components/WithdrawConfirmModal';
 import { useToast } from '../../Components/ToastContext';
 import DeviceInfo from 'react-native-device-info';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { fonts } from '../../lib/theme';
 
 // App Store Connect → My Apps → ONZ → App Information → Apple ID
 const IOS_APP_STORE_ID = '6744957084';
@@ -112,7 +113,7 @@ const MyPageScreen = () => {
           routes: [
             {
               name: 'BottomTabNavigator',
-              params: { screen: '마이페이지' },
+              params: { screen: '홈' },
             },
           ],
         });
@@ -191,7 +192,7 @@ const MyPageScreen = () => {
   // 현재 화면에서
   const handleLoginPress = () => {
     if (isLoggedIn) {
-      navigation.navigate('ProfileScreen', { user }); // User 객체만 ProfileScreen에 전달
+      navigation.navigate('ProfileScreen', { user: user! }); // User 객체만 ProfileScreen에 전달
     } else {
       navigation.navigate('Login'); // 로그인 화면은 params 없이 이동
     }
@@ -240,10 +241,23 @@ const MyPageScreen = () => {
                 <Image source={require('../../assets/drawable/right-chevron.png')} style={styles.profilerightArrow} />
               </TouchableOpacity>
 
-              <TouchableOpacity style={styles.cocktailBox} onPress={() => {navigation.navigate('CocktailBoxScreen' as never);}}>
+              <TouchableOpacity style={styles.cocktailBox} onPress={() => {navigation.navigate('CocktailBoxScreen' as never)}}>
                 <Text style={styles.cocktailBoxText}>나의 칵테일 보관함</Text>
                 <Image source={require('../../assets/drawable/bookmarkCircle.png')} style={styles.cockTailBookmark} />
               </TouchableOpacity>
+
+              {/* VisitedBarsScreen 의 유일한 진입점. 라우트만 등록돼 있고 호출부가 없어 도달 불가였다.
+                  바 기능이 꺼져 있는 동안에는 이 줄도 감춘다(lib/flags.ts). */}
+              {BAR_TAB_ENABLED && (
+                <TouchableOpacity
+                  style={styles.cocktailBox}
+                  onPress={() => {navigation.navigate('VisitedBarsScreen' as never)}}
+                  accessibilityRole="button"
+                  accessibilityLabel="방문한 바 보기"
+                >
+                  <Text style={styles.cocktailBoxText}>방문한 바</Text>
+                </TouchableOpacity>
+              )}
             </>
           ) : (
             <TouchableOpacity style={styles.loginContainer} onPress={handleLoginPress}>
@@ -345,7 +359,7 @@ export default MyPageScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffff',
+    backgroundColor: '#FFFFFF',
   },
   topBar: {
     width: '100%',
@@ -356,7 +370,7 @@ const styles = StyleSheet.create({
   },
   topTitleText: {
     fontSize: fontPercentage(20),
-    fontWeight: '600',
+    fontFamily: fonts.medium,
     color: '#1B1B1B',
   },
   profileInfoContainer: {
@@ -378,13 +392,14 @@ const styles = StyleSheet.create({
   userNickNmText: {
     fontSize: fontPercentage(16),
     color: '#1B1B1B',
-    fontWeight: '600',
+    fontFamily: fonts.medium,
     flex: 1,
   },
   withdrawText: {
     marginTop: heightPercentage(27),
     color: '#7D7A6F',
     textDecorationLine: 'underline',
+    fontFamily: fonts.regular,
     fontSize: fontPercentage(14),
     alignSelf: 'flex-start',
     marginLeft: widthPercentage(24),
@@ -404,7 +419,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: fontPercentage(16),
     color: '#FFFFFF',
-    fontWeight: '600',
+    fontFamily: fonts.medium,
   },
   loginContainer: {
     justifyContent: 'center',
@@ -418,13 +433,13 @@ const styles = StyleSheet.create({
   },
   loginText: {
     fontSize: fontPercentage(16),
-    fontWeight: '600',
+    fontFamily: fonts.medium,
     color: '#FFFFFF',
   },
   supportTitle: {
     fontSize: fontPercentage(14),
     color: '#BDBDBD',
-    fontWeight: '500',
+    fontFamily: fonts.medium,
     paddingHorizontal: widthPercentage(16),
     paddingVertical: heightPercentage(8),
     marginTop: heightPercentage(24),
@@ -433,7 +448,7 @@ const styles = StyleSheet.create({
   supportSecondTitle: {
     fontSize: fontPercentage(14),
     color: '#BDBDBD',
-    fontWeight: '500',
+    fontFamily: fonts.medium,
     paddingHorizontal: widthPercentage(16),
     paddingVertical: heightPercentage(8),
     marginTop: heightPercentage(16),
@@ -455,12 +470,12 @@ const styles = StyleSheet.create({
   supportText: {
     fontSize: fontPercentage(16),
     color: '#1B1B1B',
-    fontWeight: '500',
+    fontFamily: fonts.regular,
   },
   supportValueText: {
     fontSize: fontPercentage(14),
     color: '#9E9E9E',
-    fontWeight: '500',
+    fontFamily: fonts.medium,
   },
   profilerightArrow: {
     width: widthPercentage(24),

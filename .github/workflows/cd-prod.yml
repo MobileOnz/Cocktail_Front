@@ -27,6 +27,10 @@ concurrency:
 #   APP_STORE_CONNECT_API_KEY_ID
 #   APP_STORE_CONNECT_API_ISSUER_ID
 #   APP_STORE_CONNECT_API_KEY_CONTENT
+#
+# [공통]
+#   SENTRY_AUTH_TOKEN              - sourcemap/dSYM/ProGuard 매핑 업로드용
+#                                   (sentry.io → Settings → Auth Tokens, project:releases 스코프)
 # ────────────────────────────────────────────────
 
 jobs:
@@ -64,6 +68,15 @@ jobs:
           echo "GOOGLE_CLIENT_ID=1058340377075-vt8u6qabph0f0van79eqhkt9j2f1jkbe.apps.googleusercontent.com" >> .env
           echo "GOOGLE_REDIRECT_URI=com.googleusercontent.apps.1058340377075-vt8u6qabph0f0van79eqhkt9j2f1jkbe:/oauth2redirect/google" >> .env
 
+      - name: Create sentry.properties
+        run: |
+          # sentry.gradle 가 sourcemap·ProGuard 매핑을 업로드하려면 필요.
+          # 없으면 업로드가 조용히 스킵돼 프로덕션 스택이 난독화된 채로 온다.
+          for d in android ios; do
+            printf 'auth.token=%s\ndefaults.org=onz-yt\ndefaults.project=react-native\ndefaults.url=https://sentry.io/\n' \
+              "${{ secrets.SENTRY_AUTH_TOKEN }}" > "$d/sentry.properties"
+          done
+
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -99,14 +112,10 @@ jobs:
   # ──────────────────────────────────────────────
   ios-appstore:
     name: iOS → App Store
-    runs-on: macos-15
+    runs-on: macos-latest
 
     steps:
       - uses: actions/checkout@v4
-
-      - uses: maxim-lobanov/setup-xcode@v1
-        with:
-          xcode-version: 'latest-stable'
 
       - uses: actions/setup-node@v4
         with:
@@ -125,6 +134,15 @@ jobs:
           echo "GOOGLE_PLACES_API_KEY=AIzaSyDeWHr3QIavBa4RGYwZly8h0sNTfLmQ" >> .env
           echo "GOOGLE_CLIENT_ID=1058340377075-vt8u6qabph0f0van79eqhkt9j2f1jkbe.apps.googleusercontent.com" >> .env
           echo "GOOGLE_REDIRECT_URI=com.googleusercontent.apps.1058340377075-vt8u6qabph0f0van79eqhkt9j2f1jkbe:/oauth2redirect/google" >> .env
+
+      - name: Create sentry.properties
+        run: |
+          # sentry-xcode 스크립트가 sourcemap·dSYM 을 업로드하려면 필요.
+          # 없으면 업로드가 조용히 스킵돼 프로덕션 스택이 난독화된 채로 온다.
+          for d in android ios; do
+            printf 'auth.token=%s\ndefaults.org=onz-yt\ndefaults.project=react-native\ndefaults.url=https://sentry.io/\n' \
+              "${{ secrets.SENTRY_AUTH_TOKEN }}" > "$d/sentry.properties"
+          done
 
       - uses: ruby/setup-ruby@v1
         with:

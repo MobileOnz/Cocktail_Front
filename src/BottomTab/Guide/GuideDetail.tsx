@@ -13,6 +13,8 @@ import { widthPercentage, heightPercentage, fontPercentage } from '../../assets/
 import PagerView from 'react-native-pager-view';
 import GuideDetailViewModel from './GuideDetailViewModel';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { stripMarkdownEmphasis } from '../../lib/text';
+import { fonts } from '../../lib/theme';
 
 type GuideDetailSreenNavigationProp = StackNavigationProp<
   RootStackParamList,
@@ -104,8 +106,8 @@ const GuideDetailScreen: React.FC<Props> = ({ navigation, route}) => {
                             paddingTop: heightPercentage(20),
                         }}
                     >
-                        <Text style={styles.titleText}>{page.subtitle}</Text>
-                        <Text style={styles.subText}>{page.description}</Text>
+                        <Text style={styles.titleText}>{stripMarkdownEmphasis(page.subtitle)}</Text>
+                        <Text style={styles.subText}>{stripMarkdownEmphasis(page.description)}</Text>
                     </View>
                 </View>
             ))}
@@ -141,12 +143,12 @@ const styles = StyleSheet.create({
     paddingLeft: widthPercentage(16),
     paddingRight: widthPercentage(16),
     paddingBottom: heightPercentage(10),
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#FFFFFF'
   },
   headerTitle: {
     fontSize: fontPercentage(20),
     color: '#1B1B1B',
-    fontWeight: '600',
+    fontFamily: fonts.medium,
   },
   icon: {
     width: widthPercentage(24),
@@ -155,7 +157,7 @@ const styles = StyleSheet.create({
   },
   centralContainer: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#FFFFFF'
   },
   itemImage: {
     width: '100%',
@@ -164,18 +166,18 @@ const styles = StyleSheet.create({
   },
   bottomContainer: {
     flex: 1,
-    backgroundColor: '#ffffffff',
+    backgroundColor: '#FFFFFF',
   },
   titleText: {
     fontSize: fontPercentage(20),
     color: '#1B1B1B',
-    fontWeight: '600',
+    fontFamily: fonts.medium,
   },
   subText: {
     marginTop: heightPercentage(8),
     fontSize: fontPercentage(16),
     color: '#616161',
-    fontWeight: '500',
+    fontFamily: fonts.regular,
   },
   indicatorContainer: {
     flexDirection: 'row',

@@ -2,12 +2,33 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
 import { API_BASE_URL } from '@env';
+import * as Sentry from '@sentry/react-native';
 
 /**
  * accessToken 가져오기
  */
 export async function getToken(): Promise<string | null> {
   return await AsyncStorage.getItem('accessToken');
+}
+
+/**
+ * 현재 accessToken 을 기준으로 Sentry user 를 맞춘다.
+ * 인자를 주면 그 토큰을, 없으면 저장된 토큰을 쓴다. null 을 주면 로그아웃으로 보고 비운다.
+ * 로그인/로그아웃/토큰 갱신/앱 부팅 시점에 호출한다.
+ */
+export async function syncSentryUser(token?: string | null): Promise<void> {
+  try {
+    const t = token === undefined ? await getToken() : token;
+    if (!t) {
+      Sentry.setUser(null);
+      return;
+    }
+    const decoded: any = jwtDecode(t);
+    const id = decoded.sub ?? decoded.userId ?? decoded.memberId ?? decoded.id;
+    Sentry.setUser(id ? { id: String(id) } : null);
+  } catch {
+    // 토큰이 JWT 가 아니거나 파싱 실패 — user 태깅은 선택사항이므로 조용히 넘어간다.
+  }
 }
 
 /**
@@ -51,21 +72,16 @@ export async function tokenRefresh(): Promise<string | null> {
         },
       });
 
-      console.log('[Token] reissue 응답 전체:', JSON.stringify(response.data));
-
-      // flat 구조 ({ accessToken, refreshToken }) 또는 중첩 구조 ({ data: { accessToken, refreshToken } }) 모두 대응
-      const payload = response.data?.accessToken ? response.data : response.data?.data;
-      const accessToken = payload?.accessToken;
-      const newRefreshToken = payload?.refreshToken;
-
-      console.log('[Token] 재발급 결과:', { accessToken: accessToken ? '받음' : '없음', refreshToken: newRefreshToken ? '받음' : '없음' });
+      const { accessToken, refreshToken: newRefreshToken } = response.data;
+      console.log('[Token] 재발급 성공:', { accessToken: '받음', refreshToken: '받음' });
       if (!accessToken || !newRefreshToken) {
-        console.error('[Token] access 또는 refresh 토큰이 응답에 없습니다. payload:', JSON.stringify(payload));
+        console.error('access 또는 refresh 토큰이 응답에 없습니다.');
         return null;
       }
 
       await AsyncStorage.setItem('accessToken', accessToken);
       await AsyncStorage.setItem('refreshToken', newRefreshToken);
+      await syncSentryUser(accessToken);
 
       return accessToken;
     } catch (error: any) {

@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 
 import { FilterState, useFilterBottomSheetViewModel } from './FilterBottomSheetViewModel';
-import theme from '../../../assets/styles/theme';
+import { colors } from '../../../lib/theme';
 import { heightPercentage } from '../../../assets/styles/FigmaScreen';
 
 
@@ -30,6 +30,12 @@ const tasteOptions = [
   '기타 & 특별한 맛(Etc. & Unique Flavors)',
 ];
 
+// 서버는 등록된 별칭이 없으면 라벨 그대로 base 를 부분일치시킨다
+// (BaseMappingUtil.aliasesOf). 그래서 여기 라벨은 DB 의 base 표기와 같아야 한다.
+//
+// '무알코올' 은 신규 425종과 함께 들어온 베이스다. 서버의 '기타'(ETC_BASES) 에
+// 묻어두면 20종이 소주·사케·맥주와 섞여 찾기 어려워진다 — 술을 못/안 마시는
+// 사람에게는 이게 목록 전체이므로 독립 라벨로 둔다.
 const baseOptions = [
   '진',
   '위스키',
@@ -39,6 +45,7 @@ const baseOptions = [
   '브랜디',
   '리큐르',
   '와인',
+  '무알코올',
   '기타',
 ];
 export type FilterBottomSheetRef = {
@@ -64,6 +71,12 @@ export const FilterBottomSheet = forwardRef<FilterBottomSheetRef, Props>(
       getValue: () => vm.value,
 
     }));
+
+    // 단일 선택(도수·스타일)도 같은 값을 다시 누르면 해제된다.
+    // 이전엔 setter(option) 만 해서 한 번 고르면 '초기화' 말고는 풀 방법이 없었다.
+    const toggleSingle = (current: string, value: string, setter: (v: string) => void) => {
+      setter(current === value ? '' : value);
+    };
 
     const toggleValue = (list: string[], value: string, setter: (v: string[]) => void) => {
       if (list.includes(value)) {
@@ -137,7 +150,7 @@ export const FilterBottomSheet = forwardRef<FilterBottomSheetRef, Props>(
                 key={option}
                 label={option}
                 selected={vm.selectedDegree === option}
-                onPress={() => vm.setSelectedDegree(option)}
+                onPress={() => toggleSingle(vm.selectedDegree, option, vm.setSelectedDegree)}
               />
             ))}
           </View>
@@ -152,7 +165,7 @@ export const FilterBottomSheet = forwardRef<FilterBottomSheetRef, Props>(
                 key={option}
                 label={option}
                 selected={vm.selectedStyle === option}
-                onPress={() => vm.setSelectedStyle(option)}
+                onPress={() => toggleSingle(vm.selectedStyle, option, vm.setSelectedStyle)}
               />
             ))}
           </View>
@@ -209,7 +222,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   sectionTitle: {
-    fontFamily: 'Pretendard-Medium',
+    fontFamily: 'Pretendard-Regular',
     fontSize: 15,
     color: '#1B1B1B',
     marginBottom: 10,
@@ -257,7 +270,7 @@ const styles = StyleSheet.create({
     borderRadius: 999,
     borderWidth: 1,
     borderColor: '#E0E0E0',
-    backgroundColor: theme.background,
+    backgroundColor: colors.bg,
   },
   tagSelected: {
     backgroundColor: '#111111',
@@ -273,7 +286,7 @@ const styles = StyleSheet.create({
   },
   footer: {
     paddingTop: 12,
-    backgroundColor: theme.background,
+    backgroundColor: colors.bg,
     flexDirection: 'row',
     columnGap: 12,
     borderTopWidth: 1,
@@ -289,7 +302,7 @@ const styles = StyleSheet.create({
     borderColor: '#D0D0D0',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: theme.background,
+    backgroundColor: colors.bg,
   },
   applyButton: {
     flex: 1,

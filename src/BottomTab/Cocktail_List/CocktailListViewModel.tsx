@@ -6,7 +6,7 @@ import instance from '../../tokenRequest/axios_interceptor';
 import { useNavigation } from '@react-navigation/native';
 import { getToken } from '../../tokenRequest/Token';
 import Toast from 'react-native-toast-message';
-import { getPerformance } from '@react-native-firebase/perf';
+import perf from '@react-native-firebase/perf';
 import { trackViewHomeOncePerSession } from '../../analytics/eventProperty';
 
 type UseSearchResultDeps = {
@@ -15,7 +15,7 @@ type UseSearchResultDeps = {
 
 // 홈 데이터를 한 번에 fetch하는 함수
 const fetchHomeData = async (repository: IHomeCocktailRepository) => {
-  const trace = await getPerformance().newTrace('HomeScreen_Load');
+  const trace = await perf().newTrace('HomeScreen_Load');
   await trace.start();
   try {
     const [randomCocktail, newCocktail, bestCocktail, refreshList, intermediateList, beginnerList] =
@@ -42,6 +42,7 @@ export const useHomeViewModel = (deps?: UseSearchResultDeps) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const hasTrackedHome = useRef(false);
 
+  // ─── useQuery: 캐시된 데이터 즉시 ���시 후 백그라운드에서 최신 ��이터 fetch ───
   const { data, isLoading, error } = useQuery({
     queryKey: ['homeData'],
     queryFn: () => fetchHomeData(repository),
@@ -92,7 +93,9 @@ export const useHomeViewModel = (deps?: UseSearchResultDeps) => {
   const bookMarkCheck = async () => {
     const token = await getToken();
     if (!token) {
+      // 알리기만 하고 끝내면 사용자는 로그인 화면을 스스로 찾아가야 한다(데모 QA 지적).
       Toast.show({ type: 'error', text1: '로그인이 필요한 서비스 입니다.' });
+      navigation.navigate('Login');
       return;
     }
     navigation.navigate('CocktailBoxScreen');

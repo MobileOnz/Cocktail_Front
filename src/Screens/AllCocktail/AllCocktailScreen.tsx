@@ -1,352 +1,450 @@
 // AllCocktailScreen.tsx
 
-import React, { useCallback, useMemo, useRef } from 'react';
-import { StyleSheet, View, Pressable, ScrollView, TouchableOpacity, Platform } from 'react-native';
-import { ActivityIndicator, Button, Text } from 'react-native-paper';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { fontPercentage, heightPercentage, widthPercentage } from '../../assets/styles/FigmaScreen';
-import { FlatList } from 'react-native-gesture-handler';
-import theme from '../../assets/styles/theme';
-import OpenBottomSheet, { OpenBottomSheetHandle } from '../../Components/BottomSheet/OpenBottomSheet';
+import React, {useCallback, useMemo, useRef} from 'react';
+import {
+  StyleSheet,
+  View,
+  Pressable,
+  TouchableOpacity,
+  Platform,
+  Image,
+  FlatList,
+  Dimensions,
+} from 'react-native';
+import {ActivityIndicator, Text} from 'react-native-paper';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import {useTabBarSpace, getFloatingTabBarStyle} from '../../lib/layout';
+import {fontPercentage, heightPercentage} from '../../assets/styles/FigmaScreen';
+import {night, space} from '../../lib/theme';
+import OpenBottomSheet, {
+  OpenBottomSheetHandle,
+} from '../../Components/BottomSheet/OpenBottomSheet';
 import CocktailCard from '../../Components/CocktailCard';
-import { CocktailCard as CocktailCardModel } from '../../model/domain/CocktailCard';
-import FilterBottomSheet, { FilterBottomSheetRef } from '../../Components/BottomSheet/FilterBottomSheet/FilterBottomSheet';
+import {CocktailCard as CocktailCardModel} from '../../model/domain/CocktailCard';
+import FilterBottomSheet, {
+  FilterBottomSheetRef,
+} from '../../Components/BottomSheet/FilterBottomSheet/FilterBottomSheet';
+import {DEFAULT_FILTER} from '../../Components/BottomSheet/FilterBottomSheet/FilterBottomSheetViewModel';
+import FilterTriggerRow from '../../Components/Filter/FilterTriggerRow';
 import useAllCocktailViewModel from './AllCocktailViewModel';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../../Navigation/Navigation';
+import ErrorState from '../../Components/common/ErrorState';
+import EmptyState from '../../Components/common/EmptyState';
+import SkeletonList from '../../Components/common/SkeletonList';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import {RootStackParamList} from '../../Navigation/Navigation';
 import MIcon from 'react-native-vector-icons/MaterialCommunityIcons';
-import Icon from 'react-native-vector-icons/Ionicons';
-type Props = NativeStackScreenProps<RootStackParamList, 'AllCocktailScreen'>;
 
-const AllCocktailScreen = ({ navigation }: Props) => {
-    const vm = useAllCocktailViewModel();
-    const filterRef = useRef<FilterBottomSheetRef>(null);
-    const bottomSheetRef = useRef<OpenBottomSheetHandle>(null);
+type StackProps = NativeStackScreenProps<
+  RootStackParamList,
+  'AllCocktailScreen'
+>;
 
-    const extraData = useMemo(
-        () => ({ loading: vm.loading, filter: vm.appliedFilter }),
-        [vm.loading, vm.appliedFilter],
-    );
+/**
+ * embedded=true 이면 RecipeBookScreen 이 헤더(제목+검색)를 대신 그리므로
+ * 자체 헤더와 상단 세이프에어리어 여백을 생략한다. 필터 진입점은 그대로 유지.
+ */
+type Props = Omit<Partial<StackProps>, 'navigation'> & {
+  navigation: StackProps['navigation'] | any;
+  embedded?: boolean;
+};
 
-    const handleEndReached = useCallback(() => {
-        if (!vm.isLast && !vm.loading) {
-            vm.loadMore();
-        }
-    }, [vm]);
+const AllCocktailScreen = ({navigation, embedded = false}: Props) => {
+  const insets = useSafeAreaInsets();
+  const tabBarSpace = useTabBarSpace();
+  const vm = useAllCocktailViewModel();
+  const filterRef = useRef<FilterBottomSheetRef>(null);
+  const bottomSheetRef = useRef<OpenBottomSheetHandle>(null);
 
-    const { bookmarked } = vm;
+  // 필터 시트가 열려 있는 동안은 하단 탭바를 숨겨 그만큼 공간을 필터 UI에 돌려준다.
+  // embedded(레시피북 탭) 에서만 의미 있다 — 스택 화면엔 애초에 탭바가 없다.
+  const handleFilterSheetIndexChange = useCallback(
+    (index: number) => {
+      // '적용하기' 없이 X·백드롭으로 닫으면 시트 안의 선택만 남고 목록은 그대로였다.
+      // 다시 열면 적용되지도 않은 조건이 선택된 채로 보인다 — 배지·초기화가 생기면서 더 눈에 띈다.
+      // 닫힐 때 실제 적용된 필터로 되돌린다.
+      if (index === -1) {
+        filterRef.current?.reset();
+      }
+      if (!embedded) {
+        return;
+      }
+      navigation.setOptions({
+        tabBarStyle:
+          index === -1
+            ? getFloatingTabBarStyle(insets.bottom)
+            : {display: 'none'},
+      });
+    },
+    [embedded, navigation, insets.bottom],
+  );
 
-    const renderItem = useCallback(
-        ({ item }: { item: CocktailCardModel }) => (
-            <View style={styles.cardWrapper}>
-                <CocktailCard
-                    id={item.id}
-                    name={item.name}
-                    type={item.type}
-                    image={item.image}
-                    bookmarked={item.isBookmarked}
-                    onPress={() =>
-                        navigation.navigate('CocktailDetailScreen', {
-                            cocktailId: item.id,
-                        })
-                    }
-                    onToggleBookmark={() => bookmarked(item.id)}
-                />
-            </View>
-        ),
-        [navigation, bookmarked],
-    );
+  const extraData = useMemo(
+    () => ({loading: vm.loading, filter: vm.appliedFilter}),
+    [vm.loading, vm.appliedFilter],
+  );
 
-    const keyExtractor = useCallback(
-        (item: CocktailCardModel, index: number) => `${item.id}-${index}`,
-        [],
-    );
+  const {refetch} = vm;
 
-    const ListFooterComponent = useMemo(
-        () =>
-            vm.isFetchingNextPage ? (
-                <ActivityIndicator style={{ marginVertical: 20 }} color="#111" />
-            ) : null,
-        [vm.isFetchingNextPage],
-    );
+  // 헤더의 '초기화' 는 목록과 시트 양쪽을 되돌려야 한다.
+  // 시트 상태만 남겨두면 다시 열었을 때 해제된 조건이 선택된 채로 보인다.
+  const handleResetFilter = useCallback(() => {
+    filterRef.current?.reset();
+    refetch(DEFAULT_FILTER);
+  }, [refetch]);
 
-    const ListHeaderComponent = null;
+  const handleEndReached = useCallback(() => {
+    if (!vm.isLast && !vm.loading) {
+      vm.loadMore();
+    }
+  }, [vm]);
 
-    const ListEmptyComponent = useMemo(
-        () => (
-            <View style={styles.emptyContainer}>
-                {vm.loading && <ActivityIndicator size="large" />}
-                {!vm.loading && (
-                    <>
-                        <Text style={styles.text}>아직 준비된 칵테일이 없네요.</Text>
-                        <Text style={styles.text}>다른 필터를 선택해보시겠어요?</Text>
-                    </>
-                )}
-            </View>
-        ),
-        [vm.loading],
-    );
+  const {bookmarked} = vm;
 
+  const renderItem = useCallback(
+    ({item}: {item: CocktailCardModel}) => (
+      <View style={styles.cardWrapper}>
+        <CocktailCard
+          width={CARD_WIDTH}
+          id={item.id}
+          name={item.name}
+          type={item.type}
+          image={item.image}
+          bookmarked={item.isBookmarked}
+          onPress={() =>
+            navigation.navigate('CocktailDetailScreen', {
+              cocktailId: item.id,
+            })
+          }
+          onToggleBookmark={() => bookmarked(item.id)}
+        />
+      </View>
+    ),
+    [navigation, bookmarked],
+  );
+
+  const keyExtractor = useCallback(
+    (item: CocktailCardModel, index: number) => `${item.id}-${index}`,
+    [],
+  );
+
+  const ListFooterComponent = useMemo(
+    () =>
+      vm.isFetchingNextPage ? (
+        <ActivityIndicator style={{marginVertical: 20}} color="#111" />
+      ) : null,
+    [vm.isFetchingNextPage],
+  );
+
+  const ListHeaderComponent = null;
+
+  // 로딩 / 에러 / 빈 상태를 구분한다.
+  // 이전에는 vm.error 를 계산만 하고 렌더하지 않아, 조회 실패가 "결과 없음"으로 보였다.
+  const ListEmptyComponent = useMemo(() => {
+    if (vm.loading) {
+      return <SkeletonList count={4} variant="card" />;
+    }
+    if (vm.error) {
+      return <ErrorState message={vm.error} onRetry={vm.refetch} compact />;
+    }
     return (
-        <SafeAreaView style={styles.safeArea} edges={['top']}>
-            {/* 고정 헤더 영역 */}
-            <View style={styles.stickyHeader}>
-                <View style={styles.header}>
-                    <TouchableOpacity onPress={() => navigation.goBack()}>
-                        <Icon
-                            name="chevron-back-sharp"
-                            size={24}
-                            color="#000"
-                            style={{ marginRight: widthPercentage(8) }}
-                        />
-                    </TouchableOpacity>
-                    <View style={styles.titleContainer}>
-                        <Text style={styles.titleText}>칵테일 리스트</Text>
-                    </View>
-                    <View style={{ width: 24 }} />
-                </View>
-                <ScrollView
-                    horizontal
-                    showsHorizontalScrollIndicator={false}
-                    contentContainerStyle={styles.filterView}
-                >
-                    {['최신순', '도수', '스타일', '맛', '베이스'].map((label, idx) => {
-                        const filter = vm.appliedFilter;
-                        const isSelected =
-                            (label === '최신순' && filter.sort !== '최신순') ||
-                            (label === '도수' && filter.degree) ||
-                            (label === '스타일' && filter.style) ||
-                            (label === '맛' && filter.taste.length > 0) ||
-                            (label === '베이스' && filter.base.length > 0);
-
-                        return (
-                            <Button
-                                key={idx}
-                                mode={isSelected ? 'contained' : 'outlined'}
-                                icon={label === '최신순' ? undefined : 'chevron-down'}
-                                compact
-                                contentStyle={styles.filterButtonContent}
-                                style={[
-                                    styles.chip,
-                                    isSelected ? styles.chipSelected : styles.chipUnselected,
-                                ]}
-                                labelStyle={[
-                                    styles.chipLabel,
-                                    isSelected && styles.chipLabelSelected,
-                                ]}
-                                onPress={() => bottomSheetRef.current?.open()}
-                            >
-                                {label}
-                            </Button>
-                        );
-                    })}
-                </ScrollView>
-            </View>
-
-            <FlatList
-                data={vm.results}
-                extraData={extraData}
-                renderItem={renderItem}
-                keyExtractor={keyExtractor}
-                onEndReached={handleEndReached}
-                onEndReachedThreshold={0.5}
-                ListHeaderComponent={ListHeaderComponent}
-                ListFooterComponent={ListFooterComponent}
-                ListEmptyComponent={ListEmptyComponent}
-                numColumns={2}
-                columnWrapperStyle={styles.row}
-                style={{ flex: 1 }}
-                showsVerticalScrollIndicator={false}
-                contentContainerStyle={styles.listContent}
-                initialNumToRender={6}
-                maxToRenderPerBatch={4}
-                windowSize={5}
-                removeClippedSubviews={true}
-                updateCellsBatchingPeriod={50}
-            />
-
-            <OpenBottomSheet
-                ref={bottomSheetRef}
-                footer={
-                    <View style={styles.footer}>
-                        <Pressable style={styles.resetButton} onPress={() => filterRef.current?.reset()}>
-                            <MIcon name="refresh" size={20} color="#444" style={styles.resetIcon} />
-                            <Text style={styles.resetText}>초기화</Text>
-                        </Pressable>
-
-                        <Pressable
-                            style={styles.applyButton}
-                            onPress={() => {
-                                filterRef.current?.apply();
-                                bottomSheetRef.current?.close?.();
-                            }}
-                        >
-                            <Text style={styles.applyText}>적용하기</Text>
-                        </Pressable>
-                    </View>
-                }
-            >
-                <FilterBottomSheet
-                    ref={filterRef}
-                    onApply={(filterValue) => vm.refetch(filterValue)}
-                    onClose={() => bottomSheetRef.current?.close()}
-                />
-            </OpenBottomSheet>
-        </SafeAreaView>
+      <EmptyState
+        title="아직 준비된 칵테일이 없네요"
+        description="다른 필터를 선택해보시겠어요?"
+        compact
+      />
     );
+  }, [vm.loading, vm.error, vm.refetch]);
+
+  return (
+    <View style={styles.container}>
+      {/* 고정 헤더 영역 */}
+      <View
+        style={[styles.stickyHeader, {paddingTop: embedded ? 0 : insets.top}]}>
+        {!embedded && (
+          <View style={styles.header}>
+            <View style={styles.titleWrapper}>
+              <Text style={styles.libraryTitle}>칵테일 레시피</Text>
+              <Text style={styles.librarySubtitle}>
+                방대한 데이터로 만나는 완벽한 한 잔
+              </Text>
+            </View>
+            <TouchableOpacity
+              onPress={() => (navigation as any).navigate('SearchScreen')}
+              style={styles.searchCircleButton}
+              accessibilityRole="button"
+              accessibilityLabel="칵테일 검색">
+              <Image
+                source={require('../../assets/drawable/SharpSearch.png')}
+                style={styles.searchIcon}
+                resizeMode="contain"
+              />
+            </TouchableOpacity>
+          </View>
+        )}
+        {/* 레시피북 탭에서는 제목·검색·필터를 한 줄에 모은다.
+            예전엔 필터 알약이 제목 아래 한 줄을 통째로 차지한 채 혼자 떠 있고, 같은 성격의
+            검색 아이콘은 제목 줄 오른쪽에 따로 있었다 — 두 컨트롤이 다른 줄 반대쪽 끝에
+            흩어져 어색했다(QA: "필터링 위치가 좀 이상해요"). 한 줄로 묶으면서 목록도
+            한 칸 더 올라온다. */}
+        {embedded ? (
+          <View style={styles.embeddedHeader}>
+            <Text style={styles.embeddedTitle}>레시피 북</Text>
+            <View style={styles.embeddedActions}>
+              <FilterTriggerRow
+                filter={vm.appliedFilter}
+                onPress={() => bottomSheetRef.current?.open()}
+                onReset={handleResetFilter}
+                style={styles.embeddedFilter}
+              />
+              <TouchableOpacity
+                onPress={() => (navigation as any).navigate('SearchScreen')}
+                accessibilityRole="button"
+                accessibilityLabel="칵테일 검색"
+                hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
+                <Image
+                  source={require('../../assets/drawable/SharpSearch.png')}
+                  style={styles.embeddedSearchIcon}
+                  resizeMode="contain"
+                />
+              </TouchableOpacity>
+            </View>
+          </View>
+        ) : (
+          <FilterTriggerRow
+            filter={vm.appliedFilter}
+            onPress={() => bottomSheetRef.current?.open()}
+            onReset={handleResetFilter}
+          />
+        )}
+      </View>
+
+      <FlatList
+        data={vm.results}
+        extraData={extraData}
+        renderItem={renderItem}
+        keyExtractor={keyExtractor}
+        onEndReached={handleEndReached}
+        onEndReachedThreshold={0.5}
+        ListHeaderComponent={ListHeaderComponent}
+        ListFooterComponent={ListFooterComponent}
+        ListEmptyComponent={ListEmptyComponent}
+        numColumns={2}
+        columnWrapperStyle={styles.row}
+        style={{flex: 1}}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={[
+          styles.listContent,
+          {paddingBottom: tabBarSpace},
+        ]}
+        initialNumToRender={6}
+        maxToRenderPerBatch={4}
+        windowSize={5}
+        removeClippedSubviews={true}
+        updateCellsBatchingPeriod={50}
+      />
+
+      <OpenBottomSheet
+        ref={bottomSheetRef}
+        // 시트가 열리는 동안 탭바 자체를 숨기므로(handleFilterSheetIndexChange) 더는 탭바를
+        // 피해 여백을 둘 필요가 없다 — 그 여백이 "하단에 불필요한 공간" 문제였다.
+        avoidTabBar={false}
+        onIndexChange={handleFilterSheetIndexChange}
+        footer={
+          <View style={styles.footer}>
+            <Pressable
+              style={styles.resetButton}
+              onPress={() => filterRef.current?.reset()}>
+              <MIcon
+                name="refresh"
+                size={20}
+                color="#444"
+                style={styles.resetIcon}
+              />
+              <Text style={styles.resetText}>초기화</Text>
+            </Pressable>
+
+            <Pressable
+              style={styles.applyButton}
+              onPress={() => {
+                filterRef.current?.apply();
+                bottomSheetRef.current?.close?.();
+              }}>
+              <Text style={styles.applyText}>적용하기</Text>
+            </Pressable>
+          </View>
+        }>
+        <FilterBottomSheet
+          ref={filterRef}
+          // reset() 이 되돌아갈 기준점. 안 주면 항상 DEFAULT_FILTER 로 돌아가
+          // 적용해 둔 조건까지 날아간다.
+          initialValue={vm.appliedFilter}
+          onApply={filterValue => vm.refetch(filterValue)}
+          onClose={() => bottomSheetRef.current?.close()}
+        />
+      </OpenBottomSheet>
+    </View>
+  );
 };
 
 export default AllCocktailScreen;
 
+/** 2열 그리드 한 칸의 폭. 카드도 같은 값을 받아 이미지가 칼럼을 넘지 않게 한다. */
+const CARD_WIDTH =
+  (Dimensions.get('window').width - space.gutter * 2 - space.md) / 2;
+
 const styles = StyleSheet.create({
-    safeArea: {
-        flex: 1,
-        backgroundColor: theme.background,
-    },
-    stickyHeader: {
-        backgroundColor: theme.background,
-        zIndex: 10,
-    },
-    header: {
-        padding: 10,
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-    },
-    titleContainer: {
-        flex: 1,
-        alignItems: 'center',
-    },
-    titleText: {
-        fontFamily: 'Pretendard-Medium',
-        fontSize: fontPercentage(16),
-        color: '#000',
-    },
-    filterView: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingHorizontal: widthPercentage(8),
-        paddingVertical: 4,
-        gap: 8,
-        paddingBottom: 20,
-    },
-    filterButtonContent: {
-        flexDirection: 'row-reverse',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    chip: {
-        borderRadius: 100,
-        borderWidth: 1,
-
-        minHeight: 32,
-        justifyContent: 'center',
-        alignItems: 'center',
-        elevation: 0,
-    },
-    chipUnselected: {
-        backgroundColor: theme.background,
-        borderColor: '#E0E0E0',
-    },
-    chipSelected: {
-        backgroundColor: '#313131',
-        borderColor: '#E0E0E0',
-    },
-    chipLabel: {
-        fontFamily: 'Pretendard-Medium',
-        fontSize: fontPercentage(14),
-        color: '#616161',
-        includeFontPadding: false,
-        lineHeight: fontPercentage(18),
-        textAlignVertical: 'center',
-        marginVertical: heightPercentage(4),
-        marginHorizontal: widthPercentage(10),
-    },
-    chipLabelSelected: {
-        fontFamily: 'Pretendard-Medium',
-        fontSize: fontPercentage(14),
-        color: '#FFFFFF',
-    },
-    listContent: {
-        paddingBottom: 24,
-    },
-    row: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-        gap: widthPercentage(12),
-        marginBottom: 16,
-    },
-    cardWrapper: {
-        width: widthPercentage(160),
-        alignItems: 'center',
-    },
-    emptyContainer: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-        paddingVertical: 40,
-    },
-    text: {
-        color: '#BDBDBD',
-        fontFamily: 'Pretendard-Medium',
-        fontSize: fontPercentage(16),
-        fontWeight: '600',
-    },
-    footer: {
-        flexDirection: 'row',
-        gap: 12,
-        paddingHorizontal: 16,
-        paddingVertical: 12,
-        backgroundColor: theme.background,
-        borderTopWidth: 1,
-        borderTopColor: '#EEE',
-        ...Platform.select({
-            ios: {
-                shadowColor: '#000000',
-                shadowOffset: {
-                    width: 0,
-                    height: -2,
-                },
-                shadowOpacity: 0.08,
-                shadowRadius: 4,
-            },
-            android: {
-
-                elevation: 5,
-            },
-        }),
-    },
-    resetButton: {
-        flex: 1,
-        flexDirection: 'row',
-        height: heightPercentage(50),
-        borderRadius: 12,
-        borderWidth: 1,
-        borderColor: '#D0D0D0',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    resetIcon: {
-        marginRight: 4,
-        transform: [{ scaleX: -1 }],
-    },
-    applyButton: {
-        flex: 2,
-        height: heightPercentage(50),
-        borderRadius: 12,
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: '#313131',
-    },
-    resetText: {
-        fontFamily: 'Pretendard-Medium',
-        fontSize: 14,
-        color: '#444444',
-    },
-    applyText: {
-        fontFamily: 'Pretendard-Medium',
-        fontSize: 14,
-        color: '#FFFFFF',
-        fontWeight: '600',
-    },
+  container: {
+    flex: 1,
+    backgroundColor: night.ink,
+  },
+  safeArea: {
+    flex: 1,
+    backgroundColor: night.ink,
+  },
+  stickyHeader: {
+    backgroundColor: night.ink,
+    zIndex: 10,
+  },
+  // 레시피북 탭 전용 헤더 — 제목 + (필터·검색) 한 줄.
+  embeddedHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: space.gutter,
+    paddingBottom: space.md,
+  },
+  embeddedTitle: {
+    fontSize: fontPercentage(24),
+    fontFamily: 'Pretendard-Bold',
+    color: night.text,
+  },
+  embeddedActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: space.md,
+  },
+  // 헤더 줄 안에 들어가므로 FilterTriggerRow 자체 여백은 없앤다.
+  embeddedFilter: {
+    paddingHorizontal: 0,
+    paddingTop: 0,
+    paddingBottom: 0,
+  },
+  embeddedSearchIcon: {
+    width: 22,
+    height: 22,
+    tintColor: night.text,
+  },
+  header: {
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+  },
+  titleWrapper: {
+    flex: 1,
+  },
+  libraryTitle: {
+    fontFamily: 'Pretendard-Bold',
+    fontSize: fontPercentage(24),
+    color: '#1a1a1a',
+    marginBottom: 4,
+  },
+  librarySubtitle: {
+    fontFamily: 'Pretendard-Regular',
+    fontSize: fontPercentage(13),
+    color: '#888',
+  },
+  searchCircleButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: '#f5f5f5',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 4,
+  },
+  searchIcon: {
+    width: 22,
+    height: 22,
+    tintColor: '#1a1a1a',
+  },
+  listContent: {},
+  // 예전엔 justifyContent:'center' 라 카드 왼쪽 끝이 헤더와 2pt 어긋났다.
+  // 좌우를 gutter 로 고정하고 space-between 으로 벌린다.
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: space.gutter,
+    marginBottom: space.lg,
+  },
+  cardWrapper: {
+    width: CARD_WIDTH,
+  },
+  emptyContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 40,
+  },
+  text: {
+    color: night.textFaint,
+    fontFamily: 'Pretendard-Regular',
+    fontSize: fontPercentage(16),
+  },
+  footer: {
+    flexDirection: 'row',
+    gap: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    backgroundColor: night.ink,
+    borderTopWidth: 1,
+    borderTopColor: night.line,
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000000',
+        shadowOffset: {
+          width: 0,
+          height: -2,
+        },
+        shadowOpacity: 0.08,
+        shadowRadius: 4,
+      },
+      android: {
+        elevation: 5,
+      },
+    }),
+  },
+  resetButton: {
+    flex: 1,
+    flexDirection: 'row',
+    height: heightPercentage(50),
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: night.line,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  resetIcon: {
+    marginRight: 4,
+    transform: [{scaleX: -1}],
+  },
+  applyButton: {
+    flex: 2,
+    height: heightPercentage(50),
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: night.accent,
+  },
+  resetText: {
+    fontFamily: 'Pretendard-Medium',
+    fontSize: 14,
+    color: night.textDim,
+  },
+  applyText: {
+    fontFamily: 'Pretendard-Medium',
+    fontSize: 14,
+    color: night.onAccent,
+  },
 });

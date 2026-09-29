@@ -7,9 +7,11 @@ import {
   Text,
   FlatList,
   Image,
+  TextInput,
 } from 'react-native';
 import { StackScreenProps } from '@react-navigation/stack';
-import theme from '../../assets/styles/theme';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import {fonts, fontSize, radius, spacing, night} from '../../lib/theme';
 import {
   widthPercentage,
   heightPercentage,
@@ -17,15 +19,17 @@ import {
 } from '../../assets/styles/FigmaScreen';
 import { RootStackParamList } from '../../Navigation/Navigation';
 import { useSearchViewModel } from '../Search/SearchViewModel';
+import EmptyState from '../../Components/common/EmptyState';
 import FIcon from 'react-native-vector-icons/Feather';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { TextInput } from 'react-native-paper';
-import Animated from 'react-native-reanimated';
 
 type SearchScreenProps = StackScreenProps<RootStackParamList, 'SearchScreen'>;
 
 const SearchScreen: React.FC<SearchScreenProps> = ({ navigation, route }) => {
   const { initialKeyword } = route.params || {};
+  // 예전엔 marginTop: heightPercentage(50) 으로 상태바를 눈대중했는데,
+  // Dynamic Island 기기의 실제 인셋(59~62pt)보다 작아서 헤더가 상태바에 물렸다.
+  const insets = useSafeAreaInsets();
 
   const {
     searchText,
@@ -46,58 +50,51 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation, route }) => {
 
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor={theme.background} />
+      <StatusBar barStyle="light-content" backgroundColor={night.ink} />
 
       {/* 상단 검색 바 영역 */}
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton} onPress={handleGoBack}>
-          <Icon name="chevron-back-sharp" size={24} color="#000" />
+      <View style={[styles.header, { paddingTop: insets.top + heightPercentage(8) }]}>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={handleGoBack}
+          accessibilityRole="button"
+          accessibilityLabel="뒤로 가기"
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        >
+          <Icon name="chevron-back-sharp" size={24} color={night.text} />
         </TouchableOpacity>
 
-        <TextInput
-          style={[styles.searchInput, { paddingLeft: 0 }]}
-          mode="outlined"
-          placeholder="칵테일을 검색해보세요"
-          placeholderTextColor="#D9D9D9"
-          value={searchText}
-          onChangeText={handleSearchTextChange}
-          onSubmitEditing={handleSubmitSearch}
-
-          contentStyle={{ marginLeft: 45, paddingLeft: 0 }}
-          left={
-            <TextInput.Icon
-              forceTextInputFocus={false}
-              icon={() => (
-                <Animated.Image
-                  source={require('../../assets/drawable/SharpSearch.png')}
-                  style={{
-                    width: 24,
-                    height: 24,
-                    tintColor: '#D9D9D9',
-                  }}
-                  resizeMode="contain"
-                />
-              )}
-
-            />
-
-          }
-          right={
-            searchText.length > 0 ? (
-
-              <TextInput.Icon
-                icon="close-circle"
-                color="#BDBDBD"
-                onPress={handleClearText}
-              />
-            ) : null
-          }
-          outlineStyle={{ borderRadius: 8, borderWidth: 0 }}
-          activeOutlineColor="transparent"
-
-        />
+        {/* 레시피북 헤더의 검색 버튼과 같은 계열(회색 필)로 맞춘다. paper 의 outlined 룩은 이 앱 어디에도 없었다. */}
+        <View style={styles.searchField}>
+          <Image
+            source={require('../../assets/drawable/SharpSearch.png')}
+            style={styles.searchFieldIcon}
+            resizeMode="contain"
+          />
+          <TextInput
+            style={styles.searchInput}
+            placeholder="칵테일을 검색해보세요"
+            placeholderTextColor={night.textFaint}
+            value={searchText}
+            onChangeText={handleSearchTextChange}
+            onSubmitEditing={handleSubmitSearch}
+            returnKeyType="search"
+            autoFocus
+            autoCorrect={false}
+            accessibilityLabel="칵테일 검색어 입력"
+          />
+          {searchText.length > 0 && (
+            <TouchableOpacity
+              onPress={handleClearText}
+              accessibilityRole="button"
+              accessibilityLabel="검색어 지우기"
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            >
+              <Icon name="close-circle" size={18} color={night.textFaint} />
+            </TouchableOpacity>
+          )}
+        </View>
       </View>
-
 
       {/* 검색어 입력 전: 최근 검색어 목록 */}
       {searchText.length === 0 && (
@@ -112,6 +109,15 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation, route }) => {
           <FlatList
             data={recentSearches}
             keyExtractor={(item) => item.id.toString()}
+            keyboardShouldPersistTaps="handled"
+            ListEmptyComponent={
+              <EmptyState
+                title="최근 검색어가 없어요"
+                description="칵테일 이름이나 재료로 검색해보세요."
+                emoji="🔍"
+                compact
+              />
+            }
             renderItem={({ item }) => (
               <View style={styles.recentItem}>
                 <TouchableOpacity
@@ -120,8 +126,13 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation, route }) => {
                 >
                   <Text style={styles.recentText}>{item.queryText}</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => removeRecentSearch(item.id)}>
-                  <FIcon name="close" size={20} color="#333" />
+                <TouchableOpacity
+                  onPress={() => removeRecentSearch(item.id)}
+                  accessibilityRole="button"
+                  accessibilityLabel={`${item.queryText} 검색 기록 삭제`}
+                  hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                >
+                  <FIcon name="x" size={20} color={night.textDim} />
                 </TouchableOpacity>
               </View>
             )}
@@ -132,6 +143,14 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation, route }) => {
       {/* 검색어 입력 중: 자동완성 추천 목록 */}
       {searchText.length > 0 && (
         <View style={styles.content}>
+          {suggestions.length === 0 && (
+            <EmptyState
+              title="일치하는 칵테일이 없어요"
+              description="다른 키워드로 검색해보시겠어요?"
+              emoji="🔍"
+              compact
+            />
+          )}
           {suggestions.map((item, index) => (
             <TouchableOpacity
               style={styles.suggestionItem}
@@ -140,11 +159,7 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation, route }) => {
             >
               <Image
                 source={require('../../assets/drawable/SharpSearch.png')}
-                style={{
-                  width: 20,
-                  height: 20,
-                  tintColor: '#313131',
-                }}
+                style={styles.suggestionIcon}
                 resizeMode="contain"
               />
               <Text style={styles.suggestionText}>{item.name}</Text>
@@ -161,26 +176,41 @@ export default SearchScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF', // 화이트 배경
+    backgroundColor: night.ink,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: widthPercentage(16),
-    marginTop: heightPercentage(50), // 상태바 높이 고려
     paddingBottom: heightPercentage(10),
   },
   backButton: {
-    marginRight: widthPercentage(8),
+    marginRight: spacing.sm,
+  },
+  searchField: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    columnGap: spacing.sm,
+    height: heightPercentage(42),
+    paddingHorizontal: spacing.md,
+    borderRadius: radius.md,
+    backgroundColor: night.surface,
+  },
+  searchFieldIcon: {
+    width: widthPercentage(18),
+    height: widthPercentage(18),
+    tintColor: night.textFaint,
   },
   searchInput: {
     flex: 1,
-    fontFamily: 'Pretendard-Medium',
-    height: heightPercentage(42),
-    backgroundColor: '#F5F5F5', // 연한 회색 배경
-    fontSize: fontPercentage(16),
+    padding: 0,
+    fontFamily: fonts.regular,
+    fontSize: fontPercentage(fontSize.md),
+    color: night.text,
   },
   content: {
+    flex: 1,
     paddingHorizontal: widthPercentage(20),
     marginTop: heightPercentage(20),
   },
@@ -191,14 +221,14 @@ const styles = StyleSheet.create({
     marginBottom: heightPercentage(20),
   },
   recentTitle: {
-    fontFamily: 'Pretendard-SemiBold',
-    fontSize: fontPercentage(18),
-    color: '#000',
+    fontFamily: fonts.medium,
+    fontSize: fontPercentage(fontSize.xl),
+    color: night.text,
   },
   clearAllText: {
-    fontFamily: 'Pretendard-Medium',
-    fontSize: fontPercentage(12),
-    color: '#868686',
+    fontFamily: fonts.medium,
+    fontSize: fontPercentage(fontSize.xs),
+    color: night.textFaint,
   },
   recentItem: {
     flexDirection: 'row',
@@ -207,18 +237,24 @@ const styles = StyleSheet.create({
     paddingVertical: heightPercentage(12),
   },
   recentText: {
-    fontFamily: 'Pretendard-Medium',
-    fontSize: fontPercentage(16),
-    color: '#616161',
+    fontFamily: fonts.regular,
+    fontSize: fontPercentage(fontSize.md),
+    color: night.textDim,
   },
   suggestionItem: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: heightPercentage(12),
   },
+  suggestionIcon: {
+    width: widthPercentage(20),
+    height: widthPercentage(20),
+    tintColor: night.textDim,
+  },
   suggestionText: {
-    fontSize: fontPercentage(16),
-    color: '#616161',
+    fontFamily: fonts.regular,
+    fontSize: fontPercentage(fontSize.md),
+    color: night.textDim,
     marginLeft: widthPercentage(10),
   },
 });

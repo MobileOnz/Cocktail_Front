@@ -21,9 +21,15 @@ const TASTE_MAP: Record<string, string> = {
     '기타 & 특별한 맛(Etc. & Unique Flavors)': 'ETC_SPECIAL',
 };
 
+/**
+ * 서버 Pageable 은 "속성,방향" 형식만 알아듣는다 (지원 속성: id / korName / engName / recommendCount).
+ *
+ * 예전엔 방향만('asc' / 'desc') 보냈다. 서버는 'asc' 를 속성명으로 읽고 찾지 못해 id ASC 로 폴백했고,
+ * 그래서 최신순이든 인기순이든 목록이 똑같이 나왔다 (QA: "어떤 걸 골라도 전 항목이 다 나온다").
+ */
 const SORT_MAP: Record<string, string> = {
-    '최신순': 'asc',
-    '인기순': 'desc',
+    '최신순': 'id,desc',
+    '인기순': 'recommendCount,desc',
 };
 
 export interface ISearchRepository {
@@ -37,38 +43,19 @@ export class SearchRepository implements ISearchRepository {
         this.dataSource = dataSource ?? new SearchDataSource();
     }
     async search(keyword?: string, abvBand?: string, style?: string, flavor?: string[], base?: string[], sort?: string, page = 0, size = 10): Promise<CocktailCard[]> {
-        let result: CocktailDetail[] = [];
-        const hasFilter =
-            (keyword && keyword.trim() !== '') ||
-            abvBand ||
-            style ||
-            (flavor && flavor.length > 0) ||
-            (base && base.length > 0);
-        if (hasFilter) {
-
-            const mappedAbv = abvBand ? ABV_MAP[abvBand] : undefined;
-            const mappedSort = sort ? SORT_MAP[sort] : undefined;
-            const mappedFlavor = flavor?.map(f => TASTE_MAP[f]).filter(Boolean);
-            const styleParam = style;
-            const baseParam = base;
-
-            result = await this.dataSource.search(
-                keyword?.trim(),
-                mappedAbv,
-                styleParam,
-                mappedFlavor,
-                baseParam,
-                mappedSort,
-                page,
-                size,
-            );
-        } else {
-            result = await this.dataSource.search(
-                undefined, undefined, undefined, undefined, undefined, undefined,
-                page,
-                size
-            );
-        }
+        // 조건이 하나도 없을 때 인자를 전부 버리는 분기가 있었는데, 그 분기가 정렬까지 같이 버렸다.
+        // → 다른 조건 없이 정렬만 바꾸면 아무 일도 일어나지 않았다. 항상 그대로 넘긴다
+        //   (비어 있는 값은 DataSource 가 undefined 로 떨어뜨린다).
+        const result: CocktailDetail[] = await this.dataSource.search(
+            keyword?.trim(),
+            abvBand ? ABV_MAP[abvBand] : undefined,
+            style,
+            flavor?.map(f => TASTE_MAP[f]).filter(Boolean),
+            base,
+            sort ? SORT_MAP[sort] : undefined,
+            page,
+            size,
+        );
 
         const validSchema = result.map((item) => {
             return CocktailSchema.parse(item);

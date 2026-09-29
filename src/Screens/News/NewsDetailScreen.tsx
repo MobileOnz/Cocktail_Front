@@ -1,0 +1,270 @@
+// NewsDetailScreen.tsx — 매거진 상세(라우트 이름은 호환 위해 유지).
+// GET /api/v2/magazine/{id} → 블록 content 를 MagazineBlockRenderer 로 렌더.
+// 진입 시 POST /api/v2/magazine/{id}/read 로 조회수 기록(실패해도 화면은 진행).
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  Image,
+  TouchableOpacity,
+  Linking,
+} from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
+import { fontPercentage, heightPercentage, widthPercentage } from '../../assets/styles/FigmaScreen';
+import instance from '../../tokenRequest/axios_interceptor';
+import { unwrap, toUserMessage, fireAndForget } from '../../lib/api';
+import {fonts, fontSize, koreanBreak, radius, spacing, night} from '../../lib/theme';
+import type { MagazineDetail } from '../../types/api';
+import { RootStackParamList } from '../../Navigation/Navigation';
+import MagazineBlockRenderer from './MagazineBlockRenderer';
+import ErrorBoundary from '../../Components/common/ErrorBoundary';
+import ErrorState from '../../Components/common/ErrorState';
+import SkeletonList from '../../Components/common/SkeletonList';
+import { formatDate } from '../../lib/date';
+
+const NewsDetailScreen = () => {
+  const insets = useSafeAreaInsets();
+  const navigation = useNavigation<any>();
+  const route = useRoute<RouteProp<RootStackParamList, 'NewsDetailScreen'>>();
+  const { newsId } = route.params;
+
+  const [detail, setDetail] = useState<MagazineDetail | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const mounted = useRef(true);
+  const readSent = useRef(false);
+
+  useEffect(() => () => { mounted.current = false; }, []);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await instance.get(`/api/v2/magazine/${newsId}`);
+      const data = unwrap<MagazineDetail>(res);
+      if (!mounted.current) { return; }
+      setDetail(data);
+
+      if (!readSent.current) {
+        readSent.current = true;
+        fireAndForget(instance.post(`/api/v2/magazine/${newsId}/read`));
+      }
+    } catch (e) {
+      if (!mounted.current) { return; }
+      setError(toUserMessage(e, '글을 불러오지 못했습니다.'));
+    } finally {
+      if (mounted.current) { setLoading(false); }
+    }
+  }, [newsId]);
+
+  useEffect(() => { load(); }, [load]);
+
+  const openSource = (url: string) => {
+    Linking.openURL(url).catch(() => {});
+  };
+
+  const goCocktail = (cocktailId: number) => {
+    navigation.navigate('CocktailDetailScreen', { cocktailId });
+  };
+
+  const titleText = detail?.titleLines && detail.titleLines.length > 0
+    ? detail.titleLines.join('\n')
+    : detail?.title ?? '';
+
+  return (
+    <View style={styles.container}>
+      <View style={[styles.header, { paddingTop: insets.top + heightPercentage(spacing.sm) }]}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          accessibilityRole="button"
+          accessibilityLabel="뒤로 가기"
+          hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+        >
+          <Text style={styles.backChevron}>‹</Text>
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>매거진</Text>
+        <View style={styles.headerSpacer} />
+      </View>
+
+      {loading ? (
+        <SkeletonList count={1} variant="card" />
+      ) : error ? (
+        <ErrorState message={error} onRetry={load} />
+      ) : !detail ? (
+        <ErrorState message="글을 찾을 수 없습니다." />
+      ) : (
+        <ScrollView
+          contentContainerStyle={{ paddingBottom: insets.bottom + heightPercentage(spacing.xxxl) }}
+          showsVerticalScrollIndicator={false}
+        >
+          {!!detail.heroImage && (
+            <>
+              <Image source={{ uri: detail.heroImage }} style={styles.hero} resizeMode="cover" />
+              {!!detail.imageCaption && (
+                <Text style={styles.caption} {...koreanBreak}>
+                  {detail.imageCaption}
+                </Text>
+              )}
+            </>
+          )}
+
+          <View style={styles.body}>
+            {!!detail.subcategory && <Text style={styles.category}>{detail.subcategory}</Text>}
+            <Text style={styles.title} accessibilityRole="header" {...koreanBreak}>
+              {titleText}
+            </Text>
+
+            <View style={styles.metaRow}>
+              {!!detail.authorName && <Text style={styles.source}>{detail.authorName}</Text>}
+              {!!detail.authorName && !!detail.publishedAt && <Text style={styles.metaDot}>·</Text>}
+              {!!detail.publishedAt && <Text style={styles.date}>{formatDate(detail.publishedAt)}</Text>}
+            </View>
+
+            {!!detail.dek && (
+              <Text style={styles.summary} {...koreanBreak}>
+                {detail.dek}
+              </Text>
+            )}
+
+            {/* 본문 블록은 서버 JSONB 원본이라 형태를 보장할 수 없다.
+                여기서 막지 않으면 루트 ErrorBoundary 까지 올라가 앱 전체가 리셋된다. */}
+            <ErrorBoundary
+              fallback={() => (
+                <Text style={styles.summary}>본문을 표시할 수 없습니다.</Text>
+              )}
+            >
+              <MagazineBlockRenderer blocks={detail.content} onCocktailPress={goCocktail} />
+            </ErrorBoundary>
+
+            {detail.tags && detail.tags.length > 0 && (
+              <View style={styles.tagRow}>
+                {/* 태그를 누르면 매거진 목록이 그 태그로 걸러진다. 읽고 나서 비슷한 글로 넘어가는 통로다. */}
+                {detail.tags.map((t, i) => (
+                  <TouchableOpacity
+                    key={i}
+                    style={styles.tagChip}
+                    onPress={() => navigation.navigate('BottomTabNavigator', { screen: '매거진', params: { tag: t } })}
+                    accessibilityRole="button"
+                    accessibilityLabel={`${t} 태그로 매거진 보기`}
+                  >
+                    <Text style={styles.tagText}>#{t}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            )}
+
+            {detail.refs?.sources && detail.refs.sources.length > 0 && (
+              <View style={styles.sources}>
+                <Text style={styles.sourcesTitle}>출처</Text>
+                {detail.refs.sources.map((s, i) => (
+                  <TouchableOpacity key={i} onPress={() => openSource(s.url)} accessibilityRole="link">
+                    <Text style={styles.sourceLink}>· {s.title}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            )}
+          </View>
+        </ScrollView>
+      )}
+    </View>
+  );
+};
+
+export default NewsDetailScreen;
+
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: night.ink },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: widthPercentage(spacing.lg),
+    paddingBottom: heightPercentage(spacing.sm + 2),
+    borderBottomWidth: 1,
+    borderBottomColor: night.line,
+  },
+  backChevron: { fontFamily: fonts.regular, fontSize: fontPercentage(30), color: night.text, lineHeight: fontPercentage(32) },
+  headerTitle: { fontFamily: fonts.medium, fontSize: fontPercentage(fontSize.lg), color: night.text },
+  headerSpacer: { width: widthPercentage(spacing.xl) },
+
+  hero: { width: '100%', height: heightPercentage(220), backgroundColor: night.surfaceHigh },
+  caption: {
+    fontFamily: fonts.regular,
+    fontSize: fontPercentage(fontSize.xs),
+    color: night.textFaint,
+    paddingHorizontal: widthPercentage(spacing.xl),
+    paddingTop: heightPercentage(spacing.sm),
+  },
+  body: { padding: widthPercentage(spacing.xl) },
+  category: {
+    fontFamily: fonts.bold,
+    fontSize: fontPercentage(fontSize.xs),
+    color: night.accent,
+    marginBottom: heightPercentage(spacing.sm),
+  },
+  // 기사 제목 24 / 소제목 22 는 2pt 차이뿐이라 둘이 같은 급으로 읽혔다
+  // (QA: "제목과 문단별 제목 크기가 비슷하다"). 28 / 20 / 17 로 세 단계를 벌린다.
+  title: {
+    fontFamily: fonts.bold,
+    fontSize: fontPercentage(fontSize.display),
+    color: night.text,
+    lineHeight: fontPercentage(38),
+    letterSpacing: -0.5,
+  },
+  metaRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: heightPercentage(spacing.md),
+    marginBottom: heightPercentage(spacing.xl),
+  },
+  source: { fontFamily: fonts.medium, fontSize: fontPercentage(fontSize.sm), color: night.textDim },
+  metaDot: { marginHorizontal: widthPercentage(spacing.sm), color: night.textFaint },
+  date: { fontFamily: fonts.regular, fontSize: fontPercentage(fontSize.sm), color: night.textFaint },
+  // 리드문도 읽는 텍스트다 — 본문(17)보다 한 단 아래인 16 으로 두되 행간은 넉넉히.
+  summary: {
+    fontFamily: fonts.regular,
+    fontSize: fontPercentage(fontSize.md),
+    color: night.textDim,
+    lineHeight: fontPercentage(27),
+    letterSpacing: -0.3,
+    paddingLeft: widthPercentage(spacing.md),
+    borderLeftWidth: 3,
+    borderLeftColor: night.line,
+    marginBottom: heightPercentage(spacing.xl),
+  },
+  tagRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginTop: heightPercentage(spacing.xl),
+  },
+  tagChip: {
+    backgroundColor: night.surface,
+    borderRadius: radius.pill,
+    paddingHorizontal: widthPercentage(spacing.md),
+    paddingVertical: heightPercentage(spacing.xs),
+    marginRight: widthPercentage(spacing.sm),
+    marginBottom: heightPercentage(spacing.sm),
+  },
+  tagText: { fontFamily: fonts.medium, fontSize: fontPercentage(fontSize.xs), color: night.textDim },
+  sources: {
+    marginTop: heightPercentage(spacing.xxl),
+    borderTopWidth: 1,
+    borderTopColor: night.line,
+    paddingTop: heightPercentage(spacing.lg),
+  },
+  sourcesTitle: {
+    fontFamily: fonts.semibold,
+    fontSize: fontPercentage(fontSize.sm),
+    color: night.textDim,
+    marginBottom: heightPercentage(spacing.sm),
+  },
+  sourceLink: {
+    fontFamily: fonts.regular,
+    fontSize: fontPercentage(fontSize.sm),
+    color: night.accent,
+    lineHeight: fontPercentage(22),
+  },
+});

@@ -1,9 +1,11 @@
-const { getDefaultConfig, mergeConfig } = require('@react-native/metro-config');
+const {getDefaultConfig, mergeConfig} = require('@react-native/metro-config');
 const exclusionList = require('metro-config/src/defaults/exclusionList');
+
+const {withSentryConfig} = require('@sentry/react-native/metro');
 
 const defaultConfig = getDefaultConfig(__dirname);
 const {
-  resolver: { assetExts, sourceExts },
+  resolver: {assetExts, sourceExts},
 } = defaultConfig;
 
 const config = {
@@ -19,4 +21,4 @@ const config = {
   watchFolders: [__dirname],
 };
 
-module.exports = mergeConfig(defaultConfig, config);
+module.exports = withSentryConfig(mergeConfig(defaultConfig, config));

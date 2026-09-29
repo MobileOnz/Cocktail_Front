@@ -7,12 +7,15 @@ import {
   Image,
   Text,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { widthPercentage, heightPercentage, fontPercentage } from '../../assets/styles/FigmaScreen';
 import MyPageViewModel from './MyPageViewModel';
 import { useToast } from '../../Components/ToastContext';
+import { fonts } from '../../lib/theme';
 
 const QuitScreen: React.FC = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<any>();
+  const insets = useSafeAreaInsets();
   // const [showWithdrawModal, setShowWithdrawModal] = useState(false);
   const {showToast} = useToast();
 
@@ -44,7 +47,7 @@ const QuitScreen: React.FC = () => {
         setProfileUri(null);
 
         navigation.navigate('BottomTabNavigator', {
-          screen: '지도',
+          screen: '홈',
           params: { shouldRefresh: true },
         });
       } else {
@@ -53,8 +56,6 @@ const QuitScreen: React.FC = () => {
 
     } catch (err: any) {
       console.log('🚨 탈퇴 오류:', err.response?.data || err.message);
-    } finally {
-      setShowWithdrawModal(false);
     }
   };
 
@@ -69,7 +70,7 @@ const QuitScreen: React.FC = () => {
             <View style={styles.backIcon} />
         </View>
 
-        <View style={styles.contentContainer}>
+        <View style={[styles.contentContainer, styles.contentFill]}>
             <Text style={styles.quitTitle}>정말 떠나시겠어요?</Text>
             <Text style={styles.subTitle}>함께한 시간, 즐거웠어요.</Text>
             <Text style={styles.subTitle}>탈퇴 전 아래 내용을 꼭 확인해주세요.</Text>
@@ -88,7 +89,7 @@ const QuitScreen: React.FC = () => {
 
             </View>
         </View>
-
+        
         {/* 회원 탈퇴 모달 삭제 */}
         {/* <WithdrawBottomSheet
           isVisible={showWithdrawModal}
@@ -98,8 +99,9 @@ const QuitScreen: React.FC = () => {
 
 
         <TouchableOpacity
-          style={styles.quitBtn}
+          style={[styles.quitBtn, {marginBottom: heightPercentage(14) + insets.bottom}]}
           onPress={handleWithdraw}
+          accessibilityRole="button"
         >
             <Text style={styles.quitText}>탈퇴하기</Text>
         </TouchableOpacity>
@@ -117,6 +119,10 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#FFFFFF',
   },
+  /** 본문이 남은 공간을 모두 차지해 버튼을 화면 하단(부모 경계 안)으로 밀어낸다. */
+  contentFill: {
+    flex: 1,
+  },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -133,7 +139,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: fontPercentage(20),
-    fontWeight: '600',
+    fontFamily: fonts.medium,
     color: '#1B1B1B',
   },
   backIcon: {
@@ -150,13 +156,13 @@ const styles = StyleSheet.create({
     marginTop: heightPercentage(28),
     fontSize: fontPercentage(22),
     color: '#1B1B1B',
-    fontWeight: '600',
+    fontFamily: fonts.medium,
   },
   subTitle: {
     marginTop: heightPercentage(4),
     fontSize: fontPercentage(16),
     color: '#616161',
-    fontWeight: '500',
+    fontFamily: fonts.regular,
   },
   quitClueContainer: {
     backgroundColor: '#F5F5F5',
@@ -166,20 +172,22 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   quitClueTitle: {
-    fontWeight: '600',
+    fontFamily: fonts.semibold,
     fontSize: fontPercentage(14),
     color: '#FF465C',
     marginLeft: widthPercentage(2),
   },
   quitClueSubTitle: {
-    fontWeight: '500',
+    fontFamily: fonts.medium,
     fontSize: fontPercentage(14),
     color: '#1B1B1B',
     marginTop: heightPercentage(14),
   },
+  // 예전엔 position:'relative' + bottom:52 로 버튼을 위로 끌어올렸다.
+  // 콘텐츠가 길어지면 버튼의 레이아웃 위치가 부모 밖으로 나가는데, 안드로이드는 부모 경계
+  // 밖에 놓인 뷰의 터치를 버린다 — 보이는데 안 눌리는 상태였다(QA: "탈퇴 버튼이 안 눌림").
+  // 오프셋을 걷어내고 위쪽 콘텐츠가 남은 공간을 밀어내게 해서 버튼을 경계 안에 둔다.
   quitBtn: {
-    position: 'relative',
-    bottom: heightPercentage(52),
     height: heightPercentage(52),
     backgroundColor: '#FF465C',
     alignItems: 'center',
@@ -190,7 +198,7 @@ const styles = StyleSheet.create({
   },
   quitText: {
     fontSize: fontPercentage(16),
-    fontWeight: '600',
+    fontFamily: fonts.medium,
     color: '#FFFFFF',
   },
 });

@@ -24,6 +24,7 @@ import { RootStackParamList } from '../../../Navigation/Navigation';
 import instance from '../../../tokenRequest/axios_interceptor';
 import { getToken } from '../../../tokenRequest/Token';
 import { useToast } from '../../../Components/ToastContext';
+import { fonts } from '../../../lib/theme';
 
 type NavigationProp = StackNavigationProp<RootStackParamList>;
 
@@ -256,7 +257,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: fontPercentage(20),
-    fontWeight: '600',
+    fontFamily: fonts.medium,
     color: '#1B1B1B',
   },
   backIcon: {
@@ -271,7 +272,7 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: fontPercentage(14),
-    fontWeight: '600',
+    fontFamily: fonts.semibold,
     color: '#1B1B1B',
     marginBottom: heightPercentage(8),
   },
@@ -297,7 +298,7 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     fontSize: fontPercentage(15),
-    fontWeight: '500',
+    fontFamily: fonts.regular,
     color: '#2D2D2D',
     padding: 0,
   },
@@ -313,7 +314,7 @@ const styles = StyleSheet.create({
   textArea: {
     flex: 1,
     fontSize: fontPercentage(15),
-    fontWeight: '500',
+    fontFamily: fonts.regular,
     color: '#2D2D2D',
     minHeight: heightPercentage(130),
     padding: 0,
@@ -325,15 +326,18 @@ const styles = StyleSheet.create({
     marginTop: heightPercentage(6),
   },
   helperText: {
+    fontFamily: fonts.regular,
     fontSize: fontPercentage(12),
     color: '#9E9E9E',
     marginTop: heightPercentage(6),
   },
   counterText: {
+    fontFamily: fonts.regular,
     fontSize: fontPercentage(12),
     color: '#9E9E9E',
   },
   errorText: {
+    fontFamily: fonts.regular,
     fontSize: fontPercentage(12),
     color: '#E53935',
     marginTop: heightPercentage(6),
@@ -355,6 +359,6 @@ const styles = StyleSheet.create({
   submitButtonText: {
     fontSize: fontPercentage(16),
     color: '#FAFAFA',
-    fontWeight: '600',
+    fontFamily: fonts.medium,
   },
 });

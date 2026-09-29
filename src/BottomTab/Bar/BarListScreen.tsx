@@ -1,0 +1,279 @@
+// src/BottomTab/Bar/BarListScreen.tsx
+//
+// 바 리스트 — Recommend 탭을 대체. 3 정렬(내 주변/큐레이션/최근).
+// 카드는 가게명 + 거리(또는 큐레이션 가중치/최근 일자)만 (Spec D22).
+// 진입은 BarDetailScreen.
+
+import React, { useCallback, useEffect, useState } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  TouchableOpacity,
+  RefreshControl,
+  PermissionsAndroid,
+  Platform,
+  StatusBar,
+} from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
+import { useTabBarSpace } from '../../lib/layout';
+import { fonts, night, space, round } from '../../lib/theme';
+import RemoteImage from '../../Components/common/RemoteImage';
+import Geolocation from 'react-native-geolocation-service';
+import ErrorState from '../../Components/common/ErrorState';
+import EmptyState from '../../Components/common/EmptyState';
+import SkeletonList from '../../Components/common/SkeletonList';
+import instance from '../../tokenRequest/axios_interceptor';
+
+type Sort = 'curated' | 'distance' | 'recent';
+
+interface BarListItem {
+  id: number;
+  slug: string;
+  nameKo: string;
+  nameEn?: string | null;
+  /** 서버가 내려주는데 목록에서 안 쓰고 있었다. 카드 사진으로 쓴다. */
+  heroImage?: string | null;
+  address?: string | null;
+  distanceKm?: number;
+  featuredWeight?: number;
+  updatedAt?: string;
+}
+
+/** '내 주변' 검색 반경. 백엔드 기본값(3km)보다 넉넉히 잡아 결과가 비지 않게 한다. */
+const NEARBY_RADIUS_M = 10000;
+
+async function ensureLocationPermission(): Promise<boolean> {
+  if (Platform.OS === 'android') {
+    const granted = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+    );
+    return granted === PermissionsAndroid.RESULTS.GRANTED;
+  }
+  // iOS: requestAuthorization는 Promise를 반환 — await해서 권한 다이얼로그 응답까지 대기.
+  const result = await Geolocation.requestAuthorization('whenInUse');
+  return result === 'granted';
+}
+
+function getCurrentPosition(): Promise<{ lat: number; lng: number }> {
+  return new Promise((resolve, reject) => {
+    Geolocation.getCurrentPosition(
+      pos => resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
+      err => reject(err),
+      { enableHighAccuracy: false, timeout: 8000, maximumAge: 60000 },
+    );
+  });
+}
+
+const BarListScreen: React.FC = () => {
+  const insets = useSafeAreaInsets();
+  const tabBarSpace = useTabBarSpace();
+  const navigation = useNavigation<any>();
+  const [sort, setSort] = useState<Sort>('curated');
+  const [bars, setBars] = useState<BarListItem[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchBars = useCallback(async (s: Sort) => {
+    setError(null);
+    setLoading(true);
+    try {
+      // '내 주변'만 별도 엔드포인트를 쓴다. 백엔드가 거리순으로 정렬하고 distanceKm 를 채워준다.
+      // 권한/좌표 실패는 목록 실패와 다른 사고다 — 사용자가 할 일이 다르므로 문구를 나눈다.
+      if (s === 'distance') {
+        const granted = await ensureLocationPermission();
+        if (!granted) {
+          setBars([]);
+          setError('위치 권한이 필요합니다.\n설정에서 위치 접근을 허용하면 가까운 바부터 보여드려요.');
+          return;
+        }
+        let coords: { lat: number; lng: number };
+        try {
+          coords = await getCurrentPosition();
+        } catch {
+          setBars([]);
+          setError('현재 위치를 찾지 못했어요.\n실내이거나 GPS 신호가 약할 수 있어요.');
+          return;
+        }
+        const res = await instance.get('/api/v2/bars/nearby', {
+          params: { lat: coords.lat, lng: coords.lng, radiusM: NEARBY_RADIUS_M, limit: 30 },
+        });
+        setBars((res.data?.data ?? []) as BarListItem[]);
+        return;
+      }
+
+      const res = await instance.get(`/api/v2/bars?sort=${s}&limit=30`);
+      setBars((res.data?.data ?? []) as BarListItem[]);
+    } catch (e: any) {
+      console.warn('[BarList] fetch error', e?.message ?? e);
+      setError(e?.response?.data?.msg ?? '바 목록을 불러오지 못했습니다');
+      setBars([]);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchBars(sort);
+  }, [sort, fetchBars]);
+
+  const onRefresh = () => {
+    setRefreshing(true);
+    fetchBars(sort);
+  };
+
+  const renderRight = (item: BarListItem) => {
+    // 거리는 정렬과 무관하게, 서버가 줬으면 보여준다. 1km 미만은 m 가 훨씬 잘 읽힌다.
+    if (typeof item.distanceKm === 'number') {
+      return item.distanceKm < 1
+        ? `${Math.round(item.distanceKm * 1000)}m`
+        : `${item.distanceKm.toFixed(1)}km`;
+    }
+    if (sort === 'recent' && item.updatedAt) {
+      try {
+        const d = new Date(item.updatedAt);
+        const days = Math.max(0, Math.floor((Date.now() - d.getTime()) / 86400000));
+        return days === 0 ? '오늘' : `${days}일전`;
+      } catch {
+        return '';
+      }
+    }
+    return '';
+  };
+
+  return (
+    <View style={[styles.container, { paddingTop: insets.top + 12 }]}>
+      {/* 바 도메인도 라이트로 통일됐다 → 상태바 글씨는 어둡게. 상세 화면도 같은 설정이다. */}
+      <StatusBar barStyle="light-content" backgroundColor={night.ink} />
+      <Text style={styles.title}>바</Text>
+
+      <View style={styles.segmentBar}>
+        {(['curated', 'distance', 'recent'] as Sort[]).map(s => (
+          <TouchableOpacity
+            key={s}
+            style={[styles.segment, sort === s && styles.segmentActive]}
+            onPress={() => setSort(s)}>
+            <Text style={[styles.segmentText, sort === s && styles.segmentTextActive]}>
+              {s === 'curated' ? '큐레이션' : s === 'distance' ? '내 주변' : '최근'}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+
+      {loading && bars.length === 0 ? (
+        <SkeletonList count={5} variant="row" />
+      ) : error ? (
+        <ErrorState message={error} onRetry={() => fetchBars(sort)} />
+      ) : bars.length === 0 ? (
+        <EmptyState
+          title={sort === 'distance' ? '근처에 등록된 바가 없어요' : '등록된 바가 없습니다'}
+          description={
+            sort === 'distance'
+              ? `${NEARBY_RADIUS_M / 1000}km 안에서 찾지 못했어요. 큐레이션 탭을 둘러보세요.`
+              : '조금 뒤에 다시 확인해주세요.'
+          }
+          emoji="📍"
+        />
+      ) : (
+        <FlatList
+          contentContainerStyle={{ paddingBottom: tabBarSpace }}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={night.accent} />}
+          data={bars}
+          keyExtractor={(item) => String(item.id)}
+          renderItem={({ item }) => (
+            // 이름만 나열된 텍스트 리스트였다. 바는 '분위기'로 고르는 곳인데 그걸 전혀
+            // 보여주지 못했다(QA: "리스트 형태가 아닌 UX 친화적 뷰가 필요"). 서버가 내려주는
+            // heroImage 를 쓰지 않고 있었으므로 사진 카드로 바꾼다.
+            <TouchableOpacity
+              style={styles.barCard}
+              activeOpacity={0.9}
+              accessibilityRole="button"
+              accessibilityLabel={`${item.nameKo} 상세 보기`}
+              onPress={() => navigation.navigate('BarDetailScreen', { slug: item.slug })}>
+              <RemoteImage
+                uri={item.heroImage}
+                style={styles.barImage}
+                resizeMode="cover"
+                tone="dark"
+                label={item.nameKo}
+              />
+              <View style={styles.barBody}>
+                <Text style={styles.barName} numberOfLines={1}>{item.nameKo}</Text>
+                <View style={styles.barMetaRow}>
+                  <Text style={styles.barAddress} numberOfLines={1}>{item.address}</Text>
+                  {!!renderRight(item) && (
+                    <Text style={styles.barMeta}>{renderRight(item)}</Text>
+                  )}
+                </View>
+              </View>
+            </TouchableOpacity>
+          )}
+        />
+      )}
+    </View>
+  );
+};
+
+// 색은 bar 팔레트, 서체는 Pretendard 로 맞춘다.
+// 이 화면만 fontWeight 로 시스템 폰트를 쓰고 있어서 다른 탭과 글자 모양이 달랐다.
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: night.ink },
+  title: {
+    color: night.text,
+    fontSize: 28,
+    fontFamily: fonts.bold,
+    paddingHorizontal: space.gutter,
+    marginBottom: space.lg,
+  },
+  segmentBar: {
+    flexDirection: 'row',
+    gap: space.sm,
+    paddingHorizontal: space.gutter,
+    marginBottom: space.lg,
+  },
+  segment: {
+    paddingVertical: space.sm,
+    paddingHorizontal: space.md,
+    borderRadius: round.pill,
+    backgroundColor: night.surface,
+    borderWidth: 1,
+    borderColor: night.line,
+  },
+  segmentActive: { backgroundColor: night.accent, borderColor: night.accent },
+  segmentText: { color: night.textDim, fontSize: 13, fontFamily: fonts.medium },
+  segmentTextActive: { color: night.onAccent },
+  // 카드 한 장 — 테두리 없이 사진의 둥근 모서리가 카드 모양이 된다(홈·매거진과 같은 말).
+  // 홈과 같은 규칙 — 테두리·배경 없이 사진이 카드 모양을 만든다.
+  barCard: {
+    marginHorizontal: space.gutter,
+    marginBottom: space.xxl,
+  },
+  barImage: { width: '100%', height: 160, borderRadius: round.md },
+  barBody: { paddingTop: space.md },
+  barName: { color: night.text, fontSize: 17, fontFamily: fonts.semibold },
+  barMetaRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: space.sm,
+    marginTop: space.xs,
+  },
+  barAddress: { color: night.textDim, fontSize: 13, fontFamily: fonts.regular, flex: 1 },
+  barMeta: { color: night.accent, fontSize: 13, fontFamily: fonts.medium },
+  empty: { padding: 48, alignItems: 'center' },
+  emptyText: { color: night.textFaint, fontSize: 14, fontFamily: fonts.regular },
+  retryBtn: {
+    marginTop: 16,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    backgroundColor: night.surface,
+    borderRadius: round.sm,
+  },
+  retryText: { color: night.text, fontSize: 13, fontFamily: fonts.medium },
+});
+
+export default BarListScreen;

@@ -11,6 +11,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../../Navigation/Navigation';
 import { widthPercentage, heightPercentage, fontPercentage } from '../../assets/styles/FigmaScreen';
 import ResultViewModel from './ResultViewModel';
+import { fonts } from '../../lib/theme';
 
 type RecommendResultSreenNavigationProp = StackNavigationProp<
   RootStackParamList,
@@ -37,7 +38,7 @@ const RecommendResultScreen: React.FC<Props> = ({ navigation, route }) => {
             screen: '홈',
           },
         },
-        { name: 'RecommendIntroScreen' },
+        { name: 'RecommendationIntro' },
       ],
     });
   };
@@ -112,7 +113,7 @@ const RecommendResultScreen: React.FC<Props> = ({ navigation, route }) => {
 };
 
 // 결과 화면
-const ResultScreen = ({ data, user }) => {
+const ResultScreen = ({ data, user }: { data: any; user: any }) => {
   const ABV_LABEL: Record<string, string> = {
     WEAK: '약함',
     MEDIUM: '보통',
@@ -261,6 +262,7 @@ const styles = StyleSheet.create({
 
   resultInfoTitleText: {
     flex: 1,
+    fontFamily: fonts.regular,
     fontSize: fontPercentage(14),
     color: '#BDBDBD',
 
@@ -269,7 +271,7 @@ const styles = StyleSheet.create({
   resultInfoSubText: {
     flex: 4,
     fontSize: fontPercentage(16),
-    fontFamily: 'Pretandard-Medium',
+    fontFamily: 'Pretendard-Regular',
     color: '#FFFFFF',
     textAlign: 'left',
     flexWrap: 'wrap',
@@ -300,7 +302,7 @@ const styles = StyleSheet.create({
     marginLeft: widthPercentage(20),
     fontSize: fontPercentage(20),
     color: '#FFFFFF',
-    fontFamily: 'NotoSerif-SemiBoldItalic',
+    fontFamily: 'Pretendard-SemiBold',
   },
 
   resultTitleText: {
@@ -309,13 +311,13 @@ const styles = StyleSheet.create({
     marginLeft: widthPercentage(20),
     fontSize: fontPercentage(20),
     color: '#FFFFFF',
-    fontFamily: 'Pretandard-SemiBold',
+    fontFamily: 'Pretendard-Medium',
   },
 
   titleIntroduceText: {
     fontSize: fontPercentage(20),
     color: '#1B1B1B',
-    fontFamily: 'Pretandard-SemiBold',
+    fontFamily: 'Pretendard-Medium',
     textAlign: 'center',
   },
 
@@ -332,7 +334,7 @@ const styles = StyleSheet.create({
   description: {
     fontSize: fontPercentage(14),
     color: '#BDBDBD',
-    fontFamily: 'Pretandard-Medium',
+    fontFamily: 'Pretendard-Medium',
     textAlign: 'center',
     paddingBottom: heightPercentage(20),
   },
@@ -398,12 +400,12 @@ const styles = StyleSheet.create({
   },
 
   bottomBtnLeftText: {
-    fontFamily: 'Pretandard-SemiBold',
+    fontFamily: 'Pretendard-SemiBold',
     fontSize: fontPercentage(14),
     color: '#1B1B1B',
   },
   bottomBtnRightText: {
-    fontFamily: 'Pretandard-SemiBold',
+    fontFamily: 'Pretendard-SemiBold',
     fontSize: fontPercentage(14),
     color: '#FFFFFF',
   },
