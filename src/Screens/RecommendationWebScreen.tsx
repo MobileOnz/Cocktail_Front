@@ -24,12 +24,14 @@ import WebView from 'react-native-webview';
 import {night, fonts, round} from '../lib/theme';
 import {recommendationWebTheme} from './recommendationWebTheme';
 import type {RootStackParamList} from '../Navigation/Navigation';
+import {trackRecommendationMessage} from '../analytics/eventProperty';
 
 type Props = StackScreenProps<RootStackParamList, 'RecommendationScreen'>;
 const webUrl = 'https://onz-homepage.vercel.app/recommend/';
 
 export default function RecommendationWebScreen({navigation}: Props) {
   const webView = useRef<WebView>(null);
+  const analyticsMessages = useRef(new Set<string>());
   const {fontScale} = useWindowDimensions();
   const [ready, setReady] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(true);
@@ -158,6 +160,10 @@ export default function RecommendationWebScreen({navigation}: Props) {
           onContentProcessDidTerminate={() => setFailed(true)}
           onRenderProcessGone={() => setFailed(true)}
           onMessage={event => {
+            const messageUrl = event.nativeEvent.url;
+            if (messageUrl === webUrl || messageUrl?.startsWith(webUrl)) {
+              trackRecommendationMessage(event.nativeEvent.data, analyticsMessages.current);
+            }
             if (event.nativeEvent.data === 'onz:ready') {
               setReady(true);
             }
