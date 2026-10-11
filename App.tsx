@@ -16,6 +16,7 @@ import {PersistQueryClientProvider} from '@tanstack/react-query-persist-client';
 import {queryClient, persister} from './src/lib/queryClient';
 import {ToastProvider} from './src/Components/ToastContext';
 import ErrorBoundary from './src/Components/common/ErrorBoundary';
+import AppUpdateGate from './src/Components/AppUpdateGate';
 import {initDb} from './src/model/local/index';
 import RNBootSplash from 'react-native-bootsplash';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
@@ -92,6 +93,7 @@ const AppContent = memo(
         </ErrorBoundary>
         {/* 헤더(뒤로가기/화면 제목) 아래에 앉도록 상태바 인셋만큼 내린다. 기본값은 헤더를 덮는다. */}
         <Toast topOffset={insets.top + 48} />
+        <AppUpdateGate />
       </ToastProvider>
     );
   },
